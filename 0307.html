@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QKD</title>
+    <style>
+        :root {
+            --primary-blue: #0047AB;
+            --light-blue: #D0E0FF;
+            --bg-color: #f8f9fa;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0;
+            padding: 40px 20px;
+            color: #333;
+        }
+
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            width: 100%;
+            /* 1. 將最大寬度加大，讓左側有足夠空間 */
+            max-width: 1100px;
+        }
+
+        /* 頂部角色區域 */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+            padding: 0 40px;
+        }
+
+        .roles-group {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background: var(--light-blue);
+            padding: 10px 30px;
+            border-radius: 20px;
+        }
+
+        .role-box {
+            font-weight: bold;
+            font-size: 18px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .role-icon {
+            font-size: 32px;
+            margin-bottom: 5px;
+        }
+
+        .result-header {
+            background: var(--light-blue);
+            padding: 15px 25px;
+            border-radius: 15px;
+            font-weight: bold;
+            text-align: center;
+            line-height: 1.4;
+        }
+
+        /* 2. 新增一個並排的容器，把選單和圖表左右分開 */
+        .main-content {
+            display: flex;
+            gap: 30px; /* 左右區塊的間距 */
+            align-items: flex-start;
+            width: 100%;
+        }
+
+        /* 左側選單 */
+        .sidebar {
+            width: 220px; /* 稍微加寬讓按鈕更好點 */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            z-index: 10;
+        }
+
+        .selection-box {
+            background: var(--light-blue);
+            border-radius: 15px;
+            padding: 20px 15px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .selection-box h4 {
+            margin: 0 0 15px 0;
+            text-align: center;
+            color: #333;
+        }
+
+        .option-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 10px;
+            transition: background 0.2s;
+        }
+
+        .option-row:hover {
+            background: rgba(255, 255, 255, 0.5);
+        }
+
+        .state-btn {
+            background: white;
+            border: 2px solid var(--primary-blue);
+            color: var(--primary-blue);
+            width: 45px;
+            height: 45px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            font-weight: bold;
+            pointer-events: none; 
+        }
+
+        .arrow-icon {
+            color: var(--primary-blue);
+            font-weight: bold;
+        }
+
+        .option-row.active .state-btn {
+            background: var(--primary-blue);
+            color: white;
+        }
+
+        .hint-text {
+            margin-top: 15px;
+            color: var(--gray-text);
+            font-weight: bold;
+            font-size: 14px;
+            text-align: center;
+        }
+
+        /* 樹狀圖區域 (使用相對定位作為畫布) */
+        .diagram-area {
+            position: relative;
+            flex-grow: 1; /* 讓圖表區域填滿剩下的空間 */
+            height: 450px;
+        }
+
+        /* SVG 箭頭圖層 */
+        .arrows {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: none; /* 避免箭頭擋住點擊 */
+        }
+
+        /* 節點樣式 */
+        .node {
+            position: absolute;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            z-index: 2;
+            transform: translate(-50%, -50%); 
+        }
+
+        .polarizer-img {
+            width: 70px; 
+            height: auto;
+            object-fit: contain;
+        }
+
+        .state-circle {
+            width: 45px;
+            height: 45px;
+            background: var(--primary-blue);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+            margin-top: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .prob-circle {
+            position: absolute;
+            background: var(--light-blue);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            font-weight: bold;
+            z-index: 3;
+            transform: translate(-50%, -50%);
+        }
+        .result-circle{
+            position: absolute;
+            background: var(--light-blue);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            font-weight: bold;
+            z-index: 3;
+            transform: translate(-50%, -50%);
+            color:#ff4d4d;
+        }
+
+        /* 模擬控制區 */
+        .controls {
+            margin-top: 40px;
+            text-align: center;
+            padding-top: 20px;
+            border-top: 2px dashed #eee;
+            width: 100%;
+        }
+
+        button {
+            padding: 12px 35px;
+            font-size: 18px;
+            background: var(--primary-blue);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: bold;
+        }
+
+        button:hover {
+            background: #003580;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,71,171,0.3);
+        }
+
+        #result-text {
+            margin-top: 20px;
+            font-size: 18px;
+            font-weight: bold;
+            color: #d35400;
+            min-height: 27px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <div class="roles-group">
+            <div class="role-box">
+                <span class="role-icon">👤</span>
+                <span style="background: var(--primary-blue); color: white; padding: 2px 10px; border-radius: 10px; font-size: 14px;">Alice</span>
+            </div>
+            <span style="font-size: 24px;">▶</span>
+            <div class="role-box">
+                <span class="role-icon">👤</span>
+                <span style="background: var(--primary-blue); color: white; padding: 2px 10px; border-radius: 10px; font-size: 14px;">Bob</span>
+            </div>
+        </div>
+        <div class="result-header">結果<br>Result</div>
+    </div>
+
+    <div class="main-content">
+        <div class="sidebar">
+            <div class="selection-box">
+                <h4>Alice選擇訊息</h4>
+                <div class="option-row active" onclick="selectState(this, '|→⟩', 'rectilinear')">
+                    <div class="state-btn">|0⟩</div>
+                    <div class="arrow-icon">➔</div>
+                    <div class="state-btn">|→⟩</div>
+                </div>
+                <div class="option-row" onclick="selectState(this, '|↑⟩', 'rectilinear')">
+                    <div class="state-btn">|1⟩</div>
+                    <div class="arrow-icon">➔</div>
+                    <div class="state-btn">|↑⟩</div>
+                </div>
+                <div class="option-row" onclick="selectState(this, '|↗⟩', 'diagonal')">
+                    <div class="state-btn">|+⟩</div>
+                    <div class="arrow-icon">➔</div>
+                    <div class="state-btn">|↗⟩</div>
+                </div>
+                <div class="option-row" onclick="selectState(this, '|↖⟩', 'diagonal')">
+                    <div class="state-btn">|-⟩</div>
+                    <div class="arrow-icon">➔</div>
+                    <div class="state-btn">|↖⟩</div>
+                </div>
+            </div>
+            <div class="hint-text">點選幫Alice準備訊息</div>
+        </div>
+
+        <div class="diagram-area">
+            <svg class="arrows">
+                <defs>
+                    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                        <path d="M 0 0 L 10 5 L 0 10 z" fill="#333" />
+                    </marker>
+                </defs>
+                <line x1="15%" y1="50%" x2="35%" y2="25%" stroke="#333" stroke-width="3" marker-end="url(#arrow)" />
+                <line x1="15%" y1="50%" x2="35%" y2="75%" stroke="#333" stroke-width="3" marker-end="url(#arrow)" />
+                <line x1="45%" y1="25%" x2="55%" y2="25%" stroke="#333" stroke-width="3" stroke-dasharray="5,5" />
+                <line x1="60%" y1="25%" x2="68%" y2="25%" stroke="#333" stroke-width="3" marker-end="url(#arrow)" />
+                <line x1="45%" y1="75%" x2="63%" y2="55%" stroke="#333" stroke-width="3" marker-end="url(#arrow)" />
+                <line x1="45%" y1="75%" x2="63%" y2="90%" stroke="#333" stroke-width="3" marker-end="url(#arrow)" />
+            </svg>
+
+            <div class="node" style="left: 10%; top: 50%;">
+                <img id="initial-key-img" src="vertical.svg" alt="ver" class="polarizer-img">
+                <div class="state-circle" id="initial-state-text">|→⟩</div>
+            </div>
+
+            <div class="prob-circle" style="left: 25%; top: 32%;">1/2</div>
+            <div class="prob-circle" style="left: 25%; top: 68%;">1/2</div>
+
+            <div class="node" style="left: 40%; top: 25%;">
+                <img id="bob-same" src="vertical.svg" alt="ver" class="polarizer-img">
+            </div>
+            <div class="node" style="left: 40%; top: 75%;">
+                <img id="bob-unsame" src="diagonal.svg" alt="diag" class="polarizer-img">
+            </div>
+
+            <div class="prob-circle" style="left: 58%; top: 25%;">1</div>
+            <div class="prob-circle" style="left: 55%; top: 60%;">1/2</div>
+            <div class="prob-circle" style="left: 55%; top: 86%;">1/2</div>
+
+            <div class="node" style="left: 72%; top: 25%;">
+                <div id="symbol-bobsame" class="state-circle">|→⟩</div>
+            </div>
+            <div class="node" style="left: 72%; top: 55%;">
+                <div class="state-circle" style="transform: rotate(-45deg); display: flex; align-items: center; justify-content: center;">
+                     <span id="symbol-bobunsame-1" style="transform: rotate(45deg);">|↖⟩</span>
+                </div>
+            </div>
+            <div class="node" style="left: 72%; top: 90%;">
+                 <div class="state-circle" style="transform: rotate(45deg); display: flex; align-items: center; justify-content: center;">
+                     <span id="symbol-bobunsame-2" style="transform: rotate(-45deg);">|↗⟩</span>
+                </div>
+            </div>
+
+            <div class="result-circle" style="left: 90%; top: 25%; width: 50px; height: 50px;">V</div>
+            <div class="prob-circle" style="left: 90%; top: 55%; width: 50px; height: 50px;">X</div>
+            <div class="prob-circle" style="left: 90%; top: 90%; width: 50px; height: 50px;">X</div>
+        </div>
+
+</div>
+
+<script>
+    const symbols = {
+        Stype: ['|↑⟩', '|→⟩'], // S 種類
+        Dtype: ['|↗⟩', '|↖⟩']     // D 種類
+    };
+    // Alice選擇，切換alice節點偏振器圖片
+    function selectState(element, stateSymbol, basisType) {
+        const rows = document.querySelectorAll('.option-row');
+        rows.forEach(row => row.classList.remove('active'));
+        
+        element.classList.add('active');
+        document.getElementById('initial-state-text').innerText = stateSymbol;
+        document.getElementById('symbol-bobsame').innerText = stateSymbol;
+        //const oppoType = (basisType === 'rectilinear') ? 'Dtype' : 'Stype';
+        const oppoSymbol = symbols[(basisType === 'rectilinear') ? 'Dtype' : 'Stype'];
+        document.getElementById('symbol-bobunsame-1').innerText = oppoSymbol[0];
+        document.getElementById('symbol-bobunsame-2').innerText = oppoSymbol[1];
+
+        const keyImg = document.getElementById('initial-key-img');
+        const bobSame = document.getElementById('bob-same');
+        const bobUnsame = document.getElementById('bob-unsame');
+        if (basisType === 'rectilinear') {
+            keyImg.src = "vertical.svg";
+            bobSame.src = "vertical.svg";
+            bobUnsame.src = "diagonal.svg"; 
+        } else {
+            keyImg.src = "diagonal.svg"; 
+            bobSame.src = "diagonal.svg";
+            bobUnsame.src = "vertical.svg";
+        }        
+    }
+
+</script>
+
+</body>
+</html>
