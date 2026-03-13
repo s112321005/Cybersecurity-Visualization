@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <title>QKD 模擬器 - Step 1 (選擇偏振器)</title>
+    <style>
+        :root {
+            --primary-blue: #004aad; /* 統一使用最新設計的深藍色 */
+            --dark-text: #333333;
+            --bg-color: #f8f9fa;
+        }
+
+        body {
+            font-family: sans-serif; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center;    
+            padding: 40px 20px; 
+            background-color: var(--bg-color);
+            margin: 0;
+        }
+
+        /* =========================================
+           頂部導覽列 (Header)
+           ========================================= */
+        .header {
+            width: 1000px; /* 統一寬度 */
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 25px;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .btn-back {
+            width: 40px;
+            height: 40px;
+            background-color: var(--primary-blue);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 1.2rem;
+            flex-shrink: 0;
+        }
+
+        .title-pill {
+            border: 2px solid var(--primary-blue);
+            padding: 10px 25px;
+            border-radius: 30px;
+            font-weight: bold;
+            color: var(--dark-text);
+            font-size: 1.1rem;
+            background: white;
+        }
+
+        .header-center {
+            flex-grow: 1;
+            margin-left: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .step-text {
+            font-weight: bold;
+            font-size: 1.2rem;
+            color: var(--dark-text);
+            margin: 2px 0;
+        }
+
+        .header-right {
+            display: flex;
+            gap: 15px;
+        }
+
+        .nav-btn {
+            border: 2px solid var(--primary-blue);
+            background: white;
+            color: var(--dark-text);
+            padding: 10px 20px;
+            border-radius: 30px;
+            font-weight: bold;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .nav-btn:hover {
+            background: var(--primary-blue);
+            color: white;
+        }
+
+        /* =========================================
+           主要內容區卡片 (Main Card)
+           ========================================= */
+        .main-card {
+            width: 1000px; /* 統一卡片寬度 */
+            height: 520px; /* 統一卡片高度 */
+            border: 3px solid var(--primary-blue);
+            border-radius: 35px;
+            position: relative;
+            background: white;
+            box-sizing: border-box;
+            overflow: hidden;
+        }
+
+        /* 左下角 Alice */
+        .character-alice {
+            position: absolute;
+            bottom: 20px;
+            left: 50px;
+            z-index: 10;
+        }
+
+        /* 雲朵容器 */
+        .cloud-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-45%, -50%); /* 微調置中並避開 Alice */
+            width: 650px; 
+            height: 450px;
+            background-image: url('https://s112321005.github.io/Cybersecurity-Visualization/think.svg');
+            background-size: contain;
+            background-position: center;
+            background-repeat: no-repeat;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* 偏振器選項排列 */
+        .basis-options {
+            display: flex;
+            gap: 60px;
+            margin-top: -20px; /* 在雲朵內微調垂直位置 */
+        }
+
+        .basis-item {
+            cursor: pointer;
+            transition: transform 0.2s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .basis-item:hover {
+            transform: scale(1.08);
+        }
+
+        /* S / D 藍色圓形標籤 */
+        .basis-circle {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--primary-blue);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.5rem;
+            margin-top: 15px;
+            transition: box-shadow 0.2s;
+        }
+
+        /* 選中狀態發光效果 */
+        .basis-item.active .basis-circle {
+            box-shadow: 0 0 0 6px #80d8ff;
+        }
+
+        /* 右下角提示文字 */
+        .bottom-hint {
+            position: absolute;
+            bottom: 30px;
+            right: 40px;
+            color: gray;
+            font-weight: bold;
+            font-size: 1.1rem;
+            letter-spacing: 1px;
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <div class="header-left">
+        <a href="index.html" class="btn-back">&lt;</a>
+        <div class="title-pill">Quantum Key Distribution</div>
+    </div>
+    
+    <div class="header-center">
+        <p class="step-text">STEP 1 :</p>
+        <p class="step-text">Alice 決定 S、D 其中一種偏振器作為鑰匙</p>
+    </div>
+    
+    <div class="header-right">
+        <button class="nav-btn" onclick="prevStep()">上一步</button>
+        <button class="nav-btn" onclick="nextStep()">下一步</button>
+    </div>
+</div>
+
+<div class="main-card">
+    
+    <div class="character-alice">
+        <img src="https://s112321005.github.io/Cybersecurity-Visualization/alice.svg" alt="Alice" width="160"> 
+    </div>
+
+    <div class="cloud-container">
+        <div class="basis-options">
+            <div class="basis-item" id="basis-s" onclick="selectBasis('rectilinear')">
+                <img src="https://s112321005.github.io/Cybersecurity-Visualization/vertical.svg" width="90" alt="key-s">
+                <div class="basis-circle">S</div>
+            </div>
+
+            <div class="basis-item" id="basis-d" onclick="selectBasis('diagonal')">
+                <img src="https://s112321005.github.io/Cybersecurity-Visualization/diagonal.svg" width="90" alt="key-d">
+                <div class="basis-circle">D</div>
+            </div>
+        </div>
+    </div>
+
+    <p class="bottom-hint">點選偏振器幫 Alice 選擇鑰匙</p>
+
+</div>
+
+<script>
+    let selectedBasis = null;
+
+    function selectBasis(type) {
+        // 移除所有 active class
+        document.querySelectorAll('.basis-item').forEach(el => el.classList.remove('active'));
+        
+        // 加入 active 到點選的項目
+        if(type === 'rectilinear') {
+            document.getElementById('basis-s').classList.add('active');
+        } else {
+            document.getElementById('basis-d').classList.add('active');
+        }
+        
+        selectedBasis = type;
+        console.log("Alice 選擇了:", type);
+    }
+
+    function nextStep() {
+        if (!selectedBasis) {
+            alert("請先選擇一個偏振器！");
+            return;
+        }
+        // 跳轉到下一頁的邏輯
+        window.location.href = "step2.html?basis=" + selectedBasis;
+    }
+
+    function prevStep() {
+        window.history.back();
+    }
+</script>
+
+</body>
+</html>

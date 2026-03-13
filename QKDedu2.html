@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <title>QKD 模擬器 - Step 1 (訊息選擇)</title>
+    <style>
+        :root {
+            --primary-blue: #004aad;
+            --dark-text: #333333;
+            --bg-color: #f8f9fa;
+        }
+
+        body {
+            font-family: sans-serif; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center;    
+            padding: 40px 20px; 
+            background-color: var(--bg-color);
+            margin: 0;
+        }
+
+        /* =========================================
+           頂部導覽列 (Header)
+           ========================================= */
+        .header {
+            width: 1000px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 25px;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .btn-back {
+            width: 40px;
+            height: 40px;
+            background-color: var(--primary-blue);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 1.2rem;
+            flex-shrink: 0;
+        }
+
+        .title-pill {
+            border: 2px solid var(--primary-blue);
+            padding: 10px 25px;
+            border-radius: 30px;
+            font-weight: bold;
+            color: var(--dark-text);
+            font-size: 1.1rem;
+            background: white;
+        }
+
+        .header-center {
+            flex-grow: 1;
+            margin-left: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .step-text {
+            font-weight: bold;
+            font-size: 1.2rem;
+            color: var(--dark-text);
+            margin: 2px 0;
+        }
+
+        .header-right {
+            display: flex;
+            gap: 15px;
+        }
+
+        .nav-btn {
+            border: 2px solid var(--primary-blue);
+            background: white;
+            color: var(--dark-text);
+            padding: 10px 20px;
+            border-radius: 30px;
+            font-weight: bold;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .nav-btn:hover {
+            background: var(--primary-blue);
+            color: white;
+        }
+
+        /* =========================================
+           主要內容區卡片 (Main Card)
+           ========================================= */
+        .main-card {
+            width: 1000px;
+            height: 520px;
+            border: 3px solid var(--primary-blue);
+            border-radius: 35px;
+            position: relative;
+            background: white;
+            box-sizing: border-box;
+            overflow: hidden;
+        }
+
+        /* 左下角 Alice */
+        .character-alice {
+            position: absolute;
+            bottom: 20px;
+            left: 50px;
+            z-index: 10;
+        }
+
+        /* 雲朵容器 */
+        .cloud-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-45%, -50%);
+            width: 750px;  /* 稍微加寬以容納橫向排版 */
+            height: 450px;
+            background-image: url('think.svg');
+            background-size: contain;
+            background-position: center;
+            background-repeat: no-repeat;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* =========================================
+           雲朵內部的判斷邏輯排版 (Grid/Flex)
+           ========================================= */
+        .decision-grid {
+            display: flex;
+            align-items: center;
+            gap: 25px; /* 欄位之間的間距 */
+            margin-top: -30px; /* 微調在雲朵內的垂直位置 */
+        }
+
+        .col {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+            height: 160px; /* 控制上下選項的間距 */
+        }
+
+        .col-key {
+            justify-content: center; /* 讓鑰匙保持在正中央 */
+        }
+
+        /* 0 和 1 的圓形按鈕 */
+        .circle-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: 2px solid var(--primary-blue);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.5rem;
+            color: var(--primary-blue);
+            background: white;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .circle-btn.active {
+            background: var(--primary-blue);
+            color: white;
+            box-shadow: 0 0 0 4px #80d8ff; /* 加上一點選中光暈 */
+        }
+
+        /* 橫線與箭頭 */
+        .connector {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: var(--dark-text);
+            display: flex;
+            align-items: center;
+            height: 50px; /* 與按鈕同高，確保絕對水平對齊 */
+        }
+
+        /* 通過 / 不通過的膠囊標籤 */
+        .result-capsule {
+            padding: 12px 25px;
+            border-radius: 30px;
+            border: 2px solid var(--primary-blue);
+            color: var(--dark-text);
+            font-weight: bold;
+            font-size: 1.1rem;
+            background: white;
+            transition: 0.2s;
+            display: flex;
+            align-items: center;
+            height: 22px; /* 控制膠囊高度 */
+        }
+
+        .result-capsule.active {
+            background: var(--primary-blue);
+            color: white;
+            border-color: var(--primary-blue);
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <div class="header-left">
+        <a href="index.html" class="btn-back">&lt;</a>
+        <div class="title-pill">Quantum Key Distribution</div>
+    </div>
+    
+    <div class="header-center">
+        <p class="step-text">STEP 1 :</p>
+        <p class="step-text">Alice 選擇訊息 0、1，決定光子是否通過</p>
+    </div>
+    
+    <div class="header-right">
+        <button class="nav-btn" onclick="prevStep()">上一步</button>
+        <button class="nav-btn" onclick="nextStep()">下一步</button>
+    </div>
+</div>
+
+<div class="main-card">
+    
+    <div class="character-alice">
+        <img src="alice.svg" alt="Alice" width="160"> 
+    </div>
+
+    <div class="cloud-container">
+        
+        <div class="decision-grid">
+            
+            <div class="col">
+                <div class="circle-btn active" id="btn-0" onclick="selectMessage(0)">0</div>
+                <div class="circle-btn" id="btn-1" onclick="selectMessage(1)">1</div>
+            </div>
+
+            <div class="col">
+                <div class="connector">—</div>
+                <div class="connector">—</div>
+            </div>
+
+            <div class="col col-key">
+                <img src="00vertical.svg" width="90" alt="Key">
+            </div>
+
+            <div class="col">
+                <div class="connector">→</div>
+                <div class="connector">→</div>
+            </div>
+
+            <div class="col">
+                <div class="result-capsule active" id="res-0">不通過</div>
+                <div class="result-capsule" id="res-1">通過</div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+    let selectedMessage = 0; // 預設選擇 0
+
+    function selectMessage(val) {
+        selectedMessage = val;
+        
+        // 1. 重置所有樣式
+        document.getElementById('btn-0').classList.remove('active');
+        document.getElementById('btn-1').classList.remove('active');
+        document.getElementById('res-0').classList.remove('active');
+        document.getElementById('res-1').classList.remove('active');
+
+        // 2. 根據選擇加上 active 樣式
+        if (val === 0) {
+            document.getElementById('btn-0').classList.add('active');
+            document.getElementById('res-0').classList.add('active');
+        } else {
+            document.getElementById('btn-1').classList.add('active');
+            document.getElementById('res-1').classList.add('active');
+        }
+        
+        console.log("Alice 選擇了訊息:", val);
+    }
+
+    function nextStep() {
+        // 將選擇的訊息帶到下一頁
+        window.location.href = "step3.html?msg=" + selectedMessage;
+    }
+
+    function prevStep() {
+        window.history.back();
+    }
+</script>
+
+</body>
+</html>
