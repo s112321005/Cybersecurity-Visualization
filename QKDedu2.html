@@ -129,7 +129,8 @@
             transform: translate(-45%, -50%);
             width: 750px;  /* 稍微加寬以容納橫向排版 */
             height: 450px;
-            background-image: url('think.svg');
+            /* 假設 think.svg 存在，如果不存在，這裡會是空白 */
+            background-image: url('think.svg'); 
             background-size: contain;
             background-position: center;
             background-repeat: no-repeat;
@@ -144,7 +145,8 @@
         .decision-grid {
             display: flex;
             align-items: center;
-            gap: 25px; /* 欄位之間的間距 */
+            /* 稍微調整間距以適應新的連接器 */
+            gap: 15px; 
             margin-top: -30px; /* 微調在雲朵內的垂直位置 */
         }
 
@@ -157,6 +159,7 @@
 
         .col-key {
             justify-content: center; /* 讓鑰匙保持在正中央 */
+            padding: 0 10px; /* 給鑰匙一點左右空間 */
         }
 
         /* 0 和 1 的圓形按鈕 */
@@ -182,14 +185,43 @@
             box-shadow: 0 0 0 4px #80d8ff; /* 加上一點選中光暈 */
         }
 
-        /* 橫線與箭頭 */
+        /* =========================================
+           更新後的連接器樣式 (CSS 繪製)
+           ========================================= */
         .connector {
-            font-size: 1.8rem;
-            font-weight: bold;
-            color: var(--dark-text);
+            position: relative;
             display: flex;
             align-items: center;
             height: 50px; /* 與按鈕同高，確保絕對水平對齊 */
+            width: 60px;  /* 設定連接器的寬度 */
+        }
+
+        /* 繪製線條 (適用於所有連接器) */
+        .connector::before {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: 0;
+            width: 100%;
+            height: 3px; /* 稍微加粗線條，使其更明顯 */
+            background-color: var(--primary-blue); /* 使用主題藍色 */
+            border-radius: 2px; /* 讓線條末端圓潤 */
+            transform: translateY(-50%);
+        }
+
+        /* 僅繪製箭頭尖端 (適用於 arrow-connector) */
+        .arrow-connector::after {
+            content: "";
+            position: absolute;
+            top: 50%;
+            right: 0; /* 箭頭尖端在最右側 */
+            width: 0;
+            height: 0;
+            /* 使用邊框技術繪製三角形 */
+            border-top: 7px solid transparent;
+            border-bottom: 7px solid transparent;
+            border-left: 12px solid var(--primary-blue); /* 尖端顏色與線條一致 */
+            transform: translateY(-50%);
         }
 
         /* 通過 / 不通過的膠囊標籤 */
@@ -205,6 +237,7 @@
             display: flex;
             align-items: center;
             height: 22px; /* 控制膠囊高度 */
+            white-space: nowrap; /* 防止文字折行 */
         }
 
         .result-capsule.active {
@@ -223,14 +256,20 @@ document.addEventListener("DOMContentLoaded", () => {
     const type = params.get("type");
 
     const keyImg = document.getElementById("key-img");
+    // 獲取 passText 和 blockText，它們應該在 HTML 中定義，
+    // 但在這個片段中沒有。我會加上它們以防止腳本出錯，
+    // 或者你可以確認它們在完整的 index.html 或 setup.html 中是如何定義的。
+    const passText = document.getElementById("res-1"); 
+    const blockText = document.getElementById("res-0");
 
-    if(!keyImg) return;
+    if(!keyImg || !passText || !blockText) return;
 
     if(type === "rectilinear"){
 
         keyImg.src =
         "https://s112321005.github.io/Cybersecurity-Visualization/vertical.svg";
 
+        // 注意：這裡直接修改了膠囊的文字內容
         passText.textContent = "|↑⟩";
         blockText.textContent = "|→⟩";
 
@@ -284,8 +323,8 @@ document.addEventListener("DOMContentLoaded", () => {
             </div>
 
             <div class="col">
-                <div class="connector">—</div>
-                <div class="connector">—</div>
+                <div class="connector line-connector"></div>
+                <div class="connector line-connector"></div>
             </div>
 
             <div class="col col-key">
@@ -293,8 +332,8 @@ document.addEventListener("DOMContentLoaded", () => {
             </div>
 
             <div class="col">
-                <div class="connector">→</div>
-                <div class="connector">→</div>
+                <div class="connector arrow-connector"></div>
+                <div class="connector arrow-connector"></div>
             </div>
 
             <div class="col">
