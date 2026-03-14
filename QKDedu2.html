@@ -24,7 +24,7 @@
            頂部導覽列 (Header)
            ========================================= */
         .header {
-            width: 1000px;
+            width: min(1000px, 95vw);
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -103,8 +103,8 @@
            主要內容區卡片 (Main Card)
            ========================================= */
         .main-card {
-            width: 1000px;
-            height: 520px;
+            width: min(1000px, 95vw);
+            height: min(520px, 70vh);
             border: 3px solid var(--primary-blue);
             border-radius: 35px;
             position: relative;
@@ -215,6 +215,22 @@
 
     </style>
 </head>
+<script>
+
+    const params = new URLSearchParams(window.location.search);
+    const type = params.get("type");
+    
+    const keyImg = document.getElementById("key-img");
+    
+    if(type === "rectilinear"){
+        keyImg.src = "https://s112321005.github.io/Cybersecurity-Visualization/vertical.svg";
+    }
+    
+    if(type === "diagonal"){
+        keyImg.src = "https://s112321005.github.io/Cybersecurity-Visualization/diagonal.svg";
+    }
+
+</script>
 <body>
 
 <div class="header">
@@ -255,7 +271,7 @@
             </div>
 
             <div class="col col-key">
-                <img src="00vertical.svg" width="90" alt="Key">
+                <img src="vertical.svg" width="90" alt="Key">
             </div>
 
             <div class="col">
