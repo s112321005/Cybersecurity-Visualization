@@ -24,7 +24,7 @@
            頂部導覽列 (Header)
            ========================================= */
         .header {
-            width: 1000px; /* 統一寬度 */
+            width: min(1000px, 95vw);
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -93,7 +93,12 @@
             cursor: pointer;
             transition: all 0.2s;
         }
-
+        .nav-btn:disabled {
+            border: 2px solid #ccc;
+            background: #eee;
+            color: #999;
+            cursor: not-allowed;
+        }
         .nav-btn:hover {
             background: var(--primary-blue);
             color: white;
@@ -103,8 +108,8 @@
            主要內容區卡片 (Main Card)
            ========================================= */
         .main-card {
-            width: 1000px; /* 統一卡片寬度 */
-            height: 520px; /* 統一卡片高度 */
+            width: min(1000px, 95vw);
+            height: min(520px, 70vh);
             border: 3px solid var(--primary-blue);
             border-radius: 35px;
             position: relative;
@@ -205,7 +210,7 @@
     </div>
     
     <div class="header-right">
-        <button class="nav-btn" onclick="prevStep()">上一步</button>
+        <button class="nav-btn" onclick="prevStep()" disabled>上一步</button>
         <button class="nav-btn" onclick="nextStep()">下一步</button>
     </div>
 </div>
