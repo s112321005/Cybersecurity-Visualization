@@ -41,15 +41,6 @@
             padding: 0 40px;
         }
 
-        .roles-group {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            background: var(--light-blue);
-            padding: 10px 30px;
-            border-radius: 20px;
-        }
-
         .role-box {
             font-weight: bold;
             font-size: 18px;
@@ -64,12 +55,18 @@
         }
 
         .result-header {
+            position: absolute;
+            top: -10px; /* 與 Alice、Bob 的高度保持水平齊平 */
+            left: 90%;  /* 精準對齊下方 V X X 的 90% 位置 */
+            transform: translateX(-50%); /* 確保中心點對齊 */
             background: var(--light-blue);
-            padding: 15px 25px;
+            padding: 10px 25px;
             border-radius: 15px;
             font-weight: bold;
             text-align: center;
             line-height: 1.4;
+            z-index: 10;
+            white-space: nowrap; /* 確保文字不會被擠壓換行 */
         }
 
         /* 2. 新增一個並排的容器，把選單和圖表左右分開 */
@@ -264,52 +261,62 @@
             color: #d35400;
             min-height: 27px;
         }
+        /* 新增：Alice 與 Bob 的角色容器樣式 */
+        .character-avatar {
+            position: absolute;
+            top: -10px; /* 向上偏移，使其垂直高度對齊上方的「結果」區塊 */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transform: translateX(-50%); /* 確保水平中心點對齊 */
+            z-index: 10;
+        }
+
+        .character-avatar img {
+            width: 70px;
+            height: 70px;
+            object-fit: contain;
+        }
+
+        .character-avatar span {
+            font-weight: bold;
+            color: var(--primary-blue);
+            margin-top: 5px;
+            font-size: 18px;
+            letter-spacing: 1px;
+        }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <div class="header">
-        <div class="roles-group">
-            <div class="role-box">
-                <span class="role-icon">👤</span>
-                <span style="background: var(--primary-blue); color: white; padding: 2px 10px; border-radius: 10px; font-size: 14px;">Alice</span>
-            </div>
-            <span style="font-size: 24px;">▶</span>
-            <div class="role-box">
-                <span class="role-icon">👤</span>
-                <span style="background: var(--primary-blue); color: white; padding: 2px 10px; border-radius: 10px; font-size: 14px;">Bob</span>
-            </div>
-        </div>
-        <div class="result-header">結果<br>Result</div>
-    </div>
-
+  
     <div class="main-content">
         <div class="sidebar">
             <div class="selection-box">
-                <h4>Alice選擇訊息</h4>
+                <h4>Alice selects the message</h4>
                 <div class="option-row active" onclick="selectState(this, '|→⟩', 'rectilinear')">
-                    <div class="state-btn">|0⟩</div>
+                    <div class="state-btn">| 0 ⟩</div>
                     <div class="arrow-icon">➔</div>
                     <div class="state-btn">|→⟩</div>
                 </div>
-                <div class="option-row" onclick="selectState(this, '|↑⟩', 'rectilinear')">
-                    <div class="state-btn">|1⟩</div>
+                <div class="option-row" onclick="selectState(this, '| ↑ ⟩', 'rectilinear')">
+                    <div class="state-btn">| 1 ⟩</div>
                     <div class="arrow-icon">➔</div>
-                    <div class="state-btn">|↑⟩</div>
+                    <div class="state-btn">| ↑ ⟩</div>
                 </div>
                 <div class="option-row" onclick="selectState(this, '|↗⟩', 'diagonal')">
-                    <div class="state-btn">|+⟩</div>
+                    <div class="state-btn">|十⟩</div>
                     <div class="arrow-icon">➔</div>
                     <div class="state-btn">|↗⟩</div>
                 </div>
                 <div class="option-row" onclick="selectState(this, '|↖⟩', 'diagonal')">
-                    <div class="state-btn">|-⟩</div>
+                    <div class="state-btn">|一⟩</div>
                     <div class="arrow-icon">➔</div>
                     <div class="state-btn">|↖⟩</div>
                 </div>
             </div>
-            <div class="hint-text">點選幫Alice準備訊息</div>
+            <div class="hint-text">Click to help Alice prepare the message</div>
         </div>
 
         <div class="diagram-area">
@@ -325,12 +332,21 @@
                 <line x1="45%" y1="75%" x2="63%" y2="55%" stroke="#333" stroke-width="3" marker-end="url(#arrow)" />
                 <line x1="45%" y1="75%" x2="63%" y2="90%" stroke="#333" stroke-width="3" marker-end="url(#arrow)" />
             </svg>
+            <!--Alice->Bob & result區塊-->
+            <div class="character-avatar" style="left: 10%;">
+                <img src="https://s112321005.github.io/Cybersecurity-Visualization/alice.svg" alt="Alice">
+            </div>
 
+            <div class="character-avatar" style="left: 40%;">
+                <img src="https://s112321005.github.io/Cybersecurity-Visualization/bob.svg" alt="Bob">
+            </div>
+            <div class="result-header">Result</div>
+            
             <div class="node" style="left: 10%; top: 50%;">
                 <img id="initial-key-img" src="https://s112321005.github.io/Cybersecurity-Visualization/vertical.svg" alt="ver" class="polarizer-img">
                 <div class="state-circle" id="initial-state-text">|→⟩</div>
             </div>
-
+            
             <div class="prob-circle" style="left: 25%; top: 32%;">1/2</div>
             <div class="prob-circle" style="left: 25%; top: 68%;">1/2</div>
 
@@ -368,7 +384,7 @@
 
 <script>
     const symbols = {
-        Stype: ['|↑⟩', '|→⟩'], // S 種類
+        Stype: ['| ↑ ⟩', '|→⟩'], // S 種類
         Dtype: ['|↗⟩', '|↖⟩']     // D 種類
     };
     // Alice選擇，切換alice節點偏振器圖片
