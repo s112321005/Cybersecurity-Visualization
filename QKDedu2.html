@@ -216,7 +216,7 @@
     </style>
 </head>
 <script>
-
+//接收第一頁選擇的type
 document.addEventListener("DOMContentLoaded", () => {
 
     const params = new URLSearchParams(window.location.search);
@@ -227,11 +227,23 @@ document.addEventListener("DOMContentLoaded", () => {
     if(!keyImg) return;
 
     if(type === "rectilinear"){
-        keyImg.src = "https://s112321005.github.io/Cybersecurity-Visualization/vertical.svg";
+
+        keyImg.src =
+        "https://s112321005.github.io/Cybersecurity-Visualization/vertical.svg";
+
+        passText.textContent = "|↑⟩";
+        blockText.textContent = "|→⟩";
+
     }
 
     if(type === "diagonal"){
-        keyImg.src = "https://s112321005.github.io/Cybersecurity-Visualization/diagonal.svg";
+
+        keyImg.src =
+        "https://s112321005.github.io/Cybersecurity-Visualization/diagonal.svg";
+
+        passText.textContent = "|↗⟩";
+        blockText.textContent = "|↖⟩";
+
     }
 
 });
