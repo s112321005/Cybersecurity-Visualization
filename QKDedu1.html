@@ -2,7 +2,7 @@
 <html lang="zh-Hant">
 <head>
     <meta charset="UTF-8">
-    <title>QKD 模擬器 - Step 1 (選擇偏振器)</title>
+    <title>QKD interactive education</title>
     <style>
         :root {
             --primary-blue: #004aad; /* 統一使用最新設計的深藍色 */
@@ -206,12 +206,12 @@
     
     <div class="header-center">
         <p class="step-text">STEP 1 :</p>
-        <p class="step-text">Alice 決定 S、D 其中一種偏振器作為鑰匙</p>
+        <p class="step-text">Alice decides between the S or D polarizer as the key.</p>
     </div>
     
     <div class="header-right">
-        <button class="nav-btn" onclick="prevStep()" disabled>上一步</button>
-        <button class="nav-btn" onclick="nextStep()">下一步</button>
+        <button class="nav-btn" disabled>Back</button>
+        <button class="nav-btn" onclick="nextStep()">Next</button>
     </div>
 </div>
 
@@ -235,7 +235,7 @@
         </div>
     </div>
 
-    <p class="bottom-hint">點選偏振器幫 Alice 選擇鑰匙</p>
+    <p class="bottom-hint">Click to help Alice <br>prepare the message</p>
 
 </div>
 
@@ -259,12 +259,11 @@
 
     function nextStep() {
         if (!selectedBasis) {
-            alert("請先選擇一個偏振器！");
+            alert("Please select a polarizer first!");
             return;
         }
     
-        window.location.href =
-            "https://s112321005.github.io/Cybersecurity-Visualization/QKDedu2.html?type=" + selectedBasis;
+        window.location.href = "https://s112321005.github.io/Cybersecurity-Visualization/QKDedu2.html?type=" + selectedBasis;
     }
 
     function prevStep() {
