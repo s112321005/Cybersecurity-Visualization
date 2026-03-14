@@ -2,7 +2,7 @@
 <html lang="zh-Hant">
 <head>
     <meta charset="UTF-8">
-    <title>QKD 模擬器 - Step 1 (訊息選擇)</title>
+    <title>QKD interactive education</title>
     <style>
         :root {
             --primary-blue: #004aad;
@@ -127,10 +127,9 @@
             top: 50%;
             left: 50%;
             transform: translate(-45%, -50%);
-            width: 750px;  /* 稍微加寬以容納橫向排版 */
+            width: 650px; 
             height: 450px;
-            /* 假設 think.svg 存在，如果不存在，這裡會是空白 */
-            background-image: url('think.svg'); 
+            background-image: url('https://s112321005.github.io/Cybersecurity-Visualization/think.svg'); 
             background-size: contain;
             background-position: center;
             background-repeat: no-repeat;
@@ -256,9 +255,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const type = params.get("type");
 
     const keyImg = document.getElementById("key-img");
-    // 獲取 passText 和 blockText，它們應該在 HTML 中定義，
-    // 但在這個片段中沒有。我會加上它們以防止腳本出錯，
-    // 或者你可以確認它們在完整的 index.html 或 setup.html 中是如何定義的。
     const passText = document.getElementById("res-1"); 
     const blockText = document.getElementById("res-0");
 
@@ -266,10 +262,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if(type === "rectilinear"){
 
-        keyImg.src =
-        "https://s112321005.github.io/Cybersecurity-Visualization/vertical.svg";
+        keyImg.src = "https://s112321005.github.io/Cybersecurity-Visualization/vertical.svg";
 
-        // 注意：這裡直接修改了膠囊的文字內容
         passText.textContent = "|↑⟩";
         blockText.textContent = "|→⟩";
 
@@ -277,8 +271,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if(type === "diagonal"){
 
-        keyImg.src =
-        "https://s112321005.github.io/Cybersecurity-Visualization/diagonal.svg";
+        keyImg.src = "https://s112321005.github.io/Cybersecurity-Visualization/diagonal.svg";
 
         passText.textContent = "|↗⟩";
         blockText.textContent = "|↖⟩";
@@ -298,12 +291,12 @@ document.addEventListener("DOMContentLoaded", () => {
     
     <div class="header-center">
         <p class="step-text">STEP 1 :</p>
-        <p class="step-text">Alice 選擇訊息 0、1，決定光子是否通過</p>
+        <p class="step-text">Alice selects message 0 or 1 to determine the direction of the light.</p>
     </div>
     
     <div class="header-right">
-        <button class="nav-btn" onclick="prevStep()">上一步</button>
-        <button class="nav-btn" onclick="nextStep()">下一步</button>
+        <button class="nav-btn" onclick="prevStep()">Back</button>
+        <button class="nav-btn" onclick="nextStep()">Next</button>
     </div>
 </div>
 
@@ -337,8 +330,8 @@ document.addEventListener("DOMContentLoaded", () => {
             </div>
 
             <div class="col">
-                <div class="result-capsule active" id="res-0">不通過</div>
-                <div class="result-capsule" id="res-1">通過</div>
+                <div class="result-capsule active" id="res-0"></div>
+                <div class="result-capsule" id="res-1"></div>
             </div>
 
         </div>
