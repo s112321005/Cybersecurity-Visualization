@@ -217,18 +217,24 @@
 </head>
 <script>
 
+document.addEventListener("DOMContentLoaded", () => {
+
     const params = new URLSearchParams(window.location.search);
     const type = params.get("type");
-    
+
     const keyImg = document.getElementById("key-img");
-    
+
+    if(!keyImg) return;
+
     if(type === "rectilinear"){
         keyImg.src = "https://s112321005.github.io/Cybersecurity-Visualization/vertical.svg";
     }
-    
+
     if(type === "diagonal"){
         keyImg.src = "https://s112321005.github.io/Cybersecurity-Visualization/diagonal.svg";
     }
+
+});
 
 </script>
 <body>
