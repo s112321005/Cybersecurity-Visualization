@@ -2,8 +2,7 @@
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>QKD</title>
+    <meta name="viewport" content="width=1200">    <title>QKD-B92</title>
     <style>
         :root {
             --primary-blue: #0047AB;
@@ -12,14 +11,15 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg-color);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
             margin: 0;
-            padding: 40px 20px;
-            color: #333;
+            padding: 20px 0;
+            display: flex;
+            justify-content: center;
+            background-color: #f8f9fa; /* 若您有特定背景色可修改這行 */
+            font-family: sans-serif;
+            
+            /* 🌟 最關鍵：強制整個網頁畫布至少有 1200px 寬，絕對不准縮水 */
+            min-width: 1200px !important; 
         }
 
         .container {
@@ -27,12 +27,22 @@
             padding: 30px;
             border-radius: 20px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-            width: 100%;
-            /* 1. 將最大寬度加大，讓左側有足夠空間 */
-            max-width: 1100px;
-            box-sizing: border-box; /* 確保內邊距不會撐破寬度 */
+            
+            /* 🌟 死守 1100px 寬度，保護裡面的絕對定位不跑版 */
+            width: 1100px !important;
+            max-width: 1100px !important;
+            flex-shrink: 0 !important; /* 絕對不允許被 flex 擠壓 */
+            margin: 0 auto;
+            box-sizing: border-box;
         }
 
+        .main-content {
+            display: flex;
+            gap: 30px;
+            width: 100%;
+            /* 確保內容保持左右並排 */
+            flex-direction: row !important; 
+        }
         /* 頂部角色區域 */
         .header {
             display: flex;
@@ -69,15 +79,6 @@
             z-index: 10;
             white-space: nowrap; /* 確保文字不會被擠壓換行 */
         }
-
-        /* 2. 新增一個並排的容器，把選單和圖表左右分開 */
-        .main-content {
-            display: flex;
-            gap: 30px; /* 左右區塊的間距 */
-            align-items: flex-start;
-            width: 100%;
-        }
-
         /* 左側選單 */
         .sidebar {
             width: 220px; /* 稍微加寬讓按鈕更好點 */
@@ -287,49 +288,7 @@
             font-size: 18px;
             letter-spacing: 1px;
         }
-
-        /* =========================================
-           💡 維持電腦排版，等比例縮小以適應手機螢幕
-           ========================================= */
-        @media screen and (max-width: 1140px) {
-            body {
-                /* 隱藏可能出現的微小水平捲軸 */
-                overflow-x: hidden; 
-            }
-
-            .container {
-                /* 1. 強制鎖定為電腦版的寬度，絕對不允許內部元素被擠壓 */
-                width: 1100px !important;
-                max-width: 1100px !important;
-                
-                /* 2. 優先使用 zoom 進行完美的整體縮放 (包含長寬與佔據空間) 
-                   算法：(100vw 螢幕寬度 - 40px body的左右padding) / 1100 原始寬度 */
-                zoom: calc((100vw - 40px) / 1100);
-            }
-        }
-
-        /* 針對不支援 zoom 屬性的瀏覽器 (例如舊版 Firefox) 的備用方案 */
-        @supports not (zoom: 1) {
-            @media screen and (max-width: 1140px) {
-            body {
-                /* 1. 關鍵修正：取消 flex 居中，改為靠左對齊，防止左側被切斷！ */
-                align-items: flex-start !important; 
-                /* 2. 移除左右 padding，讓畫面能最大化利用手機寬度 */
-                padding: 20px 0 !important; 
-                overflow-x: hidden; 
-            }
-
-            .container {
-                /* 3. 強制鎖定寬度 */
-                width: 1100px !important;
-                max-width: 1100px !important;
-                /* 4. 改用 margin 讓它在畫面中置中 */
-                margin: 0 auto !important; 
-                /* 5. 完美縮放比例：手機螢幕全寬 (100vw) / 容器寬度 (1100) */
-                zoom: calc(100vw / 1100) !important; 
-            }
-        }
-        }
+        
     </style>
 </head>
 <body>
