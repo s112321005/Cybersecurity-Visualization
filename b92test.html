@@ -9,6 +9,7 @@
             --primary-blue: #0047AB;
             --light-blue: #D0E0FF;
             --bg-color: #f8f9fa;
+            --gray-text: #777; /* 假設原本有這個變數，提供給 hint-text 使用 */
         }
 
         body {
@@ -23,43 +24,14 @@
         }
 
         .container {
-            /* 1. 💡 運用「第二段」的方法：建立一個適應手機的卡片 */
-            width: min(1000px, 95vw); /* 最大 1000px，手機上為 95% 螢幕寬度 */
-            height: min(520px, 70vh); /* 設定一個固定的高度或比例 */
             background: white;
+            padding: 30px;
             border-radius: 20px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-            
-            /* 2. 💡 關鍵修正：確保溢出部分被隱藏 (防止撐爆螢幕) */
-            overflow: hidden; 
+            /* 1. 保持最大寬度，並加上 100% 與 border-box 讓手機版不破版 */
+            max-width: 1100px;
+            width: 100%;
             box-sizing: border-box; 
-            padding: 20px; /* 縮小內襯 */
-            position: relative; /* 作為內部視區的定位基準 */
-            
-            /* 確保 container 本身置中在頁面上 */
-            display: block; 
-            margin: 0 auto; 
-        }
-
-        /* =========================================
-           3. 💡 新加入的「視區」樣式
-           這個容器會被縮放和置中，從而保留內部幾何
-           ========================================= */
-        .diagram-viewport {
-            /* 💡 設定一個固定、慷慨的寬度，讓內部的 sidebar 和 diagram 佈局正確 */
-            width: 1000px; 
-            height: 100%; /* 填滿 container */
-            
-            /* 💡 核心置中與縮放邏輯 */
-            position: absolute;
-            left: 50%;
-            top: 50%;
-            transform: translate(-50%, -50%); /* 強行置中 */
-            
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 1; /* 保持在底層，以免擋住按鈕 */
         }
 
         /* 頂部角色區域 */
@@ -99,14 +71,12 @@
             white-space: nowrap; /* 確保文字不會被擠壓換行 */
         }
 
-        /* 2. 新增一個並排的容器，把選單和圖表左右分開 */
+        /* 2. 並排的容器，把選單和圖表左右分開 */
         .main-content {
-            /* 💡 將 width 改為 100%，讓它在 1000px 的視區內佈局 */
-            width: 100%; 
             display: flex;
-            gap: 30px; 
+            gap: 30px; /* 左右區塊的間距 */
             align-items: flex-start;
-            /* 移除原本的 z-index 10 */
+            width: 100%;
         }
 
         /* 左側選單 */
@@ -243,6 +213,7 @@
             z-index: 3;
             transform: translate(-50%, -50%);
         }
+
         .result-circle{
             position: absolute;
             background: var(--light-blue);
@@ -293,14 +264,15 @@
             color: #d35400;
             min-height: 27px;
         }
-        /* 新增：Alice 與 Bob 的角色容器樣式 */
+
+        /* Alice 與 Bob 的角色容器樣式 */
         .character-avatar {
             position: absolute;
-            top: -10px; /* 向上偏移，使其垂直高度對齊上方的「結果」區塊 */
+            top: -10px;
             display: flex;
             flex-direction: column;
             align-items: center;
-            transform: translateX(-50%); /* 確保水平中心點對齊 */
+            transform: translateX(-50%);
             z-index: 10;
         }
 
@@ -316,6 +288,81 @@
             margin-top: 5px;
             font-size: 18px;
             letter-spacing: 1px;
+        }
+
+        /* =========================================
+           💡 手機版 (RWD) 媒體查詢
+           螢幕寬度小於 768px 時生效
+           ========================================= */
+        @media screen and (max-width: 768px) {
+            
+            /* 1. 修正外層容器 (解決裁切與水平捲軸問題) */
+            .container {
+                width: 100% !important; 
+                padding: 20px 15px !important; /* 縮小內邊距，釋放空間 */
+                border-radius: 15px !important; 
+            }
+
+            /* 2. 頂部角色與標題改為垂直置中排列 */
+            .header {
+                flex-direction: column;
+                padding: 0;
+                margin-bottom: 20px;
+                gap: 15px;
+            }
+
+            /* 3. 將主內容改為垂直排列 (選單在上，圖表在下) */
+            .main-content {
+                flex-direction: column !important;
+                align-items: center;
+                gap: 20px; 
+            }
+
+            /* 4. 左側選單在手機上佔滿全寬 */
+            .sidebar {
+                width: 100%;
+            }
+
+            /* 5. 調整圖表區域高度為自動，容納垂直展開的內容 */
+            .diagram-area {
+                width: 100%;
+                height: auto; 
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                padding-top: 50px; /* 給頂部的 result-header 留空間 */
+            }
+
+            /* 6. 打破絕對定位堆疊！(解決元素全擠在右上角的問題) */
+            .node, .character-avatar, .prob-circle, .result-circle {
+                position: relative !important; 
+                left: auto !important; 
+                top: auto !important; 
+                transform: none !important; 
+                margin: 10px 0; /* 增加上下間距讓清單更清楚 */
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+            }
+
+            /* 7. 將結果標題重新定位到圖表區的正上方居中 */
+            .result-header {
+                position: absolute !important; 
+                left: 50% !important;
+                top: 0 !important;
+                transform: translateX(-50%) !important;
+                margin-top: 0;
+            }
+
+            /* 8. 隱藏 SVG 箭頭 (在垂直列表模式下，連線會錯位，建議隱藏以保持畫面乾淨) */
+            .arrows {
+                display: none !important;
+            }
+
+            /* 9. 稍微縮小節點圖片，適應手機螢幕 */
+            .polarizer-img {
+                width: 55px !important;
+            }
         }
     </style>
 </head>
