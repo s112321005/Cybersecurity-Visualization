@@ -9,7 +9,6 @@
             --primary-blue: #0047AB;
             --light-blue: #D0E0FF;
             --bg-color: #f8f9fa;
-            --gray-text: #777; /* 假設原本有這個變數，提供給 hint-text 使用 */
         }
 
         body {
@@ -28,10 +27,10 @@
             padding: 30px;
             border-radius: 20px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-            /* 1. 保持最大寬度，並加上 100% 與 border-box 讓手機版不破版 */
-            max-width: 1100px;
             width: 100%;
-            box-sizing: border-box; 
+            /* 1. 將最大寬度加大，讓左側有足夠空間 */
+            max-width: 1100px;
+            box-sizing: border-box; /* 確保內邊距不會撐破寬度 */
         }
 
         /* 頂部角色區域 */
@@ -71,7 +70,7 @@
             white-space: nowrap; /* 確保文字不會被擠壓換行 */
         }
 
-        /* 2. 並排的容器，把選單和圖表左右分開 */
+        /* 2. 新增一個並排的容器，把選單和圖表左右分開 */
         .main-content {
             display: flex;
             gap: 30px; /* 左右區塊的間距 */
@@ -213,7 +212,6 @@
             z-index: 3;
             transform: translate(-50%, -50%);
         }
-
         .result-circle{
             position: absolute;
             background: var(--light-blue);
@@ -264,15 +262,15 @@
             color: #d35400;
             min-height: 27px;
         }
-
-        /* Alice 與 Bob 的角色容器樣式 */
+        
+        /* 新增：Alice 與 Bob 的角色容器樣式 */
         .character-avatar {
             position: absolute;
-            top: -10px;
+            top: -10px; /* 向上偏移，使其垂直高度對齊上方的「結果」區塊 */
             display: flex;
             flex-direction: column;
             align-items: center;
-            transform: translateX(-50%);
+            transform: translateX(-50%); /* 確保水平中心點對齊 */
             z-index: 10;
         }
 
@@ -291,77 +289,35 @@
         }
 
         /* =========================================
-           💡 手機版 (RWD) 媒體查詢
-           螢幕寬度小於 768px 時生效
+           💡 維持電腦排版，等比例縮小以適應手機螢幕
            ========================================= */
-        @media screen and (max-width: 768px) {
-            
-            /* 1. 修正外層容器 (解決裁切與水平捲軸問題) */
+        @media screen and (max-width: 1140px) {
+            body {
+                /* 隱藏可能出現的微小水平捲軸 */
+                overflow-x: hidden; 
+            }
+
             .container {
-                width: 100% !important; 
-                padding: 20px 15px !important; /* 縮小內邊距，釋放空間 */
-                border-radius: 15px !important; 
+                /* 1. 強制鎖定為電腦版的寬度，絕對不允許內部元素被擠壓 */
+                width: 1100px !important;
+                max-width: 1100px !important;
+                
+                /* 2. 優先使用 zoom 進行完美的整體縮放 (包含長寬與佔據空間) 
+                   算法：(100vw 螢幕寬度 - 40px body的左右padding) / 1100 原始寬度 */
+                zoom: calc((100vw - 40px) / 1100);
             }
+        }
 
-            /* 2. 頂部角色與標題改為垂直置中排列 */
-            .header {
-                flex-direction: column;
-                padding: 0;
-                margin-bottom: 20px;
-                gap: 15px;
-            }
-
-            /* 3. 將主內容改為垂直排列 (選單在上，圖表在下) */
-            .main-content {
-                flex-direction: column !important;
-                align-items: center;
-                gap: 20px; 
-            }
-
-            /* 4. 左側選單在手機上佔滿全寬 */
-            .sidebar {
-                width: 100%;
-            }
-
-            /* 5. 調整圖表區域高度為自動，容納垂直展開的內容 */
-            .diagram-area {
-                width: 100%;
-                height: auto; 
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                padding-top: 50px; /* 給頂部的 result-header 留空間 */
-            }
-
-            /* 6. 打破絕對定位堆疊！(解決元素全擠在右上角的問題) */
-            .node, .character-avatar, .prob-circle, .result-circle {
-                position: relative !important; 
-                left: auto !important; 
-                top: auto !important; 
-                transform: none !important; 
-                margin: 10px 0; /* 增加上下間距讓清單更清楚 */
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-            }
-
-            /* 7. 將結果標題重新定位到圖表區的正上方居中 */
-            .result-header {
-                position: absolute !important; 
-                left: 50% !important;
-                top: 0 !important;
-                transform: translateX(-50%) !important;
-                margin-top: 0;
-            }
-
-            /* 8. 隱藏 SVG 箭頭 (在垂直列表模式下，連線會錯位，建議隱藏以保持畫面乾淨) */
-            .arrows {
-                display: none !important;
-            }
-
-            /* 9. 稍微縮小節點圖片，適應手機螢幕 */
-            .polarizer-img {
-                width: 55px !important;
+        /* 針對不支援 zoom 屬性的瀏覽器 (例如舊版 Firefox) 的備用方案 */
+        @supports not (zoom: 1) {
+            @media screen and (max-width: 1140px) {
+                .container {
+                    width: 1100px !important;
+                    max-width: 1100px !important;
+                    transform-origin: top center;
+                    transform: scale(calc((100vw - 40px) / 1100));
+                    margin-bottom: calc(1100px * (1 - (100vw - 40px) / 1100) * -1);
+                }
             }
         }
     </style>
