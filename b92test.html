@@ -311,14 +311,24 @@
         /* 針對不支援 zoom 屬性的瀏覽器 (例如舊版 Firefox) 的備用方案 */
         @supports not (zoom: 1) {
             @media screen and (max-width: 1140px) {
-                .container {
-                    width: 1100px !important;
-                    max-width: 1100px !important;
-                    transform-origin: top center;
-                    transform: scale(calc((100vw - 40px) / 1100));
-                    margin-bottom: calc(1100px * (1 - (100vw - 40px) / 1100) * -1);
-                }
+            body {
+                /* 1. 關鍵修正：取消 flex 居中，改為靠左對齊，防止左側被切斷！ */
+                align-items: flex-start !important; 
+                /* 2. 移除左右 padding，讓畫面能最大化利用手機寬度 */
+                padding: 20px 0 !important; 
+                overflow-x: hidden; 
             }
+
+            .container {
+                /* 3. 強制鎖定寬度 */
+                width: 1100px !important;
+                max-width: 1100px !important;
+                /* 4. 改用 margin 讓它在畫面中置中 */
+                margin: 0 auto !important; 
+                /* 5. 完美縮放比例：手機螢幕全寬 (100vw) / 容器寬度 (1100) */
+                zoom: calc(100vw / 1100) !important; 
+            }
+        }
         }
     </style>
 </head>
