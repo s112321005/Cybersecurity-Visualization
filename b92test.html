@@ -27,9 +27,11 @@
             padding: 30px;
             border-radius: 20px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-            width: 100%;
-            /* 1. 將最大寬度加大，讓左側有足夠空間 */
+            /* 保持您原本的最大寬度設定 */
             max-width: 1100px;
+            /* 💡 修正手機版寬度的關鍵兩行 */
+            width: 100%; 
+            box-sizing: border-box; 
         }
 
         /* 頂部角色區域 */
