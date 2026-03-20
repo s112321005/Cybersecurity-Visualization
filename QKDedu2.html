@@ -366,8 +366,15 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function nextStep() {
-        // 將選擇的訊息帶到下一頁
-        window.location.href = "https://s112321005.github.io/Cybersecurity-Visualization/QKDedu3.html?msg=" + selectedMessage;
+        // 1. 先把第一頁傳來這個網頁的 type 抓出來
+        const params = new URLSearchParams(window.location.search);
+        const type = params.get("type");
+
+        // 2. 把 type 和 msg 串在一起，一起帶到下一頁 (QKDedu3.html)
+        let nextUrl = "https://s112321005.github.io/Cybersecurity-Visualization/QKDedu3.html";
+        nextUrl += "?type=" + type + "&msg=" + selectedMessage;
+        
+        window.location.href = nextUrl;
     }
 
     function prevStep() {
