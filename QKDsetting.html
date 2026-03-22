@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=1200">
+    <link rel="stylesheet" href="settingStyle.css">
+    <title>Cerify Setting</title>
+    <style>
+        /* =========================================
+           1. 終極版面鎖定區
+           ========================================= */
+        body {
+            margin: 0;
+            padding: 40px 0;
+            background-color: #f8f9fa;
+            font-family: sans-serif;
+            min-width: 1200px !important; 
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            width: 1100px !important;
+            max-width: 1100px !important;
+            flex-shrink: 0 !important;
+            box-sizing: border-box;
+            position: relative;
+        }
+
+        /* =========================================
+           2. 頂部標題列
+           ========================================= */
+        .header-bar {
+            display: flex;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        .back-btn {
+            background-color: #0047AB;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-right: 20px;
+        }
+        .page-title {
+            border: 2px solid #0047AB;
+            color: #000;
+            padding: 10px 40px;
+            border-radius: 10px;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        /* =========================================
+           3. 四大直欄佈局與連線
+           ========================================= */
+        .main-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            position: relative;
+        }
+
+        .connection-line {
+            position: absolute;
+            top: 20px; 
+            left: 11.5%;
+            width: 26%;
+            height: 2px;
+            background-color: #b0b0b0;
+            z-index: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .connection-line::before,
+        .connection-line::after {
+            content: '';
+            position: absolute;
+            width: 15px;
+            height: 15px;
+            background-color: #b0b0b0;
+            border-radius: 50%;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+        .connection-line::before { left: -4px; }
+        .connection-line::after { right: -4px; }
+
+        .connection-label {
+            background: white;
+            padding: 0; 
+            display: flex;
+            align-items: center;
+            border-radius: 8px; 
+        }
+
+        /* =========================================
+           4. 角色圖示區與名牌按鈕
+           ========================================= */
+        .character-col {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            z-index: 2;
+        }
+        .character-img {
+            height: 80px;
+            object-fit: contain;
+            margin-bottom: 15px;
+            z-index: 2;
+            transition: all 0.3s ease;
+        }
+        .disabled-img {
+            filter: grayscale(100%) opacity(0.5);
+        }
+
+        .name-tag {
+            background-color: #0047AB;
+            color: white;
+            padding: 6px 30px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 16px;
+            margin-bottom: 10px;
+            z-index: 3;
+            text-align: center;
+            min-width: 140px; 
+            box-sizing: border-box;
+            transition: all 0.3s ease;
+        }
+        .name-tag.gray { background-color: #b0b0b0; color: white;}
+        .name-tag.red-text { background-color: #D32F2F; }
+        .name-tag.start:hover {
+            background: #003580;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,71,171,0.3);
+        }
+        .click-toggle { 
+            cursor: pointer; 
+            margin-bottom: 15px; 
+            z-index: 3;
+        }
+        .click-toggle input { display: none; }
+        .click-toggle span {
+            padding: 6px 30px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 16px;
+            text-align: center;
+            display: inline-block;
+            min-width: 140px; 
+            box-sizing: border-box;
+            transition: all 0.3s ease;
+        }
+        .click-toggle .text-off { display: none; background-color: #b0b0b0; color: white; }
+        .click-toggle .text-on  { background-color: #0047AB; color: white; }
+        
+        .click-toggle input:checked ~ .text-on { display: inline-block; }
+        .click-toggle input:checked ~ .text-off { display: none; }
+        
+        .click-toggle input:not(:checked) ~ .text-on { display: none; }
+        .click-toggle input:not(:checked) ~ .text-off { display: inline-block; }
+
+        /* =========================================
+           5. 控制面板內容區
+           ========================================= */
+        .control-panel {
+            border: 2px solid #0047AB;
+            border-radius: 10px;
+            padding: 15px;
+            background-color: white;
+            min-height: 440px; /* 稍微加高以容納新排版 */
+            box-sizing: border-box;
+            width: 100%;
+            transition: all 0.3s ease;
+        }
+        .control-panel.disabled {
+            border-color: #b0b0b0 !important;
+            color: #777;
+        }
+        .setting-title {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-weight: bold;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+        .setting-title::before {
+            content: '';
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: #79a6d2;
+            transition: all 0.3s ease;
+        }
+        .disabled .setting-title::before { background-color: #b0b0b0 !important; }
+        .flex-row {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        /* =========================================
+           6. 按鈕與輸入框客製化
+           ========================================= */
+        .pill-radio input[type="radio"],
+        .square-check input[type="checkbox"] {
+            display: none;
+        }
+
+        .pill-radio span {
+            display: inline-block;
+            padding: 4px 12px;
+            border: 2px solid #0047AB;
+            border-radius: 20px;
+            color: #0047AB;
+            font-weight: bold;
+            font-size: 14px;
+            cursor: pointer;
+            background-color: white;
+            text-align: center;
+            min-width: 25px; 
+            transition: all 0.3s ease;
+        }
+        .pill-radio input:checked + span {
+            background-color: #0047AB;
+            color: white;
+        }
+        .disabled .pill-radio span {
+            border-color: #b0b0b0 !important;
+            color: #b0b0b0 !important;
+            cursor: not-allowed;
+            background-color: white !important;
+        }
+
+        .square-check {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 14px;
+            font-weight: bold;
+            color: #0047AB;
+            cursor: pointer;
+        }
+        .square-check span.box {
+            display: inline-block;
+            width: 14px;
+            height: 14px;
+            border: 2px solid #0047AB;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+        .square-check input:checked + span.box {
+            background-color: #0047AB;
+            position: relative;
+        }
+        .disabled .square-check { color: #b0b0b0; cursor: not-allowed; }
+        .disabled .square-check span.box { border-color: #b0b0b0; background-color: white; }
+        .disabled .square-check input:checked + span.box { background-color: #b0b0b0; }
+
+        input[type="text"], input[type="number"] {
+            border: 2px solid #0047AB;
+            border-radius: 6px;
+            padding: 4px 8px;
+            outline: none;
+            font-weight: bold;
+            color: #0047AB;
+            font-family: inherit;
+            transition: all 0.3s ease;
+        }
+        
+        .order-input { width: 40px; text-align: center; }
+        .u-input { width: 90%; margin-top: 5px; box-sizing: border-box; }
+
+        input:disabled {
+            border-color: #b0b0b0 !important;
+            background-color: #f8f9fa !important;
+            color: #b0b0b0 !important;
+            cursor: not-allowed;
+        }
+
+        /* =========================================
+           7. Eavesdropper 專屬紅色系主題
+           ========================================= */
+        .theme-red .click-toggle .text-on { background-color: #D32F2F; }
+        .theme-red .control-panel:not(.disabled) { border-color: #D32F2F; }
+        .theme-red .pill-radio span { border-color: #D32F2F; color: #D32F2F; }
+        .theme-red .pill-radio input:checked + span { background-color: #D32F2F; color: white; }
+        .theme-red .control-panel:not(.disabled) .setting-title::before { background-color: #e57373; }
+        
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header-bar">
+        <div class="back-btn">«</div>
+        <div class="page-title">Cerify Setting</div>
+    </div>
+
+    <div class="main-grid">
+        
+        <div class="connection-line">
+            <div class="connection-label">
+                <label class="square-check" for="entangle" style="color: #333; font-size: 14px; cursor: pointer; padding: 10px 20px; margin: 0;">
+                    <input type="checkbox" id="entangle">
+                    <span class="box"></span>
+                    <span>Entanglement Required?</span>
+                </label>
+            </div>
+        </div>
+
+        <div class="character-col">
+            <img src="https://s112321005.github.io/Cybersecurity-Visualization/alice.svg" class="character-img" alt="Alice">
+            <div class="name-tag">Alice</div>
+            <label class="click-toggle">
+                <input type="checkbox" class="status-toggle" checked>
+                <span class="text-on">ON</span>
+                <span class="text-off">OFF</span>
+            </label>
+            
+            <div class="control-panel">
+                <div class="setting-title">Particle Selection</div>
+                <div class="flex-row" style="margin-bottom: 15px; gap: 8px;">
+                    <label class="pill-radio"><input type="radio" name="a_particle" checked><span>single</span></label>
+                    <label class="pill-radio"><input type="radio" name="a_particle"><span>Bell</span></label>
+                    <label class="pill-radio"><input type="radio" name="a_particle"><span>GHZ</span></label>
+                </div>
+                
+                <div class="setting-title">Basis Selection</div>
+                <div style="display:flex; flex-direction:column; gap:8px; margin-bottom: 15px;">
+                    <div class="flex-row" style="gap: 8px;">
+                        <label class="pill-radio"><input type="radio" name="a_basis" checked><span>X</span></label>
+                        <label class="pill-radio"><input type="radio" name="a_basis"><span>Z</span></label>
+                    </div>
+                    <div class="flex-row" style="gap: 8px;">
+                        <label class="pill-radio"><input type="radio" name="a_basis"><span>Bell</span></label>
+                        <label class="pill-radio"><input type="radio" name="a_basis"><span>GHZ</span></label>
+                    </div>
+                </div>
+
+                <div class="setting-title">
+                    Send Order:
+                    <input type="number" class="order-input" value="1" min="1" style="margin-left:5px;">
+                </div>
+                
+                <div class="setting-title" style="margin-top: 15px;">Available Operations:</div>
+                <div class="flex-row" style="gap:15px; margin-bottom: 8px;">
+                    <label class="square-check"><input type="checkbox" checked><span class="box"></span>I</label>
+                    <label class="square-check"><input type="checkbox"><span class="box"></span>X</label>
+                    <label class="square-check"><input type="checkbox"><span class="box"></span>Y</label>
+                </div>
+                <div class="flex-row" style="gap:15px; margin-bottom: 5px;">
+                    <label class="square-check"><input type="checkbox"><span class="box"></span>Z</label>
+                    <label class="square-check"><input type="checkbox"><span class="box"></span>H</label>
+                    <label class="square-check"><input type="checkbox"><span class="box"></span>U(自訂)：</label>
+                </div>
+                <div>
+                    <input type="text" class="u-input">
+                </div>
+            </div>
+        </div>
+
+        <div class="character-col">
+            <img src="https://s112321005.github.io/Cybersecurity-Visualization/bob.svg" class="character-img" alt="Bob">
+            <div class="name-tag">Bob</div>
+            <label class="click-toggle">
+                <input type="checkbox" class="status-toggle" checked>
+                <span class="text-on">ON</span>
+                <span class="text-off">OFF</span>
+            </label>
+            
+            <div class="control-panel">
+                <div class="setting-title">Particle Selection</div>
+                <div class="flex-row" style="margin-bottom: 15px; gap: 8px;">
+                    <label class="pill-radio"><input type="radio" name="b_particle" checked><span>single</span></label>
+                    <label class="pill-radio"><input type="radio" name="b_particle"><span>Bell</span></label>
+                    <label class="pill-radio"><input type="radio" name="b_particle"><span>GHZ</span></label>
+                </div>
+                
+                <div class="setting-title">Basis Selection</div>
+                <div style="display:flex; flex-direction:column; gap:8px; margin-bottom: 15px;">
+                    <div class="flex-row" style="gap: 8px;">
+                        <label class="pill-radio"><input type="radio" name="b_basis" checked><span>X</span></label>
+                        <label class="pill-radio"><input type="radio" name="b_basis"><span>Z</span></label>
+                    </div>
+                    <div class="flex-row" style="gap: 8px;">
+                        <label class="pill-radio"><input type="radio" name="b_basis"><span>Bell</span></label>
+                        <label class="pill-radio"><input type="radio" name="b_basis"><span>GHZ</span></label>
+                    </div>
+                </div>
+
+                <div class="setting-title">
+                    Send Order: 
+                    <input type="number" class="order-input" value="2" min="1" style="margin-left:5px;">
+                </div>
+                
+                <div class="setting-title" style="margin-top: 15px;">Available Operations:</div>
+                <div class="flex-row" style="gap:15px; margin-bottom: 8px;">
+                    <label class="square-check"><input type="checkbox" checked><span class="box"></span>I</label>
+                    <label class="square-check"><input type="checkbox" checked><span class="box"></span>X</label>
+                    <label class="square-check"><input type="checkbox" checked><span class="box"></span>Y</label>
+                </div>
+                <div class="flex-row" style="gap:15px; margin-bottom: 5px;">
+                    <label class="square-check"><input type="checkbox" checked><span class="box"></span>Z</label>
+                    <label class="square-check"><input type="checkbox" checked><span class="box"></span>H</label>
+                    <label class="square-check"><input type="checkbox" checked><span class="box"></span>U(自訂)：</label>
+                </div>
+                <div>
+                    <input type="text" class="u-input">
+                </div>
+            </div>
+        </div>
+
+        <div class="character-col">
+            <img src="https://s112321005.github.io/Cybersecurity-Visualization/charlie.svg" class="character-img" alt="Charlie">
+            <div class="name-tag">Charlie</div>
+            <label class="click-toggle">
+                <input type="checkbox" class="status-toggle">
+                <span class="text-on">ON</span>
+                <span class="text-off">OFF</span>
+            </label>
+            
+            <div class="control-panel">
+                <div class="setting-title">Particle Selection</div>
+                <div class="flex-row" style="margin-bottom: 15px; gap: 8px;">
+                    <label class="pill-radio"><input type="radio" name="c_particle"><span>single</span></label>
+                    <label class="pill-radio"><input type="radio" name="c_particle"><span>Bell</span></label>
+                    <label class="pill-radio"><input type="radio" name="c_particle"><span>GHZ</span></label>
+                </div>
+                
+                <div class="setting-title">Basis Selection</div>
+                <div style="display:flex; flex-direction:column; gap:8px; margin-bottom: 15px;">
+                    <div class="flex-row" style="gap: 8px;">
+                        <label class="pill-radio"><input type="radio" name="c_basis"><span>X</span></label>
+                        <label class="pill-radio"><input type="radio" name="c_basis"><span>Z</span></label>
+                    </div>
+                    <div class="flex-row" style="gap: 8px;">
+                        <label class="pill-radio"><input type="radio" name="c_basis"><span>Bell</span></label>
+                        <label class="pill-radio"><input type="radio" name="c_basis"><span>GHZ</span></label>
+                    </div>
+                </div>
+
+                <div class="setting-title">
+                    Send Order: 
+                    <input type="number" class="order-input" value="" style="margin-left:5px;">
+                </div>
+                
+                <div class="setting-title" style="margin-top: 15px;">Available Operations:</div>
+                <div class="flex-row" style="gap:15px; margin-bottom: 8px;">
+                    <label class="square-check"><input type="checkbox"><span class="box"></span>I</label>
+                    <label class="square-check"><input type="checkbox"><span class="box"></span>X</label>
+                    <label class="square-check"><input type="checkbox"><span class="box"></span>Y</label>
+                </div>
+                <div class="flex-row" style="gap:15px; margin-bottom: 5px;">
+                    <label class="square-check"><input type="checkbox"><span class="box"></span>Z</label>
+                    <label class="square-check"><input type="checkbox"><span class="box"></span>H</label>
+                    <label class="square-check"><input type="checkbox"><span class="box"></span>U(自訂)：</label>
+                </div>
+                <div>
+                    <input type="text" class="u-input">
+                </div>
+            </div>
+        </div>
+
+        <div class="character-col theme-red">
+            <img src="https://s112321005.github.io/Cybersecurity-Visualization/eavesdropper.svg" class="character-img" alt="Eavesdropper">
+            <div class="name-tag" data-role="eavesdropper">Eavesdropper</div>
+            <label class="click-toggle">
+                <input type="checkbox" class="status-toggle">
+                <span class="text-on">ON</span>
+                <span class="text-off">OFF</span>
+            </label>
+            
+            <div class="control-panel">
+                <div class="setting-title">Attack Selection</div>
+                <div style="display:flex; flex-direction:column; gap:10px; align-items: flex-start; margin-top: 15px;">
+                    <label class="pill-radio"><input type="radio" name="e_attack"><span style="padding: 6px 20px;">CNOT</span></label>
+                    <label class="pill-radio"><input type="radio" name="e_attack"><span style="padding: 6px 20px;">Intercept-resend</span></label>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <div style="text-align: center; margin-top: 30px;">
+        <button id="start-btn" class="name-tag start" style="cursor: pointer; font-size: 18px; padding: 10px 40px; border: none;">Start Analysis</button>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const toggles = document.querySelectorAll('.status-toggle');
+        
+        function updatePanelState(toggleElement) {
+            const col = toggleElement.closest('.character-col');
+            const img = col.querySelector('.character-img');
+            const nameTag = col.querySelector('.name-tag');
+            const panel = col.querySelector('.control-panel');
+            const inputs = panel.querySelectorAll('input:not(.status-toggle)');
+
+            if (toggleElement.checked) {
+                // =============== ON 狀態 ===============
+                img.classList.remove('disabled-img');
+                panel.classList.remove('disabled');
+                
+                nameTag.classList.remove('gray');
+                if (nameTag.dataset.role === 'eavesdropper') {
+                    nameTag.classList.add('red-text');
+                }
+                
+                inputs.forEach(input => input.disabled = false);
+
+            } else {
+                // =============== OFF 狀態 ===============
+                img.classList.add('disabled-img');
+                panel.classList.add('disabled');
+                
+                nameTag.classList.add('gray');
+                nameTag.classList.remove('red-text');
+
+                inputs.forEach(input => input.disabled = true);
+            }
+        }
+
+        toggles.forEach(toggle => {
+            updatePanelState(toggle);
+            
+            toggle.addEventListener('change', function() {
+                updatePanelState(this);
+            });
+        });
+    });
+    // --- 抓取資料並跳轉到下一頁 ---
+    document.getElementById('start-btn').addEventListener('click', () => {
+            // 1. 抓取所有角色的 ON/OFF 狀態 (依序是 Alice, Bob, Charlie, Eve)
+            const toggles = document.querySelectorAll('.status-toggle');
+            // 2. 建立一個物件來儲存所有設定
+            const qkdSettings = {
+                entangle: document.getElementById('entangle').checked,
+                
+                alice: {
+                    isOn: toggles[0].checked,
+                    particle: document.querySelector('input[name="a_particle"]:checked').nextElementSibling.innerText,
+                    basis: document.querySelector('input[name="a_basis"]:checked').nextElementSibling.innerText
+                },
+                
+                bob: {
+                    isOn: toggles[1].checked,
+                    particle: document.querySelector('input[name="b_particle"]:checked').nextElementSibling.innerText,
+                    basis: document.querySelector('input[name="b_basis"]:checked').nextElementSibling.innerText
+                },
+                
+                charlie: {
+                    isOn: toggles[2].checked, // Charlie 若沒開啟，可能抓不到 checked，所以加個保護機制
+                    particle: document.querySelector('input[name="c_particle"]:checked')?.nextElementSibling.innerText || "",
+                    basis: document.querySelector('input[name="c_basis"]:checked')?.nextElementSibling.innerText || ""
+                },
+                eve: {
+                    isOn: toggles[3].checked,
+                    attack: document.querySelector('input[name="e_attack"]:checked')?.nextElementSibling.innerText || ""
+                }
+            };
+            localStorage.setItem('qkdSettings', JSON.stringify(qkdSettings)); // 3. 把資料轉成文字並存入 localStorage 
+            window.location.href = 'QKDanalysis.html'; // 4. 跳轉到你的分析頁面 (請確認這裡的路徑是否正確)
+        });
+</script>
+
+</body>
+</html>
