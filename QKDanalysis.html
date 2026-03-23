@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=1200">
+    <base href="https://s112321005.github.io/Cybersecurity-Visualization/">
     <title>QKD 視覺化模擬：BB84 & B92</title>
     <style>
         /* 共用與全域變數設定 */
@@ -265,12 +266,12 @@
                     <line x1="45%" y1="75%" x2="63%" y2="90%" stroke="#333" stroke-width="3" marker-end="url(#arrow-bb84)" />
                 </svg>
 
-                <div class="character-avatar" style="left: 10%;"><img src="https://s112321005.github.io/Cybersecurity-Visualization/alice.svg" alt="Alice"></div>
-                <div class="character-avatar" style="left: 40%;"><img src="https://s112321005.github.io/Cybersecurity-Visualization/bob.svg" alt="Bob"></div>
+                <div class="character-avatar" style="left: 10%;"><img src="pictures/cat_alice.svg" alt="Alice"></div>
+                <div class="character-avatar" style="left: 40%;"><img src="pictures/cat_bob.svg" alt="Bob"></div>
                 <div class="result-header">Result</div>
                 
                 <div class="node" style="left: 10%; top: 50%;">
-                    <img id="bb84-initial-key-img" src="https://s112321005.github.io/Cybersecurity-Visualization/vertical.svg" class="polarizer-img">
+                    <img id="bb84-initial-key-img" src="pictures/vertical.svg" class="polarizer-img">
                     <div class="state-circle" id="bb84-initial-state-text">|→⟩</div>
                 </div>
                 
@@ -278,10 +279,10 @@
                 <div class="prob-circle inactive" style="left: 25%; top: 68%;"><math style="font-weight: bold; font-size: 18px;"><mfrac><mn>1</mn><mn>2</mn></mfrac></math></div>
 
                 <div class="node" style="left: 40%; top: 25%;">
-                    <img id="bb84-bob-same" src="https://s112321005.github.io/Cybersecurity-Visualization/vertical.svg" class="polarizer-img">
+                    <img id="bb84-bob-same" src="pictures/vertical.svg" class="polarizer-img">
                 </div>
                 <div class="node" style="left: 40%; top: 75%;">
-                    <img id="bb84-bob-unsame" src="https://s112321005.github.io/Cybersecurity-Visualization/gray_diagonal.svg" class="polarizer-img inactive">
+                    <img id="bb84-bob-unsame" src="pictures/gray_diagonal.svg" class="polarizer-img inactive">
                 </div>
 
                 <div class="prob-circle" style="left: 58%; top: 25%;">1</div>
@@ -348,12 +349,12 @@
                     <line x1="45%" y1="75%" x2="63%" y2="90%" stroke="#333" stroke-width="3" marker-end="url(#arrow-b92)" />
                 </svg>
 
-                <div class="character-avatar" style="left: 10%;"><img src="https://s112321005.github.io/Cybersecurity-Visualization/alice.svg" alt="Alice"></div>
-                <div class="character-avatar" style="left: 40%;"><img src="https://s112321005.github.io/Cybersecurity-Visualization/bob.svg" alt="Bob"></div>
+                <div class="character-avatar" style="left: 10%;"><img src="pictures/cat_alice.svg" alt="Alice"></div>
+                <div class="character-avatar" style="left: 40%;"><img src="pictures/cat_bob.svg" alt="Bob"></div>
                 <div class="result-header">Result</div>
                 
                 <div class="node" style="left: 10%; top: 50%;">
-                    <img id="b92-initial-key-img" src="https://s112321005.github.io/Cybersecurity-Visualization/vertical.svg" class="polarizer-img">
+                    <img id="b92-initial-key-img" src="pictures/vertical.svg" class="polarizer-img">
                     <div class="state-circle" id="b92-initial-state-text">|→⟩</div>
                 </div>
                 
@@ -361,10 +362,10 @@
                 <div class="prob-circle" style="left: 25%; top: 68%;"><math style="font-weight: bold; font-size: 18px;"><mfrac><mn>1</mn><mn>2</mn></mfrac></math></div>
 
                 <div class="node" style="left: 40%; top: 25%;">
-                    <img id="b92-bob-same" src="https://s112321005.github.io/Cybersecurity-Visualization/gray_vertical.svg" class="polarizer-img">
+                    <img id="b92-bob-same" src="pictures/gray_vertical.svg" class="polarizer-img">
                 </div>
                 <div class="node" style="left: 40%; top: 75%;">
-                    <img id="b92-bob-unsame" src="https://s112321005.github.io/Cybersecurity-Visualization/diagonal.svg" class="polarizer-img">
+                    <img id="b92-bob-unsame" src="pictures/diagonal.svg" class="polarizer-img">
                 </div>
 
                 <div class="prob-circle inactive" style="left: 58%; top: 25%;">1</div>
@@ -480,13 +481,13 @@
         const bobSame = document.getElementById('bb84-bob-same');
         const bobUnsame = document.getElementById('bb84-bob-unsame');
         if (basisType === 'rectilinear') {
-            keyImg.src = "https://s112321005.github.io/Cybersecurity-Visualization/vertical.svg";
-            bobSame.src = "https://s112321005.github.io/Cybersecurity-Visualization/vertical.svg";
-            bobUnsame.src = "https://s112321005.github.io/Cybersecurity-Visualization/gray_diagonal.svg"; 
+            keyImg.src = "pictures/vertical.svg";
+            bobSame.src = "pictures/vertical.svg";
+            bobUnsame.src = "pictures/gray_diagonal.svg"; 
         } else {
-            keyImg.src = "https://s112321005.github.io/Cybersecurity-Visualization/diagonal.svg"; 
-            bobSame.src = "https://s112321005.github.io/Cybersecurity-Visualization/diagonal.svg";
-            bobUnsame.src = "https://s112321005.github.io/Cybersecurity-Visualization/gray_vertical.svg";
+            keyImg.src = "pictures/diagonal.svg"; 
+            bobSame.src = "pictures/diagonal.svg";
+            bobUnsame.src = "pictures/gray_vertical.svg";
         }    
     }
 
@@ -507,13 +508,13 @@
         const bobSame = document.getElementById('b92-bob-same');
         const bobUnsame = document.getElementById('b92-bob-unsame');
         if (basisType === 'rectilinear') {
-            keyImg.src = "https://s112321005.github.io/Cybersecurity-Visualization/vertical.svg";
-            bobSame.src = "https://s112321005.github.io/Cybersecurity-Visualization/vertical.svg";
-            bobUnsame.src = "https://s112321005.github.io/Cybersecurity-Visualization/gray_diagonal.svg"; 
+            keyImg.src = "pictures/vertical.svg";
+            bobSame.src = "pictures/vertical.svg";
+            bobUnsame.src = "pictures/gray_diagonal.svg"; 
         } else {
-            keyImg.src = "https://s112321005.github.io/Cybersecurity-Visualization/diagonal.svg"; 
-            bobSame.src = "https://s112321005.github.io/Cybersecurity-Visualization/diagonal.svg";
-            bobUnsame.src = "https://s112321005.github.io/Cybersecurity-Visualization/gray_vertical.svg";
+            keyImg.src = "pictures/diagonal.svg"; 
+            bobSame.src = "pictures/diagonal.svg";
+            bobUnsame.src = "pictures/gray_vertical.svg";
         }        
     }
 </script>

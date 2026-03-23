@@ -2,6 +2,7 @@
 <html lang="zh-Hant">
 <head>
     <meta charset="UTF-8">
+    <base href="https://s112321005.github.io/Cybersecurity-Visualization/">
     <title>QKD interactive education</title>
     <style>
         :root {
@@ -129,7 +130,7 @@
             transform: translate(-45%, -50%);
             width: 650px; 
             height: 450px;
-            background-image: url('https://s112321005.github.io/Cybersecurity-Visualization/think.svg'); 
+            background-image: url('pictures/think.svg'); 
             background-size: contain;
             background-position: center;
             background-repeat: no-repeat;
@@ -263,7 +264,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if(type === "rectilinear"){
 
-        keyImg.src = "https://s112321005.github.io/Cybersecurity-Visualization/vertical.svg";
+        keyImg.src = "pictures/vertical.svg";
 
         passText.textContent = "|↑⟩";
         blockText.textContent = "|→⟩";
@@ -272,7 +273,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if(type === "diagonal"){
 
-        keyImg.src = "https://s112321005.github.io/Cybersecurity-Visualization/diagonal.svg";
+        keyImg.src = "pictures/diagonal.svg";
 
         passText.textContent = "|↗⟩";
         blockText.textContent = "|↖⟩";
@@ -304,7 +305,7 @@ document.addEventListener("DOMContentLoaded", () => {
 <div class="main-card">
     
     <div class="character-alice">
-        <img src="alice.svg" alt="Alice" width="160"> 
+        <img src="pictures/cat_alice.svg" alt="Alice" width="160"> 
     </div>
 
     <div class="cloud-container">
@@ -371,14 +372,14 @@ document.addEventListener("DOMContentLoaded", () => {
         const type = params.get("type");
 
         // 2. 把 type 和 msg 串在一起，一起帶到下一頁 (QKDedu3.html)
-        let nextUrl = "https://s112321005.github.io/Cybersecurity-Visualization/QKDedu3.html";
+        let nextUrl = "QKDedu3.html";
         nextUrl += "?type=" + type + "&msg=" + selectedMessage;
         
         window.location.href = nextUrl;
     }
 
     function prevStep() {
-        let prevUrl = "https://s112321005.github.io/Cybersecurity-Visualization/QKDedu1.html";
+        let prevUrl = "QKDedu1.html";
         window.location.href = prevUrl;
         //window.history.back();
     }
