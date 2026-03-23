@@ -554,37 +554,39 @@
     });
     // --- 抓取資料並跳轉到下一頁 ---
     document.getElementById('start-btn').addEventListener('click', () => {
-            // 1. 抓取所有角色的 ON/OFF 狀態 (依序是 Alice, Bob, Charlie, Eve)
-            const toggles = document.querySelectorAll('.status-toggle');
-            // 2. 建立一個物件來儲存所有設定
-            const qkdSettings = {
-                entangle: document.getElementById('entangle').checked,
-                
-                alice: {
-                    isOn: toggles[0].checked,
-                    particle: document.querySelector('input[name="a_particle"]:checked').nextElementSibling.innerText,
-                    basis: document.querySelector('input[name="a_basis"]:checked').nextElementSibling.innerText
-                },
-                
-                bob: {
-                    isOn: toggles[1].checked,
-                    particle: document.querySelector('input[name="b_particle"]:checked').nextElementSibling.innerText,
-                    basis: document.querySelector('input[name="b_basis"]:checked').nextElementSibling.innerText
-                },
-                
-                charlie: {
-                    isOn: toggles[2].checked, // Charlie 若沒開啟，可能抓不到 checked，所以加個保護機制
-                    particle: document.querySelector('input[name="c_particle"]:checked')?.nextElementSibling.innerText || "",
-                    basis: document.querySelector('input[name="c_basis"]:checked')?.nextElementSibling.innerText || ""
-                },
-                eve: {
-                    isOn: toggles[3].checked,
-                    attack: document.querySelector('input[name="e_attack"]:checked')?.nextElementSibling.innerText || ""
-                }
-            };
-            localStorage.setItem('qkdSettings', JSON.stringify(qkdSettings)); // 3. 把資料轉成文字並存入 localStorage 
-            window.location.href = 'QKDanalysis.html'; // 4. 跳轉到你的分析頁面 (請確認這裡的路徑是否正確)
-        });
+        const toggles = document.querySelectorAll('.status-toggle');
+        
+        const qkdSettings = {
+            entangle: document.getElementById('entangle').checked,
+            
+            alice: {
+                isOn: toggles[0].checked,
+                particle: document.querySelector('input[name="a_particle"]:checked')?.nextElementSibling?.innerText || "",
+                basis: document.querySelector('input[name="a_basis"]:checked')?.nextElementSibling?.innerText || ""
+            },
+            
+            bob: {
+                isOn: toggles[1].checked,
+                particle: document.querySelector('input[name="b_particle"]:checked')?.nextElementSibling?.innerText || "",
+                basis: document.querySelector('input[name="b_basis"]:checked')?.nextElementSibling?.innerText || ""
+            },
+            
+            charlie: {
+                isOn: toggles[2].checked, 
+                // 加上 ?.innerText 保護，避免未選擇時報錯
+                particle: document.querySelector('input[name="c_particle"]:checked')?.nextElementSibling?.innerText || "",
+                basis: document.querySelector('input[name="c_basis"]:checked')?.nextElementSibling?.innerText || ""
+            },
+            eve: {
+                isOn: toggles[3].checked,
+                // 加上 ?.innerText 保護，避免未選擇時報錯
+                attack: document.querySelector('input[name="e_attack"]:checked')?.nextElementSibling?.innerText || ""
+            }
+        };
+        
+        localStorage.setItem('qkdSettings', JSON.stringify(qkdSettings)); 
+        window.location.href = 'QKDanalysis.html'; 
+    });
 </script>
 
 </body>
