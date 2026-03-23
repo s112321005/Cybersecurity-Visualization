@@ -22,7 +22,10 @@
 
         .container {
             background: white;
-            padding: 30px;
+            padding-top: 20px;
+            padding-left: 20px;
+            padding-right: 20px;
+            padding-bottom: -10px;
             border-radius: 20px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.08);
             width: 1100px !important;
@@ -75,7 +78,7 @@
 
         .connection-line {
             position: absolute;
-            top: 20px; 
+            top: 150px; 
             left: 11.5%;
             width: 26%;
             height: 2px;
@@ -135,7 +138,7 @@
             border-radius: 20px;
             font-weight: bold;
             font-size: 16px;
-            margin-bottom: 10px;
+            margin-bottom: 50px;
             z-index: 3;
             text-align: center;
             min-width: 140px; 
@@ -144,6 +147,7 @@
         }
         .name-tag.gray { background-color: #b0b0b0; color: white;}
         .name-tag.red-text { background-color: #D32F2F; }
+        .name-tag.start { margin-bottom: 15px;}
         .name-tag.start:hover {
             background: #003580;
             transform: translateY(-2px);
@@ -151,7 +155,7 @@
         }
         .click-toggle { 
             cursor: pointer; 
-            margin-bottom: 15px; 
+            margin-bottom: -15px; 
             z-index: 3;
         }
         .click-toggle input { display: none; }
@@ -287,7 +291,7 @@
         }
         
         .order-input { width: 40px; text-align: center; }
-        .u-input { width: 90%; margin-top: 5px; box-sizing: border-box; }
+        .u-input { width: 90%;height: 50px; margin-top: 5px; box-sizing: border-box; }
 
         input:disabled {
             border-color: #b0b0b0 !important;
@@ -317,19 +321,20 @@
 
     <div class="main-grid">
         
+     
         <div class="connection-line">
             <div class="connection-label">
-                <label class="square-check" for="entangle" style="color: #333; font-size: 14px; cursor: pointer; padding: 10px 20px; margin: 0;">
+                <label class="square-check" for="entangle" style="color: #333; font-size: 14px; cursor: pointer; padding: -5px 20px; margin: 0;">
                     <input type="checkbox" id="entangle">
                     <span class="box"></span>
                     <span>Entanglement Required?</span>
                 </label>
             </div>
         </div>
-
         <div class="character-col">
             <img src="pictures/cat_alice.svg" class="character-img" alt="Alice">
             <div class="name-tag">Alice</div>
+            
             <label class="click-toggle">
                 <input type="checkbox" class="status-toggle" checked>
                 <span class="text-on">ON</span>
@@ -370,7 +375,7 @@
                 <div class="flex-row" style="gap:15px; margin-bottom: 5px;">
                     <label class="square-check"><input type="checkbox"><span class="box"></span>Z</label>
                     <label class="square-check"><input type="checkbox"><span class="box"></span>H</label>
-                    <label class="square-check"><input type="checkbox"><span class="box"></span>U(自訂)：</label>
+                    <label class="square-check"><input type="checkbox"><span class="box"></span>U (custom)：</label>
                 </div>
                 <div>
                     <input type="text" class="u-input">
@@ -379,7 +384,7 @@
         </div>
 
         <div class="character-col">
-            <img src="pictures/cat_alice.svg" class="character-img" alt="Bob">
+            <img src="pictures/cat_bob.svg" class="character-img" alt="Bob">
             <div class="name-tag">Bob</div>
             <label class="click-toggle">
                 <input type="checkbox" class="status-toggle" checked>
@@ -421,7 +426,7 @@
                 <div class="flex-row" style="gap:15px; margin-bottom: 5px;">
                     <label class="square-check"><input type="checkbox"><span class="box"></span>Z</label>
                     <label class="square-check"><input type="checkbox"><span class="box"></span>H</label>
-                    <label class="square-check"><input type="checkbox"><span class="box"></span>U(自訂)：</label>
+                    <label class="square-check"><input type="checkbox"><span class="box"></span>U (custom)：</label>
                 </div>
                 <div>
                     <input type="text" class="u-input">
@@ -430,7 +435,7 @@
         </div>
 
         <div class="character-col">
-            <img src="pictures/cat_alice.svg" class="character-img" alt="Charlie">
+            <img src="pictures/cat_charlie.svg" class="character-img" alt="Charlie">
             <div class="name-tag">Charlie</div>
             <label class="click-toggle">
                 <input type="checkbox" class="status-toggle">
@@ -472,7 +477,7 @@
                 <div class="flex-row" style="gap:15px; margin-bottom: 5px;">
                     <label class="square-check"><input type="checkbox"><span class="box"></span>Z</label>
                     <label class="square-check"><input type="checkbox"><span class="box"></span>H</label>
-                    <label class="square-check"><input type="checkbox"><span class="box"></span>U(自訂)：</label>
+                    <label class="square-check"><input type="checkbox"><span class="box"></span>U (custom)：</label>
                 </div>
                 <div>
                     <input type="text" class="u-input">
