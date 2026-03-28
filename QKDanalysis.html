@@ -213,10 +213,21 @@
             margin-bottom: 2px;
         }
         
+        /* 狀態為 OFF 時的字體顏色 */
         .setting-item.off-state span {
             color: #999;
-            font-style: italic;
         }
+        
+        /* 狀態為 OFF 時的人物名稱改為灰色 */
+        .setting-item.off-state strong {
+            color: #999;
+        }
+
+        /* 狀態為 ON 時且人物是 Eavesdropper 改為紅色 */
+        .setting-item.eve-on strong {
+            color: #ff4d4d;
+        }
+
     </style>
 </head>
 <body>
@@ -412,8 +423,12 @@
                             <span>Status: OFF</span>
                         </div>`;
                 }
+
+                // 判斷是否為開啟狀態的 Eavesdropper
+                const eveClass = (name === 'Eavesdropper') ? ' eve-on' : '';
+
                 return `
-                    <div class="setting-item">
+                    <div class="setting-item${eveClass}">
                         <strong>${name}</strong>
                         <span>Status: ON</span>
                         ${data.particle ? `<span>Particle: ${data.particle}</span>` : ''}
