@@ -182,22 +182,29 @@
     document.addEventListener("DOMContentLoaded", () => {
         const params = new URLSearchParams(window.location.search);
         aliceType = params.get("type");
-        aliceMsg = parseInt(params.get("msg")); // 轉成數字 0 或 1
+        aliceMsg = params.get("msg"); // 這裡抓到的會是字串 "0" 或 "1"
         bobBasis = params.get("bobBasis");
+
+        console.log("接收到的參數：", {aliceType, aliceMsg, bobBasis});
 
         // 1. 判斷傳入的量子態 (Alice)
         let inputSymbol = "";
-        if (aliceType === "rectilinear") {
-            // 【修正這裡】0 對應 |→⟩，1 對應 |↑⟩
-            inputSymbol = (aliceMsg === 0) ? "|→⟩" : "|↑⟩";
+        let msgStr = String(aliceMsg); // 強制轉成字串，確保比對百分之百正確
+
+        // 檢查 Alice 是選 S 還是 D (相容 "rectilinear" 或 "S" 的寫法)
+        if (aliceType === "rectilinear" || aliceType === "S") {
+            // 【S 基底】: 選 0 顯示 |→⟩，選 1 顯示 |↑⟩
+            inputSymbol = (msgStr === "0") ? "|→⟩" : "|↑⟩";
         } else {
-            // 【修正這裡】0 對應 |↖⟩，1 對應 |↗⟩
-            inputSymbol = (aliceMsg === 0) ? "|↖⟩" : "|↗⟩";
+            // 【D 基底】: 選 0 顯示 |↖⟩，選 1 顯示 |↗⟩
+            inputSymbol = (msgStr === "0") ? "|↖⟩" : "|↗⟩";
         }
+        
+        // 把算出來的符號塞進第四頁最左邊的膠囊裡
         document.getElementById("input-state").textContent = inputSymbol;
 
         // 2. 設定 Bob 的偏振器圖片與標籤
-        if (bobBasis === "rectilinear") {
+        if (bobBasis === "rectilinear" || bobBasis === "S") {
             document.getElementById("bob-key-img").src = "pictures/vertical.svg";
             document.getElementById("bob-key-label").textContent = "S";
         } else {
@@ -205,7 +212,7 @@
             document.getElementById("bob-key-label").textContent = "D";
         }
 
-        // 3. 判斷基底是否匹配，決定顯示單一箭頭還是分支
+        // 3. 判斷 Alice 跟 Bob 的基底有沒有一樣
         const isMatch = (aliceType === bobBasis);
 
         if (isMatch) {
@@ -222,7 +229,7 @@
             document.getElementById("output-mismatch").style.display = "flex";
 
             // 如果 Bob 選 S，會測量出 ↑ 和 →；如果選 D，會測量出 ↗ 和 ↖
-            if (bobBasis === "rectilinear") {
+            if (bobBasis === "rectilinear" || bobBasis === "S") {
                 document.getElementById("mis-state-up").textContent = "|↑⟩";
                 document.getElementById("mis-state-down").textContent = "|→⟩";
             } else {
@@ -233,17 +240,16 @@
     });
 
     function prevStep(event) {
-        event.preventDefault(); // 防止 a 標籤預設跳轉
+        event.preventDefault(); // 防止預設跳轉
         let prevUrl = "QKDedu3.html";
         // 把 Alice 之前的設定帶回去
-        if (aliceType !== null && !isNaN(aliceMsg)) {
+        if (aliceType && aliceMsg) {
             prevUrl += `?type=${aliceType}&msg=${aliceMsg}`;
         }
         window.location.href = prevUrl;
     }
 
     function nextStep() {
-        // 可以導向一個統整頁面或遊戲結束畫面
         alert("完成了一次 QKD 傳輸比對！準備進入下一個階段。");
     }
 </script>
