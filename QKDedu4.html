@@ -50,7 +50,7 @@
         .nav-btn:hover { background: var(--primary-blue); color: white; }
 
         /* 卡片與雲朵 */
-        /*.main-card {
+        .main-card {
             width: min(1000px, 95vw); height: min(520px, 70vh);
             border: 3px solid var(--primary-blue); border-radius: 35px;
             position: relative; background: white; box-sizing: border-box; overflow: hidden;
@@ -58,10 +58,14 @@
         .cloud-container {
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
             width: 750px; height: 450px;
-            background-image: url('pictures/think.svg');
-            background-size: contain; background-position: center; background-repeat: no-repeat;
+            
+            /* 改成乾淨的圓角外框 */
+            border: 3px solid var(--primary-blue);
+            border-radius: 30px;
+            background-color: white; 
+            
             display: flex; justify-content: center; align-items: center;
-        }*/
+        }
 
         /* 網格排版：讓元素橫向對齊 */
         .decision-grid {
