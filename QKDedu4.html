@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <base href="https://s112321005.github.io/Cybersecurity-Visualization/">
+    <title>QKD interactive education - Result</title>
+    <style>
+        :root {
+            --primary-blue: #004aad;
+            --dark-text: #333333;
+            --bg-color: #f8f9fa;
+        }
+
+        body {
+            font-family: sans-serif; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center;    
+            padding: 40px 20px; 
+            background-color: var(--bg-color);
+            margin: 0;
+        }
+
+        /* 頂部導覽列 (與前幾頁相同) */
+        .header {
+            width: min(1000px, 95vw);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 25px;
+        }
+        .header-left { display: flex; align-items: center; gap: 15px; }
+        .btn-back {
+            width: 40px; height: 40px; background-color: var(--primary-blue);
+            color: white; border-radius: 50%; display: flex; justify-content: center;
+            align-items: center; text-decoration: none; font-weight: bold; font-size: 1.2rem;
+        }
+        .title-pill {
+            border: 2px solid var(--primary-blue); padding: 10px 25px;
+            border-radius: 30px; font-weight: bold; color: var(--dark-text); font-size: 1.1rem;
+            background: white;
+        }
+        .header-center { flex-grow: 1; margin-left: 20px; font-weight: bold; font-size: 1.5rem; color: var(--dark-text); }
+        .header-right { display: flex; gap: 15px; }
+        .nav-btn {
+            border: 2px solid var(--primary-blue); background: white; color: var(--dark-text);
+            padding: 10px 20px; border-radius: 30px; font-weight: bold; font-size: 1rem;
+            cursor: pointer; transition: all 0.2s;
+        }
+        .nav-btn:hover { background: var(--primary-blue); color: white; }
+
+        /* 卡片與雲朵 */
+        .main-card {
+            width: min(1000px, 95vw); height: min(520px, 70vh);
+            border: 3px solid var(--primary-blue); border-radius: 35px;
+            position: relative; background: white; box-sizing: border-box; overflow: hidden;
+        }
+        .cloud-container {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: 750px; height: 450px;
+            background-image: url('pictures/think.svg');
+            background-size: contain; background-position: center; background-repeat: no-repeat;
+            display: flex; justify-content: center; align-items: center;
+        }
+
+        /* 網格排版：讓元素橫向對齊 */
+        .decision-grid {
+            display: flex; align-items: center; gap: 20px; margin-top: -20px;
+        }
+        .col { display: flex; flex-direction: column; justify-content: center; align-items: center; }
+
+        /* 膠囊標籤 */
+        .result-capsule {
+            padding: 12px 25px; border-radius: 30px; border: 2px solid var(--primary-blue);
+            color: var(--primary-blue); font-weight: bold; font-size: 1.2rem;
+            background: white; display: flex; align-items: center; height: 22px;
+        }
+        .result-capsule.active {
+            background: var(--primary-blue); color: white;
+        }
+
+        /* 偏振器樣式 */
+        .basis-circle {
+            width: 40px; height: 40px; border-radius: 50%; background: var(--primary-blue);
+            color: white; display: flex; align-items: center; justify-content: center;
+            font-weight: bold; font-size: 1.2rem; margin-top: 10px;
+        }
+
+        /* 連接線條與箭頭 */
+        .connector { position: relative; display: flex; align-items: center; height: 50px; width: 50px; }
+        .connector::before {
+            content: ""; position: absolute; top: 50%; left: 0; width: 100%; height: 3px;
+            background-color: var(--primary-blue); transform: translateY(-50%);
+        }
+        .arrow-connector::after {
+            content: ""; position: absolute; top: 50%; right: 0; width: 0; height: 0;
+            border-top: 7px solid transparent; border-bottom: 7px solid transparent;
+            border-left: 12px solid var(--primary-blue); transform: translateY(-50%);
+        }
+
+        /* 分支箭頭的容器 */
+        .col-connectors { position: relative; width: 60px; height: 160px; }
+        .arrow-single { width: 100%; }
+        .arrow-branch-up {
+            position: absolute; width: 70px; left: 0; top: 50%;
+            transform-origin: left center; transform: rotate(-35deg);
+        }
+        .arrow-branch-down {
+            position: absolute; width: 70px; left: 0; top: 50%;
+            transform-origin: left center; transform: rotate(35deg);
+        }
+
+        /* 判斷結果 (V / X) */
+        .result-icon { font-size: 2rem; font-weight: bold; margin-left: 15px; color: black; }
+        .output-group { display: flex; align-items: center; }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <div class="header-left">
+        <a href="QKDedu3.html" class="btn-back" onclick="prevStep(event)">&lt;</a>
+        <div class="title-pill">Quantum Key Distribution</div>
+    </div>
+    <div class="header-center">Result</div>
+    <div class="header-right">
+        <button class="nav-btn" onclick="prevStep(event)">上一步</button>
+        <button class="nav-btn" onclick="nextStep()">下一步</button>
+    </div>
+</div>
+
+<div class="main-card">
+    <div class="cloud-container">
+        <div class="decision-grid">
+            
+            <div class="col">
+                <div class="result-capsule active" id="input-state"></div>
+            </div>
+
+            <div class="col"><div class="connector"></div></div>
+
+            <div class="col">
+                <img id="bob-key-img" src="" width="90" alt="Key">
+                <div class="basis-circle" id="bob-key-label"></div>
+            </div>
+
+            <div class="col col-connectors">
+                <div class="connector arrow-connector arrow-single" id="arrow-match" style="display: none;"></div>
+                
+                <div class="connector arrow-connector arrow-branch-up" id="arrow-mis-up" style="display: none;"></div>
+                <div class="connector arrow-connector arrow-branch-down" id="arrow-mis-down" style="display: none;"></div>
+            </div>
+
+            <div class="col" style="height: 160px; justify-content: space-around;">
+                <div class="output-group" id="output-match" style="display: none;">
+                    <div class="result-capsule active" id="match-state"></div>
+                    <div class="result-icon">V</div>
+                </div>
+
+                <div id="output-mismatch" style="display: none; flex-direction: column; gap: 30px;">
+                    <div class="output-group">
+                        <div class="result-capsule" id="mis-state-up"></div>
+                        <div class="result-icon">X</div>
+                    </div>
+                    <div class="output-group">
+                        <div class="result-capsule" id="mis-state-down"></div>
+                        <div class="result-icon">X</div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+    // 儲存前幾頁的參數，方便返回時帶上
+    let aliceType = "";
+    let aliceMsg = "";
+    let bobBasis = "";
+
+    document.addEventListener("DOMContentLoaded", () => {
+        const params = new URLSearchParams(window.location.search);
+        aliceType = params.get("type");
+        aliceMsg = parseInt(params.get("msg")); // 轉成數字 0 或 1
+        bobBasis = params.get("bobBasis");
+
+        // 1. 判斷傳入的量子態 (Alice)
+        let inputSymbol = "";
+        if (aliceType === "rectilinear") {
+            inputSymbol = (aliceMsg === 0) ? "|↑⟩" : "|→⟩";
+        } else {
+            inputSymbol = (aliceMsg === 0) ? "|↗⟩" : "|↖⟩";
+        }
+        document.getElementById("input-state").textContent = inputSymbol;
+
+        // 2. 設定 Bob 的偏振器圖片與標籤
+        if (bobBasis === "rectilinear") {
+            document.getElementById("bob-key-img").src = "pictures/vertical.svg";
+            document.getElementById("bob-key-label").textContent = "S";
+        } else {
+            document.getElementById("bob-key-img").src = "pictures/diagonal.svg";
+            document.getElementById("bob-key-label").textContent = "D";
+        }
+
+        // 3. 判斷基底是否匹配，決定顯示單一箭頭還是分支
+        const isMatch = (aliceType === bobBasis);
+
+        if (isMatch) {
+            // [匹配情況] 顯示單一直線與 V
+            document.getElementById("arrow-match").style.display = "flex";
+            document.getElementById("output-match").style.display = "flex";
+            // 輸出的狀態會和輸入完全一樣
+            document.getElementById("match-state").textContent = inputSymbol;
+            
+        } else {
+            // [不匹配情況] 顯示分支與 X
+            document.getElementById("arrow-mis-up").style.display = "flex";
+            document.getElementById("arrow-mis-down").style.display = "flex";
+            document.getElementById("output-mismatch").style.display = "flex";
+
+            // 如果 Bob 選 S，會測量出 ↑ 和 →；如果選 D，會測量出 ↗ 和 ↖
+            if (bobBasis === "rectilinear") {
+                document.getElementById("mis-state-up").textContent = "|↑⟩";
+                document.getElementById("mis-state-down").textContent = "|→⟩";
+            } else {
+                document.getElementById("mis-state-up").textContent = "|↗⟩";
+                document.getElementById("mis-state-down").textContent = "|↖⟩";
+            }
+        }
+    });
+
+    function prevStep(event) {
+        event.preventDefault(); // 防止 a 標籤預設跳轉
+        let prevUrl = "QKDedu3.html";
+        // 把 Alice 之前的設定帶回去
+        if (aliceType !== null && !isNaN(aliceMsg)) {
+            prevUrl += `?type=${aliceType}&msg=${aliceMsg}`;
+        }
+        window.location.href = prevUrl;
+    }
+
+    function nextStep() {
+        // 可以導向一個統整頁面或遊戲結束畫面
+        alert("完成了一次 QKD 傳輸比對！準備進入下一個階段。");
+    }
+</script>
+
+</body>
+</html>
