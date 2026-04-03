@@ -188,9 +188,11 @@
         // 1. 判斷傳入的量子態 (Alice)
         let inputSymbol = "";
         if (aliceType === "rectilinear") {
-            inputSymbol = (aliceMsg === 0) ? "|↑⟩" : "|→⟩";
+            // 【修正這裡】0 對應 |→⟩，1 對應 |↑⟩
+            inputSymbol = (aliceMsg === 0) ? "|→⟩" : "|↑⟩";
         } else {
-            inputSymbol = (aliceMsg === 0) ? "|↗⟩" : "|↖⟩";
+            // 【修正這裡】0 對應 |↖⟩，1 對應 |↗⟩
+            inputSymbol = (aliceMsg === 0) ? "|↖⟩" : "|↗⟩";
         }
         document.getElementById("input-state").textContent = inputSymbol;
 
