@@ -67,6 +67,39 @@
         }
 
         /* =========================================
+           2.5 下拉式選單區塊
+           ========================================= */
+        .protocol-selection {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background-color: #f0f4f8;
+            border-radius: 10px;
+            border: 1px dashed #0047AB;
+        }
+        .protocol-selection label {
+            font-size: 18px;
+            font-weight: bold;
+            color: #0047AB;
+            margin-right: 15px;
+        }
+        .custom-select {
+            padding: 8px 20px;
+            font-size: 16px;
+            border: 2px solid #0047AB;
+            border-radius: 8px;
+            color: #0047AB;
+            font-weight: bold;
+            outline: none;
+            cursor: pointer;
+            background-color: white;
+            transition: all 0.3s ease;
+        }
+        .custom-select:hover {
+            box-shadow: 0 4px 12px rgba(0,71,171,0.15);
+        }
+
+        /* =========================================
            3. 四大直欄佈局與連線
            ========================================= */
         .main-grid {
@@ -187,7 +220,7 @@
             border-radius: 10px;
             padding: 15px;
             background-color: white;
-            min-height: 440px; /* 稍微加高以容納新排版 */
+            min-height: 440px; 
             box-sizing: border-box;
             width: 100%;
             transition: all 0.3s ease;
@@ -319,198 +352,406 @@
         <div class="page-title">Cerify Setting</div>
     </div>
 
-    <div class="main-grid">
-        
-     
-        <div class="connection-line">
-            <div class="connection-label">
-                <label class="square-check" for="entangle" style="color: #333; font-size: 14px; cursor: pointer; padding: -5px 20px; margin: 0;">
-                    <input type="checkbox" id="entangle">
-                    <span class="box"></span>
-                    <span>Entanglement Required?</span>
+    <div class="protocol-selection">
+        <label for="protocol-select">Select Protocol:</label>
+        <select id="protocol-select" class="custom-select">
+            <option value="none" disabled selected>-- 選擇要設定的介面 --</option>
+            <option value="qkd">QKD</option>
+            <option value="qss">QSS</option>
+            <option value="entanglement">Entanglement</option>
+        </select>
+    </div>
+
+    <div id="qkd-interface" class="protocol-interface" style="display: none;">
+        <div class="main-grid">
+            <div class="connection-line">
+                <div class="connection-label">
+                    <label class="square-check" for="qkd-entangle" style="color: #333; font-size: 14px; cursor: pointer; padding: -5px 20px; margin: 0;">
+                        <input type="checkbox" id="qkd-entangle">
+                        <span class="box"></span>
+                        <span>Entanglement Required?</span>
+                    </label>
+                </div>
+            </div>
+            
+            <div class="character-col">
+                <img src="pictures/cat_alice.svg" class="character-img" alt="Alice">
+                <div class="name-tag">Alice</div>
+                <label class="click-toggle">
+                    <input type="checkbox" class="status-toggle" checked>
+                    <span class="text-on">ON</span>
                 </label>
-            </div>
-        </div>
-        <div class="character-col">
-            <img src="pictures/cat_alice.svg" class="character-img" alt="Alice">
-            <div class="name-tag">Alice</div>
-            
-            <label class="click-toggle">
-                <input type="checkbox" class="status-toggle" checked>
-                <span class="text-on">ON</span>
-                <span class="text-off">OFF</span>
-            </label>
-            
-            <div class="control-panel">
-                <div class="setting-title">Particle Selection</div>
-                <div class="flex-row" style="margin-bottom: 15px; gap: 8px;">
-                    <label class="pill-radio"><input type="radio" name="a_particle" checked><span>single</span></label>
-                    <label class="pill-radio"><input type="radio" name="a_particle"><span>Bell</span></label>
-                    <label class="pill-radio"><input type="radio" name="a_particle"><span>GHZ</span></label>
-                </div>
-                
-                <div class="setting-title">Basis Selection</div>
-                <div style="display:flex; flex-direction:column; gap:8px; margin-bottom: 15px;">
-                    <div class="flex-row" style="gap: 8px;">
-                        <label class="pill-radio"><input type="radio" name="a_basis" checked><span>X</span></label>
-                        <label class="pill-radio"><input type="radio" name="a_basis"><span>Z</span></label>
+                <div class="control-panel">
+                    <div class="setting-title">Particle Selection</div>
+                    <div class="flex-row" style="margin-bottom: 15px; gap: 8px;">
+                        <label class="pill-radio"><input type="radio" name="a_particle" checked><span>single</span></label>
                     </div>
-                    <div class="flex-row" style="gap: 8px;">
-                        <label class="pill-radio"><input type="radio" name="a_basis"><span>Bell</span></label>
-                        <label class="pill-radio"><input type="radio" name="a_basis"><span>GHZ</span></label>
+                    <div class="setting-title">Basis Selection</div>
+                    <div style="display:flex; flex-direction:column; gap:8px; margin-bottom: 15px;">
+                        <div class="flex-row" style="gap: 8px;">
+                            <label class="pill-radio"><input type="radio" name="a_basis" checked><span>X</span></label>
+                            <label class="pill-radio"><input type="radio" name="a_basis"><span>Z</span></label>
+                        </div>
                     </div>
-                </div>
-
-                <div class="setting-title">
-                    Send Order:
-                    <input type="number" class="order-input" value="1" min="1" style="margin-left:5px;">
-                </div>
-                
-                <div class="setting-title" style="margin-top: 15px;">Available Operations:</div>
-                <div class="flex-row" style="gap:15px; margin-bottom: 8px;">
-                    <label class="square-check"><input type="checkbox"><span class="box"></span>I</label>
-                    <label class="square-check"><input type="checkbox"><span class="box"></span>X</label>
-                    <label class="square-check"><input type="checkbox"><span class="box"></span>Y</label>
-                </div>
-                <div class="flex-row" style="gap:15px; margin-bottom: 5px;">
-                    <label class="square-check"><input type="checkbox"><span class="box"></span>Z</label>
-                    <label class="square-check"><input type="checkbox"><span class="box"></span>H</label>
-                    <label class="square-check"><input type="checkbox"><span class="box"></span>U (custom)：</label>
-                </div>
-                <div>
-                    <input type="text" class="u-input">
+                    <div class="setting-title">Send Order: <input type="number" class="order-input" value="1" min="1" style="margin-left:5px;"></div>
                 </div>
             </div>
-        </div>
 
-        <div class="character-col">
-            <img src="pictures/cat_bob.svg" class="character-img" alt="Bob">
-            <div class="name-tag">Bob</div>
-            <label class="click-toggle">
-                <input type="checkbox" class="status-toggle" checked>
-                <span class="text-on">ON</span>
-                <span class="text-off">OFF</span>
-            </label>
-            
-            <div class="control-panel">
-                <div class="setting-title">Particle Selection</div>
-                <div class="flex-row" style="margin-bottom: 15px; gap: 8px;">
-                    <label class="pill-radio"><input type="radio" name="b_particle" checked><span>single</span></label>
-                    <label class="pill-radio"><input type="radio" name="b_particle"><span>Bell</span></label>
-                    <label class="pill-radio"><input type="radio" name="b_particle"><span>GHZ</span></label>
-                </div>
-                
-                <div class="setting-title">Basis Selection</div>
-                <div style="display:flex; flex-direction:column; gap:8px; margin-bottom: 15px;">
-                    <div class="flex-row" style="gap: 8px;">
-                        <label class="pill-radio"><input type="radio" name="b_basis" checked><span>X</span></label>
-                        <label class="pill-radio"><input type="radio" name="b_basis"><span>Z</span></label>
+            <div class="character-col">
+                <img src="pictures/cat_bob.svg" class="character-img" alt="Bob">
+                <div class="name-tag">Bob</div>
+                <label class="click-toggle">
+                    <input type="checkbox" class="status-toggle" checked>
+                    <span class="text-on">ON</span>
+                </label>
+                <div class="control-panel">
+                    <div class="setting-title">Particle Selection</div>
+                    <div class="flex-row" style="margin-bottom: 15px; gap: 8px;">
+                        <label class="pill-radio"><input type="radio" name="b_particle" checked><span>single</span></label>
                     </div>
-                    <div class="flex-row" style="gap: 8px;">
-                        <label class="pill-radio"><input type="radio" name="b_basis"><span>Bell</span></label>
-                        <label class="pill-radio"><input type="radio" name="b_basis"><span>GHZ</span></label>
+                    <div class="setting-title">Basis Selection</div>
+                    <div style="display:flex; flex-direction:column; gap:8px; margin-bottom: 15px;">
+                        <div class="flex-row" style="gap: 8px;">
+                            <label class="pill-radio"><input type="radio" name="b_basis" checked><span>X</span></label>
+                            <label class="pill-radio"><input type="radio" name="b_basis"><span>Z</span></label>
+                        </div>
                     </div>
+                    <div class="setting-title">Send Order: <input type="number" class="order-input" value="2" min="1" style="margin-left:5px;"></div>
+                    
                 </div>
+            </div>
 
-                <div class="setting-title">
-                    Send Order: 
-                    <input type="number" class="order-input" value="2" min="1" style="margin-left:5px;">
-                </div>
-                
-                <div class="setting-title" style="margin-top: 15px;">Available Operations:</div>
-                <div class="flex-row" style="gap:15px; margin-bottom: 8px;">
-                    <label class="square-check"><input type="checkbox"><span class="box"></span>I</label>
-                    <label class="square-check"><input type="checkbox"><span class="box"></span>X</label>
-                    <label class="square-check"><input type="checkbox"><span class="box"></span>Y</label>
-                </div>
-                <div class="flex-row" style="gap:15px; margin-bottom: 5px;">
-                    <label class="square-check"><input type="checkbox"><span class="box"></span>Z</label>
-                    <label class="square-check"><input type="checkbox"><span class="box"></span>H</label>
-                    <label class="square-check"><input type="checkbox"><span class="box"></span>U (custom)：</label>
-                </div>
-                <div>
-                    <input type="text" class="u-input">
+            <div class="character-col theme-red">
+                <img src="pictures/Eavesdropper.svg" class="character-img" alt="Eavesdropper">
+                <div class="name-tag" data-role="eavesdropper">Eavesdropper</div>
+                <label class="click-toggle">
+                    <input type="checkbox" class="status-toggle">
+                    <span class="text-on">ON</span><span class="text-off">OFF</span>
+                </label>
+                <div class="control-panel">
+                    <div class="setting-title">Attack Selection</div>
+                    <div style="display:flex; flex-direction:column; gap:10px; align-items: flex-start; margin-top: 15px;">
+                        <label class="pill-radio"><input type="radio" name="e_attack"><span style="padding: 6px 20px;">CNOT</span></label>
+                        <label class="pill-radio"><input type="radio" name="e_attack"><span style="padding: 6px 20px;">Intercept-resend</span></label>
+                    </div>
                 </div>
             </div>
         </div>
-
-        <div class="character-col">
-            <img src="pictures/cat_charlie.svg" class="character-img" alt="Charlie">
-            <div class="name-tag">Charlie</div>
-            <label class="click-toggle">
-                <input type="checkbox" class="status-toggle">
-                <span class="text-on">ON</span>
-                <span class="text-off">OFF</span>
-            </label>
-            
-            <div class="control-panel">
-                <div class="setting-title">Particle Selection</div>
-                <div class="flex-row" style="margin-bottom: 15px; gap: 8px;">
-                    <label class="pill-radio"><input type="radio" name="c_particle"><span>single</span></label>
-                    <label class="pill-radio"><input type="radio" name="c_particle"><span>Bell</span></label>
-                    <label class="pill-radio"><input type="radio" name="c_particle"><span>GHZ</span></label>
-                </div>
-                
-                <div class="setting-title">Basis Selection</div>
-                <div style="display:flex; flex-direction:column; gap:8px; margin-bottom: 15px;">
-                    <div class="flex-row" style="gap: 8px;">
-                        <label class="pill-radio"><input type="radio" name="c_basis"><span>X</span></label>
-                        <label class="pill-radio"><input type="radio" name="c_basis"><span>Z</span></label>
-                    </div>
-                    <div class="flex-row" style="gap: 8px;">
-                        <label class="pill-radio"><input type="radio" name="c_basis"><span>Bell</span></label>
-                        <label class="pill-radio"><input type="radio" name="c_basis"><span>GHZ</span></label>
-                    </div>
-                </div>
-
-                <div class="setting-title">
-                    Send Order: 
-                    <input type="number" class="order-input" value="" style="margin-left:5px;">
-                </div>
-                
-                <div class="setting-title" style="margin-top: 15px;">Available Operations:</div>
-                <div class="flex-row" style="gap:15px; margin-bottom: 8px;">
-                    <label class="square-check"><input type="checkbox"><span class="box"></span>I</label>
-                    <label class="square-check"><input type="checkbox"><span class="box"></span>X</label>
-                    <label class="square-check"><input type="checkbox"><span class="box"></span>Y</label>
-                </div>
-                <div class="flex-row" style="gap:15px; margin-bottom: 5px;">
-                    <label class="square-check"><input type="checkbox"><span class="box"></span>Z</label>
-                    <label class="square-check"><input type="checkbox"><span class="box"></span>H</label>
-                    <label class="square-check"><input type="checkbox"><span class="box"></span>U (custom)：</label>
-                </div>
-                <div>
-                    <input type="text" class="u-input">
-                </div>
-            </div>
+        <div style="text-align: center; margin-top: 30px;">
+            <button id="qkd-start-btn" class="name-tag start" style="cursor: pointer; font-size: 18px; padding: 10px 40px; border: none;">Start QKD Analysis</button>
         </div>
-
-        <div class="character-col theme-red">
-            <img src="pictures/Eavesdropper.svg" class="character-img" alt="Eavesdropper">
-            <div class="name-tag" data-role="eavesdropper">Eavesdropper</div>
-            <label class="click-toggle">
-                <input type="checkbox" class="status-toggle">
-                <span class="text-on">ON</span>
-                <span class="text-off">OFF</span>
-            </label>
-            
-            <div class="control-panel">
-                <div class="setting-title">Attack Selection</div>
-                <div style="display:flex; flex-direction:column; gap:10px; align-items: flex-start; margin-top: 15px;">
-                    <label class="pill-radio"><input type="radio" name="e_attack"><span style="padding: 6px 20px;">CNOT</span></label>
-                    <label class="pill-radio"><input type="radio" name="e_attack"><span style="padding: 6px 20px;">Intercept-resend</span></label>
-                </div>
-            </div>
-        </div>
-
     </div>
-    <div style="text-align: center; margin-top: 30px;">
-        <button id="start-btn" class="name-tag start" style="cursor: pointer; font-size: 18px; padding: 10px 40px; border: none;">Start Analysis</button>
+
+
+    <div id="qss-interface" class="protocol-interface" style="display: none;">
+        <div class="main-grid">
+            <div class="connection-line">
+                <div class="connection-label">
+                    <label class="square-check" for="qss-entangle" style="color: #333; font-size: 14px; cursor: pointer; padding: -5px 20px; margin: 0;">
+                        <input type="checkbox" id="qss-entangle">
+                        <span class="box"></span>
+                        <span>Entanglement Required?</span>
+                    </label>
+                </div>
+            </div>
+            
+            <div class="character-col">
+                <img src="pictures/cat_alice.svg" class="character-img" alt="Alice">
+                <div class="name-tag">Alice</div>
+                <label class="click-toggle"><input type="checkbox" class="status-toggle" checked><span class="text-on">ON</span><span class="text-off">OFF</span></label>
+                <div class="control-panel">
+                    <div class="setting-title">Particle Selection</div>
+                    <div class="flex-row" style="margin-bottom: 15px; gap: 8px;">
+                        <label class="pill-radio"><input type="radio" name="qss_a_particle" checked><span>single</span></label>
+                        <label class="pill-radio"><input type="radio" name="qss_a_particle"><span>Bell</span></label>
+                        <label class="pill-radio"><input type="radio" name="qss_a_particle"><span>GHZ</span></label>
+                    </div>
+                    <div class="setting-title">Basis Selection</div>
+                    <div style="display:flex; flex-direction:column; gap:8px; margin-bottom: 15px;">
+                        <div class="flex-row" style="gap: 8px;">
+                            <label class="pill-radio"><input type="radio" name="qss_a_basis" checked><span>X</span></label>
+                            <label class="pill-radio"><input type="radio" name="qss_a_basis"><span>Z</span></label>
+                        </div>
+                        <div class="flex-row" style="gap: 8px;">
+                            <label class="pill-radio"><input type="radio" name="qss_a_basis"><span>Bell</span></label>
+                            <label class="pill-radio"><input type="radio" name="qss_a_basis"><span>GHZ</span></label>
+                        </div>
+                    </div>
+                    <div class="setting-title">Send Order: <input type="number" class="order-input" value="1" min="1" style="margin-left:5px;"></div>
+                    <div class="setting-title" style="margin-top: 15px;">Available Operations:</div>
+                    <div class="flex-row" style="gap:15px; margin-bottom: 8px;">
+                        <label class="square-check"><input type="checkbox"><span class="box"></span>I</label>
+                        <label class="square-check"><input type="checkbox"><span class="box"></span>X</label>
+                        <label class="square-check"><input type="checkbox"><span class="box"></span>Y</label>
+                    </div>
+                    <div class="flex-row" style="gap:15px; margin-bottom: 5px;">
+                        <label class="square-check"><input type="checkbox"><span class="box"></span>Z</label>
+                        <label class="square-check"><input type="checkbox"><span class="box"></span>H</label>
+                        <label class="square-check"><input type="checkbox"><span class="box"></span>U (custom)：</label>
+                    </div>
+                    <div><input type="text" class="u-input"></div>
+                </div>
+            </div>
+
+            <div class="character-col">
+                <img src="pictures/cat_bob.svg" class="character-img" alt="Bob">
+                <div class="name-tag">Bob</div>
+                <label class="click-toggle"><input type="checkbox" class="status-toggle" checked><span class="text-on">ON</span><span class="text-off">OFF</span></label>
+                <div class="control-panel">
+                    <div class="setting-title">Particle Selection</div>
+                    <div class="flex-row" style="margin-bottom: 15px; gap: 8px;">
+                        <label class="pill-radio"><input type="radio" name="qss_b_particle" checked><span>single</span></label>
+                        <label class="pill-radio"><input type="radio" name="qss_b_particle"><span>Bell</span></label>
+                        <label class="pill-radio"><input type="radio" name="qss_b_particle"><span>GHZ</span></label>
+                    </div>
+                    <div class="setting-title">Basis Selection</div>
+                    <div style="display:flex; flex-direction:column; gap:8px; margin-bottom: 15px;">
+                        <div class="flex-row" style="gap: 8px;">
+                            <label class="pill-radio"><input type="radio" name="qss_b_basis" checked><span>X</span></label>
+                            <label class="pill-radio"><input type="radio" name="qss_b_basis"><span>Z</span></label>
+                        </div>
+                        <div class="flex-row" style="gap: 8px;">
+                            <label class="pill-radio"><input type="radio" name="qss_b_basis"><span>Bell</span></label>
+                            <label class="pill-radio"><input type="radio" name="qss_b_basis"><span>GHZ</span></label>
+                        </div>
+                    </div>
+                    <div class="setting-title">Send Order: <input type="number" class="order-input" value="2" min="1" style="margin-left:5px;"></div>
+                    <div class="setting-title" style="margin-top: 15px;">Available Operations:</div>
+                    <div class="flex-row" style="gap:15px; margin-bottom: 8px;">
+                        <label class="square-check"><input type="checkbox"><span class="box"></span>I</label>
+                        <label class="square-check"><input type="checkbox"><span class="box"></span>X</label>
+                        <label class="square-check"><input type="checkbox"><span class="box"></span>Y</label>
+                    </div>
+                    <div class="flex-row" style="gap:15px; margin-bottom: 5px;">
+                        <label class="square-check"><input type="checkbox"><span class="box"></span>Z</label>
+                        <label class="square-check"><input type="checkbox"><span class="box"></span>H</label>
+                        <label class="square-check"><input type="checkbox"><span class="box"></span>U (custom)：</label>
+                    </div>
+                    <div><input type="text" class="u-input"></div>
+                </div>
+            </div>
+
+            <div class="character-col">
+                <img src="pictures/cat_charlie.svg" class="character-img" alt="Charlie">
+                <div class="name-tag">Charlie</div>
+                <label class="click-toggle"><input type="checkbox" class="status-toggle"><span class="text-on">ON</span><span class="text-off">OFF</span></label>
+                <div class="control-panel">
+                    <div class="setting-title">Particle Selection</div>
+                    <div class="flex-row" style="margin-bottom: 15px; gap: 8px;">
+                        <label class="pill-radio"><input type="radio" name="qss_c_particle"><span>single</span></label>
+                        <label class="pill-radio"><input type="radio" name="qss_c_particle"><span>Bell</span></label>
+                        <label class="pill-radio"><input type="radio" name="qss_c_particle"><span>GHZ</span></label>
+                    </div>
+                    <div class="setting-title">Basis Selection</div>
+                    <div style="display:flex; flex-direction:column; gap:8px; margin-bottom: 15px;">
+                        <div class="flex-row" style="gap: 8px;">
+                            <label class="pill-radio"><input type="radio" name="qss_c_basis"><span>X</span></label>
+                            <label class="pill-radio"><input type="radio" name="qss_c_basis"><span>Z</span></label>
+                        </div>
+                        <div class="flex-row" style="gap: 8px;">
+                            <label class="pill-radio"><input type="radio" name="qss_c_basis"><span>Bell</span></label>
+                            <label class="pill-radio"><input type="radio" name="qss_c_basis"><span>GHZ</span></label>
+                        </div>
+                    </div>
+                    <div class="setting-title">Send Order: <input type="number" class="order-input" value="" style="margin-left:5px;"></div>
+                    <div class="setting-title" style="margin-top: 15px;">Available Operations:</div>
+                    <div class="flex-row" style="gap:15px; margin-bottom: 8px;">
+                        <label class="square-check"><input type="checkbox"><span class="box"></span>I</label>
+                        <label class="square-check"><input type="checkbox"><span class="box"></span>X</label>
+                        <label class="square-check"><input type="checkbox"><span class="box"></span>Y</label>
+                    </div>
+                    <div class="flex-row" style="gap:15px; margin-bottom: 5px;">
+                        <label class="square-check"><input type="checkbox"><span class="box"></span>Z</label>
+                        <label class="square-check"><input type="checkbox"><span class="box"></span>H</label>
+                        <label class="square-check"><input type="checkbox"><span class="box"></span>U (custom)：</label>
+                    </div>
+                    <div><input type="text" class="u-input"></div>
+                </div>
+            </div>
+
+            <div class="character-col theme-red">
+                <img src="pictures/Eavesdropper.svg" class="character-img" alt="Eavesdropper">
+                <div class="name-tag" data-role="eavesdropper">Eavesdropper</div>
+                <label class="click-toggle"><input type="checkbox" class="status-toggle"><span class="text-on">ON</span><span class="text-off">OFF</span></label>
+                <div class="control-panel">
+                    <div class="setting-title">Attack Selection</div>
+                    <div style="display:flex; flex-direction:column; gap:10px; align-items: flex-start; margin-top: 15px;">
+                        <label class="pill-radio"><input type="radio" name="qss_e_attack"><span style="padding: 6px 20px;">CNOT</span></label>
+                        <label class="pill-radio"><input type="radio" name="qss_e_attack"><span style="padding: 6px 20px;">Intercept-resend</span></label>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div style="text-align: center; margin-top: 30px;">
+            <button id="qss-start-btn" class="name-tag start" style="cursor: pointer; font-size: 18px; padding: 10px 40px; border: none;">Start QSS Analysis</button>
+        </div>
     </div>
+
+
+    <div id="entanglement-interface" class="protocol-interface" style="display: none;">
+        <div class="main-grid">
+            <div class="connection-line">
+                <div class="connection-label">
+                    <label class="square-check" for="ent-entangle" style="color: #333; font-size: 14px; cursor: pointer; padding: -5px 20px; margin: 0;">
+                        <input type="checkbox" id="ent-entangle">
+                        <span class="box"></span>
+                        <span>Entanglement Required?</span>
+                    </label>
+                </div>
+            </div>
+            
+            <div class="character-col">
+                <img src="pictures/cat_alice.svg" class="character-img" alt="Alice">
+                <div class="name-tag">Alice</div>
+                <label class="click-toggle"><input type="checkbox" class="status-toggle" checked><span class="text-on">ON</span><span class="text-off">OFF</span></label>
+                <div class="control-panel">
+                    <div class="setting-title">Particle Selection</div>
+                    <div class="flex-row" style="margin-bottom: 15px; gap: 8px;">
+                        <label class="pill-radio"><input type="radio" name="ent_a_particle" checked><span>single</span></label>
+                        <label class="pill-radio"><input type="radio" name="ent_a_particle"><span>Bell</span></label>
+                        <label class="pill-radio"><input type="radio" name="ent_a_particle"><span>GHZ</span></label>
+                    </div>
+                    <div class="setting-title">Basis Selection</div>
+                    <div style="display:flex; flex-direction:column; gap:8px; margin-bottom: 15px;">
+                        <div class="flex-row" style="gap: 8px;">
+                            <label class="pill-radio"><input type="radio" name="ent_a_basis" checked><span>X</span></label>
+                            <label class="pill-radio"><input type="radio" name="ent_a_basis"><span>Z</span></label>
+                        </div>
+                        <div class="flex-row" style="gap: 8px;">
+                            <label class="pill-radio"><input type="radio" name="ent_a_basis"><span>Bell</span></label>
+                            <label class="pill-radio"><input type="radio" name="ent_a_basis"><span>GHZ</span></label>
+                        </div>
+                    </div>
+                    <div class="setting-title">Send Order: <input type="number" class="order-input" value="1" min="1" style="margin-left:5px;"></div>
+                    <div class="setting-title" style="margin-top: 15px;">Available Operations:</div>
+                    <div class="flex-row" style="gap:15px; margin-bottom: 8px;">
+                        <label class="square-check"><input type="checkbox"><span class="box"></span>I</label>
+                        <label class="square-check"><input type="checkbox"><span class="box"></span>X</label>
+                        <label class="square-check"><input type="checkbox"><span class="box"></span>Y</label>
+                    </div>
+                    <div class="flex-row" style="gap:15px; margin-bottom: 5px;">
+                        <label class="square-check"><input type="checkbox"><span class="box"></span>Z</label>
+                        <label class="square-check"><input type="checkbox"><span class="box"></span>H</label>
+                        <label class="square-check"><input type="checkbox"><span class="box"></span>U (custom)：</label>
+                    </div>
+                    <div><input type="text" class="u-input"></div>
+                </div>
+            </div>
+
+            <div class="character-col">
+                <img src="pictures/cat_bob.svg" class="character-img" alt="Bob">
+                <div class="name-tag">Bob</div>
+                <label class="click-toggle"><input type="checkbox" class="status-toggle" checked><span class="text-on">ON</span><span class="text-off">OFF</span></label>
+                <div class="control-panel">
+                    <div class="setting-title">Particle Selection</div>
+                    <div class="flex-row" style="margin-bottom: 15px; gap: 8px;">
+                        <label class="pill-radio"><input type="radio" name="ent_b_particle" checked><span>single</span></label>
+                        <label class="pill-radio"><input type="radio" name="ent_b_particle"><span>Bell</span></label>
+                        <label class="pill-radio"><input type="radio" name="ent_b_particle"><span>GHZ</span></label>
+                    </div>
+                    <div class="setting-title">Basis Selection</div>
+                    <div style="display:flex; flex-direction:column; gap:8px; margin-bottom: 15px;">
+                        <div class="flex-row" style="gap: 8px;">
+                            <label class="pill-radio"><input type="radio" name="ent_b_basis" checked><span>X</span></label>
+                            <label class="pill-radio"><input type="radio" name="ent_b_basis"><span>Z</span></label>
+                        </div>
+                        <div class="flex-row" style="gap: 8px;">
+                            <label class="pill-radio"><input type="radio" name="ent_b_basis"><span>Bell</span></label>
+                            <label class="pill-radio"><input type="radio" name="ent_b_basis"><span>GHZ</span></label>
+                        </div>
+                    </div>
+                    <div class="setting-title">Send Order: <input type="number" class="order-input" value="2" min="1" style="margin-left:5px;"></div>
+                    <div class="setting-title" style="margin-top: 15px;">Available Operations:</div>
+                    <div class="flex-row" style="gap:15px; margin-bottom: 8px;">
+                        <label class="square-check"><input type="checkbox"><span class="box"></span>I</label>
+                        <label class="square-check"><input type="checkbox"><span class="box"></span>X</label>
+                        <label class="square-check"><input type="checkbox"><span class="box"></span>Y</label>
+                    </div>
+                    <div class="flex-row" style="gap:15px; margin-bottom: 5px;">
+                        <label class="square-check"><input type="checkbox"><span class="box"></span>Z</label>
+                        <label class="square-check"><input type="checkbox"><span class="box"></span>H</label>
+                        <label class="square-check"><input type="checkbox"><span class="box"></span>U (custom)：</label>
+                    </div>
+                    <div><input type="text" class="u-input"></div>
+                </div>
+            </div>
+
+            <div class="character-col">
+                <img src="pictures/cat_charlie.svg" class="character-img" alt="Charlie">
+                <div class="name-tag">Charlie</div>
+                <label class="click-toggle"><input type="checkbox" class="status-toggle"><span class="text-on">ON</span><span class="text-off">OFF</span></label>
+                <div class="control-panel">
+                    <div class="setting-title">Particle Selection</div>
+                    <div class="flex-row" style="margin-bottom: 15px; gap: 8px;">
+                        <label class="pill-radio"><input type="radio" name="ent_c_particle"><span>single</span></label>
+                        <label class="pill-radio"><input type="radio" name="ent_c_particle"><span>Bell</span></label>
+                        <label class="pill-radio"><input type="radio" name="ent_c_particle"><span>GHZ</span></label>
+                    </div>
+                    <div class="setting-title">Basis Selection</div>
+                    <div style="display:flex; flex-direction:column; gap:8px; margin-bottom: 15px;">
+                        <div class="flex-row" style="gap: 8px;">
+                            <label class="pill-radio"><input type="radio" name="ent_c_basis"><span>X</span></label>
+                            <label class="pill-radio"><input type="radio" name="ent_c_basis"><span>Z</span></label>
+                        </div>
+                        <div class="flex-row" style="gap: 8px;">
+                            <label class="pill-radio"><input type="radio" name="ent_c_basis"><span>Bell</span></label>
+                            <label class="pill-radio"><input type="radio" name="ent_c_basis"><span>GHZ</span></label>
+                        </div>
+                    </div>
+                    <div class="setting-title">Send Order: <input type="number" class="order-input" value="" style="margin-left:5px;"></div>
+                    <div class="setting-title" style="margin-top: 15px;">Available Operations:</div>
+                    <div class="flex-row" style="gap:15px; margin-bottom: 8px;">
+                        <label class="square-check"><input type="checkbox"><span class="box"></span>I</label>
+                        <label class="square-check"><input type="checkbox"><span class="box"></span>X</label>
+                        <label class="square-check"><input type="checkbox"><span class="box"></span>Y</label>
+                    </div>
+                    <div class="flex-row" style="gap:15px; margin-bottom: 5px;">
+                        <label class="square-check"><input type="checkbox"><span class="box"></span>Z</label>
+                        <label class="square-check"><input type="checkbox"><span class="box"></span>H</label>
+                        <label class="square-check"><input type="checkbox"><span class="box"></span>U (custom)：</label>
+                    </div>
+                    <div><input type="text" class="u-input"></div>
+                </div>
+            </div>
+
+            <div class="character-col theme-red">
+                <img src="pictures/Eavesdropper.svg" class="character-img" alt="Eavesdropper">
+                <div class="name-tag" data-role="eavesdropper">Eavesdropper</div>
+                <label class="click-toggle"><input type="checkbox" class="status-toggle"><span class="text-on">ON</span><span class="text-off">OFF</span></label>
+                <div class="control-panel">
+                    <div class="setting-title">Attack Selection</div>
+                    <div style="display:flex; flex-direction:column; gap:10px; align-items: flex-start; margin-top: 15px;">
+                        <label class="pill-radio"><input type="radio" name="ent_e_attack"><span style="padding: 6px 20px;">CNOT</span></label>
+                        <label class="pill-radio"><input type="radio" name="ent_e_attack"><span style="padding: 6px 20px;">Intercept-resend</span></label>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div style="text-align: center; margin-top: 30px;">
+            <button id="ent-start-btn" class="name-tag start" style="cursor: pointer; font-size: 18px; padding: 10px 40px; border: none;">Start Entanglement</button>
+        </div>
+    </div>
+
 </div>
 
 <script>
     document.addEventListener('DOMContentLoaded', () => {
+        
+        // --- 1. 下拉式選單切換介面邏輯 ---
+        const protocolSelect = document.getElementById('protocol-select');
+        const interfaces = document.querySelectorAll('.protocol-interface');
+
+        protocolSelect.addEventListener('change', function() {
+            interfaces.forEach(iface => {
+                iface.style.display = 'none';
+            });
+            const selectedValue = this.value;
+            if (selectedValue !== 'none') {
+                document.getElementById(`${selectedValue}-interface`).style.display = 'block';
+            }
+        });
+
+        // --- 2. 面板啟用/停用邏輯 (適用於全域所有的 status-toggle) ---
         const toggles = document.querySelectorAll('.status-toggle');
         
         function updatePanelState(toggleElement) {
@@ -521,71 +762,130 @@
             const inputs = panel.querySelectorAll('input:not(.status-toggle)');
 
             if (toggleElement.checked) {
-                // =============== ON 狀態 ===============
                 img.classList.remove('disabled-img');
                 panel.classList.remove('disabled');
-                
                 nameTag.classList.remove('gray');
                 if (nameTag.dataset.role === 'eavesdropper') {
                     nameTag.classList.add('red-text');
                 }
-                
                 inputs.forEach(input => input.disabled = false);
-
             } else {
-                // =============== OFF 狀態 ===============
                 img.classList.add('disabled-img');
                 panel.classList.add('disabled');
-                
                 nameTag.classList.add('gray');
                 nameTag.classList.remove('red-text');
-
                 inputs.forEach(input => input.disabled = true);
             }
         }
 
         toggles.forEach(toggle => {
             updatePanelState(toggle);
-            
             toggle.addEventListener('change', function() {
                 updatePanelState(this);
             });
         });
     });
-    // --- 抓取資料並跳轉到下一頁 ---
-    document.getElementById('start-btn').addEventListener('click', () => {
-        const toggles = document.querySelectorAll('.status-toggle');
+
+    // ==========================================
+    // 3. 各個介面的獨立 Start 按鈕邏輯
+    // ==========================================
+
+    // --- QKD Start ---
+    document.getElementById('qkd-start-btn').addEventListener('click', () => {
+        const interfaceDiv = document.getElementById('qkd-interface');
+        const toggles = interfaceDiv.querySelectorAll('.status-toggle');
         
         const qkdSettings = {
-            entangle: document.getElementById('entangle').checked,
-            
+            entangle: document.getElementById('qkd-entangle').checked,
             alice: {
                 isOn: toggles[0].checked,
-                particle: document.querySelector('input[name="a_particle"]:checked')?.nextElementSibling?.innerText || "",
-                basis: document.querySelector('input[name="a_basis"]:checked')?.nextElementSibling?.innerText || ""
+                particle: interfaceDiv.querySelector('input[name="a_particle"]:checked')?.nextElementSibling?.innerText || "",
+                basis: interfaceDiv.querySelector('input[name="a_basis"]:checked')?.nextElementSibling?.innerText || ""
             },
-            
             bob: {
                 isOn: toggles[1].checked,
-                particle: document.querySelector('input[name="b_particle"]:checked')?.nextElementSibling?.innerText || "",
-                basis: document.querySelector('input[name="b_basis"]:checked')?.nextElementSibling?.innerText || ""
+                particle: interfaceDiv.querySelector('input[name="b_particle"]:checked')?.nextElementSibling?.innerText || "",
+                basis: interfaceDiv.querySelector('input[name="b_basis"]:checked')?.nextElementSibling?.innerText || ""
             },
-            
             charlie: {
                 isOn: toggles[2].checked, 
-                // 加上 ?.innerText 保護，避免未選擇時報錯
-                particle: document.querySelector('input[name="c_particle"]:checked')?.nextElementSibling?.innerText || "",
-                basis: document.querySelector('input[name="c_basis"]:checked')?.nextElementSibling?.innerText || ""
+                particle: interfaceDiv.querySelector('input[name="c_particle"]:checked')?.nextElementSibling?.innerText || "",
+                basis: interfaceDiv.querySelector('input[name="c_basis"]:checked')?.nextElementSibling?.innerText || ""
             },
             eve: {
                 isOn: toggles[3].checked,
-                // 加上 ?.innerText 保護，避免未選擇時報錯
-                attack: document.querySelector('input[name="e_attack"]:checked')?.nextElementSibling?.innerText || ""
+                attack: interfaceDiv.querySelector('input[name="e_attack"]:checked')?.nextElementSibling?.innerText || ""
             }
         };
         
         localStorage.setItem('qkdSettings', JSON.stringify(qkdSettings)); 
         window.location.href = 'QKDanalysis.html'; 
+    });
+
+    // --- QSS Start ---
+    document.getElementById('qss-start-btn').addEventListener('click', () => {
+        const interfaceDiv = document.getElementById('qss-interface');
+        const toggles = interfaceDiv.querySelectorAll('.status-toggle');
+        
+        const qssSettings = {
+            entangle: document.getElementById('qss-entangle').checked,
+            alice: {
+                isOn: toggles[0].checked,
+                particle: interfaceDiv.querySelector('input[name="qss_a_particle"]:checked')?.nextElementSibling?.innerText || "",
+                basis: interfaceDiv.querySelector('input[name="qss_a_basis"]:checked')?.nextElementSibling?.innerText || ""
+            },
+            bob: {
+                isOn: toggles[1].checked,
+                particle: interfaceDiv.querySelector('input[name="qss_b_particle"]:checked')?.nextElementSibling?.innerText || "",
+                basis: interfaceDiv.querySelector('input[name="qss_b_basis"]:checked')?.nextElementSibling?.innerText || ""
+            },
+            charlie: {
+                isOn: toggles[2].checked, 
+                particle: interfaceDiv.querySelector('input[name="qss_c_particle"]:checked')?.nextElementSibling?.innerText || "",
+                basis: interfaceDiv.querySelector('input[name="qss_c_basis"]:checked')?.nextElementSibling?.innerText || ""
+            },
+            eve: {
+                isOn: toggles[3].checked,
+                attack: interfaceDiv.querySelector('input[name="qss_e_attack"]:checked')?.nextElementSibling?.innerText || ""
+            }
+        };
+        
+        localStorage.setItem('qssSettings', JSON.stringify(qssSettings)); 
+        // 依照你未來的需求更改跳轉頁面
+        window.location.href = 'QSSanalysis.html'; 
+    });
+
+    // --- Entanglement Start ---
+    document.getElementById('ent-start-btn').addEventListener('click', () => {
+        const interfaceDiv = document.getElementById('entanglement-interface');
+        const toggles = interfaceDiv.querySelectorAll('.status-toggle');
+        
+        const entSettings = {
+            entangle: document.getElementById('ent-entangle').checked,
+            alice: {
+                isOn: toggles[0].checked,
+                particle: interfaceDiv.querySelector('input[name="ent_a_particle"]:checked')?.nextElementSibling?.innerText || "",
+                basis: interfaceDiv.querySelector('input[name="ent_a_basis"]:checked')?.nextElementSibling?.innerText || ""
+            },
+            bob: {
+                isOn: toggles[1].checked,
+                particle: interfaceDiv.querySelector('input[name="ent_b_particle"]:checked')?.nextElementSibling?.innerText || "",
+                basis: interfaceDiv.querySelector('input[name="ent_b_basis"]:checked')?.nextElementSibling?.innerText || ""
+            },
+            charlie: {
+                isOn: toggles[2].checked, 
+                particle: interfaceDiv.querySelector('input[name="ent_c_particle"]:checked')?.nextElementSibling?.innerText || "",
+                basis: interfaceDiv.querySelector('input[name="ent_c_basis"]:checked')?.nextElementSibling?.innerText || ""
+            },
+            eve: {
+                isOn: toggles[3].checked,
+                attack: interfaceDiv.querySelector('input[name="ent_e_attack"]:checked')?.nextElementSibling?.innerText || ""
+            }
+        };
+        
+        localStorage.setItem('entSettings', JSON.stringify(entSettings)); 
+        // 依照你未來的需求更改跳轉頁面
+        window.location.href = 'ENTanalysis.html'; 
     });
 </script>
 
