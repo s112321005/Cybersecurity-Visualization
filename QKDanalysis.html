@@ -410,11 +410,22 @@
 </div>
 
 <script>
+    // --- 新增：全域變數，用來判定是否要使用黃色偏振片 ---
+    let userMistake = false; 
+
     document.addEventListener('DOMContentLoaded', () => {
         const savedData = localStorage.getItem('qkdSettings');
         const contentAreas = document.querySelectorAll('.settings-content');   // 取得所有要顯示資料的區塊 (BB84 和 B92 各有一個)
+        
         if (savedData) {
             const settings = JSON.parse(savedData);
+
+            const aliceBasis = settings.alice?.basis;
+            const bobBasis = settings.bob?.basis;
+            if (aliceBasis.includes('X') && bobBasis.includes('Z')) {
+                userMistake = true;
+            }
+
             function formatRole(name, data) {    // 幫助格式化各角色資訊的函數
                 if (!data.isOn) {
                     return `
@@ -424,9 +435,7 @@
                         </div>`;
                 }
 
-                // 判斷是否為開啟狀態的 Eavesdropper
                 const eveClass = (name === 'Eavesdropper') ? ' eve-on' : '';
-
                 return `
                     <div class="setting-item${eveClass}">
                         <strong>${name}</strong>
@@ -436,7 +445,6 @@
                         ${data.attack ? `<span>Attack: ${data.attack}</span>` : ''}
                     </div>`;
             }
-            // 組合要產生的 HTML
             const htmlContent = `
                 <div class="setting-item">
                     <strong>Environment</strong>
@@ -446,10 +454,10 @@
                 ${formatRole('Bob', settings.bob)}
                 ${formatRole('Eavesdropper', settings.eve)}
             `;
-            contentAreas.forEach(area => {   area.innerHTML = htmlContent; }); // 把組合好的 HTML 塞進右側面板
+            contentAreas.forEach(area => {   area.innerHTML = htmlContent; });
             console.log("設定載入成功", settings);
             
-        } else {   // 如果沒有抓到設定 (例如直接開啟這個網頁)，顯示預設訊息
+        } else {
             contentAreas.forEach(area => {
                 area.innerHTML = `
                     <div class="setting-item off-state">
@@ -458,26 +466,24 @@
                     </div>`;
             });
         }
+
+        const defaultBB84 = document.querySelector('#bb84-options .option-row.active');
+        if(defaultBB84) selectStateBB84(defaultBB84, '|→⟩', 'rectilinear');
+
+        const defaultB92 = document.querySelector('#b92-options .option-row.active');
+        if(defaultB92) selectStateB92(defaultB92, '|→⟩', 'rectilinear');
     });
-    // 共用的狀態資料
     const symbols = {
         Stype: ['| ↑ ⟩', '|→⟩'],
         Dtype: ['|↗⟩', '|↖⟩']
     };
-
-    // --- 分頁切換邏輯 ---
     function switchTab(tabId) {
-        // 先隱藏所有視圖、移除按鈕 active 狀態
         document.querySelectorAll('.page-view').forEach(el => el.style.display = 'none');
         document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-
-        // 顯示被選中的視圖
         document.getElementById('view-' + tabId).style.display = 'flex';
-        // 將點擊的按鈕設為 active (這利用了 event.target 或是可以簡單透過索引控制)
         event.currentTarget.classList.add('active');
     }
 
-    // --- BB84 專屬的切換邏輯 ---
     function selectStateBB84(element, stateSymbol, basisType) {
         const rows = document.querySelectorAll('#bb84-options .option-row');
         rows.forEach(row => row.classList.remove('active'));
@@ -493,14 +499,17 @@
         const keyImg = document.getElementById('bb84-initial-key-img');
         const bobSame = document.getElementById('bb84-bob-same');
         const bobUnsame = document.getElementById('bb84-bob-unsame');
+        const imgDiagonalUnsame = userMistake ? "pictures/yellow_diagonal.svg" : "pictures/gray_diagonal.svg";
+        const imgVerticalUnsame = userMistake ? "pictures/yellow_vertical.svg" : "pictures/gray_vertical.svg";
+
         if (basisType === 'rectilinear') {
             keyImg.src = "pictures/vertical.svg";
             bobSame.src = "pictures/vertical.svg";
-            bobUnsame.src = "pictures/gray_diagonal.svg"; 
+            bobUnsame.src = imgDiagonalUnsame; 
         } else {
             keyImg.src = "pictures/diagonal.svg"; 
             bobSame.src = "pictures/diagonal.svg";
-            bobUnsame.src = "pictures/gray_vertical.svg";
+            bobUnsame.src = imgVerticalUnsame;
         }    
     }
 
@@ -520,14 +529,19 @@
         const keyImg = document.getElementById('b92-initial-key-img');
         const bobSame = document.getElementById('b92-bob-same');
         const bobUnsame = document.getElementById('b92-bob-unsame');
+
+        // --- 新增：動態判斷要放灰底還是黃底圖片 ---
+        const imgDiagonalUnsame = userMistake ? "pictures/yellow_diagonal.svg" : "pictures/gray_diagonal.svg";
+        const imgVerticalUnsame = userMistake ? "pictures/yellow_vertical.svg" : "pictures/gray_vertical.svg";
+
         if (basisType === 'rectilinear') {
             keyImg.src = "pictures/vertical.svg";
             bobSame.src = "pictures/vertical.svg";
-            bobUnsame.src = "pictures/gray_diagonal.svg"; 
+            bobUnsame.src = imgDiagonalUnsame; 
         } else {
             keyImg.src = "pictures/diagonal.svg"; 
             bobSame.src = "pictures/diagonal.svg";
-            bobUnsame.src = "pictures/gray_vertical.svg";
+            bobUnsame.src = imgVerticalUnsame;
         }        
     }
 </script>
