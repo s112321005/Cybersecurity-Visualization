@@ -502,12 +502,7 @@
             });
         }
 
-        // --- 初始化載入時，手動觸發預設選項來更新圖片顏色 ---
-        const defaultBB84 = Array.from(document.querySelectorAll('#bb84-options .option-row')).find(row => row.style.display !== 'none');
-        if(defaultBB84) selectStateBB84(defaultBB84, defaultBB84.querySelector('.state-btn:last-child').innerText, defaultBB84.classList.contains('basis-z') ? 'rectilinear' : 'diagonal');
-
-        const defaultB92 = Array.from(document.querySelectorAll('#b92-options .option-row')).find(row => row.style.display !== 'none');
-        if(defaultB92) selectStateB92(defaultB92, defaultB92.querySelector('.state-btn:last-child').innerText, defaultB92.classList.contains('basis-z') ? 'rectilinear' : 'diagonal');
+        
     });
 
     const symbols = {
