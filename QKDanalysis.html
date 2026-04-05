@@ -367,13 +367,13 @@
                 
                     <line class="b92-line FalseRoute" 
                         x1="17%" y1="50%" x2="35%" y2="25%" stroke="#333" stroke-width="3" marker-end="url(#arrow-b92)" />
-                    <line class="b92-line TrueRoute FalseRoute" 
+                    <line class="b92-line TrueRoute" 
                         x1="17%" y1="50%" x2="35%" y2="75%" stroke="#333" stroke-width="3" marker-end="url(#arrow-b92)" />
                     <line class="b92-line FalseRoute" 
                         x1="47%" y1="25%" x2="67%" y2="25%" stroke="#333" stroke-width="3" marker-end="url(#arrow-b92)" />
                     <line class="b92-line TrueRoute" 
                         x1="47%" y1="75%" x2="67%" y2="55%" stroke="#333" stroke-width="3" marker-end="url(#arrow-b92)" />
-                    <line class="b92-line FalseRoute" 
+                    <line class="b92-line TrueRoute" 
                         x1="47%" y1="75%" x2="67%" y2="95%" stroke="#333" stroke-width="3" marker-end="url(#arrow-b92)" />
                 </svg>
 
@@ -588,12 +588,12 @@
 
         if (basisType === 'rectilinear') {
             keyImg.src = "pictures/vertical.svg";
-            bobSame.src = "pictures/vertical.svg";
-            bobUnsame.src = "pictures/gray_diagonal.svg"; 
+            bobSame.src = "pictures/gray_vertical.svg";
+            bobUnsame.src = "pictures/diagonal.svg"; 
         } else {
             keyImg.src = "pictures/diagonal.svg"; 
-            bobSame.src = "pictures/diagonal.svg";
-            bobUnsame.src = "pictures/gray_vertical.svg";
+            bobSame.src = "pictures/gray_diagonal.svg";
+            bobUnsame.src = "pictures/vertical.svg";
         }   
         
         // 更新線條狀態：將 Alice 的 Basis 轉換為 X 或 Z，並傳入更新函數
@@ -615,10 +615,10 @@
 
         // 2. 判斷基底是否相同
         const isSameBasis = (aliceBasis === bobBasis);
-        const targetClass = isSameBasis ? '.TrueRoute' : '.FalseRoute';
-
+        const bb84Target = isSameBasis ? '.TrueRoute' : '.FalseRoute';
+        const b92Target = isSameBasis ? '.FalseRoute' : '.TrueRoute';
         // 3. 亮起並加粗對應的線條
-        const activeLines = document.querySelectorAll(`${containerSelector} line${targetClass}`);
+        const activeLines = document.querySelectorAll(`#view-bb84 line${bb84Target}, #view-b92 line${b92Target}`);
         activeLines.forEach(line => {
             line.classList.remove('line-inactive');
             line.setAttribute('stroke-width', '4'); // 變粗
