@@ -275,15 +275,15 @@
                         </marker>
                     </defs>
                 
-                    <line class="bb84-line SameBasis" 
+                    <line class="bb84-line TrueRoute" 
                         x1="17%" y1="50%" x2="35%" y2="25%" stroke="#333" stroke-width="3" marker-end="url(#arrow-bb84)" />
-                    <line class="bb84-line UnsameBasis" 
+                    <line class="bb84-line FalseRoute" 
                         x1="17%" y1="50%" x2="35%" y2="75%" stroke="#333" stroke-width="3" marker-end="url(#arrow-bb84)" />
-                    <line class="bb84-line SameBasis" 
+                    <line class="bb84-line TrueRoute" 
                         x1="47%" y1="25%" x2="65%" y2="25%" stroke="#333" stroke-width="3" marker-end="url(#arrow-bb84)" />
-                    <line class="bb84-line UnsameBasis" 
+                    <line class="bb84-line FalseRoute" 
                         x1="47%" y1="75%" x2="65%" y2="55%" stroke="#333" stroke-width="3" marker-end="url(#arrow-bb84)" />
-                    <line class="bb84-line UnsameBasis" 
+                    <line class="bb84-line FalseRoute" 
                         x1="47%" y1="75%" x2="65%" y2="95%" stroke="#333" stroke-width="3" marker-end="url(#arrow-bb84)" />
                 </svg>
 
@@ -365,15 +365,15 @@
                         </marker>
                     </defs>
                 
-                    <line class="b92-line SameBasis" 
+                    <line class="b92-line FalseBasis" 
                         x1="17%" y1="50%" x2="35%" y2="25%" stroke="#333" stroke-width="3" marker-end="url(#arrow-b92)" />
-                    <line class="b92-line UnsameBasis" 
+                    <line class="b92-line TrueRoute" 
                         x1="17%" y1="50%" x2="35%" y2="75%" stroke="#333" stroke-width="3" marker-end="url(#arrow-b92)" />
-                    <line class="b92-line SameBasis" 
+                    <line class="b92-line TrueRoute" 
                         x1="47%" y1="25%" x2="65%" y2="25%" stroke="#333" stroke-width="3" marker-end="url(#arrow-b92)" />
-                    <line class="b92-line UnsameBasis" 
+                    <line class="b92-line FalseRoute" 
                         x1="47%" y1="75%" x2="65%" y2="55%" stroke="#333" stroke-width="3" marker-end="url(#arrow-b92)" />
-                    <line class="b92-line UnsameBasis" 
+                    <line class="b92-line FalseRoute" 
                         x1="47%" y1="75%" x2="65%" y2="95%" stroke="#333" stroke-width="3" marker-end="url(#arrow-b92)" />
                 </svg>
 
@@ -615,7 +615,7 @@
 
         // 2. 判斷基底是否相同
         const isSameBasis = (aliceBasis === bobBasis);
-        const targetClass = isSameBasis ? '.SameBasis' : '.UnsameBasis';
+        const targetClass = isSameBasis ? '.TrueRoute' : '.FalseRoute';
 
         // 3. 亮起並加粗對應的線條
         const activeLines = document.querySelectorAll(`${containerSelector} line${targetClass}`);
