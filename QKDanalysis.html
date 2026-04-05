@@ -216,8 +216,7 @@
         /* 狀態為 OFF 時的字體顏色 */
         .setting-item.off-state span {
             color: #999;
-        }
-        
+        }     
         /* 狀態為 OFF 時的人物名稱改為灰色 */
         .setting-item.off-state strong {
             color: #999;
@@ -226,6 +225,11 @@
         /* 狀態為 ON 時且人物是 Eavesdropper 改為紅色 */
         .setting-item.eve-on strong {
             color: #ff4d4d;
+        }
+
+        .line-inactive {
+            stroke: #ccc !important;
+            opacity: 0.5;
         }
 
     </style>
@@ -538,7 +542,24 @@
             bobUnsame.src = "pictures/gray_vertical.svg";
         }    
     }
+    function updateBB84Lines(selectedBasis) {
+        const allLines = document.querySelectorAll('#view-bb84 line');
 
+        // 先全部變灰
+        allLines.forEach(line => line.classList.add('line-inactive'));
+
+        if (selectedBasis === 'rectilinear') {
+            // 上路徑亮
+            document.getElementById('bb84-line-a1').classList.remove('line-inactive');
+            document.getElementById('bb84-line-b1').classList.remove('line-inactive');
+
+        } else {
+            // 下路徑亮
+            document.getElementById('bb84-line-a2').classList.remove('line-inactive');
+            document.getElementById('bb84-line-b2').classList.remove('line-inactive');
+            document.getElementById('bb84-line-b3').classList.remove('line-inactive');
+        }
+    }
     function selectStateB92(element, stateSymbol, basisType) {
         const rows = document.querySelectorAll('#b92-options .option-row');
         rows.forEach(row => row.classList.remove('active'));
