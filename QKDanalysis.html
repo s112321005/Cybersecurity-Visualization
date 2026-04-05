@@ -501,6 +501,21 @@
                     </div>`;
             });
         }
+        const defaultBB84 = Array.from(document.querySelectorAll('#bb84-options .option-row')).find(row => row.style.display !== 'none');
+        if(defaultBB84) {
+            // 抓取第二個 state-btn 的文字 (例如 |→⟩) 當作狀態符號
+            const symbol = defaultBB84.querySelectorAll('.state-btn')[1].innerText;
+            const basis = defaultBB84.classList.contains('basis-z') ? 'rectilinear' : 'diagonal';
+            selectStateBB84(defaultBB84, symbol, basis);
+        }
+
+        // 觸發 B92 的預設選項 (尋找第一個沒有被隱藏的選項)
+        const defaultB92 = Array.from(document.querySelectorAll('#b92-options .option-row')).find(row => row.style.display !== 'none');
+        if(defaultB92) {
+            const symbol = defaultB92.querySelectorAll('.state-btn')[1].innerText;
+            const basis = defaultB92.classList.contains('basis-z') ? 'rectilinear' : 'diagonal';
+            selectStateB92(defaultB92, symbol, basis);
+        }
 
         
     });
