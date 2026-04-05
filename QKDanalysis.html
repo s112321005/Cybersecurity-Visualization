@@ -246,16 +246,16 @@
             <div class="sidebar">
                 <div class="selection-box" id="bb84-options">
                     <h4>Alice selects the message</h4>
-                    <div class="option-row active" onclick="selectStateBB84(this, '|→⟩', 'rectilinear')">
+                    <div class="option-row basis-z" onclick="selectStateBB84(this, '|→⟩', 'rectilinear')">
                         <div class="state-btn">| 0 ⟩</div><div class="arrow-icon">➔</div><div class="state-btn">|→⟩</div>
                     </div>
-                    <div class="option-row" onclick="selectStateBB84(this, '| ↑ ⟩', 'rectilinear')">
+                    <div class="option-row basis-z" onclick="selectStateBB84(this, '| ↑ ⟩', 'rectilinear')">
                         <div class="state-btn">| 1 ⟩</div><div class="arrow-icon">➔</div><div class="state-btn">| ↑ ⟩</div>
                     </div>
-                    <div class="option-row" onclick="selectStateBB84(this, '|↗⟩', 'diagonal')">
+                    <div class="option-row basis-x" onclick="selectStateBB84(this, '|↗⟩', 'diagonal')">
                         <div class="state-btn">|十⟩</div><div class="arrow-icon">➔</div><div class="state-btn">|↗⟩</div>
                     </div>
-                    <div class="option-row" onclick="selectStateBB84(this, '|↖⟩', 'diagonal')">
+                    <div class="option-row basis-x" onclick="selectStateBB84(this, '|↖⟩', 'diagonal')">
                         <div class="state-btn">|一⟩</div><div class="arrow-icon">➔</div><div class="state-btn">|↖⟩</div>
                     </div>
                 </div>
@@ -335,10 +335,10 @@
             <div class="sidebar">
                 <div class="selection-box" id="b92-options">
                     <h4>Alice selects the message</h4>
-                    <div class="option-row active" onclick="selectStateB92(this, '|→⟩', 'rectilinear')">
+                    <div class="option-row basis-z" onclick="selectStateB92(this, '|→⟩', 'rectilinear')">
                         <div class="state-btn">| 0 ⟩</div><div class="arrow-icon">➔</div><div class="state-btn">|→⟩</div>
                     </div>
-                    <div class="option-row" onclick="selectStateB92(this, '|↗⟩', 'diagonal')">
+                    <div class="option-row basis-x" onclick="selectStateB92(this, '|↗⟩', 'diagonal')">
                         <div class="state-btn">|十⟩</div><div class="arrow-icon">➔</div><div class="state-btn">|↗⟩</div>
                     </div>
                 </div>
@@ -415,19 +415,40 @@
 
     document.addEventListener('DOMContentLoaded', () => {
         const savedData = localStorage.getItem('qkdSettings');
-        const contentAreas = document.querySelectorAll('.settings-content');   // 取得所有要顯示資料的區塊 (BB84 和 B92 各有一個)
+        const contentAreas = document.querySelectorAll('.settings-content');
         
         if (savedData) {
             const settings = JSON.parse(savedData);
 
-            const aliceBasis = settings.alice?.basis;
-            const bobBasis = settings.bob?.basis;
+            // 確保有預設值，避免報錯
+            const aliceBasis = settings.alice?.basis || "";
+            const bobBasis = settings.bob?.basis || "";
+            
             if (aliceBasis.includes('X') && bobBasis.includes('Z')) {
                 userMistake = true;
             }
 
-            function formatRole(name, data) {    // 幫助格式化各角色資訊的函數
-                if (!data.isOn) {
+            // 1. 修正：加上 forEach 迴圈，才能一個一個處理選項
+            const allOptionRows = document.querySelectorAll('#bb84-options .option-row, #b92-options .option-row');
+            allOptionRows.forEach(row => {
+                row.classList.remove('active'); // 移除原本寫死的 active 狀態
+                
+                // 依據 Alice 的基底決定顯示/隱藏
+                if (aliceBasis.includes('Z') && row.classList.contains('basis-z')) {
+                    row.style.display = 'flex';
+                } else if (aliceBasis.includes('X') && row.classList.contains('basis-x')) {
+                    row.style.display = 'flex';
+                } else {
+                    row.style.display = 'none'; // 隱藏不符合基底的選項
+                }
+            });
+
+            // 2. 修正：調整 formatRole，只針對 Eve 顯示 ON/OFF
+            function formatRole(name, data) {
+                if (!data) return ''; // 防呆
+
+                // 只有 Eve 才需要判斷是否為 OFF 狀態
+                if (name === 'Eavesdropper' && !data.isOn) {
                     return `
                         <div class="setting-item off-state">
                             <strong>${name}</strong>
@@ -435,16 +456,21 @@
                         </div>`;
                 }
 
+                // Alice, Bob 以及「開啟狀態的 Eve」的顯示邏輯
                 const eveClass = (name === 'Eavesdropper') ? ' eve-on' : '';
+                // 只有 Eve 顯示 Status: ON，Alice 和 Bob 不顯示 Status
+                const statusHtml = (name === 'Eavesdropper') ? `<span>Status: ON</span>` : ''; 
+
                 return `
                     <div class="setting-item${eveClass}">
                         <strong>${name}</strong>
-                        <span>Status: ON</span>
+                        ${statusHtml}
                         ${data.particle ? `<span>Particle: ${data.particle}</span>` : ''}
                         ${data.basis ? `<span>Basis: ${data.basis}</span>` : ''}
                         ${data.attack ? `<span>Attack: ${data.attack}</span>` : ''}
                     </div>`;
             }
+
             const htmlContent = `
                 <div class="setting-item">
                     <strong>Environment</strong>
@@ -454,7 +480,8 @@
                 ${formatRole('Bob', settings.bob)}
                 ${formatRole('Eavesdropper', settings.eve)}
             `;
-            contentAreas.forEach(area => {   area.innerHTML = htmlContent; });
+            
+            contentAreas.forEach(area => { area.innerHTML = htmlContent; });
             console.log("設定載入成功", settings);
             
         } else {
@@ -467,16 +494,19 @@
             });
         }
 
-        const defaultBB84 = document.querySelector('#bb84-options .option-row.active');
-        if(defaultBB84) selectStateBB84(defaultBB84, '|→⟩', 'rectilinear');
+        // --- 初始化載入時，手動觸發預設選項來更新圖片顏色 ---
+        const defaultBB84 = Array.from(document.querySelectorAll('#bb84-options .option-row')).find(row => row.style.display !== 'none');
+        if(defaultBB84) selectStateBB84(defaultBB84, defaultBB84.querySelector('.state-btn:last-child').innerText, defaultBB84.classList.contains('basis-z') ? 'rectilinear' : 'diagonal');
 
-        const defaultB92 = document.querySelector('#b92-options .option-row.active');
-        if(defaultB92) selectStateB92(defaultB92, '|→⟩', 'rectilinear');
+        const defaultB92 = Array.from(document.querySelectorAll('#b92-options .option-row')).find(row => row.style.display !== 'none');
+        if(defaultB92) selectStateB92(defaultB92, defaultB92.querySelector('.state-btn:last-child').innerText, defaultB92.classList.contains('basis-z') ? 'rectilinear' : 'diagonal');
     });
+
     const symbols = {
         Stype: ['| ↑ ⟩', '|→⟩'],
         Dtype: ['|↗⟩', '|↖⟩']
     };
+
     function switchTab(tabId) {
         document.querySelectorAll('.page-view').forEach(el => el.style.display = 'none');
         document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
@@ -513,7 +543,6 @@
         }    
     }
 
-    // --- B92 專屬的切換邏輯 ---
     function selectStateB92(element, stateSymbol, basisType) {
         const rows = document.querySelectorAll('#b92-options .option-row');
         rows.forEach(row => row.classList.remove('active'));
@@ -530,7 +559,6 @@
         const bobSame = document.getElementById('b92-bob-same');
         const bobUnsame = document.getElementById('b92-bob-unsame');
 
-        // --- 新增：動態判斷要放灰底還是黃底圖片 ---
         const imgDiagonalUnsame = userMistake ? "pictures/yellow_diagonal.svg" : "pictures/gray_diagonal.svg";
         const imgVerticalUnsame = userMistake ? "pictures/yellow_vertical.svg" : "pictures/gray_vertical.svg";
 
