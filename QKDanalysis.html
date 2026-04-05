@@ -426,6 +426,7 @@
             
             if ((aliceBasis.includes('X') && bobBasis.includes('Z'))||(aliceBasis.includes('Z') && bobBasis.includes('X'))) {
                 userMistake = true;
+                document.body.classList.add('mistake-mode');
             }
 
             // 1. 修正：加上 forEach 迴圈，才能一個一個處理選項
