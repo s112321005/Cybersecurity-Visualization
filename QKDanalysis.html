@@ -430,18 +430,9 @@
             }
 
             // 1. 修正：加上 forEach 迴圈，才能一個一個處理選項
-            const allOptionRows = document.querySelectorAll('#bb84-options .option-row, #b92-options .option-row');
-            allOptionRows.forEach(row => {
-                row.classList.remove('active'); // 移除原本寫死的 active 狀態
-                
-                // 依據 Alice 的基底決定顯示/隱藏
-                if (aliceBasis.includes('Z') && row.classList.contains('basis-z')) {
-                    row.style.display = 'flex';
-                } else if (aliceBasis.includes('X') && row.classList.contains('basis-x')) {
-                    row.style.display = 'flex';
-                } else {
-                    row.style.display = 'none'; // 隱藏不符合基底的選項
-                }
+            const bb84Circles = document.querySelectorAll('#bb84-options .option-row');
+            bb84Circles.forEach(circle => {
+                circle.style.backgroundColor = '#f5e39c';
             });
 
             // 2. 修正：調整 formatRole，只針對 Eve 顯示 ON/OFF
