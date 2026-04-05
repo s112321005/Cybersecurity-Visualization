@@ -777,24 +777,33 @@
     // ==========================================
 
     // --- QKD Start ---
+    // ==========================================
+    // 3. 各個介面的獨立 Start 按鈕邏輯
+    // ==========================================
+
+    // --- QKD Start ---
     document.getElementById('qkd-start-btn').addEventListener('click', () => {
         const interfaceDiv = document.getElementById('qkd-interface');
-        const toggles = interfaceDiv.querySelectorAll('.status-toggle');
+        
+        // 因為 Alice 和 Bob 沒有開關了，我們假設畫面上剩下的 .status-toggle 就是 Eve 的
+        const eveToggle = interfaceDiv.querySelector('.status-toggle');
+        const entangleCheck = document.getElementById('qkd-entangle');
         
         const qkdSettings = {
-            entangle: document.getElementById('qkd-entangle').checked,
+            entangle: entangleCheck ? entangleCheck.checked : false,
             alice: {
-                isOn: toggles[0].checked,
+                isOn: true, // 強制設定為開啟，不再讀取 toggle
                 particle: interfaceDiv.querySelector('input[name="a_particle"]:checked')?.nextElementSibling?.innerText || "",
                 basis: interfaceDiv.querySelector('input[name="a_basis"]:checked')?.nextElementSibling?.innerText || ""
             },
             bob: {
-                isOn: toggles[1].checked,
+                isOn: true, // 強制設定為開啟，不再讀取 toggle
                 particle: interfaceDiv.querySelector('input[name="b_particle"]:checked')?.nextElementSibling?.innerText || "",
                 basis: interfaceDiv.querySelector('input[name="b_basis"]:checked')?.nextElementSibling?.innerText || ""
             },
             eve: {
-                isOn: toggles[2].checked,
+                // 安全讀取 Eve 的狀態，如果找不到開關就預設為 false
+                isOn: eveToggle ? eveToggle.checked : false, 
                 attack: interfaceDiv.querySelector('input[name="e_attack"]:checked')?.nextElementSibling?.innerText || ""
             }
         };
