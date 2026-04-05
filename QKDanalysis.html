@@ -410,10 +410,6 @@
 </div>
 
 <script>
-    // --- 新增：將原本的 userMistake 拆分為兩個獨立的變數 ---
-    let bb84_userMistake = false; 
-    let b92_userMistake = false;
-
     document.addEventListener('DOMContentLoaded', () => {
         const savedData = localStorage.getItem('qkdSettings');
         const contentAreas = document.querySelectorAll('.settings-content');
@@ -423,21 +419,6 @@
             const aliceBasis = settings.alice?.basis || "";
             const bobBasis = settings.bob?.basis || "";
             
-            if ((aliceBasis.includes('X') && bobBasis.includes('Z')) || (aliceBasis.includes('Z') && bobBasis.includes('X'))) {
-                bb84_userMistake = true;
-                const bb84Circles = document.querySelectorAll('#view-bb84 .prob-circle.inactive, #view-bb84 .state-circle.inactive');
-                bb84Circles.forEach(circle => {
-                    circle.style.backgroundColor = '#f5e39c';
-                });
-
-            } else {
-                b92_userMistake = true;
-                const b92Circles = document.querySelectorAll('#view-b92 .prob-circle.inactive, #view-b92 .state-circle.inactive');
-                b92Circles.forEach(circle => {
-                    circle.style.backgroundColor = '#f5e39c';
-                });
-            }
-
             // 1. 選項顯示過濾 (只顯示與 Alice 基底相符的選項)
             const allOptionRows = document.querySelectorAll('#bb84-options .option-row, #b92-options .option-row');
             allOptionRows.forEach(row => {
@@ -547,19 +528,14 @@
         const keyImg = document.getElementById('bb84-initial-key-img');
         const bobSame = document.getElementById('bb84-bob-same');
         const bobUnsame = document.getElementById('bb84-bob-unsame');
-        
-        // 套用 BB84 專屬的變數
-        const imgDiagonalUnsame = bb84_userMistake ? "pictures/yellow_diagonal.svg" : "pictures/gray_diagonal.svg";
-        const imgVerticalUnsame = bb84_userMistake ? "pictures/yellow_vertical.svg" : "pictures/gray_vertical.svg";
-
         if (basisType === 'rectilinear') {
             keyImg.src = "pictures/vertical.svg";
             bobSame.src = "pictures/vertical.svg";
-            bobUnsame.src = imgDiagonalUnsame; 
+            bobUnsame.src = "pictures/gray_vertical.svg"; 
         } else {
             keyImg.src = "pictures/diagonal.svg"; 
             bobSame.src = "pictures/diagonal.svg";
-            bobUnsame.src = imgVerticalUnsame;
+            bobUnsame.src = "pictures/gray_vertical.svg";
         }    
     }
 
@@ -579,19 +555,15 @@
         const bobSame = document.getElementById('b92-bob-same');
         const bobUnsame = document.getElementById('b92-bob-unsame');
 
-        // 套用 B92 專屬的變數
-        const imgDiagonalUnsame = b92_userMistake ? "pictures/yellow_diagonal.svg" : "pictures/diagonal.svg";
-        const imgVerticalUnsame = b92_userMistake ? "pictures/yellow_vertical.svg" : "pictures/vertical.svg";
-
         if (basisType === 'rectilinear') {
             keyImg.src = "pictures/vertical.svg";
-            bobSame.src = imgDiagonalUnsame;
-            bobUnsame.src = "pictures/gray_vertical.svg"; 
+            bobSame.src = "pictures/vertical.svg";
+            bobUnsame.src = "pictures/gray_diagonal.svg"; 
         } else {
             keyImg.src = "pictures/diagonal.svg"; 
-            bobSame.src = imgVerticalUnsame;
-            bobUnsame.src = "pictures/gray_diagonal.svg";
-        }        
+            bobSame.src = "pictures/diagonal.svg";
+            bobUnsame.src = "pictures/gray_vertical.svg";
+        }       
     }
 </script>
 
