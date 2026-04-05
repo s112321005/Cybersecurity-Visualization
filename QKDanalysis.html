@@ -420,22 +420,18 @@
         
         if (savedData) {
             const settings = JSON.parse(savedData);
-
-            // 確保有預設值，避免報錯
             const aliceBasis = settings.alice?.basis || "";
             const bobBasis = settings.bob?.basis || "";
             
-            // --- 你修改的邏輯區塊 ---
             if ((aliceBasis.includes('X') && bobBasis.includes('Z')) || (aliceBasis.includes('Z') && bobBasis.includes('X'))) {
                 bb84_userMistake = true;
-                // 針對 BB84 改變活躍機率圈圈的顏色
                 const bb84Circles = document.querySelectorAll('#view-bb84 .prob-circle:not(.inactive)');
                 bb84Circles.forEach(circle => {
                     circle.style.backgroundColor = '#f5e39c';
                 });
+
             } else {
                 b92_userMistake = true;
-                // 針對 B92 改變活躍機率圈圈的顏色
                 const b92Circles = document.querySelectorAll('#view-b92 .prob-circle:not(.inactive)');
                 b92Circles.forEach(circle => {
                     circle.style.backgroundColor = '#f5e39c';
