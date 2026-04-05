@@ -424,7 +424,7 @@
             const aliceBasis = settings.alice?.basis || "";
             const bobBasis = settings.bob?.basis || "";
             
-            if (aliceBasis.includes('X') && bobBasis.includes('Z')) {
+            if ((aliceBasis.includes('X') && bobBasis.includes('Z'))||(aliceBasis.includes('Z') && bobBasis.includes('X'))) {
                 userMistake = true;
             }
 
