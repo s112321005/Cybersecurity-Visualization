@@ -410,8 +410,9 @@
 </div>
 
 <script>
-    // --- 新增：全域變數，用來判定是否要使用黃色偏振片 ---
-    let userMistake = false; 
+    // --- 新增：將原本的 userMistake 拆分為兩個獨立的變數 ---
+    let bb84_userMistake = false; 
+    let b92_userMistake = false;
 
     document.addEventListener('DOMContentLoaded', () => {
         const savedData = localStorage.getItem('qkdSettings');
@@ -424,18 +425,38 @@
             const aliceBasis = settings.alice?.basis || "";
             const bobBasis = settings.bob?.basis || "";
             
-            if ((aliceBasis.includes('X') && bobBasis.includes('Z'))||(aliceBasis.includes('Z') && bobBasis.includes('X'))) {
-                userMistake = true;
-                document.body.classList.add('mistake-mode');
+            // --- 你修改的邏輯區塊 ---
+            if ((aliceBasis.includes('X') && bobBasis.includes('Z')) || (aliceBasis.includes('Z') && bobBasis.includes('X'))) {
+                bb84_userMistake = true;
+                // 針對 BB84 改變活躍機率圈圈的顏色
+                const bb84Circles = document.querySelectorAll('#view-bb84 .prob-circle:not(.inactive)');
+                bb84Circles.forEach(circle => {
+                    circle.style.backgroundColor = '#f5e39c';
+                });
+            } else {
+                b92_userMistake = true;
+                // 針對 B92 改變活躍機率圈圈的顏色
+                const b92Circles = document.querySelectorAll('#view-b92 .prob-circle:not(.inactive)');
+                b92Circles.forEach(circle => {
+                    circle.style.backgroundColor = '#f5e39c';
+                });
             }
 
-            // 1. 修正：加上 forEach 迴圈，才能一個一個處理選項
-            const bb84Circles = document.querySelectorAll('#bb84-options .option-row');
-            bb84Circles.forEach(circle => {
-                circle.style.backgroundColor = '#f5e39c';
+            // 1. 選項顯示過濾 (只顯示與 Alice 基底相符的選項)
+            const allOptionRows = document.querySelectorAll('#bb84-options .option-row, #b92-options .option-row');
+            allOptionRows.forEach(row => {
+                row.classList.remove('active'); 
+                
+                if (aliceBasis.includes('Z') && row.classList.contains('basis-z')) {
+                    row.style.display = 'flex';
+                } else if (aliceBasis.includes('X') && row.classList.contains('basis-x')) {
+                    row.style.display = 'flex';
+                } else {
+                    row.style.display = 'none'; 
+                }
             });
 
-            // 2. 修正：調整 formatRole，只針對 Eve 顯示 ON/OFF
+            // 2. 角色設定面板生成邏輯
             function formatRole(name, data) {
                 if (!data) return ''; // 防呆
 
@@ -450,7 +471,6 @@
 
                 // Alice, Bob 以及「開啟狀態的 Eve」的顯示邏輯
                 const eveClass = (name === 'Eavesdropper') ? ' eve-on' : '';
-                // 只有 Eve 顯示 Status: ON，Alice 和 Bob 不顯示 Status
                 const statusHtml = (name === 'Eavesdropper') ? `<span>Status: ON</span>` : ''; 
 
                 return `
@@ -521,8 +541,10 @@
         const keyImg = document.getElementById('bb84-initial-key-img');
         const bobSame = document.getElementById('bb84-bob-same');
         const bobUnsame = document.getElementById('bb84-bob-unsame');
-        const imgDiagonalUnsame = userMistake ? "pictures/yellow_diagonal.svg" : "pictures/gray_diagonal.svg";
-        const imgVerticalUnsame = userMistake ? "pictures/yellow_vertical.svg" : "pictures/gray_vertical.svg";
+        
+        // 套用 BB84 專屬的變數
+        const imgDiagonalUnsame = bb84_userMistake ? "pictures/yellow_diagonal.svg" : "pictures/gray_diagonal.svg";
+        const imgVerticalUnsame = bb84_userMistake ? "pictures/yellow_vertical.svg" : "pictures/gray_vertical.svg";
 
         if (basisType === 'rectilinear') {
             keyImg.src = "pictures/vertical.svg";
@@ -551,8 +573,9 @@
         const bobSame = document.getElementById('b92-bob-same');
         const bobUnsame = document.getElementById('b92-bob-unsame');
 
-        const imgDiagonalUnsame = userMistake ? "pictures/yellow_diagonal.svg" : "pictures/gray_diagonal.svg";
-        const imgVerticalUnsame = userMistake ? "pictures/yellow_vertical.svg" : "pictures/gray_vertical.svg";
+        // 套用 B92 專屬的變數
+        const imgDiagonalUnsame = b92_userMistake ? "pictures/yellow_diagonal.svg" : "pictures/gray_diagonal.svg";
+        const imgVerticalUnsame = b92_userMistake ? "pictures/yellow_vertical.svg" : "pictures/gray_vertical.svg";
 
         if (basisType === 'rectilinear') {
             keyImg.src = "pictures/vertical.svg";
