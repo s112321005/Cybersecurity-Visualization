@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>量子資安應用</title>
+    <style>
+        :root {
+            --primary-blue: #0047A0;
+            --text-brown: #3E2B25;
+            --border-width: 4px;
+            --border-radius: 20px;
+        }
+
+        body {
+            font-family: "Microsoft JhengHei", "PingFang TC", sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: #ffffff;
+        }
+
+        .container {
+            width: 900px;
+            padding: 20px;
+        }
+
+        .main-content {
+            display: flex;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        /* 左側卡片設計 */
+        .left-panel {
+            flex: 0 0 35%;
+            border: var(--border-width) solid var(--primary-blue);
+            border-radius: var(--border-radius);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+            box-sizing: border-box;
+        }
+
+        .left-panel img {
+            width: 80%;
+            max-width: 200px;
+            margin-bottom: 30px;
+        }
+
+        .left-panel h2 {
+            color: var(--text-brown);
+            margin: 0;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        /* 右側選單設計 */
+        .right-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .menu-item {
+            border: var(--border-width) solid var(--primary-blue);
+            border-radius: var(--border-radius);
+            padding: 20px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            text-decoration: none;
+            transition: background-color 0.2s;
+        }
+
+        .menu-item:hover {
+            background-color: #f4f8fc;
+        }
+
+        .text-content {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .text-content .zh-title {
+            color: var(--text-brown);
+            font-size: 24px;
+            font-weight: bold;
+            margin: 0;
+        }
+
+        .text-content .en-title {
+            color: var(--text-brown);
+            font-size: 26px;
+            font-weight: 900;
+            margin: 0;
+        }
+
+        .learn-more {
+            color: var(--text-brown);
+            font-size: 16px;
+            font-weight: bold;
+            text-decoration: underline;
+            margin-bottom: 5px;
+        }
+
+        /* 隱藏沒有 learn more 的區塊的預設底線 */
+        .no-link {
+            text-decoration: none;
+            cursor: default;
+        }
+        .no-link:hover {
+            background-color: transparent;
+        }
+
+        /* 底部按鈕設計 */
+        .back-btn {
+            background-color: var(--primary-blue);
+            color: white;
+            border: none;
+            border-radius: 30px;
+            padding: 15px 40px;
+            font-size: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            transition: background-color 0.2s;
+        }
+
+        .back-btn:hover {
+            background-color: #003377;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="main-content">
+            
+            <div class="left-panel">
+                <img src="https://s112321005.github.io/Cybersecurity-Visualization/frontpage.svg" alt="量子資安應用 Icon">
+                <h2>量子資安應用</h2>
+            </div>
+
+            <div class="right-panel">
+                
+                <a href="https://s112321005.github.io/Cybersecurity-Visualization/QKDedu1.html" class="menu-item">
+                    <div class="text-content">
+                        <p class="zh-title">量子密鑰分發</p>
+                        <p class="en-title">Quantum Key Distribution</p>
+                    </div>
+                    <span class="learn-more">learn more</span>
+                </a>
+
+                <a href="#" class="menu-item">
+                    <div class="text-content">
+                        <p class="zh-title">量子秘密分享</p>
+                        <p class="en-title">Quantum Secret Sharing</p>
+                    </div>
+                    <span class="learn-more">learn more</span>
+                </a>
+
+                <div class="menu-item no-link">
+                    <div class="text-content">
+                        <p class="zh-title">彈性設置參數自訂協議</p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <a href="javascript:history.back()" class="back-btn">上一頁</a>
+    </div>
+
+</body>
+</html>
