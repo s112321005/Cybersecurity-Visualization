@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <base href="https://s112321005.github.io/Cybersecurity-Visualization/">
+    <title>QKD interactive education - Result</title>
+    <style>
+        :root {
+            --primary-blue: #004aad;
+            --dark-text: #333333;
+            --bg-color: #f8f9fa;
+            --photon-yellow: #ffeb3b; 
+            --match-green: #28a745;
+            --mismatch-red: #dc3545;
+        }
+
+        body {
+            font-family: 'Segoe UI', sans-serif; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center;    
+            padding: 40px 20px; 
+            background-color: var(--bg-color);
+            margin: 0;
+            overflow-y: scroll; 
+        }
+
+        /* 頂部導覽列 */
+        .header {
+            width: min(1000px, 95vw);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 25px;
+            animation: fadeIn 0.8s ease-out forwards;
+        }
+        
+        .header-left { display: flex; align-items: center; gap: 15px; }
+
+        .btn-back {
+            width: 40px; height: 40px; background-color: var(--primary-blue);
+            color: white; border-radius: 50%; display: flex; justify-content: center; align-items: center; 
+            text-decoration: none; font-size: 1rem; transition: transform 0.2s; cursor: pointer; border: none;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .btn-back:hover { transform: scale(1.1); }
+
+        .title-pill {
+            border: 2px solid var(--primary-blue); padding: 8px 20px;
+            border-radius: 30px; font-weight: bold; background: white; color: var(--dark-text);
+        }
+
+        .header-center { 
+            flex-grow: 1; margin-left: 20px; font-weight: bold; 
+            font-size: 1.2rem; color: var(--dark-text); text-align: center; 
+        }
+        
+        .header-right { display: flex; gap: 15px; }
+        
+        .nav-btn {
+            border: 2px solid var(--primary-blue); background: white; color: var(--dark-text);
+            padding: 10px 25px; border-radius: 30px; font-weight: bold; font-size: 1rem;
+            cursor: pointer; transition: all 0.2s;
+        }
+        .nav-btn:hover { background: var(--primary-blue); color: white; }
+
+        /* 主卡片 */
+        .main-card {
+            width: min(1000px, 95vw); height: 560px; border: 3px solid var(--primary-blue); border-radius: 35px;
+            position: relative; background: white; box-sizing: border-box; overflow: hidden;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            padding-top: 25px; padding-bottom: 50px; animation: fadeIn 0.8s ease-out forwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* 網格排版 */
+        .decision-grid { display: flex; align-items: center; justify-content: center; gap: 30px; width: 100%; }
+        .col { display: flex; flex-direction: column; justify-content: center; align-items: center; position: relative; }
+
+        /* 角色圖片定位 */
+        .character-avatar { position: absolute; bottom: 100%; margin-bottom: 20px; z-index: 10; }
+
+        /* 膠囊標籤 */
+        .result-capsule {
+            padding: 12px 25px; border-radius: 30px; border: 2px solid var(--primary-blue);
+            color: var(--primary-blue); font-weight: bold; font-size: 1.2rem;
+            background: white; display: flex; align-items: center; justify-content: center;
+            height: 25px; min-width: 100px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+        .result-capsule.active { background: var(--primary-blue); color: white; }
+        .result-capsule.error { border-color: #999; color: #555; opacity: 0; transition: opacity 0.5s; }
+
+        /* 偏振器圓形標籤 */
+        .basis-circle {
+            width: 45px; height: 45px; border-radius: 50%; background: var(--primary-blue);
+            color: white; display: flex; align-items: center; justify-content: center;
+            font-weight: bold; font-size: 1.5rem; margin-top: 10px;
+            box-shadow: 0 4px 10px rgba(0, 74, 173, 0.3);
+        }
+
+        /* Bob 選擇區域 */
+        .bob-interactive { display: flex; flex-direction: column; align-items: center; gap: 10px; transition: opacity 0.3s ease; }
+        .bob-choices { display: flex; gap: 20px; }
+        .bob-choice-btn {
+            display: flex; flex-direction: column; align-items: center; cursor: pointer;
+            padding: 10px; border-radius: 15px; border: 2px solid transparent; transition: all 0.2s; background: white;
+        }
+        .bob-choice-btn:hover { background-color: #e6f0ff; border-color: #80d8ff; transform: scale(1.05); }
+        
+        .pulse { animation: pulse-anim 2s infinite; }
+        @keyframes pulse-anim {
+            0% { box-shadow: 0 0 0 0 rgba(0, 74, 173, 0.4); }
+            70% { box-shadow: 0 0 0 15px rgba(0, 74, 173, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(0, 74, 173, 0); }
+        }
+
+        /* Bob 測量中的偏振器 */
+        .bob-active-basis {
+            display: none; flex-direction: column; align-items: center;
+            animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+        @keyframes popIn { 0% { transform: scale(0.5); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+
+        /* ========================================================
+           優化後的連接線條與箭頭動畫
+           ======================================================== */
+        .connector { 
+            position: relative; display: flex; align-items: center; 
+            height: 50px; width: 0; opacity: 0;
+            transition: width 0.5s ease-out, opacity 0.2s ease; 
+        }
+        .connector::before {
+            content: ""; position: absolute; top: 50%; left: 0; width: 100%; height: 3px;
+            background-color: var(--primary-blue); transform: translateY(-50%); 
+        }
+        .arrow-connector::after {
+            content: ""; position: absolute; top: 50%; right: -2px; width: 0; height: 0;
+            border-top: 8px solid transparent; border-bottom: 8px solid transparent;
+            border-left: 14px solid var(--primary-blue); transform: translateY(-50%);
+            opacity: 0; transition: opacity 0.2s ease 0.4s; /* 延遲出現箭頭尖端，等線拉完 */
+        }
+        
+        /* 觸發動畫的狀態 */
+        .connector.active { opacity: 1; width: 60px; }
+        .connector.active.full-width { width: 100%; }
+        .arrow-connector.active::after { opacity: 1; }
+
+        .col-connectors { position: relative; width: 60px; height: 160px; }
+        .arrow-single { position: absolute; left: 0; top: 50%; transform: translateY(-50%); }
+        .arrow-branch-up { position: absolute; left: 0; top: 50%; transform-origin: left center; transform: translateY(-50%) rotate(-35deg); }
+        .arrow-branch-down { position: absolute; left: 0; top: 50%; transform-origin: left center; transform: translateY(-50%) rotate(35deg); }
+
+        /* 結果打勾/打叉圖示 */
+        .result-icon { font-size: 2rem; font-weight: bold; margin-left: 15px; }
+        .result-icon.match { color: var(--match-green); }
+        .result-icon.mismatch { color: var(--mismatch-red); opacity: 0; transition: opacity 0.5s; }
+        .output-group { display: flex; align-items: center; }
+
+        /* Outcome 區塊專屬排版 */
+        #results-area {
+            min-width: 180px; height: 180px; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative;
+        }
+        #results-area-title { color: gray; font-weight: bold; margin: 0; position: absolute; top: -10px; font-size: 0.9rem; }
+
+        .show-result .result-capsule.error { opacity: 1; }
+        .show-result .result-icon.mismatch { opacity: 1; }
+
+        /* 解說面板 */
+        .explanation-box {
+            position: absolute; bottom: 25px; width: 85%; background: #f8fbff;
+            border-left: 6px solid var(--primary-blue); padding: 18px 30px; border-radius: 15px; 
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08); display: flex; flex-direction: column; gap: 8px; box-sizing: border-box;
+            opacity: 0; transform: translateY(20px); pointer-events: none; transition: all 0.5s ease;
+        }
+        .explanation-box.show { opacity: 1; transform: translateY(0); pointer-events: auto; }
+        .explain-header { display: flex; justify-content: space-between; align-items: center; }
+        .explain-title { font-weight: bold; font-size: 1.25rem; margin: 0; display: flex; align-items: center; gap: 8px; }
+        .explain-desc { color: #555; font-size: 1.05rem; margin: 0; line-height: 1.4; }
+        .highlight-keep { color: var(--match-green); font-weight: bold; }
+        .highlight-discard { color: var(--mismatch-red); font-weight: bold; }
+
+        .retry-btn {
+            padding: 8px 20px; border-radius: 20px; border: 2px solid #ccc;
+            background: white; color: #555; cursor: pointer; font-weight: bold; transition: all 0.2s; font-size: 0.95rem;
+        }
+        .retry-btn:hover { background: #f0f0f0; border-color: #999; color: black; transform: scale(1.05); }
+
+        .bottom-hint { position: absolute; bottom: 30px; color: gray; font-weight: bold; font-size: 1.1rem; transition: opacity 0.3s; }
+
+        /* 光子動畫 */
+        @keyframes shoot-to-bob {
+            0% { transform: translate(0, 0) scale(0); opacity: 1; }
+            20% { transform: translate(calc(var(--tx-bob) * 0.2), calc(var(--ty-bob) * 0.2)) scale(1.3); }
+            100% { transform: translate(var(--tx-bob), var(--ty-bob)) scale(1); opacity: 1; } 
+        }
+        @keyframes shoot-bob-to-outcome {
+            0% { transform: translate(var(--tx-bob), var(--ty-bob)) scale(1); opacity: 1; }
+            100% { transform: translate(var(--tx-out), var(--ty-out)) scale(1); opacity: 1; } 
+        }
+        @keyframes shoot-collapse {
+            0% { transform: translate(var(--tx-bob), var(--ty-bob)) scale(1); opacity: 1; }
+            100% { transform: translate(var(--tx-bob), var(--ty-bob)) scale(0); opacity: 0; }
+        }
+
+        .photon-particle {
+            position: absolute; width: 35px; height: 35px; background: var(--photon-yellow); border-radius: 50%; 
+            box-shadow: 0 0 25px var(--photon-yellow); display: flex; justify-content: center; align-items: center;
+            font-weight: bold; font-size: 1.3rem; color: var(--primary-blue); pointer-events: none; z-index: 100;
+        }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <div class="header-left">
+        <button class="btn-back" onclick="prevStep()">◀</button>
+        <div class="title-pill">Quantum Key Distribution</div>
+    </div>
+    <div class="header-center">Measurement Result</div>
+    <div class="header-right">
+        <button class="nav-btn" onclick="prevStep()">Back</button>
+        <button class="nav-btn" onclick="nextStep()">Next</button>
+    </div>
+</div>
+
+<div class="main-card" id="stage">
+    
+    <div class="decision-grid" id="grid-container">
+        
+        <div class="col" style="min-width: 150px;">
+            <img src="pictures/cat_alice.svg" width="120" alt="Alice" class="character-avatar">
+            <p style="color:gray; font-weight:bold; margin-bottom: 5px; font-size: 0.9rem;">Alice Sent</p>
+            <img id="alice-polarizer-img" src="" width="80" style="margin-bottom: 10px;" alt="Alice Basis">
+            <div class="result-capsule active" id="input-state">-</div>
+        </div>
+
+        <div class="col" style="width: 50px;">
+            <div class="connector active full-width" id="conn-1"></div> 
+        </div>
+
+        <div class="col" style="min-width: 200px;" id="bob-col">
+            <img src="pictures/cat_bob.svg" width="120" alt="Bob" class="character-avatar">
+            
+            <div class="bob-interactive" id="bob-interactive">
+                <p style="margin:0; font-weight:bold; color:var(--primary-blue);">Choose a basis!</p>
+                <div class="bob-choices">
+                    <div class="bob-choice-btn pulse" onclick="startMeasurementProcess('S')">
+                        <img src="pictures/vertical.svg" width="80" alt="S basis">
+                        <div class="basis-circle">S</div>
+                    </div>
+                    <div class="bob-choice-btn pulse" onclick="startMeasurementProcess('D')">
+                        <img src="pictures/diagonal.svg" width="80" alt="D basis">
+                        <div class="basis-circle">D</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bob-active-basis" id="bob-active-basis">
+                <p style="color:gray; font-weight:bold; margin-bottom: 5px; font-size: 0.9rem;">Bob Measured</p>
+                <img id="bob-active-img" src="" width="80" style="margin-bottom: 10px;" alt="Key">
+                <div class="basis-circle" style="margin-top:0;" id="bob-key-label">-</div>
+            </div>
+        </div>
+
+        <div class="col col-connectors" id="connectors-area">
+            <div class="connector arrow-connector arrow-single" id="arrow-match"></div>
+            <div class="connector arrow-connector arrow-branch-up" id="arrow-mis-up"></div>
+            <div class="connector arrow-connector arrow-branch-down" id="arrow-mis-down"></div>
+        </div>
+
+        <div class="col" id="results-area">
+            <p id="results-area-title">Outcome</p>
+            
+            <div id="match-container" style="display: none; flex-direction: column; align-items: center; width: 100%;">
+                <div id="photon-landing-spot" style="width: 35px; height: 35px; margin-top: 25px;"></div>
+                <div class="output-group" id="output-match" style="margin-top: 15px; opacity: 0; transition: opacity 0.5s ease;">
+                    <div class="result-capsule active" id="match-state"> Waiting... </div>
+                    <div class="result-icon match">✔</div>
+                </div>
+            </div>
+
+            <div id="output-mismatch" style="display: none; flex-direction: column; gap: 20px; margin-top: 25px;">
+                <div class="output-group">
+                    <div class="result-capsule error" id="mis-state-up"> Waiting... </div>
+                    <div class="result-icon mismatch">✖</div>
+                </div>
+                <div class="output-group">
+                    <div class="result-capsule error" id="mis-state-down"> Waiting... </div>
+                    <div class="result-icon mismatch">✖</div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <p class="bottom-hint" id="hint-text">Help Bob measure the incoming photon</p>
+
+    <div class="explanation-box" id="explain-box">
+        <div class="explain-header">
+            <p class="explain-title" id="explain-title">Analyzing Result...</p>
+            <button class="retry-btn" onclick="resetBob()">↺ Try Another Basis</button>
+        </div>
+        <p class="explain-desc" id="explain-desc">Loading explanation...</p>
+    </div>
+
+</div>
+
+<script>
+    let alicePhotonStr = ""; 
+    let aliceBasisStr = ""; 
+    
+    const photonConfig = {
+        's1': { display: 'Bit 1 : |↑⟩', symbol: '↑' },
+        's0': { display: 'Bit 0 : |→⟩', symbol: '→' },
+        'd1': { display: 'Bit 1 : |↖⟩', symbol: '↖' },
+        'd0': { display: 'Bit 0 : |↗⟩', symbol: '↗' }
+    };
+
+    document.addEventListener("DOMContentLoaded", () => {
+        const params = new URLSearchParams(window.location.search);
+        let type = params.get("aliceBasis") || "S"; 
+        let msg = params.get("aliceMsg") || "0"; 
+        msg = String(msg);
+
+        if (type === "rectilinear" || type === "S") {
+            aliceBasisStr = "S";
+            alicePhotonStr = (msg === "0") ? "s0" : "s1";
+            document.getElementById("alice-polarizer-img").src = "pictures/vertical.svg";
+        } else {
+            aliceBasisStr = "D";
+            alicePhotonStr = (msg === "0") ? "d0" : "d1";
+            document.getElementById("alice-polarizer-img").src = "pictures/diagonal.svg";
+        }
+        document.getElementById("input-state").textContent = photonConfig[alicePhotonStr].display;
+    });
+
+    function startMeasurementProcess(bobChosenBasis) {
+        document.getElementById("bob-interactive").style.display = "none";
+        document.getElementById("hint-text").style.opacity = "0"; 
+        
+        const activeBasisUI = document.getElementById("bob-active-basis");
+        activeBasisUI.style.display = "flex";
+        
+        if (bobChosenBasis === "S") {
+            document.getElementById("bob-active-img").src = "pictures/vertical.svg";
+            document.getElementById("bob-key-label").textContent = "S";
+        } else {
+            document.getElementById("bob-active-img").src = "pictures/diagonal.svg";
+            document.getElementById("bob-key-label").textContent = "D";
+        }
+
+        const isMatch = (aliceBasisStr === bobChosenBasis);
+        document.getElementById("results-area").classList.remove("show-result");
+        
+        if (isMatch) {
+            document.getElementById("match-state").textContent = photonConfig[alicePhotonStr].display;
+            document.getElementById("match-container").style.display = "flex";
+            document.getElementById("output-mismatch").style.display = "none";
+            document.getElementById("output-match").style.opacity = "0"; 
+        } else {
+            document.getElementById("mis-state-up").textContent = (bobChosenBasis === "S") ? photonConfig['s1'].display : photonConfig['d1'].display;
+            document.getElementById("mis-state-down").textContent = (bobChosenBasis === "S") ? photonConfig['s0'].display : photonConfig['d0'].display;
+            document.getElementById("match-container").style.display = "none";
+            document.getElementById("output-mismatch").style.display = "flex";
+        }
+
+        animateMeasurement(isMatch);
+    }
+
+    function animateMeasurement(isMatch) {
+        const stage = document.getElementById('stage');
+        const sourceEl = document.getElementById('input-state');
+        const bobEl = document.getElementById('bob-active-img');
+
+        const particle = document.createElement('div');
+        particle.className = 'photon-particle';
+        particle.innerText = photonConfig[alicePhotonStr].symbol;
+
+        const stageRect = stage.getBoundingClientRect();
+        const srcRect = sourceEl.getBoundingClientRect();
+        const bobRect = bobEl.getBoundingClientRect();
+        
+        const landingSpot = isMatch ? document.getElementById('photon-landing-spot') : document.getElementById('results-area');
+        const outRect = landingSpot.getBoundingClientRect();
+
+        const startX = srcRect.left - stageRect.left + srcRect.width / 2 - 17.5;
+        const startY = srcRect.top - stageRect.top + srcRect.height / 2 - 17.5;
+        
+        const toBobX = bobRect.left - stageRect.left + bobRect.width / 2 - 17.5;
+        const toBobY = bobRect.top - stageRect.top + bobRect.height / 2 - 17.5;
+
+        const toOutX = outRect.left - stageRect.left + outRect.width / 2 - 17.5;
+        const toOutY = outRect.top - stageRect.top + outRect.height / 2 - 17.5;
+
+        particle.style.left = startX + 'px';
+        particle.style.top = startY + 'px';
+        particle.style.setProperty('--tx-bob', (toBobX - startX) + 'px');
+        particle.style.setProperty('--ty-bob', (toBobY - startY) + 'px');
+        particle.style.setProperty('--tx-out', (toOutX - startX) + 'px');
+        particle.style.setProperty('--ty-out', (toOutY - startY) + 'px');
+
+        stage.appendChild(particle);
+
+        // 1. 光子發射到 Bob
+        requestAnimationFrame(() => {
+            particle.style.animation = 'shoot-to-bob 1.5s forwards cubic-bezier(0.4, 0, 0.2, 1)';
+        });
+
+        // 2. 在 1.5 秒時抵達，觸發箭頭伸長動畫 (光子原地停留 0.5 秒)
+        setTimeout(() => {
+            if (isMatch) {
+                document.getElementById("arrow-match").classList.add("active");
+            } else {
+                document.getElementById("arrow-mis-up").classList.add("active");
+                document.getElementById("arrow-mis-down").classList.add("active");
+            }
+        }, 1500);
+
+        // 3. 在 2.0 秒時 (箭頭已經畫完)，光子才繼續移動
+        setTimeout(() => {
+            if (isMatch) {
+                particle.style.animation = 'shoot-bob-to-outcome 0.8s forwards ease-out';
+                
+                setTimeout(() => {
+                    displayFinalResult(true);
+                }, 800);
+
+            } else {
+                particle.style.animation = 'shoot-collapse 0.3s forwards ease-in';
+
+                setTimeout(() => {
+                    particle.remove();
+                    displayFinalResult(false);
+                }, 300);
+            }
+        }, 2000); 
+    }
+
+    function displayFinalResult(isMatch) {
+        const resultsArea = document.getElementById("results-area");
+        const explainBox = document.getElementById("explain-box");
+        const explainTitle = document.getElementById("explain-title");
+        const explainDesc = document.getElementById("explain-desc");
+
+        if (isMatch) {
+            document.getElementById("output-match").style.opacity = "1"; // 顯示結果膠囊
+            
+            explainBox.style.borderLeftColor = "var(--match-green)";
+            explainBox.style.backgroundColor = "#f0fdf4";
+            explainTitle.style.color = "var(--match-green)";
+            explainTitle.innerHTML = "🎯 Basis Match! (Deterministic Result)";
+            explainDesc.innerHTML = "Bob chose the <b>same basis</b> as Alice. The photon passed through predictably, <span class='highlight-keep'>confirming Bit " + (photonConfig[alicePhotonStr].symbol === '↑' || photonConfig[alicePhotonStr].symbol === '↖' ? '1' : '0') + " deterministically!</span> They will KEEP this bit.";
+        } else {
+            explainBox.style.borderLeftColor = "var(--mismatch-red)";
+            explainBox.style.backgroundColor = "#fff5f5";
+            explainTitle.style.color = "var(--mismatch-red)";
+            explainTitle.innerHTML = "🎲 Basis Mismatch! (Random Result)";
+            explainDesc.innerHTML = "Bob used a <b>different basis</b>. The photon collapsed randomly (50/50 chance). Because the measurement is unreliable, <span class='highlight-discard'>they must DISCARD this bit.</span>";
+        }
+        
+        resultsArea.classList.add("show-result");
+        explainBox.classList.add("show");
+    }
+
+    function resetBob() {
+        document.getElementById("explain-box").classList.remove("show");
+        document.getElementById("results-area").classList.remove("show-result");
+        
+        // 移除連接線的 active 狀態，讓其隱藏
+        document.getElementById("arrow-match").classList.remove("active");
+        document.getElementById("arrow-mis-up").classList.remove("active");
+        document.getElementById("arrow-mis-down").classList.remove("active");
+        
+        const oldPhoton = document.querySelector('.photon-particle');
+        if(oldPhoton) oldPhoton.remove();
+
+        setTimeout(() => {
+            document.getElementById("bob-active-basis").style.display = "none";
+            document.getElementById("match-container").style.display = "none";
+            document.getElementById("output-mismatch").style.display = "none";
+            document.getElementById("bob-interactive").style.display = "flex";
+            document.getElementById("hint-text").style.opacity = "1";
+        }, 300);
+    }
+
+    function prevStep() { window.history.back(); }
+    function nextStep() { alert("Ready for Sifting!"); }
+</script>
+
+</body>
+</html>
