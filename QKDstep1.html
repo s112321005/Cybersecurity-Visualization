@@ -124,8 +124,7 @@
             background: var(--primary-blue); color: white;
             box-shadow: 0 4px 15px rgba(0, 74, 173, 0.3);
         }
-
-        /* --- 主卡片內容保持不變 --- */
+                /* --- 主卡片內容保持不變 --- */
         .main-card {
             width: min(1000px, 95vw); 
             height: 560px; 
@@ -233,7 +232,7 @@
     </div>
     <div class="header-center"><p class="step-text">STEP 1: Alice prepares the photon</p></div>
     <div class="header-right">
-        <button id="next-btn" class="nav-btn" onclick="nextStep()">Next</button>
+        <button id="next-btn" class="nav-btn" onclick="nextStep()" disabled>Next</button>
     </div>
 </div>
 
@@ -303,7 +302,7 @@
     function selectState(basis, bit, el) {
         document.querySelectorAll('.state-btn').forEach(btn => btn.classList.remove('active'));
         el.classList.add('active');
-        
+
         document.querySelector('.prompt-text').textContent = "State Selected!";
         document.querySelector('.prompt-text').style.color = "#28a745"; 
         
@@ -311,6 +310,7 @@
         selectedMsg = bit;
 
         const nextBtn = document.getElementById('next-btn');
+        nextBtn.disabled = false;
         nextBtn.classList.add('ready');
     }
 
@@ -325,5 +325,6 @@
         window.location.href = `QKDstep2.html?aliceBasis=${selectedBasis}&aliceMsg=${selectedMsg}`;
     }
 </script>
+?aliceBasis=rectilinear&aliceMsg=1
 </body>
 </html>
