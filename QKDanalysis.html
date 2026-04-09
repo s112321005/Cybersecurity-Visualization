@@ -556,7 +556,7 @@
 </div>
 
 <script>
-    let globalBobBasis = 'Z';
+    let globalBobBasis = 'X';
     let isEveInterceptResend = false; 
 
     const symbols = {
@@ -574,11 +574,8 @@
             const bobBasisRaw = settings.bob?.basis || "";
             
             // 判斷 Bob 基底
-            if (bobBasisRaw.includes('X') || bobBasisRaw.toLowerCase().includes('diagonal')) {
-                globalBobBasis = 'X';
-            } else if (bobBasisRaw.includes('Z') || bobBasisRaw.toLowerCase().includes('rectilinear')) {
-                globalBobBasis = 'Z';
-            }
+            if (bobBasisRaw.includes('X')) { globalBobBasis = 'X';}
+            else if (bobBasisRaw.includes('Z')) { globalBobBasis = 'Z';}
 
             // 1. 強化判斷邏輯：防呆處理大小寫與字串/布林值
             if (settings.eve) {
@@ -614,7 +611,6 @@
             // 3. 角色設定面板生成邏輯
             function formatRole(name, data) {
                 if (!data) return ''; 
-
                 if (name === 'Eavesdropper' && (!data.isOn || String(data.isOn).toLowerCase() === 'false')) {
                     return `
                         <div class="setting-item off-state">
@@ -651,9 +647,17 @@
         } else {
             contentAreas.forEach(area => {
                 area.innerHTML = `
+                    <div class="setting-item">
+                        <strong>Alice</strong>
+                        <span>Basis: X</span>
+                    </div>
+                    <div class="setting-item">
+                        <strong>Bob</strong>
+                        <span>Basis: X</span>
+                    </div>
                     <div class="setting-item off-state">
-                        <span>No data found.</span>
-                        <span>Using default settings.</span>
+                        <strong>Eavesdropper</strong>
+                        <span>Status: OFF</span>
                     </div>`;
             });
         }
@@ -683,27 +687,15 @@
         }
     });
 
-    // 4. 改寫：支援動態導向 Eve 視圖，並修復 JS 報錯與樣式衝突
     function switchTab(tabId, btnElement) {
-        // 先清除所有畫面的 active-view 類別
-        document.querySelectorAll('.page-view').forEach(el => {
-            el.classList.remove('active-view');
-        });
+        document.querySelectorAll('.page-view').forEach(el => el.classList.remove('active-view'));
         document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-        
+
         let targetId = 'view-' + tabId;
-        // 若點擊 BB84 且有 Eve 攻擊，將目標視圖導向 Eve 版本
-        if (tabId === 'bb84' && isEveInterceptResend) {
-            targetId = 'view-bb84-eve';
-        }
-        
-        // 加入 active-view 使畫面顯示
+        if (tabId === 'bb84' && isEveInterceptResend)      targetId = 'view-bb84-eve';
+
         const targetView = document.getElementById(targetId);
-        if (targetView) {
-            targetView.classList.add('active-view');
-        }
-        
-        // 設定按鈕狀態
+        if (targetView)     targetView.classList.add('active-view');
         if (btnElement) {
             btnElement.classList.add('active');
         } else {
@@ -724,17 +716,23 @@
         document.getElementById('bb84-symbol-bobunsame-1').innerText = oppoSymbol[0];
         document.getElementById('bb84-symbol-bobunsame-2').innerText = oppoSymbol[1];
 
+        // 確保這裡有宣告 keyImg, bobSame, bobUnsame
         const keyImg = document.getElementById('bb84-initial-key-img');
         const bobSame = document.getElementById('bb84-bob-same');
         const bobUnsame = document.getElementById('bb84-bob-unsame');
-        if (basisType === 'rectilinear') {
+        
+        const isAliceZ = (basisType === 'rectilinear');
+        const isBobZ = (globalBobBasis === 'Z');
+        const isSameBasis = (isAliceZ === isBobZ);
+
+        if (isAliceZ) {
             keyImg.src = "pictures/vertical.svg";
-            bobSame.src = "pictures/vertical.svg";
-            bobUnsame.src = "pictures/gray_vertical.svg"; 
+            bobSame.src = isSameBasis ? "pictures/b_vertical.svg" : "pictures/gray_vertical.svg";
+            bobUnsame.src = !isSameBasis ? "pictures/b_diagonal.svg" : "pictures/gray_diagonal.svg";
         } else {
             keyImg.src = "pictures/diagonal.svg"; 
-            bobSame.src = "pictures/diagonal.svg";
-            bobUnsame.src = "pictures/gray_vertical.svg";
+            bobSame.src = isSameBasis ? "pictures/b_diagonal.svg" : "pictures/gray_diagonal.svg";
+            bobUnsame.src = !isSameBasis ? "pictures/b_vertical.svg" : "pictures/gray_vertical.svg";
         }    
         
         const aliceBasis = (basisType === 'rectilinear') ? 'Z' : 'X';
@@ -757,20 +755,23 @@
         const bobSame = document.getElementById('b92-bob-same');
         const bobUnsame = document.getElementById('b92-bob-unsame');
 
-        if (basisType === 'rectilinear') {
+        const isAliceZ = (basisType === 'rectilinear');
+        const isBobZ = (globalBobBasis === 'Z');
+        const isSameBasis = (isAliceZ === isBobZ);
+
+        if (isAliceZ) {
             keyImg.src = "pictures/vertical.svg";
-            bobSame.src = "pictures/gray_vertical.svg";
-            bobUnsame.src = "pictures/diagonal.svg"; 
+            bobSame.src = isSameBasis ? "pictures/b_vertical.svg" : "pictures/gray_vertical.svg";
+            bobUnsame.src = !isSameBasis ? "pictures/b_diagonal.svg" : "pictures/gray_diagonal.svg";
         } else {
             keyImg.src = "pictures/diagonal.svg"; 
-            bobSame.src = "pictures/gray_diagonal.svg";
-            bobUnsame.src = "pictures/vertical.svg";
+            bobSame.src = isSameBasis ? "pictures/b_diagonal.svg" : "pictures/gray_diagonal.svg";
+            bobUnsame.src = !isSameBasis ? "pictures/b_vertical.svg" : "pictures/gray_vertical.svg";
         }   
         
         const aliceBasis = (basisType === 'rectilinear') ? 'Z' : 'X';
         updateLines(aliceBasis, globalBobBasis, 'b92');
     }
-
     function updateLines(aliceBasis, bobBasis, protocol) {
         const containerSelector = protocol === 'bb84' ? '#view-bb84' : '#view-b92';
         const allLines = document.querySelectorAll(`${containerSelector} line`);
@@ -818,16 +819,6 @@
         const eveSameImg = document.getElementById('eve-pol-same');
         const eveDiffImg = document.getElementById('eve-pol-diff');
 
-        if (isAliceZ) {
-            aliceImg.src = "pictures/vertical.svg";
-            eveSameImg.src = "pictures/red_vertical.svg";
-            eveDiffImg.src = "pictures/red_diagonal.svg";
-        } else {
-            aliceImg.src = "pictures/diagonal.svg";
-            eveSameImg.src = "pictures/red_diagonal.svg";
-            eveDiffImg.src = "pictures/red_vertical.svg";
-        }
-
         document.getElementById('eve-state-same').innerText = stateSymbol;
         document.getElementById('eve-state-diff1').innerText = eveDiffStates[0];
         document.getElementById('eve-state-diff2').innerText = eveDiffStates[1];
@@ -839,11 +830,17 @@
         ];
 
         if (isAliceZ) {
-            bobPols[0].src = bobPols[2].src = bobPols[4].src = "pictures/vertical.svg";
-            bobPols[1].src = bobPols[3].src = bobPols[5].src = "pictures/gray_diagonal.svg";
+            const sameSrc = isBobZ ? "pictures/b_vertical.svg" : "pictures/gray_vertical.svg";
+            const diffSrc = !isBobZ ? "pictures/b_diagonal.svg" : "pictures/gray_diagonal.svg";
+            
+            bobPols[0].src = bobPols[2].src = bobPols[4].src = sameSrc; // 路線 1,3,5 是 Z
+            bobPols[1].src = bobPols[3].src = bobPols[5].src = diffSrc; // 路線 2,4,6 是 X
         } else {
-            bobPols[0].src = bobPols[2].src = bobPols[4].src = "pictures/diagonal.svg";
-            bobPols[1].src = bobPols[3].src = bobPols[5].src = "pictures/gray_vertical.svg";
+            const sameSrc = !isBobZ ? "pictures/b_diagonal.svg" : "pictures/gray_diagonal.svg";
+            const diffSrc = isBobZ ? "pictures/b_vertical.svg" : "pictures/gray_vertical.svg";
+            
+            bobPols[0].src = bobPols[2].src = bobPols[4].src = sameSrc; // 路線 1,3,5 是 X
+            bobPols[1].src = bobPols[3].src = bobPols[5].src = diffSrc; // 路線 2,4,6 是 Z
         }
 
         const sameNodes = document.querySelectorAll('.bob-same-node .polarizer-img, .bob-same-node .state-circle');
