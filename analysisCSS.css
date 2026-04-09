@@ -243,3 +243,29 @@ body {
     background-color: #003380;
     color: white;
 }
+
+.line-tooltip {
+    position: absolute;
+    background: rgba(0, 0, 0, 0.6);
+    color: #ffffff;
+    padding: 8px 12px;
+    border-radius: 8px; /* 圓角化的方框 */
+    font-size: 14px;
+    font-weight: bold;
+    pointer-events: none; /* 避免滑鼠干擾 */
+    opacity: 0;
+    transition: opacity 0.2s ease-in-out;
+    z-index: 1000;
+    white-space: nowrap;
+    box-shadow: 0px 4px 6px rgba(0,0,0,0.3);
+}
+
+/* 增加線條的互動回饋 */
+svg.arrows line {
+    cursor: pointer;
+    transition: stroke-width 0.2s ease;
+}
+svg.arrows line:hover {
+    stroke-width: 6 !important; /* 懸浮時加粗箭頭方便辨識 */
+    stroke: #007bff !important; /* 懸浮時微微改變顏色，可依需求調整 */
+}
