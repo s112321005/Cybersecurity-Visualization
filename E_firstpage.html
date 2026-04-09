@@ -4,172 +4,143 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <base href="https://s112321005.github.io/Cybersecurity-Visualization/">
-    <title>Quantum Security Applications</title>
+    <title>Quantum Cybersecurity Education Platform</title>
     <style>
         :root {
-            --primary-blue: #0047A0;
-            --text-brown: #3E2B25;
-            --border-width: 4px;
-            --border-radius: 20px;
+            --primary-blue: #0047A0; /* 主題深藍色 */
+            --text-dark: #333333;
+            --bg-color: #ffffff;
         }
 
         body {
             /* 換成適合英文的無襯線字體 */
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
+            background-color: var(--bg-color);
             margin: 0;
-            background-color: #ffffff;
-        }
-
-        .container {
-            width: 900px;
-            padding: 20px;
-        }
-
-        .main-content {
-            display: flex;
-            gap: 30px;
-            margin-bottom: 30px;
-        }
-
-        .left-panel {
-            flex: 0 0 35%;
-            border: var(--border-width) solid var(--primary-blue);
-            border-radius: var(--border-radius);
+            padding: 40px;
             display: flex;
             flex-direction: column;
             align-items: center;
+        }
+
+        /* 頂部標題區塊設計 */
+        .header {
+            display: flex;
+            align-items: center;
             justify-content: center;
-            padding: 40px 20px;
-            box-sizing: border-box;
-            text-align: center; /* 讓英文字置中 */
+            gap: 15px;
+            width: 100%;
+            max-width: 1000px;
+            margin-bottom: 60px;
         }
 
-        .left-panel img {
-            width: 80%;
-            max-width: 200px;
-            margin-bottom: 30px;
+        .header img {
+            width: 60px;
+            height: auto;
         }
 
-        .left-panel h2 {
-            color: var(--text-brown);
+        .header h1 {
+            font-size: 32px; /* 稍微縮小一點點以適應英文長度 */
+            color: var(--text-dark);
             margin: 0;
-            font-size: 26px; /* 稍微調小一點點以容納英文 */
             font-weight: 900;
-            line-height: 1.2;
+            letter-spacing: 1px;
         }
 
-        .right-panel {
-            flex: 1;
+        /* 卡片容器設計 */
+        .cards-container {
             display: flex;
-            flex-direction: column;
-            gap: 20px;
             justify-content: center;
+            gap: 30px;
+            width: 100%;
+            max-width: 1100px;
+            flex-wrap: wrap; /* 螢幕縮小時自動換行 */
         }
 
-        .menu-item {
-            border: var(--border-width) solid var(--primary-blue);
-            border-radius: var(--border-radius);
-            padding: 25px 30px; /* 稍微增加上下 padding */
-            display: flex;
-            justify-content: space-between;
-            align-items: center; /* 改成置中對齊 */
-            text-decoration: none;
-            transition: background-color 0.2s, transform 0.2s;
-        }
-
-        .menu-item:hover {
-            background-color: #f4f8fc;
-            transform: translateY(-2px); /* 加入微浮動效果 */
-        }
-
-        .text-content {
+        /* 單一卡片設計 (設定為超連結標籤) */
+        .card {
+            position: relative; /* 為了讓上方的藍色標籤可以絕對定位在框線上 */
+            width: 300px;
+            height: 380px;
+            border: 4px solid var(--primary-blue);
+            border-radius: 15px;
             display: flex;
             flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            padding: 40px 20px 30px;
+            box-sizing: border-box;
+            text-decoration: none; /* 移除超連結的底線 */
+            color: var(--text-dark);
+            background-color: white;
+            transition: transform 0.2s, box-shadow 0.2s;
+            cursor: pointer;
         }
 
-        .text-content .en-title {
-            color: var(--text-brown);
-            font-size: 24px;
-            font-weight: bold;
-            margin: 0;
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 71, 160, 0.15);
         }
 
-        .learn-more {
-            color: var(--text-brown);
-            font-size: 16px;
-            font-weight: bold;
-            text-decoration: underline;
-        }
-
-        .no-link {
-            text-decoration: none;
-            cursor: default;
-        }
-        
-        .no-link:hover {
-            background-color: transparent;
-            transform: none;
-        }
-
-        .back-btn {
+        /* 卡片上方的藍色膠囊標籤 */
+        .card-badge {
+            position: absolute;
+            top: -18px; /* 配合字體縮小微調高度 */
             background-color: var(--primary-blue);
             color: white;
-            border: none;
+            padding: 8px 18px; /* 縮小左右 padding 讓長英文能塞入卡片寬度 */
             border-radius: 30px;
-            padding: 12px 35px;
-            font-size: 18px;
+            font-size: 14px; /* 縮小字體以適應英文長度 */
             font-weight: bold;
-            cursor: pointer;
-            text-decoration: none;
-            display: inline-block;
-            transition: background-color 0.2s;
+            letter-spacing: 0.5px;
+            white-space: nowrap;
         }
 
-        .back-btn:hover {
-            background-color: #003377;
+        /* 卡片中間的圖片 */
+        .card img {
+            width: 160px;
+            height: 160px;
+            object-fit: contain;
+            margin-top: 30px;
+        }
+
+        /* 卡片底部的文字 */
+        .card-title {
+            font-size: 18px; /* 稍微縮小以適應英文 */
+            font-weight: 800;
+            margin: 0;
+            text-align: center; /* 讓斷行時的文字保持置中 */
+            line-height: 1.3;
         }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <div class="main-content">
-            
-            <div class="left-panel">
-                <img src="key.svg" alt="Quantum Security Icon">
-                <h2>Quantum Security<br>Applications</h2>
-            </div>
+    <div class="header">
+        <img src="pictures/computer.svg" alt="Computer Icon">
+        <h1>Quantum Cybersecurity Education Platform</h1>
+    </div>
 
-            <div class="right-panel">
-                
-                <a href="QKDstep1.html" class="menu-item">
-                    <div class="text-content">
-                        <p class="en-title">Quantum Key Distribution</p>
-                    </div>
-                    <span class="learn-more">Learn more</span>
-                </a>
+    <div class="cards-container">
+        
+        <a href="Information_security_application.html" class="card">
+            <div class="card-badge">Education Tier: Introduction</div>
+            <img src="pictures/quantum.svg" alt="Education Tier Icon">
+            <p class="card-title">Quantum Communication &<br>Basic Security Scenarios</p>
+        </a>
 
-                <a href="#" class="menu-item">
-                    <div class="text-content">
-                        <p class="en-title">Quantum Secret Sharing</p>
-                    </div>
-                    <span class="learn-more">Learn more</span>
-                </a>
+        <a href="#" class="card">
+            <div class="card-badge">Design Tier: Security Verification</div>
+            <img src="pictures/calculate.svg" alt="Design Tier Icon">
+            <p class="card-title">Computation & Verification</p>
+        </a>
 
-                <div class="menu-item no-link">
-                    <div class="text-content">
-                        <p class="en-title" style="color: #666;">Custom Protocol Settings</p>
-                    </div>
-                </div>
+        <a href="#" class="card">
+            <div class="card-badge">Analysis Tier: Research & Analysis</div>
+            <img src="pictures/analyze.svg" alt="Analysis Tier Icon">
+            <p class="card-title">Protocol Comparison & Analysis</p>
+        </a>
 
-            </div>
-        </div>
-
-        <a href="firstpage.html" class="back-btn">Back</a>
     </div>
 
 </body>
