@@ -5,251 +5,33 @@
     <meta name="viewport" content="width=1200">
     <base href="https://s112321005.github.io/Cybersecurity-Visualization/">
     <title>QKD 視覺化模擬：BB84 & B92</title>
+    <link rel="stylesheet" href="analysisCSS.css">
     <style>
-        /* 共用與全域變數設定 */
-        :root {
-            --primary-blue: #0047AB;
-            --light-blue: #D0E0FF;
-            --inactive-gray: #e0e0e0;
-            --bg-color: #f8f9fa;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg-color);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin: 0;
-            padding: 20px 0;
-            color: #333;
-            min-width: 1450px !important; 
-        }
-
-        /* --- 頂部切換按鈕區 --- */
-        .nav-tabs {
-            display: flex;
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-
-        .tab-btn {
-            background-color: white;
-            color: var(--primary-blue);
-            border: 2px solid var(--primary-blue);
-            padding: 10px 30px;
-            font-size: 18px;
-            font-weight: bold;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .tab-btn.active {
-            background-color: var(--primary-blue);
-            color: white;
-            box-shadow: 0 5px 15px rgba(0,71,171,0.3);
-        }
-
-        /* 隱藏/顯示的控制 class */
-        .page-view {
-            display: none; 
-            width: 100%;
-            justify-content: center;
-        }
-
-        .page-view.active-view {
-            display: flex; 
-        }
-
-        /* 原本的排版樣式 (共用) */
-        .container {
-            background: white;
-            padding: 30px;
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-            width: 1350px !important;
-            max-width: 1350px !important;
-            flex-shrink: 0 !important;
-            margin: 0 auto;
-            box-sizing: border-box;
-        }
-
-        .top-bar {
-            display: flex;
-            align-items: center;
-            margin-bottom: 30px;
-        }
-
-        .page-title {
-            border: 2px solid #0047AB;
-            color: #000;
-            padding: 10px 40px;
-            border-radius: 10px;
-            font-size: 20px;
-            font-weight: bold;
-        }
-
-        .main-content {
-            display: flex;
-            flex-direction: row !important;
-            gap: 30px;
-            align-items: flex-start;
-            width: 100%;
-        }
-
-        .sidebar {
-            width: 220px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            z-index: 10;
-        }
-
-        .selection-box {
-            background: var(--light-blue);
-            border-radius: 15px;
-            padding: 20px 15px;
-            width: 100%;
-            box-sizing: border-box;
-        }
-
-        .selection-box h4 { margin: 0 0 15px 0; text-align: center; color: #333; }
-        
-        .option-row {
-            display: flex; align-items: center; justify-content: space-between;
-            margin-bottom: 10px; cursor: pointer; padding: 5px; border-radius: 10px;
-            transition: background 0.2s;
-        }
-        .option-row:hover { background: rgba(255, 255, 255, 0.5); }
-        .option-row.active .state-btn { background: var(--primary-blue); color: white; }
-
-        .state-btn {
-            background: white; border: 2px solid var(--primary-blue); color: var(--primary-blue);
-            width: 45px; height: 45px; border-radius: 10px; display: flex;
-            align-items: center; justify-content: center; font-size: 18px; font-weight: bold; pointer-events: none; 
-        }
-
-        .arrow-icon { color: var(--primary-blue); font-weight: bold; }
-        .hint-text { margin-top: 15px; color: #888; font-weight: bold; font-size: 14px; text-align: center; }
-
-        .diagram-area { position: relative; flex-grow: 1; height: 450px; }
-        .arrows { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; }
-        
-        .node { position: absolute; display: flex; flex-direction: column; align-items: center; z-index: 2; transform: translate(-50%, -50%); }
-        .polarizer-img { width: 70px; height: auto; object-fit: contain; }
-        
-        .state-circle {
-            width: 45px; height: 45px; background: var(--primary-blue); border-radius: 50%;
-            display: flex; align-items: center; justify-content: center; color: white;
-            font-size: 18px; font-weight: bold; margin-top: 10px; transition: all 0.3s ease;
-        }
-        .state-circle.inactive { background-color: var(--inactive-gray); color: #666; }
-
-        /* 新增：Eve 專屬的紅色狀態球 */
-        .eve-state-circle {
-            width: 45px; height: 45px; background: #ff4d4d; border-radius: 50%;
-            display: flex; align-items: center; justify-content: center; color: white;
-            font-size: 18px; font-weight: bold; margin-top: 10px; transition: all 0.3s ease;
-        }
-
-        .prob-circle {
-            position: absolute; background: var(--light-blue); width: 40px; height: 40px;
-            border-radius: 50%; display: flex; align-items: center; justify-content: center;
-            font-size: 18px; font-weight: bold; z-index: 3; transform: translate(-50%, -50%); transition: all 0.3s ease;
-        }
-        .prob-circle.inactive { background-color: var(--inactive-gray); color: #333; }
-
-        .result-circle {
-            position: absolute; background: var(--light-blue); width: 40px; height: 40px;
-            border-radius: 50%; display: flex; align-items: center; justify-content: center;
-            font-size: 18px; font-weight: bold; z-index: 3; transform: translate(-50%, -50%); color:#ff4d4d;
-        }
-
-        .character-avatar {
-            position: absolute; top: -10px; display: flex; flex-direction: column;
-            align-items: center; transform: translateX(-50%); z-index: 10;
-        }
-        .character-avatar img { width: 70px; height: 70px; object-fit: contain; }
-        
-        .result-header {
-            position: absolute; top: -10px; left: 90%; transform: translateX(-50%);
-            background: var(--light-blue); padding: 10px 25px; border-radius: 15px;
-            font-weight: bold; text-align: center; z-index: 10; white-space: nowrap;
-        }
-
-        /* --- 右側設定資訊欄樣式 --- */
-        .settings-panel {
-            width: 220px;
-            background: var(--light-blue);
-            border-radius: 15px;
-            padding: 20px 15px;
-            box-sizing: border-box;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            z-index: 10;
-        }
-
-        .settings-panel h4 { 
-            margin: 0 0 10px 0; 
-            text-align: center; 
-            color: #333; 
-            border-bottom: 2px solid var(--primary-blue); 
-            padding-bottom: 8px;
-        }
-
-        .setting-item { 
-            background: white; 
-            padding: 10px; 
-            border-radius: 8px; 
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05); 
+        /* 新增：機率提示框 (Tooltip) 樣式 */
+        .line-tooltip {
+            position: absolute;
+            background: rgba(0, 0, 0, 0.6);
+            color: #ffffff;
+            padding: 8px 12px;
+            border-radius: 8px; /* 圓角化的方框 */
             font-size: 14px;
-        }
-
-        .setting-item strong { 
-            color: var(--primary-blue); 
-            display: block; 
-            margin-bottom: 5px; 
-            font-size: 15px;
-        }
-
-        .setting-item span { 
-            color: #555; 
-            display: block;
-            margin-bottom: 2px;
-        }
-        
-        .setting-item.off-state span { color: #999; }     
-        .setting-item.off-state strong { color: #999; }
-        .setting-item.eve-on strong { color: #ff4d4d; }
-
-        .line-inactive {
-            stroke: #ccc !important;
-            opacity: 0.5;
-        }
-        /* --- 左上角返回按鈕與標題區 --- */
-        .btn-back {
-            background-color: var(--primary-blue);
-            color: white;
-            text-decoration: none;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 18px;
             font-weight: bold;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-            transition: all 0.3s ease;
-            flex-shrink: 0; /* 確保按鈕不會被壓縮 */
+            pointer-events: none; /* 避免滑鼠干擾 */
+            opacity: 0;
+            transition: opacity 0.2s ease-in-out;
+            z-index: 1000;
+            white-space: nowrap;
+            box-shadow: 0px 4px 6px rgba(0,0,0,0.3);
         }
 
-        .btn-back:hover {
-            transform: scale(1.1);
-            background-color: #003380;
-            color: white;
+        /* 增加線條的互動回饋 */
+        svg.arrows line {
+            cursor: pointer;
+            transition: stroke-width 0.2s ease;
+        }
+        svg.arrows line:hover {
+            stroke-width: 6 !important; /* 懸浮時加粗箭頭方便辨識 */
+            stroke: #007bff; /* 可選：懸浮時微微改變顏色，依需求調整 */
         }
     </style>
 </head>
@@ -294,12 +76,11 @@
                             <path d="M 0 0 L 10 5 L 0 10 z" fill="#333" />
                         </marker>
                     </defs>
-                
-                    <line class="bb84-line TrueRoute" x1="17%" y1="50%" x2="35%" y2="25%" stroke="#333" stroke-width="3" marker-end="url(#arrow-bb84)" />
-                    <line class="bb84-line FalseRoute" x1="17%" y1="50%" x2="35%" y2="75%" stroke="#333" stroke-width="3" marker-end="url(#arrow-bb84)" />
-                    <line class="bb84-line TrueRoute" x1="47%" y1="25%" x2="67%" y2="25%" stroke="#333" stroke-width="3" marker-end="url(#arrow-bb84)" />
-                    <line class="bb84-line FalseRoute" x1="47%" y1="75%" x2="67%" y2="55%" stroke="#333" stroke-width="3" marker-end="url(#arrow-bb84)" />
-                    <line class="bb84-line FalseRoute" x1="47%" y1="75%" x2="67%" y2="95%" stroke="#333" stroke-width="3" marker-end="url(#arrow-bb84)" />
+                    <line class="bb84-line TrueRoute" data-prob="50%" x1="17%" y1="50%" x2="35%" y2="25%" stroke="#333" stroke-width="3" marker-end="url(#arrow-bb84)" />
+                    <line class="bb84-line FalseRoute" data-prob="50%" x1="17%" y1="50%" x2="35%" y2="75%" stroke="#333" stroke-width="3" marker-end="url(#arrow-bb84)" />
+                    <line class="bb84-line TrueRoute" data-prob="50%" x1="47%" y1="25%" x2="67%" y2="25%" stroke="#333" stroke-width="3" marker-end="url(#arrow-bb84)" />
+                    <line class="bb84-line FalseRoute" data-prob="25%" x1="47%" y1="75%" x2="67%" y2="55%" stroke="#333" stroke-width="3" marker-end="url(#arrow-bb84)" />
+                    <line class="bb84-line FalseRoute" data-prob="25%" x1="47%" y1="75%" x2="67%" y2="95%" stroke="#333" stroke-width="3" marker-end="url(#arrow-bb84)" />
                 </svg>
 
                 <div class="character-avatar" style="left: 10%;"><img src="pictures/cat_alice.svg" alt="Alice"></div>
@@ -311,19 +92,12 @@
                     <div class="state-circle" id="bb84-initial-state-text">|→⟩</div>
                 </div>
                 
-                <div class="prob-circle" style="left: 25%; top: 35%;"><math style="font-weight: bold; font-size: 20px;"><mfrac><mn>1</mn><mn>2</mn></mfrac></math></div>
-                <div class="prob-circle inactive" style="left: 25%; top: 65%;"><math style="font-weight: bold; font-size: 20px;"><mfrac><mn>1</mn><mn>2</mn></mfrac></math></div>
-
                 <div class="node" style="left: 41%; top: 25%;">
                     <img id="bb84-bob-same" src="pictures/vertical.svg" class="polarizer-img">
                 </div>
                 <div class="node" style="left: 41%; top: 75%;">
                     <img id="bb84-bob-unsame" src="pictures/gray_diagonal.svg" class="polarizer-img inactive">
                 </div>
-
-                <div class="prob-circle" style="left: 55%; top: 25%;"><math style="font-weight: bold; font-size: 30px;"><mfrac><mn>1</mn></mfrac></math></div>
-                <div class="prob-circle inactive" style="left: 55%; top: 60%;"><math style="font-weight: bold; font-size: 20px;"><mfrac><mn>1</mn><mn>2</mn></mfrac></math></div>
-                <div class="prob-circle inactive" style="left: 55%; top: 86%;"><math style="font-weight: bold; font-size: 20px;"><mfrac><mn>1</mn><mn>2</mn></mfrac></math></div>
 
                 <div class="node" style="left: 75%; top: 25%;">
                     <div id="bb84-symbol-bobsame" class="state-circle">|→⟩</div>
@@ -340,8 +114,8 @@
                 </div>
 
                 <div class="result-circle" style="left: 90%; top: 25%; width: 50px; height: 50px;">✔</div>
-                <div class="prob-circle inactive" style="left: 90%; top: 56%; width: 50px; height: 50px;">✖</div>
-                <div class="prob-circle inactive" style="left: 90%; top: 96%; width: 50px; height: 50px;">✖</div>
+                <div class="result-circle inactive" style="left: 90%; top: 56%; width: 50px; height: 50px;">✖</div>
+                <div class="result-circle inactive" style="left: 90%; top: 96%; width: 50px; height: 50px;">✖</div>
             </div>
             <div class="settings-panel">
                 <h4>Current Settings</h4>
@@ -384,33 +158,33 @@
                             <path d="M 0 0 L 10 5 L 0 10 z" fill="#333" />
                         </marker>
                     </defs>
-                    <line x1="12%" y1="50%" x2="28%" y2="25%" stroke="#333" stroke-width="3" marker-end="url(#arrow-eve)" />
-                    <line x1="12%" y1="50%" x2="28%" y2="75%" stroke="#333" stroke-width="3" marker-end="url(#arrow-eve)" />
+                    <line data-prob="50%" x1="12%" y1="50%" x2="28%" y2="25%" stroke="#333" stroke-width="3" marker-end="url(#arrow-eve)" />
+                    <line data-prob="50%" x1="12%" y1="50%" x2="28%" y2="75%" stroke="#333" stroke-width="3" marker-end="url(#arrow-eve)" />
                     
-                    <line x1="36%" y1="25%" x2="46%" y2="25%" stroke="#ff4d4d" stroke-width="3" marker-end="url(#arrow-eve)" />
-                    <line x1="36%" y1="75%" x2="46%" y2="60%" stroke="#ff4d4d" stroke-width="3" marker-end="url(#arrow-eve)" />
-                    <line x1="36%" y1="75%" x2="46%" y2="90%" stroke="#ff4d4d" stroke-width="3" marker-end="url(#arrow-eve)" />
+                    <line data-prob="50%" x1="36%" y1="25%" x2="46%" y2="25%" stroke="#ff4d4d" stroke-width="3" marker-end="url(#arrow-eve)" />
+                    <line data-prob="25%" x1="36%" y1="75%" x2="46%" y2="60%" stroke="#ff4d4d" stroke-width="3" marker-end="url(#arrow-eve)" />
+                    <line data-prob="25%" x1="36%" y1="75%" x2="46%" y2="90%" stroke="#ff4d4d" stroke-width="3" marker-end="url(#arrow-eve)" />
                     
-                    <line class="eve-bob-line same-path" x1="54%" y1="25%" x2="68%" y2="15%" stroke="#333" stroke-width="3" marker-end="url(#arrow-eve)" />
-                    <line class="eve-bob-line diff-path" x1="54%" y1="25%" x2="68%" y2="35%" stroke="#333" stroke-width="3" marker-end="url(#arrow-eve)" />
+                    <line class="eve-bob-line same-path" data-prob="25%" x1="54%" y1="25%" x2="68%" y2="15%" stroke="#333" stroke-width="3" marker-end="url(#arrow-eve)" />
+                    <line class="eve-bob-line diff-path" data-prob="25%" x1="54%" y1="25%" x2="68%" y2="35%" stroke="#333" stroke-width="3" marker-end="url(#arrow-eve)" />
                     
-                    <line class="eve-bob-line same-path" x1="54%" y1="60%" x2="68%" y2="52%" stroke="#333" stroke-width="3" marker-end="url(#arrow-eve)" />
-                    <line class="eve-bob-line diff-path" x1="54%" y1="60%" x2="68%" y2="68%" stroke="#333" stroke-width="3" marker-end="url(#arrow-eve)" />
+                    <line class="eve-bob-line same-path" data-prob="12.5%" x1="54%" y1="60%" x2="68%" y2="52%" stroke="#333" stroke-width="3" marker-end="url(#arrow-eve)" />
+                    <line class="eve-bob-line diff-path" data-prob="12.5%" x1="54%" y1="60%" x2="68%" y2="68%" stroke="#333" stroke-width="3" marker-end="url(#arrow-eve)" />
                     
-                    <line class="eve-bob-line same-path" x1="54%" y1="90%" x2="68%" y2="82%" stroke="#333" stroke-width="3" marker-end="url(#arrow-eve)" />
-                    <line class="eve-bob-line diff-path" x1="54%" y1="90%" x2="68%" y2="98%" stroke="#333" stroke-width="3" marker-end="url(#arrow-eve)" />
+                    <line class="eve-bob-line same-path" data-prob="12.5%" x1="54%" y1="90%" x2="68%" y2="82%" stroke="#333" stroke-width="3" marker-end="url(#arrow-eve)" />
+                    <line class="eve-bob-line diff-path" data-prob="12.5%" x1="54%" y1="90%" x2="68%" y2="98%" stroke="#333" stroke-width="3" marker-end="url(#arrow-eve)" />
 
-                    <line class="eve-bob-line same-path" x1="76%" y1="15%" x2="84%" y2="15%" stroke="#333" stroke-width="3" marker-end="url(#arrow-eve)" />
-                    <line class="eve-bob-line diff-path" x1="76%" y1="35%" x2="84%" y2="30%" stroke="#333" stroke-width="3" marker-end="url(#arrow-eve)" />
-                    <line class="eve-bob-line diff-path" x1="76%" y1="35%" x2="84%" y2="40%" stroke="#333" stroke-width="3" marker-end="url(#arrow-eve)" />
+                    <line class="eve-bob-line same-path" data-prob="25%" x1="76%" y1="15%" x2="84%" y2="15%" stroke="#333" stroke-width="3" marker-end="url(#arrow-eve)" />
+                    <line class="eve-bob-line diff-path" data-prob="12.5%" x1="76%" y1="35%" x2="84%" y2="30%" stroke="#333" stroke-width="3" marker-end="url(#arrow-eve)" />
+                    <line class="eve-bob-line diff-path" data-prob="12.5%" x1="76%" y1="35%" x2="84%" y2="40%" stroke="#333" stroke-width="3" marker-end="url(#arrow-eve)" />
 
-                    <line class="eve-bob-line same-path" x1="76%" y1="52%" x2="84%" y2="48%" stroke="#333" stroke-width="3" marker-end="url(#arrow-eve)" />
-                    <line class="eve-bob-line same-path" x1="76%" y1="52%" x2="84%" y2="56%" stroke="#333" stroke-width="3" marker-end="url(#arrow-eve)" />
-                    <line class="eve-bob-line diff-path" x1="76%" y1="68%" x2="84%" y2="68%" stroke="#333" stroke-width="3" marker-end="url(#arrow-eve)" />
+                    <line class="eve-bob-line same-path" data-prob="6.25%" x1="76%" y1="52%" x2="84%" y2="48%" stroke="#333" stroke-width="3" marker-end="url(#arrow-eve)" />
+                    <line class="eve-bob-line same-path" data-prob="6.25%" x1="76%" y1="52%" x2="84%" y2="56%" stroke="#333" stroke-width="3" marker-end="url(#arrow-eve)" />
+                    <line class="eve-bob-line diff-path" data-prob="12.5%" x1="76%" y1="68%" x2="84%" y2="68%" stroke="#333" stroke-width="3" marker-end="url(#arrow-eve)" />
 
-                    <line class="eve-bob-line same-path" x1="76%" y1="82%" x2="84%" y2="78%" stroke="#333" stroke-width="3" marker-end="url(#arrow-eve)" />
-                    <line class="eve-bob-line same-path" x1="76%" y1="82%" x2="84%" y2="86%" stroke="#333" stroke-width="3" marker-end="url(#arrow-eve)" />
-                    <line class="eve-bob-line diff-path" x1="76%" y1="98%" x2="84%" y2="98%" stroke="#333" stroke-width="3" marker-end="url(#arrow-eve)" />
+                    <line class="eve-bob-line same-path" data-prob="6.25%" x1="76%" y1="82%" x2="84%" y2="78%" stroke="#333" stroke-width="3" marker-end="url(#arrow-eve)" />
+                    <line class="eve-bob-line same-path" data-prob="6.25%" x1="76%" y1="82%" x2="84%" y2="86%" stroke="#333" stroke-width="3" marker-end="url(#arrow-eve)" />
+                    <line class="eve-bob-line diff-path" data-prob="12.5%" x1="76%" y1="98%" x2="84%" y2="98%" stroke="#333" stroke-width="3" marker-end="url(#arrow-eve)" />
                 </svg>
 
                 <div class="character-avatar" style="left: 8%;"><img src="pictures/cat_alice.svg" alt="Alice"></div>
@@ -419,16 +193,9 @@
                     <div class="state-circle" id="eve-alice-state">|→⟩</div>
                 </div>
 
-                <div class="prob-circle" style="left: 20%; top: 35%; width:30px; height:30px; font-size:14px;"><math><mfrac><mn>1</mn><mn>2</mn></mfrac></math></div>
-                <div class="prob-circle" style="left: 20%; top: 65%; width:30px; height:30px; font-size:14px;"><math><mfrac><mn>1</mn><mn>2</mn></mfrac></math></div>
-
                 <div class="character-avatar" style="left: 32%;"><img src="pictures/Eavesdropper.svg" alt="Eve" style="width:60px;"></div>
                 <div class="node" style="left: 32%; top: 25%;"><img id="eve-pol-same" src="pictures/red_vertical.svg" class="polarizer-img"></div>
                 <div class="node" style="left: 32%; top: 75%;"><img id="eve-pol-diff" src="pictures/red_diagonal.svg" class="polarizer-img"></div>
-
-                <div class="prob-circle" style="left: 42%; top: 25%; width:30px; height:30px; font-size:14px; background:#ffe6e6; color:#ff4d4d;">1</div>
-                <div class="prob-circle" style="left: 42%; top: 65%; width:30px; height:30px; font-size:14px; background:#ffe6e6; color:#ff4d4d;"><math><mfrac><mn>1</mn><mn>2</mn></mfrac></math></div>
-                <div class="prob-circle" style="left: 42%; top: 85%; width:30px; height:30px; font-size:14px; background:#ffe6e6; color:#ff4d4d;"><math><mfrac><mn>1</mn><mn>2</mn></mfrac></math></div>
 
                 <div class="node" style="left: 50%; top: 25%;"><div class="eve-state-circle" id="eve-state-same">|→⟩</div></div>
                 <div class="node" style="left: 50%; top: 60%;">
@@ -498,12 +265,11 @@
                             <path d="M 0 0 L 10 5 L 0 10 z" fill="#333" />
                         </marker>
                     </defs>
-                
-                    <line class="b92-line FalseRoute" x1="17%" y1="50%" x2="35%" y2="25%" stroke="#333" stroke-width="3" marker-end="url(#arrow-b92)" />
-                    <line class="b92-line TrueRoute" x1="17%" y1="50%" x2="35%" y2="75%" stroke="#333" stroke-width="3" marker-end="url(#arrow-b92)" />
-                    <line class="b92-line FalseRoute" x1="47%" y1="25%" x2="67%" y2="25%" stroke="#333" stroke-width="3" marker-end="url(#arrow-b92)" />
-                    <line class="b92-line TrueRoute" x1="47%" y1="75%" x2="67%" y2="55%" stroke="#333" stroke-width="3" marker-end="url(#arrow-b92)" />
-                    <line class="b92-line TrueRoute" x1="47%" y1="75%" x2="67%" y2="95%" stroke="#333" stroke-width="3" marker-end="url(#arrow-b92)" />
+                    <line class="b92-line FalseRoute" data-prob="50%" x1="17%" y1="50%" x2="35%" y2="25%" stroke="#333" stroke-width="3" marker-end="url(#arrow-b92)" />
+                    <line class="b92-line TrueRoute" data-prob="50%" x1="17%" y1="50%" x2="35%" y2="75%" stroke="#333" stroke-width="3" marker-end="url(#arrow-b92)" />
+                    <line class="b92-line FalseRoute" data-prob="50%" x1="47%" y1="25%" x2="67%" y2="25%" stroke="#333" stroke-width="3" marker-end="url(#arrow-b92)" />
+                    <line class="b92-line TrueRoute" data-prob="25%" x1="47%" y1="75%" x2="67%" y2="55%" stroke="#333" stroke-width="3" marker-end="url(#arrow-b92)" />
+                    <line class="b92-line TrueRoute" data-prob="25%" x1="47%" y1="75%" x2="67%" y2="95%" stroke="#333" stroke-width="3" marker-end="url(#arrow-b92)" />
                 </svg>
 
                 <div class="character-avatar" style="left: 10%;"><img src="pictures/cat_alice.svg" alt="Alice"></div>
@@ -515,19 +281,12 @@
                     <div class="state-circle" id="b92-initial-state-text">|→⟩</div>
                 </div>
                 
-                <div class="prob-circle inactive" style="left: 25%; top: 35%;"><math style="font-weight: bold; font-size: 20px;"><mfrac><mn>1</mn><mn>2</mn></mfrac></math></div>
-                <div class="prob-circle" style="left: 25%; top: 65%;"><math style="font-weight: bold; font-size: 20px;"><mfrac><mn>1</mn><mn>2</mn></mfrac></math></div>
-
                 <div class="node" style="left: 41%; top: 25%;">
                     <img id="b92-bob-same" src="pictures/gray_vertical.svg" class="polarizer-img">
                 </div>
                 <div class="node" style="left: 41%; top: 75%;">
                     <img id="b92-bob-unsame" src="pictures/diagonal.svg" class="polarizer-img">
                 </div>
-
-                <div class="prob-circle inactive" style="left: 55%; top: 25%;"><math style="font-weight: bold; font-size: 30px;"><mfrac><mn>1</mn></mfrac></math></div>
-                <div class="prob-circle" style="left: 55%; top: 60%;"><math style="font-weight: bold; font-size: 20px;"><mfrac><mn>1</mn><mn>2</mn></mfrac></math></div>
-                <div class="prob-circle inactive" style="left: 55%; top: 86%;"><math style="font-weight: bold; font-size: 20px;"><mfrac><mn>1</mn><mn>2</mn></mfrac></math></div>
 
                 <div class="node" style="left: 75%; top: 25%;">
                     <div id="b92-symbol-bobsame" class="state-circle inactive">|→⟩</div>
@@ -543,9 +302,9 @@
                     </div>
                 </div>
 
-                <div class="prob-circle inactive" style="left: 90%; top: 25%; width: 50px; height: 50px;">✖</div>
+                <div class="result-circle inactive" style="left: 90%; top: 25%; width: 50px; height: 50px;">✖</div>
                 <div class="result-circle" style="left: 90%; top: 56%; width: 50px; height: 50px;">✔</div>
-                <div class="prob-circle inactive" style="left: 90%; top: 96%; width: 50px; height: 50px;">✖</div>
+                <div class="result-circle inactive" style="left: 90%; top: 96%; width: 50px; height: 50px;">✖</div>
             </div>
             <div class="settings-panel">
                 <h4>Current Settings</h4>
@@ -565,6 +324,33 @@
     };
 
     document.addEventListener('DOMContentLoaded', () => {
+        // --- 新增：機率 Tooltip 初始化邏輯 ---
+        const tooltip = document.createElement('div');
+        tooltip.className = 'line-tooltip';
+        document.body.appendChild(tooltip);
+
+        // 為所有帶有 data-prob 屬性的線條綁定事件
+        document.querySelectorAll('svg.arrows line[data-prob]').forEach(line => {
+            line.addEventListener('mouseenter', (e) => {
+                const probValue = line.getAttribute('data-prob');
+                if (probValue) {
+                    tooltip.innerHTML = `Probability: ${probValue}`;
+                    tooltip.style.opacity = '1';
+                }
+            });
+
+            line.addEventListener('mousemove', (e) => {
+                // 加上 15px 的偏移量避免遮擋游標，滑鼠移動時更新位置
+                tooltip.style.left = (e.pageX + 15) + 'px';
+                tooltip.style.top = (e.pageY + 15) + 'px';
+            });
+
+            line.addEventListener('mouseleave', () => {
+                tooltip.style.opacity = '0';
+            });
+        });
+        // --- Tooltip 結束 ---
+
         const savedData = localStorage.getItem('qkdSettings');
         const contentAreas = document.querySelectorAll('.settings-content');
         
@@ -577,24 +363,20 @@
             if (bobBasisRaw.includes('X')) { globalBobBasis = 'X';}
             else if (bobBasisRaw.includes('Z')) { globalBobBasis = 'Z';}
 
-            // 1. 強化判斷邏輯：防呆處理大小寫與字串/布林值
             if (settings.eve) {
                 const isEveOn = (settings.eve.isOn === true || String(settings.eve.isOn).toLowerCase() === 'true' || settings.eve.isOn === 'on');
                 const attackMethod = String(settings.eve.attack || '').toLowerCase();
                 
-                // 只要 attackMethod 包含 intercept 關鍵字就視為成立
                 if (isEveOn && attackMethod.includes('intercept')) {
                     isEveInterceptResend = true;
                 }
             }
 
-            // 如果 Eve 是 Intercept-Resend，切換預設視圖為 Eve 版本
             if (isEveInterceptResend) {
                 document.getElementById('view-bb84').classList.remove('active-view');
                 document.getElementById('view-bb84-eve').classList.add('active-view');
             }
 
-            // 2. 選項顯示過濾防呆：若 Alice 沒有特別選 Z 或 X (例如選了 Random 或空值)，預設全部顯示
             const showZ = aliceBasis.includes('Z') || aliceBasis.toLowerCase().includes('rectilinear') || !aliceBasis.includes('X');
             const showX = aliceBasis.includes('X') || aliceBasis.toLowerCase().includes('diagonal') || !aliceBasis.includes('Z');
             
@@ -608,7 +390,6 @@
                 }
             });
 
-            // 3. 角色設定面板生成邏輯
             function formatRole(name, data) {
                 if (!data) return ''; 
                 if (name === 'Eavesdropper' && (!data.isOn || String(data.isOn).toLowerCase() === 'false')) {
@@ -716,7 +497,6 @@
         document.getElementById('bb84-symbol-bobunsame-1').innerText = oppoSymbol[0];
         document.getElementById('bb84-symbol-bobunsame-2').innerText = oppoSymbol[1];
 
-        // 確保這裡有宣告 keyImg, bobSame, bobUnsame
         const keyImg = document.getElementById('bb84-initial-key-img');
         const bobSame = document.getElementById('bb84-bob-same');
         const bobUnsame = document.getElementById('bb84-bob-unsame');
@@ -772,6 +552,7 @@
         const aliceBasis = (basisType === 'rectilinear') ? 'Z' : 'X';
         updateLines(aliceBasis, globalBobBasis, 'b92');
     }
+
     function updateLines(aliceBasis, bobBasis, protocol) {
         const containerSelector = protocol === 'bb84' ? '#view-bb84' : '#view-b92';
         const allLines = document.querySelectorAll(`${containerSelector} line`);
@@ -792,7 +573,6 @@
         });
     }
 
-    // Eve 專屬狀態邏輯
     function selectStateBB84Eve(element, stateSymbol, basisType) {
         const rows = document.querySelectorAll('#bb84-eve-options .option-row');
         rows.forEach(row => row.classList.remove('active'));
