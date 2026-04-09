@@ -143,13 +143,13 @@
         <div class="main-content">
             
             <div class="left-panel">
-                <img src="https://s112321005.github.io/Cybersecurity-Visualization/pictures/key.svg" alt="Quantum Security Applications Icon">
+                <img src="pictures/key.svg" alt="Quantum Security Applications Icon">
                 <h2>Quantum Security<br>Applications</h2>
             </div>
 
             <div class="right-panel">
                 
-                <a href="https://s112321005.github.io/Cybersecurity-Visualization/QKDstep1.html" class="menu-item">
+                <a href="QKDstep1.html" class="menu-item">
                     <div class="text-content">
                         <p class="en-title">Quantum Key Distribution</p>
                     </div>
