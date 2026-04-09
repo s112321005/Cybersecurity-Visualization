@@ -264,9 +264,9 @@ body {
 svg.arrows line {
     cursor: pointer;
     transition: stroke-width 0.2s ease;
-    pointer-events: auto;
+    pointer-events: stroke !important; /* 強制線條感應滑鼠 */
 }
 svg.arrows line:hover {
     stroke-width: 6 !important; /* 懸浮時加粗箭頭方便辨識 */
-    stroke: #007bff !important; /* 懸浮時微微改變顏色，可依需求調整 */
+    stroke: #007bff !important; /* 懸浮時微微改變顏色 */
 }
