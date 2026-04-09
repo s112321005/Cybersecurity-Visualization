@@ -23,10 +23,10 @@
             margin: 0;
             padding: 20px 0;
             color: #333;
-            min-width: 1200px !important; /* 保留 B92 要求的最小寬度 */
+            min-width: 1200px !important; 
         }
 
-        /* --- 新增：頂部切換按鈕區 --- */
+        /* --- 頂部切換按鈕區 --- */
         .nav-tabs {
             display: flex;
             gap: 20px;
@@ -50,17 +50,16 @@
             color: white;
             box-shadow: 0 5px 15px rgba(0,71,171,0.3);
         }
-        /* --------------------------- */
 
         /* 隱藏/顯示的控制 class */
         .page-view {
-            display: none; /* 預設隱藏 */
+            display: none; 
             width: 100%;
             justify-content: center;
         }
 
         .page-view.active-view {
-            display: flex; /* 啟用的頁面顯示為 flex */
+            display: flex; 
         }
 
         /* 原本的排版樣式 (共用) */
@@ -147,6 +146,13 @@
         }
         .state-circle.inactive { background-color: var(--inactive-gray); color: #666; }
 
+        /* 新增：Eve 專屬的紅色狀態球 */
+        .eve-state-circle {
+            width: 45px; height: 45px; background: #ff4d4d; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center; color: white;
+            font-size: 18px; font-weight: bold; margin-top: 10px; transition: all 0.3s ease;
+        }
+
         .prob-circle {
             position: absolute; background: var(--light-blue); width: 40px; height: 40px;
             border-radius: 50%; display: flex; align-items: center; justify-content: center;
@@ -171,7 +177,8 @@
             background: var(--light-blue); padding: 10px 25px; border-radius: 15px;
             font-weight: bold; text-align: center; z-index: 10; white-space: nowrap;
         }
-        /* --- 新增：右側設定資訊欄樣式 --- */
+
+        /* --- 右側設定資訊欄樣式 --- */
         .settings-panel {
             width: 220px;
             background: var(--light-blue);
@@ -213,32 +220,13 @@
             margin-bottom: 2px;
         }
         
-        /* 狀態為 OFF 時的字體顏色 */
-        .setting-item.off-state span {
-            color: #999;
-        }     
-        /* 狀態為 OFF 時的人物名稱改為灰色 */
-        .setting-item.off-state strong {
-            color: #999;
-        }
-
-        /* 狀態為 ON 時且人物是 Eavesdropper 改為紅色 */
-        .setting-item.eve-on strong {
-            color: #ff4d4d;
-        }
+        .setting-item.off-state span { color: #999; }     
+        .setting-item.off-state strong { color: #999; }
+        .setting-item.eve-on strong { color: #ff4d4d; }
 
         .line-inactive {
             stroke: #ccc !important;
             opacity: 0.5;
-        }
-        /* --- Eve 專屬樣式 --- */
-        .eve-state-circle {
-            width: 45px; height: 45px; background: #ff4d4d; /* Eve 的紅色 */
-            border-radius: 50%; display: flex; align-items: center; justify-content: center;
-            color: white; font-size: 18px; font-weight: bold; margin-top: 10px; transition: all 0.3s ease;
-        }
-        .diagram-area.eve-layout {
-            height: 800px; /* 因為樹狀圖很大，需要更高的畫布 */
         }
 
     </style>
@@ -284,16 +272,11 @@
                         </marker>
                     </defs>
                 
-                    <line class="bb84-line TrueRoute" 
-                        x1="17%" y1="50%" x2="35%" y2="25%" stroke="#333" stroke-width="3" marker-end="url(#arrow-bb84)" />
-                    <line class="bb84-line FalseRoute" 
-                        x1="17%" y1="50%" x2="35%" y2="75%" stroke="#333" stroke-width="3" marker-end="url(#arrow-bb84)" />
-                    <line class="bb84-line TrueRoute" 
-                        x1="47%" y1="25%" x2="67%" y2="25%" stroke="#333" stroke-width="3" marker-end="url(#arrow-bb84)" />
-                    <line class="bb84-line FalseRoute" 
-                        x1="47%" y1="75%" x2="67%" y2="55%" stroke="#333" stroke-width="3" marker-end="url(#arrow-bb84)" />
-                    <line class="bb84-line FalseRoute" 
-                        x1="47%" y1="75%" x2="67%" y2="95%" stroke="#333" stroke-width="3" marker-end="url(#arrow-bb84)" />
+                    <line class="bb84-line TrueRoute" x1="17%" y1="50%" x2="35%" y2="25%" stroke="#333" stroke-width="3" marker-end="url(#arrow-bb84)" />
+                    <line class="bb84-line FalseRoute" x1="17%" y1="50%" x2="35%" y2="75%" stroke="#333" stroke-width="3" marker-end="url(#arrow-bb84)" />
+                    <line class="bb84-line TrueRoute" x1="47%" y1="25%" x2="67%" y2="25%" stroke="#333" stroke-width="3" marker-end="url(#arrow-bb84)" />
+                    <line class="bb84-line FalseRoute" x1="47%" y1="75%" x2="67%" y2="55%" stroke="#333" stroke-width="3" marker-end="url(#arrow-bb84)" />
+                    <line class="bb84-line FalseRoute" x1="47%" y1="75%" x2="67%" y2="95%" stroke="#333" stroke-width="3" marker-end="url(#arrow-bb84)" />
                 </svg>
 
                 <div class="character-avatar" style="left: 10%;"><img src="pictures/cat_alice.svg" alt="Alice"></div>
@@ -339,16 +322,16 @@
             </div>
             <div class="settings-panel">
                 <h4>Current Settings</h4>
-                <div class="settings-content">
-                    </div>
+                <div class="settings-content"></div>
             </div>
         </div>
     </div>
 </div>
+
 <div id="view-bb84-eve" class="page-view">
-    <div class="container" style="width: 1200px !important; max-width: 1200px !important;">
+    <div class="container">
         <div class="top-bar">
-            <div class="page-title">QKD：BB84 (Eve Intercept-Resend)</div>
+            <div class="page-title" style="border-color: #ff4d4d; color: #ff4d4d;">QKD：BB84 (Eve Intercept-Resend)</div>
         </div>
         <div class="main-content">
             <div class="sidebar">
@@ -367,45 +350,92 @@
                         <div class="state-btn">|一⟩</div><div class="arrow-icon">➔</div><div class="state-btn">|↖⟩</div>
                     </div>
                 </div>
+                <div class="hint-text">Select to prepare <br>Alice's message</div>
             </div>
 
-            <div class="diagram-area eve-layout">
-                <div class="character-avatar" style="left: 5%;"><img src="pictures/cat_alice.svg" alt="Alice"></div>
+            <div class="diagram-area eve-layout" style="height: 900px;">
+                <svg class="arrows" style="width: 100%; height: 100%; position: absolute; z-index: 1;">
+                    <defs>
+                        <marker id="arrow-eve" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                            <path d="M 0 0 L 10 5 L 0 10 z" fill="#333" />
+                        </marker>
+                    </defs>
+                    <line x1="10%" y1="50%" x2="22%" y2="25%" stroke="#333" stroke-width="3" marker-end="url(#arrow-eve)" />
+                    <line x1="10%" y1="50%" x2="22%" y2="75%" stroke="#333" stroke-width="3" marker-end="url(#arrow-eve)" />
+                    <line x1="28%" y1="25%" x2="38%" y2="25%" stroke="#ff4d4d" stroke-width="3" marker-end="url(#arrow-eve)" />
+                    <line x1="28%" y1="75%" x2="38%" y2="60%" stroke="#ff4d4d" stroke-width="3" marker-end="url(#arrow-eve)" />
+                    <line x1="28%" y1="75%" x2="38%" y2="90%" stroke="#ff4d4d" stroke-width="3" marker-end="url(#arrow-eve)" />
+                    
+                    <line class="eve-bob-line same-path" x1="43%" y1="25%" x2="57%" y2="15%" stroke="#333" stroke-width="3" marker-end="url(#arrow-eve)" />
+                    <line class="eve-bob-line diff-path" x1="43%" y1="25%" x2="57%" y2="35%" stroke="#333" stroke-width="3" marker-end="url(#arrow-eve)" />
+                    
+                    <line class="eve-bob-line same-path" x1="43%" y1="60%" x2="57%" y2="52%" stroke="#333" stroke-width="3" marker-end="url(#arrow-eve)" />
+                    <line class="eve-bob-line diff-path" x1="43%" y1="60%" x2="57%" y2="68%" stroke="#333" stroke-width="3" marker-end="url(#arrow-eve)" />
+                    
+                    <line class="eve-bob-line same-path" x1="43%" y1="90%" x2="57%" y2="82%" stroke="#333" stroke-width="3" marker-end="url(#arrow-eve)" />
+                    <line class="eve-bob-line diff-path" x1="43%" y1="90%" x2="57%" y2="98%" stroke="#333" stroke-width="3" marker-end="url(#arrow-eve)" />
+
+                    <line class="eve-bob-line same-path" x1="63%" y1="15%" x2="72%" y2="15%" stroke="#333" stroke-width="3" marker-end="url(#arrow-eve)" />
+                    <line class="eve-bob-line diff-path" x1="63%" y1="35%" x2="72%" y2="30%" stroke="#333" stroke-width="3" marker-end="url(#arrow-eve)" />
+                    <line class="eve-bob-line diff-path" x1="63%" y1="35%" x2="72%" y2="40%" stroke="#333" stroke-width="3" marker-end="url(#arrow-eve)" />
+
+                    <line class="eve-bob-line same-path" x1="63%" y1="52%" x2="72%" y2="48%" stroke="#333" stroke-width="3" marker-end="url(#arrow-eve)" />
+                    <line class="eve-bob-line same-path" x1="63%" y1="52%" x2="72%" y2="56%" stroke="#333" stroke-width="3" marker-end="url(#arrow-eve)" />
+                    <line class="eve-bob-line diff-path" x1="63%" y1="68%" x2="72%" y2="68%" stroke="#333" stroke-width="3" marker-end="url(#arrow-eve)" />
+
+                    <line class="eve-bob-line same-path" x1="63%" y1="82%" x2="72%" y2="78%" stroke="#333" stroke-width="3" marker-end="url(#arrow-eve)" />
+                    <line class="eve-bob-line same-path" x1="63%" y1="82%" x2="72%" y2="86%" stroke="#333" stroke-width="3" marker-end="url(#arrow-eve)" />
+                    <line class="eve-bob-line diff-path" x1="63%" y1="98%" x2="72%" y2="98%" stroke="#333" stroke-width="3" marker-end="url(#arrow-eve)" />
+                </svg>
+
+                <div class="character-avatar" style="left: 5%; top: 40%;"><img src="pictures/cat_alice.svg" alt="Alice"></div>
                 <div class="node" style="left: 5%; top: 50%;">
                     <img id="eve-alice-key" src="pictures/vertical.svg" class="polarizer-img">
                     <div class="state-circle" id="eve-alice-state">|→⟩</div>
                 </div>
 
-                <div class="character-avatar" style="left: 25%;"><img src="pictures/cat_eve.svg" alt="Eve" style="width:70px;"></div>
-                <div class="node" style="left: 25%; top: 30%;">
-                    <img id="eve-pol-same" src="pictures/red_vertical.svg" class="polarizer-img">
-                </div>
-                <div class="node" style="left: 25%; top: 70%;">
-                    <img id="eve-pol-diff" src="pictures/red_diagonal.svg" class="polarizer-img">
-                </div>
+                <div class="prob-circle" style="left: 15%; top: 35%; width:30px; height:30px; font-size:14px;"><math><mfrac><mn>1</mn><mn>2</mn></mfrac></math></div>
+                <div class="prob-circle" style="left: 15%; top: 65%; width:30px; height:30px; font-size:14px;"><math><mfrac><mn>1</mn><mn>2</mn></mfrac></math></div>
 
-                <div class="node" style="left: 40%; top: 30%;">
-                    <div class="eve-state-circle" id="eve-state-same">|→⟩</div>
-                </div>
+                <div class="character-avatar" style="left: 25%; top: 12%;"><img src="pictures/cat_eve.svg" alt="Eve" style="width:60px;"></div>
+                <div class="node" style="left: 25%; top: 25%;"><img id="eve-pol-same" src="pictures/red_vertical.svg" class="polarizer-img"></div>
+                <div class="node" style="left: 25%; top: 75%;"><img id="eve-pol-diff" src="pictures/red_diagonal.svg" class="polarizer-img"></div>
+
+                <div class="prob-circle" style="left: 33%; top: 25%; width:30px; height:30px; font-size:14px; background:#ffe6e6; color:#ff4d4d;">1</div>
+                <div class="prob-circle" style="left: 33%; top: 65%; width:30px; height:30px; font-size:14px; background:#ffe6e6; color:#ff4d4d;"><math><mfrac><mn>1</mn><mn>2</mn></mfrac></math></div>
+                <div class="prob-circle" style="left: 33%; top: 85%; width:30px; height:30px; font-size:14px; background:#ffe6e6; color:#ff4d4d;"><math><mfrac><mn>1</mn><mn>2</mn></mfrac></math></div>
+
+                <div class="node" style="left: 40%; top: 25%;"><div class="eve-state-circle" id="eve-state-same">|→⟩</div></div>
                 <div class="node" style="left: 40%; top: 60%;">
-                    <div class="eve-state-circle" id="eve-state-diff1" style="transform: rotate(-45deg);"><span style="transform: rotate(45deg); display:block;">|↖⟩</span></div>
+                    <div class="eve-state-circle" style="transform: rotate(-45deg);"><span id="eve-state-diff1" style="transform: rotate(45deg); display:block;">|↖⟩</span></div>
                 </div>
-                <div class="node" style="left: 40%; top: 80%;">
-                    <div class="eve-state-circle" id="eve-state-diff2" style="transform: rotate(45deg);"><span style="transform: rotate(-45deg); display:block;">|↗⟩</span></div>
+                <div class="node" style="left: 40%; top: 90%;">
+                    <div class="eve-state-circle" style="transform: rotate(45deg);"><span id="eve-state-diff2" style="transform: rotate(-45deg); display:block;">|↗⟩</span></div>
                 </div>
 
-                <div class="character-avatar" style="left: 60%;"><img src="pictures/cat_bob.svg" alt="Bob"></div>
-                <div class="node" style="left: 60%; top: 15%;"><img id="bob-pol-1" src="pictures/vertical.svg" class="polarizer-img"></div>
-                <div class="node" style="left: 60%; top: 35%;"><img id="bob-pol-2" src="pictures/gray_diagonal.svg" class="polarizer-img inactive"></div>
-                <div class="node" style="left: 60%; top: 55%;"><img id="bob-pol-3" src="pictures/diagonal.svg" class="polarizer-img"></div>
-                <div class="node" style="left: 60%; top: 65%;"><img id="bob-pol-4" src="pictures/gray_vertical.svg" class="polarizer-img inactive"></div>
-                <div class="node" style="left: 60%; top: 75%;"><img id="bob-pol-5" src="pictures/diagonal.svg" class="polarizer-img"></div>
-                <div class="node" style="left: 60%; top: 85%;"><img id="bob-pol-6" src="pictures/gray_vertical.svg" class="polarizer-img inactive"></div>
+                <div class="character-avatar" style="left: 60%; top: 2%;"><img src="pictures/cat_bob.svg" alt="Bob"></div>
+                <div class="node bob-same-node" style="left: 60%; top: 15%;"><img id="bob-pol-1" src="pictures/vertical.svg" class="polarizer-img"></div>
+                <div class="node bob-diff-node" style="left: 60%; top: 35%;"><img id="bob-pol-2" src="pictures/gray_diagonal.svg" class="polarizer-img inactive"></div>
+                
+                <div class="node bob-same-node" style="left: 60%; top: 52%;"><img id="bob-pol-3" src="pictures/vertical.svg" class="polarizer-img"></div>
+                <div class="node bob-diff-node" style="left: 60%; top: 68%;"><img id="bob-pol-4" src="pictures/gray_diagonal.svg" class="polarizer-img inactive"></div>
+                
+                <div class="node bob-same-node" style="left: 60%; top: 82%;"><img id="bob-pol-5" src="pictures/vertical.svg" class="polarizer-img"></div>
+                <div class="node bob-diff-node" style="left: 60%; top: 98%;"><img id="bob-pol-6" src="pictures/gray_diagonal.svg" class="polarizer-img inactive"></div>
 
-                <div class="node" style="left: 75%; top: 15%;"><div class="state-circle" id="bob-final-1">|→⟩</div></div>
-                <div class="node" style="left: 75%; top: 30%;"><div class="state-circle inactive" id="bob-final-2">|↖⟩</div></div>
-                <div class="node" style="left: 75%; top: 40%;"><div class="state-circle inactive" id="bob-final-3">|↗⟩</div></div>
-                </div>
+                <div class="result-header" style="left: 75%; top: 2%;">Bob's Measure</div>
+                <div class="node bob-same-node" style="left: 75%; top: 15%;"><div class="state-circle" id="bob-final-1">|→⟩</div></div>
+                <div class="node bob-diff-node" style="left: 75%; top: 30%;"><div class="state-circle inactive" id="bob-final-2" style="transform: rotate(-45deg);"><span style="transform: rotate(45deg); display:block;">|↖⟩</span></div></div>
+                <div class="node bob-diff-node" style="left: 75%; top: 40%;"><div class="state-circle inactive" id="bob-final-3" style="transform: rotate(45deg);"><span style="transform: rotate(-45deg); display:block;">|↗⟩</span></div></div>
+                
+                <div class="node bob-same-node" style="left: 75%; top: 48%;"><div class="state-circle" id="bob-final-4">|→⟩</div></div>
+                <div class="node bob-same-node" style="left: 75%; top: 56%;"><div class="state-circle" id="bob-final-5" style="background:#ff4d4d;">|↑⟩</div></div>
+                <div class="node bob-diff-node" style="left: 75%; top: 68%;"><div class="state-circle inactive" id="bob-final-6" style="transform: rotate(-45deg);"><span style="transform: rotate(45deg); display:block;">|↖⟩</span></div></div>
+
+                <div class="node bob-same-node" style="left: 75%; top: 78%;"><div class="state-circle" id="bob-final-7">|→⟩</div></div>
+                <div class="node bob-same-node" style="left: 75%; top: 86%;"><div class="state-circle" id="bob-final-8" style="background:#ff4d4d;">|↑⟩</div></div>
+                <div class="node bob-diff-node" style="left: 75%; top: 98%;"><div class="state-circle inactive" id="bob-final-9" style="transform: rotate(45deg);"><span style="transform: rotate(-45deg); display:block;">|↗⟩</span></div></div>
+            </div>
             
             <div class="settings-panel">
                 <h4>Current Settings</h4>
@@ -414,6 +444,7 @@
         </div>
     </div>
 </div>
+
 <div id="view-b92" class="page-view">
     <div class="container">
         <div class="top-bar">
@@ -442,16 +473,11 @@
                         </marker>
                     </defs>
                 
-                    <line class="b92-line FalseRoute" 
-                        x1="17%" y1="50%" x2="35%" y2="25%" stroke="#333" stroke-width="3" marker-end="url(#arrow-b92)" />
-                    <line class="b92-line TrueRoute" 
-                        x1="17%" y1="50%" x2="35%" y2="75%" stroke="#333" stroke-width="3" marker-end="url(#arrow-b92)" />
-                    <line class="b92-line FalseRoute" 
-                        x1="47%" y1="25%" x2="67%" y2="25%" stroke="#333" stroke-width="3" marker-end="url(#arrow-b92)" />
-                    <line class="b92-line TrueRoute" 
-                        x1="47%" y1="75%" x2="67%" y2="55%" stroke="#333" stroke-width="3" marker-end="url(#arrow-b92)" />
-                    <line class="b92-line TrueRoute" 
-                        x1="47%" y1="75%" x2="67%" y2="95%" stroke="#333" stroke-width="3" marker-end="url(#arrow-b92)" />
+                    <line class="b92-line FalseRoute" x1="17%" y1="50%" x2="35%" y2="25%" stroke="#333" stroke-width="3" marker-end="url(#arrow-b92)" />
+                    <line class="b92-line TrueRoute" x1="17%" y1="50%" x2="35%" y2="75%" stroke="#333" stroke-width="3" marker-end="url(#arrow-b92)" />
+                    <line class="b92-line FalseRoute" x1="47%" y1="25%" x2="67%" y2="25%" stroke="#333" stroke-width="3" marker-end="url(#arrow-b92)" />
+                    <line class="b92-line TrueRoute" x1="47%" y1="75%" x2="67%" y2="55%" stroke="#333" stroke-width="3" marker-end="url(#arrow-b92)" />
+                    <line class="b92-line TrueRoute" x1="47%" y1="75%" x2="67%" y2="95%" stroke="#333" stroke-width="3" marker-end="url(#arrow-b92)" />
                 </svg>
 
                 <div class="character-avatar" style="left: 10%;"><img src="pictures/cat_alice.svg" alt="Alice"></div>
@@ -497,47 +523,52 @@
             </div>
             <div class="settings-panel">
                 <h4>Current Settings</h4>
-                <div class="settings-content">
-                    </div>
+                <div class="settings-content"></div>
             </div>
         </div>
     </div>
 </div>
 
 <script>
-    // 新增全域變數，用來儲存 Bob 目前的基底 (預設為 Z)
     let globalBobBasis = 'Z';
+    let isEveInterceptResend = false; // 新增全域變數，判斷 Eve 是否啟動攻擊
+
+    const symbols = {
+        Stype: ['| ↑ ⟩', '|→⟩'],
+        Dtype: ['|↗⟩', '|↖⟩']
+    };
 
     document.addEventListener('DOMContentLoaded', () => {
         const savedData = localStorage.getItem('qkdSettings');
         const contentAreas = document.querySelectorAll('.settings-content');
         
-        // 新增：用來記錄是否需要顯示 Eve 攔截畫面
-        let isEveIntercept = false;
-
         if (savedData) {
             const settings = JSON.parse(savedData);
             const aliceBasis = settings.alice?.basis || "";
             const bobBasisRaw = settings.bob?.basis || "";
             
-            // --- 讀取並判斷 Bob 的基底設定 ---
+            // 判斷 Bob 基底
             if (bobBasisRaw.includes('X') || bobBasisRaw.toLowerCase().includes('diagonal')) {
                 globalBobBasis = 'X';
             } else if (bobBasisRaw.includes('Z') || bobBasisRaw.toLowerCase().includes('rectilinear')) {
                 globalBobBasis = 'Z';
             }
 
-            // --- 判斷是否開啟 Eve Intercept-resend ---
-            if (settings.eve && settings.eve.isOn && settings.eve.attack === "Intercept-resend") {
-                isEveIntercept = true;
+            // 判斷 Eve 攻擊狀態
+            if (settings.eve && settings.eve.isOn && settings.eve.attack === 'Intercept-Resend') {
+                isEveInterceptResend = true;
             }
 
-            // 1. 選項顯示過濾 (只顯示與 Alice 基底相符的選項)
-            // 注意：這裡把 #bb84-eve-options 也加進去一起過濾
+            // 如果 Eve 是 Intercept-Resend，切換預設視圖為 Eve 版本
+            if (isEveInterceptResend) {
+                document.getElementById('view-bb84').classList.remove('active-view');
+                document.getElementById('view-bb84-eve').classList.add('active-view');
+            }
+
+            // 1. 選項顯示過濾 (包含新增加的 Eve 選單)
             const allOptionRows = document.querySelectorAll('#bb84-options .option-row, #b92-options .option-row, #bb84-eve-options .option-row');
             allOptionRows.forEach(row => {
                 row.classList.remove('active'); 
-                
                 if (aliceBasis.includes('Z') && row.classList.contains('basis-z')) {
                     row.style.display = 'flex';
                 } else if (aliceBasis.includes('X') && row.classList.contains('basis-x')) {
@@ -549,9 +580,8 @@
 
             // 2. 角色設定面板生成邏輯
             function formatRole(name, data) {
-                if (!data) return ''; // 防呆
+                if (!data) return ''; 
 
-                // 只有 Eve 才需要判斷是否為 OFF 狀態
                 if (name === 'Eavesdropper' && !data.isOn) {
                     return `
                         <div class="setting-item off-state">
@@ -560,7 +590,6 @@
                         </div>`;
                 }
 
-                // Alice, Bob 以及「開啟狀態的 Eve」的顯示邏輯
                 const eveClass = (name === 'Eavesdropper') ? ' eve-on' : '';
                 const statusHtml = (name === 'Eavesdropper') ? `<span>Status: ON</span>` : ''; 
 
@@ -585,7 +614,6 @@
             `;
             
             contentAreas.forEach(area => { area.innerHTML = htmlContent; });
-            console.log("設定載入成功", settings);
             
         } else {
             contentAreas.forEach(area => {
@@ -597,62 +625,42 @@
             });
         }
         
-        // --- 3. 根據 Eve 狀態決定顯示哪個畫面並觸發預設選項 ---
-        if (isEveIntercept) {
-            // 隱藏所有頁面，顯示 Eve 專屬頁面
-            document.querySelectorAll('.page-view').forEach(el => el.style.display = 'none');
-            const eveView = document.getElementById('view-bb84-eve');
-            if (eveView) eveView.style.display = 'flex';
-            
-            // 隱藏頂部的 BB84/B92 切換按鈕 (因為現在是 Eve 專屬的演示流程)
-            const navTabs = document.querySelector('.nav-tabs');
-            if (navTabs) navTabs.style.display = 'none';
-
-            // 觸發 Eve 畫面的預設選項
+        // 觸發預設選項
+        if (isEveInterceptResend) {
             const defaultEve = Array.from(document.querySelectorAll('#bb84-eve-options .option-row')).find(row => row.style.display !== 'none');
-            if (defaultEve) {
+            if(defaultEve) {
                 const symbol = defaultEve.querySelectorAll('.state-btn')[1].innerText;
                 const basis = defaultEve.classList.contains('basis-z') ? 'rectilinear' : 'diagonal';
-                if (typeof selectStateEve === 'function') {
-                    selectStateEve(defaultEve, symbol, basis);
-                }
+                selectStateEve(defaultEve, symbol, basis);
             }
         } else {
-            // 確保頂部切換按鈕顯示 (若從 Eve 切換回來)
-            const navTabs = document.querySelector('.nav-tabs');
-            if (navTabs) navTabs.style.display = 'flex';
-
-            // 觸發原本 BB84 的預設選項
             const defaultBB84 = Array.from(document.querySelectorAll('#bb84-options .option-row')).find(row => row.style.display !== 'none');
-            if (defaultBB84) {
+            if(defaultBB84) {
                 const symbol = defaultBB84.querySelectorAll('.state-btn')[1].innerText;
                 const basis = defaultBB84.classList.contains('basis-z') ? 'rectilinear' : 'diagonal';
-                if (typeof selectStateBB84 === 'function') {
-                    selectStateBB84(defaultBB84, symbol, basis);
-                }
+                selectStateBB84(defaultBB84, symbol, basis);
             }
+        }
 
-            // 觸發原本 B92 的預設選項
-            const defaultB92 = Array.from(document.querySelectorAll('#b92-options .option-row')).find(row => row.style.display !== 'none');
-            if (defaultB92) {
-                const symbol = defaultB92.querySelectorAll('.state-btn')[1].innerText;
-                const basis = defaultB92.classList.contains('basis-z') ? 'rectilinear' : 'diagonal';
-                if (typeof selectStateB92 === 'function') {
-                    selectStateB92(defaultB92, symbol, basis);
-                }
-            }
+        const defaultB92 = Array.from(document.querySelectorAll('#b92-options .option-row')).find(row => row.style.display !== 'none');
+        if(defaultB92) {
+            const symbol = defaultB92.querySelectorAll('.state-btn')[1].innerText;
+            const basis = defaultB92.classList.contains('basis-z') ? 'rectilinear' : 'diagonal';
+            selectStateB92(defaultB92, symbol, basis);
         }
     });
 
-    const symbols = {
-        Stype: ['| ↑ ⟩', '|→⟩'],
-        Dtype: ['|↗⟩', '|↖⟩']
-    };
-
+    // 改寫：支援動態導向 Eve 視圖
     function switchTab(tabId) {
         document.querySelectorAll('.page-view').forEach(el => el.style.display = 'none');
         document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-        document.getElementById('view-' + tabId).style.display = 'flex';
+        
+        let targetId = 'view-' + tabId;
+        if (tabId === 'bb84' && isEveInterceptResend) {
+            targetId = 'view-bb84-eve';
+        }
+        
+        document.getElementById(targetId).style.display = 'flex';
         event.currentTarget.classList.add('active');
     }
 
@@ -681,7 +689,6 @@
             bobUnsame.src = "pictures/gray_vertical.svg";
         }    
         
-        // 更新線條狀態：將 Alice 的 Basis 轉換為 X 或 Z，並傳入更新函數
         const aliceBasis = (basisType === 'rectilinear') ? 'Z' : 'X';
         updateLines(aliceBasis, globalBobBasis, 'bb84');
     }
@@ -712,51 +719,58 @@
             bobUnsame.src = "pictures/vertical.svg";
         }   
         
-        // 更新線條狀態：將 Alice 的 Basis 轉換為 X 或 Z，並傳入更新函數
         const aliceBasis = (basisType === 'rectilinear') ? 'Z' : 'X';
         updateLines(aliceBasis, globalBobBasis, 'b92');
     }
 
-    // --- 改寫：動態判斷基底並加粗對應的線條 ---
     function updateLines(aliceBasis, bobBasis, protocol) {
-        // 根據協定選擇對應區塊內的 line
         const containerSelector = protocol === 'bb84' ? '#view-bb84' : '#view-b92';
         const allLines = document.querySelectorAll(`${containerSelector} line`);
 
-        // 1. 初始化：將所有線條變灰 (加上 inactive) 且粗細設為 3
         allLines.forEach(line => {
             line.classList.add('line-inactive');
             line.setAttribute('stroke-width', '3'); 
         });
 
-        // 2. 判斷基底是否相同
         const isSameBasis = (aliceBasis === bobBasis);
         const bb84Target = isSameBasis ? '.TrueRoute' : '.FalseRoute';
         const b92Target = isSameBasis ? '.FalseRoute' : '.TrueRoute';
-        // 3. 亮起並加粗對應的線條
         const activeLines = document.querySelectorAll(`#view-bb84 line${bb84Target}, #view-b92 line${b92Target}`);
+        
         activeLines.forEach(line => {
             line.classList.remove('line-inactive');
-            line.setAttribute('stroke-width', '4'); // 變粗
+            line.setAttribute('stroke-width', '4'); 
         });
     }
+
+    // 新增：Eve 專屬狀態邏輯
     function selectStateEve(element, stateSymbol, basisType) {
         const rows = document.querySelectorAll('#bb84-eve-options .option-row');
         rows.forEach(row => row.classList.remove('active'));
         element.classList.add('active');
 
-        // 設定 Alice
+        const isAliceZ = (basisType === 'rectilinear');
+        const isBobZ = (globalBobBasis === 'Z');
+        const isBobBasisSameAsAlice = (isAliceZ === isBobZ);
+
+        const symbolsZ = symbols['Stype']; 
+        const symbolsX = symbols['Dtype']; 
+        
+        let aliceOppoState = "";
+        if (isAliceZ) {
+            aliceOppoState = (stateSymbol === '|→⟩') ? '| ↑ ⟩' : '|→⟩';
+        } else {
+            aliceOppoState = (stateSymbol === '|↗⟩') ? '|↖⟩' : '|↗⟩';
+        }
+
+        const eveDiffStates = isAliceZ ? symbolsX : symbolsZ;
+
         document.getElementById('eve-alice-state').innerText = stateSymbol;
         const aliceImg = document.getElementById('eve-alice-key');
-        
-        // 設定 Eve 的偏振器 (同基底 vs 不同基底)
         const eveSameImg = document.getElementById('eve-pol-same');
         const eveDiffImg = document.getElementById('eve-pol-diff');
-        
-        // 找出對立基底的符號 (例如 Alice 是 |→⟩，對立就是 |↗⟩ 和 |↖⟩)
-        const oppoSymbols = symbols[(basisType === 'rectilinear') ? 'Dtype' : 'Stype'];
 
-        if (basisType === 'rectilinear') {
+        if (isAliceZ) {
             aliceImg.src = "pictures/vertical.svg";
             eveSameImg.src = "pictures/red_vertical.svg";
             eveDiffImg.src = "pictures/red_diagonal.svg";
@@ -766,14 +780,52 @@
             eveDiffImg.src = "pictures/red_vertical.svg";
         }
 
-        // 更新 Eve 的輸出狀態
         document.getElementById('eve-state-same').innerText = stateSymbol;
-        // 因為 Span 內部有旋轉，我們把字換掉就好
-        document.getElementById('eve-state-diff1').innerHTML = `<span style="transform: rotate(45deg); display:block;">${oppoSymbols[0]}</span>`;
-        document.getElementById('eve-state-diff2').innerHTML = `<span style="transform: rotate(-45deg); display:block;">${oppoSymbols[1]}</span>`;
+        document.getElementById('eve-state-diff1').innerText = eveDiffStates[0];
+        document.getElementById('eve-state-diff2').innerText = eveDiffStates[1];
 
-        // 接下來這裡可以根據 Bob 的 globalBobBasis 繼續更新 bob-pol-1 ~ 6 
-        // 以及 bob-final-1 ~ 8 的圖示和文字。邏輯與上方推導相同。
+        const bobPols = [
+            document.getElementById('bob-pol-1'), document.getElementById('bob-pol-2'),
+            document.getElementById('bob-pol-3'), document.getElementById('bob-pol-4'),
+            document.getElementById('bob-pol-5'), document.getElementById('bob-pol-6')
+        ];
+
+        if (isAliceZ) {
+            bobPols[0].src = bobPols[2].src = bobPols[4].src = "pictures/vertical.svg";
+            bobPols[1].src = bobPols[3].src = bobPols[5].src = "pictures/gray_diagonal.svg";
+        } else {
+            bobPols[0].src = bobPols[2].src = bobPols[4].src = "pictures/diagonal.svg";
+            bobPols[1].src = bobPols[3].src = bobPols[5].src = "pictures/gray_vertical.svg";
+        }
+
+        const sameNodes = document.querySelectorAll('.bob-same-node .polarizer-img, .bob-same-node .state-circle');
+        const diffNodes = document.querySelectorAll('.bob-diff-node .polarizer-img, .bob-diff-node .state-circle');
+        const sameLines = document.querySelectorAll('.eve-bob-line.same-path');
+        const diffLines = document.querySelectorAll('.eve-bob-line.diff-path');
+
+        if (isBobBasisSameAsAlice) {
+            sameNodes.forEach(el => el.classList.remove('inactive'));
+            diffNodes.forEach(el => el.classList.add('inactive'));
+            sameLines.forEach(l => { l.classList.remove('line-inactive'); l.setAttribute('stroke-width', '4'); });
+            diffLines.forEach(l => { l.classList.add('line-inactive'); l.setAttribute('stroke-width', '2'); });
+        } else {
+            sameNodes.forEach(el => el.classList.add('inactive'));
+            diffNodes.forEach(el => el.classList.remove('inactive'));
+            sameLines.forEach(l => { l.classList.add('line-inactive'); l.setAttribute('stroke-width', '2'); });
+            diffLines.forEach(l => { l.classList.remove('line-inactive'); l.setAttribute('stroke-width', '4'); });
+        }
+
+        document.getElementById('bob-final-1').innerText = stateSymbol;
+        document.querySelector('#bob-final-2 span').innerText = eveDiffStates[0];
+        document.querySelector('#bob-final-3 span').innerText = eveDiffStates[1];
+        
+        document.getElementById('bob-final-4').innerText = stateSymbol;
+        document.getElementById('bob-final-5').innerText = aliceOppoState; 
+        document.querySelector('#bob-final-6 span').innerText = eveDiffStates[0];
+
+        document.getElementById('bob-final-7').innerText = stateSymbol;
+        document.getElementById('bob-final-8').innerText = aliceOppoState; 
+        document.querySelector('#bob-final-9 span').innerText = eveDiffStates[1];
     }
 </script>
 
