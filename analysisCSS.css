@@ -267,6 +267,5 @@ svg.arrows line {
     pointer-events: stroke !important; /* 強制線條感應滑鼠 */
 }
 svg.arrows line:hover {
-    stroke-width: 6 !important; /* 懸浮時加粗箭頭方便辨識 */
-    stroke: #007bff !important; /* 懸浮時微微改變顏色 */
+    stroke-width: 5 !important; /* 懸浮時加粗箭頭方便辨識 */
 }
