@@ -361,16 +361,16 @@
             <div class="sidebar">
                 <div class="selection-box" id="bb84-eve-options">
                     <h4>Alice selects the message</h4>
-                    <div class="option-row basis-z" onclick="selectStateEve(this, '|→⟩', 'rectilinear')">
+                    <div class="option-row basis-z" onclick="selectStateBB84Eve(this, '|→⟩', 'rectilinear')">
                         <div class="state-btn">| 0 ⟩</div><div class="arrow-icon">➔</div><div class="state-btn">|→⟩</div>
                     </div>
-                    <div class="option-row basis-z" onclick="selectStateEve(this, '| ↑ ⟩', 'rectilinear')">
+                    <div class="option-row basis-z" onclick="selectStateBB84Eve(this, '| ↑ ⟩', 'rectilinear')">
                         <div class="state-btn">| 1 ⟩</div><div class="arrow-icon">➔</div><div class="state-btn">| ↑ ⟩</div>
                     </div>
-                    <div class="option-row basis-x" onclick="selectStateEve(this, '|↗⟩', 'diagonal')">
+                    <div class="option-row basis-x" onclick="selectStateBB84Eve(this, '|↗⟩', 'diagonal')">
                         <div class="state-btn">|十⟩</div><div class="arrow-icon">➔</div><div class="state-btn">|↗⟩</div>
                     </div>
-                    <div class="option-row basis-x" onclick="selectStateEve(this, '|↖⟩', 'diagonal')">
+                    <div class="option-row basis-x" onclick="selectStateBB84Eve(this, '|↖⟩', 'diagonal')">
                         <div class="state-btn">|一⟩</div><div class="arrow-icon">➔</div><div class="state-btn">|↖⟩</div>
                     </div>
                 </div>
@@ -641,7 +641,7 @@
                 ${formatRole('Bob', settings.bob)}
                 ${formatRole('Eavesdropper', settings.eve)}
             `;
-            
+
             contentAreas.forEach(area => { area.innerHTML = htmlContent; });
             
         } else {
@@ -668,7 +668,7 @@
             if(defaultEve) {
                 const symbol = defaultEve.querySelectorAll('.state-btn')[1].innerText;
                 const basis = defaultEve.classList.contains('basis-z') ? 'rectilinear' : 'diagonal';
-                selectStateEve(defaultEve, symbol, basis);
+                selectStateBB84Eve(defaultEve, symbol, basis);
             }
         } else {
             const defaultBB84 = Array.from(document.querySelectorAll('#bb84-options .option-row')).find(row => row.style.display !== 'none');
@@ -793,7 +793,7 @@
     }
 
     // Eve 專屬狀態邏輯
-    function selectStateEve(element, stateSymbol, basisType) {
+    function selectStateBB84Eve(element, stateSymbol, basisType) {
         const rows = document.querySelectorAll('#bb84-eve-options .option-row');
         rows.forEach(row => row.classList.remove('active'));
         element.classList.add('active');
@@ -819,6 +819,16 @@
         const eveSameImg = document.getElementById('eve-pol-same');
         const eveDiffImg = document.getElementById('eve-pol-diff');
 
+        if (isAliceZ) {
+            aliceImg.src = "pictures/vertical.svg";
+            eveSameImg.src = "pictures/red_vertical.svg";
+            eveDiffImg.src = "pictures/red_diagonal.svg";
+        } else {
+            aliceImg.src = "pictures/diagonal.svg";
+            eveSameImg.src = "pictures/red_diagonal.svg";
+            eveDiffImg.src = "pictures/red_vertical.svg";
+        }
+
         document.getElementById('eve-state-same').innerText = stateSymbol;
         document.getElementById('eve-state-diff1').innerText = eveDiffStates[0];
         document.getElementById('eve-state-diff2').innerText = eveDiffStates[1];
@@ -830,17 +840,11 @@
         ];
 
         if (isAliceZ) {
-            const sameSrc = isBobZ ? "pictures/b_vertical.svg" : "pictures/gray_vertical.svg";
-            const diffSrc = !isBobZ ? "pictures/b_diagonal.svg" : "pictures/gray_diagonal.svg";
-            
-            bobPols[0].src = bobPols[2].src = bobPols[4].src = sameSrc; // 路線 1,3,5 是 Z
-            bobPols[1].src = bobPols[3].src = bobPols[5].src = diffSrc; // 路線 2,4,6 是 X
+            bobPols[0].src = bobPols[2].src = bobPols[4].src = "pictures/vertical.svg";
+            bobPols[1].src = bobPols[3].src = bobPols[5].src = "pictures/gray_diagonal.svg";
         } else {
-            const sameSrc = !isBobZ ? "pictures/b_diagonal.svg" : "pictures/gray_diagonal.svg";
-            const diffSrc = isBobZ ? "pictures/b_vertical.svg" : "pictures/gray_vertical.svg";
-            
-            bobPols[0].src = bobPols[2].src = bobPols[4].src = sameSrc; // 路線 1,3,5 是 X
-            bobPols[1].src = bobPols[3].src = bobPols[5].src = diffSrc; // 路線 2,4,6 是 Z
+            bobPols[0].src = bobPols[2].src = bobPols[4].src = "pictures/diagonal.svg";
+            bobPols[1].src = bobPols[3].src = bobPols[5].src = "pictures/gray_vertical.svg";
         }
 
         const sameNodes = document.querySelectorAll('.bob-same-node .polarizer-img, .bob-same-node .state-circle');
