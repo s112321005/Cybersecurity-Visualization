@@ -234,8 +234,8 @@
 <body>
 
 <div class="nav-tabs">
-    <button class="tab-btn active" onclick="switchTab('bb84')">BB84 Protocol</button>
-    <button class="tab-btn" onclick="switchTab('b92')">B92 Protocol</button>
+    <button class="tab-btn active" onclick="switchTab('bb84', this)">BB84 Protocol</button>
+    <button class="tab-btn" onclick="switchTab('b92', this)">B92 Protocol</button>
 </div>
 
 <div id="view-bb84" class="page-view active-view">
@@ -531,7 +531,7 @@
 
 <script>
     let globalBobBasis = 'Z';
-    let isEveInterceptResend = false; // 新增全域變數，判斷 Eve 是否啟動攻擊
+    let isEveInterceptResend = false; 
 
     const symbols = {
         Stype: ['| ↑ ⟩', '|→⟩'],
@@ -554,9 +554,15 @@
                 globalBobBasis = 'Z';
             }
 
-            // 判斷 Eve 攻擊狀態
-            if (settings.eve && settings.eve.isOn && settings.eve.attack === 'Intercept-Resend') {
-                isEveInterceptResend = true;
+            // 1. 強化判斷邏輯：防呆處理大小寫與字串/布林值
+            if (settings.eve) {
+                const isEveOn = (settings.eve.isOn === true || String(settings.eve.isOn).toLowerCase() === 'true' || settings.eve.isOn === 'on');
+                const attackMethod = String(settings.eve.attack || '').toLowerCase();
+                
+                // 只要 attackMethod 包含 intercept 關鍵字就視為成立
+                if (isEveOn && attackMethod.includes('intercept')) {
+                    isEveInterceptResend = true;
+                }
             }
 
             // 如果 Eve 是 Intercept-Resend，切換預設視圖為 Eve 版本
@@ -565,24 +571,25 @@
                 document.getElementById('view-bb84-eve').classList.add('active-view');
             }
 
-            // 1. 選項顯示過濾 (包含新增加的 Eve 選單)
+            // 2. 選項顯示過濾防呆：若 Alice 沒有特別選 Z 或 X (例如選了 Random 或空值)，預設全部顯示
+            const showZ = aliceBasis.includes('Z') || aliceBasis.toLowerCase().includes('rectilinear') || !aliceBasis.includes('X');
+            const showX = aliceBasis.includes('X') || aliceBasis.toLowerCase().includes('diagonal') || !aliceBasis.includes('Z');
+            
             const allOptionRows = document.querySelectorAll('#bb84-options .option-row, #b92-options .option-row, #bb84-eve-options .option-row');
             allOptionRows.forEach(row => {
                 row.classList.remove('active'); 
-                if (aliceBasis.includes('Z') && row.classList.contains('basis-z')) {
-                    row.style.display = 'flex';
-                } else if (aliceBasis.includes('X') && row.classList.contains('basis-x')) {
-                    row.style.display = 'flex';
-                } else {
-                    row.style.display = 'none'; 
+                if (row.classList.contains('basis-z')) {
+                    row.style.display = showZ ? 'flex' : 'none';
+                } else if (row.classList.contains('basis-x')) {
+                    row.style.display = showX ? 'flex' : 'none';
                 }
             });
 
-            // 2. 角色設定面板生成邏輯
+            // 3. 角色設定面板生成邏輯
             function formatRole(name, data) {
                 if (!data) return ''; 
 
-                if (name === 'Eavesdropper' && !data.isOn) {
+                if (name === 'Eavesdropper' && (!data.isOn || String(data.isOn).toLowerCase() === 'false')) {
                     return `
                         <div class="setting-item off-state">
                             <strong>${name}</strong>
@@ -650,18 +657,33 @@
         }
     });
 
-    // 改寫：支援動態導向 Eve 視圖
-    function switchTab(tabId) {
-        document.querySelectorAll('.page-view').forEach(el => el.style.display = 'none');
+    // 4. 改寫：支援動態導向 Eve 視圖，並修復 JS 報錯與樣式衝突
+    function switchTab(tabId, btnElement) {
+        // 先清除所有畫面的 active-view 類別
+        document.querySelectorAll('.page-view').forEach(el => {
+            el.classList.remove('active-view');
+        });
         document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
         
         let targetId = 'view-' + tabId;
+        // 若點擊 BB84 且有 Eve 攻擊，將目標視圖導向 Eve 版本
         if (tabId === 'bb84' && isEveInterceptResend) {
             targetId = 'view-bb84-eve';
         }
         
-        document.getElementById(targetId).style.display = 'flex';
-        event.currentTarget.classList.add('active');
+        // 加入 active-view 使畫面顯示
+        const targetView = document.getElementById(targetId);
+        if (targetView) {
+            targetView.classList.add('active-view');
+        }
+        
+        // 設定按鈕狀態
+        if (btnElement) {
+            btnElement.classList.add('active');
+        } else {
+            const activeBtn = document.querySelector(`button[onclick*="'${tabId}'"]`);
+            if (activeBtn) activeBtn.classList.add('active');
+        }
     }
 
     function selectStateBB84(element, stateSymbol, basisType) {
@@ -743,7 +765,7 @@
         });
     }
 
-    // 新增：Eve 專屬狀態邏輯
+    // Eve 專屬狀態邏輯
     function selectStateEve(element, stateSymbol, basisType) {
         const rows = document.querySelectorAll('#bb84-eve-options .option-row');
         rows.forEach(row => row.classList.remove('active'));
