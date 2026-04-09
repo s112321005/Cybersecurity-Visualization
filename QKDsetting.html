@@ -180,11 +180,25 @@
         }
         .name-tag.gray { background-color: #b0b0b0; color: white;}
         .name-tag.red-text { background-color: #D32F2F; }
-        .name-tag.start { margin-bottom: 15px;}
+        /* =========================================
+           新增：Start 按鈕的波紋脈衝動畫
+           ========================================= */
+        @keyframes pulse-start-btn {
+        0% { box-shadow: 0 0 0 0 rgba(0, 71, 171, 0.6); }
+        70% { box-shadow: 0 0 0 20px rgba(0, 71, 171, 0); }
+        100% { box-shadow: 0 0 0 0 rgba(0, 71, 171, 0); }
+        }
+
+        .name-tag.start { 
+            margin-bottom: 15px;
+            animation: pulse-start-btn 2s infinite; /* 套用脈衝動畫 */
+        }
+        
         .name-tag.start:hover {
             background: #003580;
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0,71,171,0.3);
+            box-shadow: 0 5px 15px rgba(0,71,171,0.4);
+            animation: none; /* 滑鼠懸停時停止脈衝動畫 */
         }
         .click-toggle { 
             cursor: pointer; 
@@ -220,8 +234,9 @@
             border-radius: 10px;
             padding: 15px;
             background-color: white;
-            min-height: 440px; 
+            min-height: 250px; 
             box-sizing: border-box;
+            
             width: 100%;
             transition: all 0.3s ease;
         }
@@ -377,6 +392,10 @@
             <div class="character-col">
                 <img src="pictures/cat_alice.svg" class="character-img" alt="Alice">
                 <div class="name-tag">Alice</div>
+                <label class="click-toggle">
+                    <input type="checkbox" class="status-toggle" checked>
+                    <span class="text-on">ON</span>
+                </label>
                 <div class="control-panel">
                     <div class="setting-title">Particle Selection</div>
                     <div class="flex-row" style="margin-bottom: 15px; gap: 8px;">
@@ -396,6 +415,10 @@
             <div class="character-col">
                 <img src="pictures/cat_bob.svg" class="character-img" alt="Bob">
                 <div class="name-tag">Bob</div>
+                <label class="click-toggle">
+                    <input type="checkbox" class="status-toggle" checked>
+                    <span class="text-on">ON</span>
+                </label>
                 <div class="control-panel">
                     <div class="setting-title">Particle Selection</div>
                     <div class="flex-row" style="margin-bottom: 15px; gap: 8px;">
@@ -450,6 +473,7 @@
             <div class="character-col">
                 <img src="pictures/cat_alice.svg" class="character-img" alt="Alice">
                 <div class="name-tag">Alice</div>
+                <label class="click-toggle"><input type="checkbox" class="status-toggle" checked><span class="text-on">ON</span><span class="text-off">OFF</span></label>
                 <div class="control-panel">
                     <div class="setting-title">Particle Selection</div>
                     <div class="flex-row" style="margin-bottom: 15px; gap: 8px;">
@@ -487,6 +511,7 @@
             <div class="character-col">
                 <img src="pictures/cat_bob.svg" class="character-img" alt="Bob">
                 <div class="name-tag">Bob</div>
+                <label class="click-toggle"><input type="checkbox" class="status-toggle" checked><span class="text-on">ON</span><span class="text-off">OFF</span></label>
                 <div class="control-panel">
                     <div class="setting-title">Particle Selection</div>
                     <div class="flex-row" style="margin-bottom: 15px; gap: 8px;">
@@ -524,6 +549,7 @@
             <div class="character-col">
                 <img src="pictures/cat_charlie.svg" class="character-img" alt="Charlie">
                 <div class="name-tag">Charlie</div>
+                <label class="click-toggle"><input type="checkbox" class="status-toggle"><span class="text-on">ON</span><span class="text-off">OFF</span></label>
                 <div class="control-panel">
                     <div class="setting-title">Particle Selection</div>
                     <div class="flex-row" style="margin-bottom: 15px; gap: 8px;">
@@ -592,6 +618,7 @@
             <div class="character-col">
                 <img src="pictures/cat_alice.svg" class="character-img" alt="Alice">
                 <div class="name-tag">Alice</div>
+                <label class="click-toggle"><input type="checkbox" class="status-toggle" checked><span class="text-on">ON</span><span class="text-off">OFF</span></label>
                 <div class="control-panel">
                     <div class="setting-title">Particle Selection</div>
                     <div class="flex-row" style="margin-bottom: 15px; gap: 8px;">
@@ -629,6 +656,7 @@
             <div class="character-col">
                 <img src="pictures/cat_bob.svg" class="character-img" alt="Bob">
                 <div class="name-tag">Bob</div>
+                <label class="click-toggle"><input type="checkbox" class="status-toggle" checked><span class="text-on">ON</span><span class="text-off">OFF</span></label>
                 <div class="control-panel">
                     <div class="setting-title">Particle Selection</div>
                     <div class="flex-row" style="margin-bottom: 15px; gap: 8px;">
@@ -666,6 +694,7 @@
             <div class="character-col">
                 <img src="pictures/cat_charlie.svg" class="character-img" alt="Charlie">
                 <div class="name-tag">Charlie</div>
+                <label class="click-toggle"><input type="checkbox" class="status-toggle"><span class="text-on">ON</span><span class="text-off">OFF</span></label>
                 <div class="control-panel">
                     <div class="setting-title">Particle Selection</div>
                     <div class="flex-row" style="margin-bottom: 15px; gap: 8px;">
@@ -777,33 +806,24 @@
     // ==========================================
 
     // --- QKD Start ---
-    // ==========================================
-    // 3. 各個介面的獨立 Start 按鈕邏輯
-    // ==========================================
-
-    // --- QKD Start ---
     document.getElementById('qkd-start-btn').addEventListener('click', () => {
         const interfaceDiv = document.getElementById('qkd-interface');
-        
-        // 因為 Alice 和 Bob 沒有開關了，我們假設畫面上剩下的 .status-toggle 就是 Eve 的
-        const eveToggle = interfaceDiv.querySelector('.status-toggle');
-        const entangleCheck = document.getElementById('qkd-entangle');
+        const toggles = interfaceDiv.querySelectorAll('.status-toggle');
         
         const qkdSettings = {
-            entangle: entangleCheck ? entangleCheck.checked : false,
+            entangle: document.getElementById('qkd-entangle').checked,
             alice: {
-                isOn: true, // 強制設定為開啟，不再讀取 toggle
+                isOn: toggles[0].checked,
                 particle: interfaceDiv.querySelector('input[name="a_particle"]:checked')?.nextElementSibling?.innerText || "",
                 basis: interfaceDiv.querySelector('input[name="a_basis"]:checked')?.nextElementSibling?.innerText || ""
             },
             bob: {
-                isOn: true, // 強制設定為開啟，不再讀取 toggle
+                isOn: toggles[1].checked,
                 particle: interfaceDiv.querySelector('input[name="b_particle"]:checked')?.nextElementSibling?.innerText || "",
                 basis: interfaceDiv.querySelector('input[name="b_basis"]:checked')?.nextElementSibling?.innerText || ""
             },
             eve: {
-                // 安全讀取 Eve 的狀態，如果找不到開關就預設為 false
-                isOn: eveToggle ? eveToggle.checked : false, 
+                isOn: toggles[3].checked,
                 attack: interfaceDiv.querySelector('input[name="e_attack"]:checked')?.nextElementSibling?.innerText || ""
             }
         };

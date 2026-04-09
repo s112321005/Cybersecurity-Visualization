@@ -231,6 +231,15 @@
             stroke: #ccc !important;
             opacity: 0.5;
         }
+        /* --- Eve 專屬樣式 --- */
+        .eve-state-circle {
+            width: 45px; height: 45px; background: #ff4d4d; /* Eve 的紅色 */
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            color: white; font-size: 18px; font-weight: bold; margin-top: 10px; transition: all 0.3s ease;
+        }
+        .diagram-area.eve-layout {
+            height: 800px; /* 因為樹狀圖很大，需要更高的畫布 */
+        }
 
     </style>
 </head>
@@ -336,7 +345,75 @@
         </div>
     </div>
 </div>
+<div id="view-bb84-eve" class="page-view">
+    <div class="container" style="width: 1200px !important; max-width: 1200px !important;">
+        <div class="top-bar">
+            <div class="page-title">QKD：BB84 (Eve Intercept-Resend)</div>
+        </div>
+        <div class="main-content">
+            <div class="sidebar">
+                <div class="selection-box" id="bb84-eve-options">
+                    <h4>Alice selects the message</h4>
+                    <div class="option-row basis-z" onclick="selectStateEve(this, '|→⟩', 'rectilinear')">
+                        <div class="state-btn">| 0 ⟩</div><div class="arrow-icon">➔</div><div class="state-btn">|→⟩</div>
+                    </div>
+                    <div class="option-row basis-z" onclick="selectStateEve(this, '| ↑ ⟩', 'rectilinear')">
+                        <div class="state-btn">| 1 ⟩</div><div class="arrow-icon">➔</div><div class="state-btn">| ↑ ⟩</div>
+                    </div>
+                    <div class="option-row basis-x" onclick="selectStateEve(this, '|↗⟩', 'diagonal')">
+                        <div class="state-btn">|十⟩</div><div class="arrow-icon">➔</div><div class="state-btn">|↗⟩</div>
+                    </div>
+                    <div class="option-row basis-x" onclick="selectStateEve(this, '|↖⟩', 'diagonal')">
+                        <div class="state-btn">|一⟩</div><div class="arrow-icon">➔</div><div class="state-btn">|↖⟩</div>
+                    </div>
+                </div>
+            </div>
 
+            <div class="diagram-area eve-layout">
+                <div class="character-avatar" style="left: 5%;"><img src="pictures/cat_alice.svg" alt="Alice"></div>
+                <div class="node" style="left: 5%; top: 50%;">
+                    <img id="eve-alice-key" src="pictures/vertical.svg" class="polarizer-img">
+                    <div class="state-circle" id="eve-alice-state">|→⟩</div>
+                </div>
+
+                <div class="character-avatar" style="left: 25%;"><img src="pictures/cat_eve.svg" alt="Eve" style="width:70px;"></div>
+                <div class="node" style="left: 25%; top: 30%;">
+                    <img id="eve-pol-same" src="pictures/red_vertical.svg" class="polarizer-img">
+                </div>
+                <div class="node" style="left: 25%; top: 70%;">
+                    <img id="eve-pol-diff" src="pictures/red_diagonal.svg" class="polarizer-img">
+                </div>
+
+                <div class="node" style="left: 40%; top: 30%;">
+                    <div class="eve-state-circle" id="eve-state-same">|→⟩</div>
+                </div>
+                <div class="node" style="left: 40%; top: 60%;">
+                    <div class="eve-state-circle" id="eve-state-diff1" style="transform: rotate(-45deg);"><span style="transform: rotate(45deg); display:block;">|↖⟩</span></div>
+                </div>
+                <div class="node" style="left: 40%; top: 80%;">
+                    <div class="eve-state-circle" id="eve-state-diff2" style="transform: rotate(45deg);"><span style="transform: rotate(-45deg); display:block;">|↗⟩</span></div>
+                </div>
+
+                <div class="character-avatar" style="left: 60%;"><img src="pictures/cat_bob.svg" alt="Bob"></div>
+                <div class="node" style="left: 60%; top: 15%;"><img id="bob-pol-1" src="pictures/vertical.svg" class="polarizer-img"></div>
+                <div class="node" style="left: 60%; top: 35%;"><img id="bob-pol-2" src="pictures/gray_diagonal.svg" class="polarizer-img inactive"></div>
+                <div class="node" style="left: 60%; top: 55%;"><img id="bob-pol-3" src="pictures/diagonal.svg" class="polarizer-img"></div>
+                <div class="node" style="left: 60%; top: 65%;"><img id="bob-pol-4" src="pictures/gray_vertical.svg" class="polarizer-img inactive"></div>
+                <div class="node" style="left: 60%; top: 75%;"><img id="bob-pol-5" src="pictures/diagonal.svg" class="polarizer-img"></div>
+                <div class="node" style="left: 60%; top: 85%;"><img id="bob-pol-6" src="pictures/gray_vertical.svg" class="polarizer-img inactive"></div>
+
+                <div class="node" style="left: 75%; top: 15%;"><div class="state-circle" id="bob-final-1">|→⟩</div></div>
+                <div class="node" style="left: 75%; top: 30%;"><div class="state-circle inactive" id="bob-final-2">|↖⟩</div></div>
+                <div class="node" style="left: 75%; top: 40%;"><div class="state-circle inactive" id="bob-final-3">|↗⟩</div></div>
+                </div>
+            
+            <div class="settings-panel">
+                <h4>Current Settings</h4>
+                <div class="settings-content"></div>
+            </div>
+        </div>
+    </div>
+</div>
 <div id="view-b92" class="page-view">
     <div class="container">
         <div class="top-bar">
@@ -435,6 +512,9 @@
         const savedData = localStorage.getItem('qkdSettings');
         const contentAreas = document.querySelectorAll('.settings-content');
         
+        // 新增：用來記錄是否需要顯示 Eve 攔截畫面
+        let isEveIntercept = false;
+
         if (savedData) {
             const settings = JSON.parse(savedData);
             const aliceBasis = settings.alice?.basis || "";
@@ -447,8 +527,14 @@
                 globalBobBasis = 'Z';
             }
 
+            // --- 判斷是否開啟 Eve Intercept-resend ---
+            if (settings.eve && settings.eve.isOn && settings.eve.attack === "Intercept-resend") {
+                isEveIntercept = true;
+            }
+
             // 1. 選項顯示過濾 (只顯示與 Alice 基底相符的選項)
-            const allOptionRows = document.querySelectorAll('#bb84-options .option-row, #b92-options .option-row');
+            // 注意：這裡把 #bb84-eve-options 也加進去一起過濾
+            const allOptionRows = document.querySelectorAll('#bb84-options .option-row, #b92-options .option-row, #bb84-eve-options .option-row');
             allOptionRows.forEach(row => {
                 row.classList.remove('active'); 
                 
@@ -511,20 +597,50 @@
             });
         }
         
-        // 觸發 BB84 的預設選項
-        const defaultBB84 = Array.from(document.querySelectorAll('#bb84-options .option-row')).find(row => row.style.display !== 'none');
-        if(defaultBB84) {
-            const symbol = defaultBB84.querySelectorAll('.state-btn')[1].innerText;
-            const basis = defaultBB84.classList.contains('basis-z') ? 'rectilinear' : 'diagonal';
-            selectStateBB84(defaultBB84, symbol, basis);
-        }
+        // --- 3. 根據 Eve 狀態決定顯示哪個畫面並觸發預設選項 ---
+        if (isEveIntercept) {
+            // 隱藏所有頁面，顯示 Eve 專屬頁面
+            document.querySelectorAll('.page-view').forEach(el => el.style.display = 'none');
+            const eveView = document.getElementById('view-bb84-eve');
+            if (eveView) eveView.style.display = 'flex';
+            
+            // 隱藏頂部的 BB84/B92 切換按鈕 (因為現在是 Eve 專屬的演示流程)
+            const navTabs = document.querySelector('.nav-tabs');
+            if (navTabs) navTabs.style.display = 'none';
 
-        // 觸發 B92 的預設選項
-        const defaultB92 = Array.from(document.querySelectorAll('#b92-options .option-row')).find(row => row.style.display !== 'none');
-        if(defaultB92) {
-            const symbol = defaultB92.querySelectorAll('.state-btn')[1].innerText;
-            const basis = defaultB92.classList.contains('basis-z') ? 'rectilinear' : 'diagonal';
-            selectStateB92(defaultB92, symbol, basis);
+            // 觸發 Eve 畫面的預設選項
+            const defaultEve = Array.from(document.querySelectorAll('#bb84-eve-options .option-row')).find(row => row.style.display !== 'none');
+            if (defaultEve) {
+                const symbol = defaultEve.querySelectorAll('.state-btn')[1].innerText;
+                const basis = defaultEve.classList.contains('basis-z') ? 'rectilinear' : 'diagonal';
+                if (typeof selectStateEve === 'function') {
+                    selectStateEve(defaultEve, symbol, basis);
+                }
+            }
+        } else {
+            // 確保頂部切換按鈕顯示 (若從 Eve 切換回來)
+            const navTabs = document.querySelector('.nav-tabs');
+            if (navTabs) navTabs.style.display = 'flex';
+
+            // 觸發原本 BB84 的預設選項
+            const defaultBB84 = Array.from(document.querySelectorAll('#bb84-options .option-row')).find(row => row.style.display !== 'none');
+            if (defaultBB84) {
+                const symbol = defaultBB84.querySelectorAll('.state-btn')[1].innerText;
+                const basis = defaultBB84.classList.contains('basis-z') ? 'rectilinear' : 'diagonal';
+                if (typeof selectStateBB84 === 'function') {
+                    selectStateBB84(defaultBB84, symbol, basis);
+                }
+            }
+
+            // 觸發原本 B92 的預設選項
+            const defaultB92 = Array.from(document.querySelectorAll('#b92-options .option-row')).find(row => row.style.display !== 'none');
+            if (defaultB92) {
+                const symbol = defaultB92.querySelectorAll('.state-btn')[1].innerText;
+                const basis = defaultB92.classList.contains('basis-z') ? 'rectilinear' : 'diagonal';
+                if (typeof selectStateB92 === 'function') {
+                    selectStateB92(defaultB92, symbol, basis);
+                }
+            }
         }
     });
 
@@ -623,6 +739,41 @@
             line.classList.remove('line-inactive');
             line.setAttribute('stroke-width', '4'); // 變粗
         });
+    }
+    function selectStateEve(element, stateSymbol, basisType) {
+        const rows = document.querySelectorAll('#bb84-eve-options .option-row');
+        rows.forEach(row => row.classList.remove('active'));
+        element.classList.add('active');
+
+        // 設定 Alice
+        document.getElementById('eve-alice-state').innerText = stateSymbol;
+        const aliceImg = document.getElementById('eve-alice-key');
+        
+        // 設定 Eve 的偏振器 (同基底 vs 不同基底)
+        const eveSameImg = document.getElementById('eve-pol-same');
+        const eveDiffImg = document.getElementById('eve-pol-diff');
+        
+        // 找出對立基底的符號 (例如 Alice 是 |→⟩，對立就是 |↗⟩ 和 |↖⟩)
+        const oppoSymbols = symbols[(basisType === 'rectilinear') ? 'Dtype' : 'Stype'];
+
+        if (basisType === 'rectilinear') {
+            aliceImg.src = "pictures/vertical.svg";
+            eveSameImg.src = "pictures/red_vertical.svg";
+            eveDiffImg.src = "pictures/red_diagonal.svg";
+        } else {
+            aliceImg.src = "pictures/diagonal.svg";
+            eveSameImg.src = "pictures/red_diagonal.svg";
+            eveDiffImg.src = "pictures/red_vertical.svg";
+        }
+
+        // 更新 Eve 的輸出狀態
+        document.getElementById('eve-state-same').innerText = stateSymbol;
+        // 因為 Span 內部有旋轉，我們把字換掉就好
+        document.getElementById('eve-state-diff1').innerHTML = `<span style="transform: rotate(45deg); display:block;">${oppoSymbols[0]}</span>`;
+        document.getElementById('eve-state-diff2').innerHTML = `<span style="transform: rotate(-45deg); display:block;">${oppoSymbols[1]}</span>`;
+
+        // 接下來這裡可以根據 Bob 的 globalBobBasis 繼續更新 bob-pol-1 ~ 6 
+        // 以及 bob-final-1 ~ 8 的圖示和文字。邏輯與上方推導相同。
     }
 </script>
 
