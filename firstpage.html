@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <base href="https://s112321005.github.io/Cybersecurity-Visualization/">
+    <title>量子資安教學平台</title>
+    <style>
+        :root {
+            --primary-blue: #0047A0; /* 主題深藍色 */
+            --text-dark: #333333;
+            --bg-color: #ffffff;
+        }
+
+        body {
+            font-family: "Microsoft JhengHei", "PingFang TC", sans-serif;
+            background-color: var(--bg-color);
+            margin: 0;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* 頂部標題區塊設計 */
+        .header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            width: 100%;
+            max-width: 1000px;
+            margin-bottom: 60px;
+        }
+
+        .header img {
+            width: 60px;
+            height: auto;
+        }
+
+        .header h1 {
+            font-size: 36px;
+            color: var(--text-dark);
+            margin: 0;
+            font-weight: 900;
+            letter-spacing: 2px;
+        }
+
+        /* 卡片容器設計 */
+        .cards-container {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            width: 100%;
+            max-width: 1100px;
+            flex-wrap: wrap; /* 螢幕縮小時自動換行 */
+        }
+
+        /* 單一卡片設計 (設定為超連結標籤) */
+        .card {
+            position: relative; /* 為了讓上方的藍色標籤可以絕對定位在框線上 */
+            width: 300px;
+            height: 380px;
+            border: 4px solid var(--primary-blue);
+            border-radius: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            padding: 40px 20px 30px;
+            box-sizing: border-box;
+            text-decoration: none; /* 移除超連結的底線 */
+            color: var(--text-dark);
+            background-color: white;
+            transition: transform 0.2s, box-shadow 0.2s;
+            cursor: pointer;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 71, 160, 0.15);
+        }
+
+        /* 卡片上方的藍色膠囊標籤 */
+        .card-badge {
+            position: absolute;
+            top: -22px; /* 往上移，讓它剛好壓在框線上 */
+            background-color: var(--primary-blue);
+            color: white;
+            padding: 8px 30px;
+            border-radius: 30px;
+            font-size: 18px;
+            font-weight: bold;
+            letter-spacing: 1px;
+            white-space: nowrap;
+        }
+
+        /* 卡片中間的圖片 */
+        .card img {
+            width: 160px;
+            height: 160px;
+            object-fit: contain;
+            margin-top: 30px;
+        }
+
+        /* 卡片底部的文字 */
+        .card-title {
+            font-size: 20px;
+            font-weight: 800;
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <img src="computer.svg" alt="電腦 Icon">
+        <h1>量子資安教學平台</h1>
+    </div>
+
+    <div class="cards-container">
+        
+        <a href="Information_security_application.html" class="card">
+            <div class="card-badge">教學層：入門學習</div>
+            <img src="quantum.svg" alt="教學層 Icon">
+            <p class="card-title">量子通訊與簡易資安場景</p>
+        </a>
+
+        <a href="#" class="card">
+            <div class="card-badge">設計層：安全驗證</div>
+            <img src="calculate.svg" alt="設計層 Icon">
+            <p class="card-title">運算與驗證</p>
+        </a>
+
+        <a href="#" class="card">
+            <div class="card-badge">分析層：研究分析</div>
+            <img src="analyze.svg" alt="分析層 Icon">
+            <p class="card-title">協定比較與分析</p>
+        </a>
+
+    </div>
+
+</body>
+</html>
