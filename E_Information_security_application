@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <base href="https://s112321005.github.io/Cybersecurity-Visualization/">
+    <title>Quantum Security Applications</title>
+    <style>
+        :root {
+            --primary-blue: #0047A0;
+            --text-brown: #3E2B25;
+            --border-width: 4px;
+            --border-radius: 20px;
+        }
+
+        body {
+            /* 換成適合英文的無襯線字體 */
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: #ffffff;
+        }
+
+        .container {
+            width: 900px;
+            padding: 20px;
+        }
+
+        .main-content {
+            display: flex;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        /* 左側卡片設計 */
+        .left-panel {
+            flex: 0 0 35%;
+            border: var(--border-width) solid var(--primary-blue);
+            border-radius: var(--border-radius);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+            box-sizing: border-box;
+            text-align: center;
+        }
+
+        .left-panel img {
+            width: 80%;
+            max-width: 200px;
+            margin-bottom: 30px;
+        }
+
+        .left-panel h2 {
+            color: var(--text-brown);
+            margin: 0;
+            font-size: 26px; /* 稍微調小以容納英文 */
+            font-weight: 900;
+            line-height: 1.2;
+        }
+
+        /* 右側選單設計 */
+        .right-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            justify-content: center;
+        }
+
+        .menu-item {
+            border: var(--border-width) solid var(--primary-blue);
+            border-radius: var(--border-radius);
+            padding: 25px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center; /* 改成置中對齊 */
+            text-decoration: none;
+            transition: background-color 0.2s, transform 0.2s;
+        }
+
+        .menu-item:hover {
+            background-color: #f4f8fc;
+            transform: translateY(-2px);
+        }
+
+        .text-content {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .text-content .en-title {
+            color: var(--text-brown);
+            font-size: 24px;
+            font-weight: bold;
+            margin: 0;
+        }
+
+        .learn-more {
+            color: var(--text-brown);
+            font-size: 16px;
+            font-weight: bold;
+            text-decoration: underline;
+        }
+
+        /* 隱藏沒有 learn more 的區塊的預設底線 */
+        .no-link {
+            text-decoration: none;
+            cursor: default;
+        }
+        .no-link:hover {
+            background-color: transparent;
+            transform: none;
+        }
+
+        /* 底部按鈕設計 */
+        .back-btn {
+            background-color: var(--primary-blue);
+            color: white;
+            border: none;
+            border-radius: 30px;
+            padding: 12px 35px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            transition: background-color 0.2s;
+        }
+
+        .back-btn:hover {
+            background-color: #003377;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="main-content">
+            
+            <div class="left-panel">
+                <img src="https://s112321005.github.io/Cybersecurity-Visualization/picture/key.svg" alt="Quantum Security Applications Icon">
+                <h2>Quantum Security<br>Applications</h2>
+            </div>
+
+            <div class="right-panel">
+                
+                <a href="https://s112321005.github.io/Cybersecurity-Visualization/QKDstep1.html" class="menu-item">
+                    <div class="text-content">
+                        <p class="en-title">Quantum Key Distribution</p>
+                    </div>
+                    <span class="learn-more">Learn more</span>
+                </a>
+
+                <a href="#" class="menu-item">
+                    <div class="text-content">
+                        <p class="en-title">Quantum Secret Sharing</p>
+                    </div>
+                    <span class="learn-more">Learn more</span>
+                </a>
+
+                <div class="menu-item no-link">
+                    <div class="text-content">
+                        <p class="en-title" style="color: #666;">Custom Protocol Settings</p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <a href="firstpage.html" class="back-btn">Back</a>
+    </div>
+
+</body>
+</html>
