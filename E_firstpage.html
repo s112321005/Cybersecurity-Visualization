@@ -7,111 +7,250 @@
     <title>Quantum Cybersecurity Education Platform</title>
     <style>
         :root {
-            --primary-blue: #0047A0; /* 主題深藍色 */
+            --primary-blue: #0047A0; 
             --text-dark: #333333;
+            --text-brown: #3E2B25;
             --bg-color: #ffffff;
+            --border-width: 4px;
+            --border-radius: 15px;
+            /* 定義統一的動畫節奏 */
+            --transition-speed: 0.6s;
+            --easing: cubic-bezier(0.25, 1, 0.3, 1);
         }
 
         body {
-            /* 換成適合英文的無襯線字體 */
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: var(--bg-color);
             margin: 0;
-            padding: 40px;
+            overflow-x: hidden;
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
             align-items: center;
         }
 
-        /* 頂部標題區塊設計 */
+        /* 頂部標題 */
         .header {
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 15px;
-            width: 100%;
-            max-width: 1000px;
+            margin-top: 40px;
             margin-bottom: 60px;
+            transition: opacity 0.4s ease, transform 0.4s ease;
         }
-
-        .header img {
-            width: 60px;
-            height: auto;
-        }
-
+        .header img { width: 60px; height: auto; }
         .header h1 {
-            font-size: 32px; /* 稍微縮小一點點以適應英文長度 */
+            font-size: 32px;
             color: var(--text-dark);
             margin: 0;
             font-weight: 900;
             letter-spacing: 1px;
         }
 
-        /* 卡片容器設計 */
-        .cards-container {
+        /* 核心 Flex 容器 */
+        .app-container {
             display: flex;
             justify-content: center;
+            align-items: stretch; /* 讓內部元素高度一致 */
             gap: 30px;
             width: 100%;
             max-width: 1100px;
-            flex-wrap: wrap; /* 螢幕縮小時自動換行 */
+            transition: all var(--transition-speed) var(--easing);
         }
 
-        /* 單一卡片設計 (設定為超連結標籤) */
+        /* =========================================
+           卡片共用設計
+           ========================================= */
         .card {
-            position: relative; /* 為了讓上方的藍色標籤可以絕對定位在框線上 */
+            position: relative;
             width: 300px;
             height: 380px;
-            border: 4px solid var(--primary-blue);
-            border-radius: 15px;
+            border: var(--border-width) solid var(--primary-blue);
+            border-radius: var(--border-radius);
+            box-sizing: border-box;
+            background-color: white;
+            flex-shrink: 0; /* 防止被擠壓 */
+            transition: all var(--transition-speed) var(--easing);
+        }
+
+        /* 可被縮放隱藏的卡片 (卡片2、卡片3) */
+        .collapsible-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            padding: 40px 20px 30px;
+            cursor: pointer;
+        }
+        .collapsible-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 71, 160, 0.15);
+        }
+
+        /* 卡片內部元素設計 */
+        .card-badge {
+            position: absolute;
+            top: -18px;
+            background-color: var(--primary-blue);
+            color: white;
+            padding: 8px 18px;
+            border-radius: 30px;
+            font-size: 14px;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+        .card img { width: 160px; height: 160px; object-fit: contain; margin-top: 30px; }
+        .card-title { font-size: 18px; font-weight: 800; margin: 0; text-align: center; line-height: 1.3; color: var(--text-dark); }
+
+
+        /* =========================================
+           第一張卡片 (互動主角) 的雙狀態設計
+           ========================================= */
+        #interactive-card {
+            cursor: pointer;
+        }
+        #interactive-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 71, 160, 0.15);
+        }
+
+        /* 狀態一：首頁卡片視角 */
+        .state-front {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: space-between;
             padding: 40px 20px 30px;
             box-sizing: border-box;
-            text-decoration: none; /* 移除超連結的底線 */
-            color: var(--text-dark);
-            background-color: white;
-            transition: transform 0.2s, box-shadow 0.2s;
-            cursor: pointer;
+            transition: opacity 0.4s ease;
         }
 
-        .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0, 71, 160, 0.15);
-        }
-
-        /* 卡片上方的藍色膠囊標籤 */
-        .card-badge {
+        /* 狀態二：展開後的左側面板視角 (原 Page 2 設計) */
+        .state-expanded {
             position: absolute;
-            top: -18px; /* 配合字體縮小微調高度 */
+            top: 0; left: 0; width: 100%; height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+            box-sizing: border-box;
+            opacity: 0; /* 預設隱藏 */
+            pointer-events: none;
+            transition: opacity 0.4s ease;
+            text-align: center;
+        }
+        .state-expanded img { width: 80%; max-width: 200px; margin-bottom: 30px; margin-top: 0; }
+        .state-expanded h2 { color: var(--text-brown); margin: 0; font-size: 26px; font-weight: 900; line-height: 1.2; }
+
+
+        /* =========================================
+           隱藏的右側選單 (原 Page 2 的 Right Panel)
+           ========================================= */
+        .right-menu-container {
+            width: 0; /* 初始寬度為 0 */
+            opacity: 0;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: all var(--transition-speed) var(--easing);
+        }
+
+        .menu-item {
+            border: var(--border-width) solid var(--primary-blue);
+            border-radius: var(--border-radius);
+            padding: 25px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            text-decoration: none;
+            transition: background-color 0.2s, transform 0.2s;
+            background-color: white;
+            white-space: nowrap; /* 防止縮放時文字斷行錯亂 */
+        }
+        .menu-item:hover { background-color: #f4f8fc; transform: translateY(-2px); }
+        .text-content .en-title { color: var(--text-brown); font-size: 24px; font-weight: bold; margin: 0; }
+        .learn-more { color: var(--text-brown); font-size: 16px; font-weight: bold; text-decoration: underline; }
+        .no-link { text-decoration: none; cursor: default; }
+        .no-link:hover { background-color: white; transform: none; }
+
+
+        /* =========================================
+           展開模式 (Expanded Mode) 狀態變化
+           ========================================= */
+        /* 隱藏頂部大標題 */
+        body.is-expanded .header {
+            opacity: 0;
+            transform: translateY(-20px);
+            pointer-events: none;
+        }
+
+        /* 縮小並隱藏其他卡片 */
+        body.is-expanded .collapsible-card {
+            width: 0;
+            opacity: 0;
+            padding: 0;
+            margin: 0;
+            border-width: 0;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        /* 第一張卡片：取消 hover 浮動效果，切換內部內容 */
+        body.is-expanded #interactive-card {
+            transform: none;
+            box-shadow: none;
+            cursor: default;
+        }
+        body.is-expanded .state-front {
+            opacity: 0;
+            pointer-events: none;
+        }
+        body.is-expanded .state-expanded {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        /* 展開右側選單 (550px 是適合英文選單的寬度) */
+        body.is-expanded .right-menu-container {
+            width: 550px;
+            opacity: 1;
+        }
+
+        /* =========================================
+           返回按鈕 (預設隱藏)
+           ========================================= */
+        .back-btn-wrapper {
+            margin-top: 40px;
+            opacity: 0;
+            transform: translateY(20px);
+            visibility: hidden;
+            transition: all 0.4s ease;
+        }
+        body.is-expanded .back-btn-wrapper {
+            opacity: 1;
+            transform: translateY(0);
+            visibility: visible;
+        }
+        .back-btn {
             background-color: var(--primary-blue);
             color: white;
-            padding: 8px 18px; /* 縮小左右 padding 讓長英文能塞入卡片寬度 */
+            border: none;
             border-radius: 30px;
-            font-size: 14px; /* 縮小字體以適應英文長度 */
+            padding: 12px 35px;
+            font-size: 18px;
             font-weight: bold;
-            letter-spacing: 0.5px;
-            white-space: nowrap;
+            cursor: pointer;
+            transition: background-color 0.2s;
         }
+        .back-btn:hover { background-color: #003377; }
 
-        /* 卡片中間的圖片 */
-        .card img {
-            width: 160px;
-            height: 160px;
-            object-fit: contain;
-            margin-top: 30px;
-        }
-
-        /* 卡片底部的文字 */
-        .card-title {
-            font-size: 18px; /* 稍微縮小以適應英文 */
-            font-weight: 800;
-            margin: 0;
-            text-align: center; /* 讓斷行時的文字保持置中 */
-            line-height: 1.3;
-        }
     </style>
 </head>
 <body>
@@ -121,27 +260,73 @@
         <h1>Quantum Cybersecurity Education Platform</h1>
     </div>
 
-    <div class="cards-container">
+    <div class="app-container">
         
-        <a href="E_Information_security_application.html" class="card">
-            <div class="card-badge">Education Tier: Introduction</div>
-            <img src="pictures/quantum.svg" alt="Education Tier Icon">
-            <p class="card-title">Quantum Communication &<br>Basic Security Scenarios</p>
-        </a>
+        <div class="card" id="interactive-card" onclick="expandView()">
+            <div class="state-front">
+                <div class="card-badge">Education Tier: Introduction</div>
+                <img src="pictures/quantum.svg" alt="Education Tier Icon">
+                <p class="card-title">Quantum Communication &<br>Basic Security Scenarios</p>
+            </div>
+            <div class="state-expanded">
+                <img src="pictures/key.svg" alt="Quantum Security Applications Icon">
+                <h2>Quantum Security<br>Applications</h2>
+            </div>
+        </div>
 
-        <a href="#" class="card">
+        <div class="right-menu-container">
+            <a href="QKDstep1.html" class="menu-item">
+                <div class="text-content">
+                    <p class="en-title">Quantum Key Distribution</p>
+                </div>
+                <span class="learn-more">Learn more</span>
+            </a>
+
+            <a href="#" class="menu-item">
+                <div class="text-content">
+                    <p class="en-title">Quantum Secret Sharing</p>
+                </div>
+                <span class="learn-more">Learn more</span>
+            </a>
+
+            <div class="menu-item no-link">
+                <div class="text-content">
+                    <p class="en-title" style="color: #666;">Custom Protocol Settings</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="card collapsible-card">
             <div class="card-badge">Design Tier: Security Verification</div>
             <img src="pictures/calculate.svg" alt="Design Tier Icon">
             <p class="card-title">Computation & Verification</p>
-        </a>
+        </div>
 
-        <a href="#" class="card">
+        <div class="card collapsible-card">
             <div class="card-badge">Analysis Tier: Research & Analysis</div>
             <img src="pictures/analyze.svg" alt="Analysis Tier Icon">
             <p class="card-title">Protocol Comparison & Analysis</p>
-        </a>
+        </div>
 
     </div>
+
+    <div class="back-btn-wrapper">
+        <button class="back-btn" onclick="collapseView()">Back</button>
+    </div>
+
+    <script>
+        // 點擊卡片展開
+        function expandView() {
+            // 在 body 加上 is-expanded 標籤，觸發 CSS 的動畫效果
+            document.body.classList.add('is-expanded');
+        }
+
+        // 點擊 Back 按鈕復原
+        function collapseView() {
+            // 移除標籤，所有元素會照著 CSS 設定絲滑歸位
+            document.body.classList.remove('is-expanded');
+        }
+    </script>
 
 </body>
 </html>
