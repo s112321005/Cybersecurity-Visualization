@@ -144,6 +144,21 @@ body {
     display: flex; align-items: center; justify-content: center; color: white;
     font-size: 18px; font-weight: bold; margin-top: 10px; transition: all 0.3s ease;
 }
+/* --- Eve 導致的錯誤結果圈圈 (Bob 端) --- */
+/* Alice 與 Bob 偏振器相同時 (Active) */
+.state-circle.eve-error {
+    background-color: #ff4d4d;
+    color: white;
+    border: 2px solid #ff4d4d;
+    box-sizing: border-box; /* 確保加上邊框後圈圈大小不變 */
+}
+
+/* Alice 與 Bob 偏振器不同時 (Inactive) */
+.state-circle.eve-error.inactive {
+    background-color: var(--inactive-gray); /* 也就是 #e0e0e0 */
+    color: #666; /* 灰色文字 */
+    border: 2px solid #ff4d4d; /* 加上粗細為 2 的紅框框 */
+}
 
 .prob-circle {
     position: absolute; background: var(--light-blue); width: 40px; height: 40px;
