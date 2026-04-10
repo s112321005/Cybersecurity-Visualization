@@ -7,6 +7,9 @@
     <link rel="stylesheet" href="settingStyle.css">
     <title>Cerify Setting</title>
     <style>
+        :root {
+                --primary-blue: #0047AB;     
+        }
         body {
             margin: 0;
             padding: 40px 0;
@@ -35,19 +38,33 @@
             align-items: center;
             margin-bottom: 30px;
         }
-        .back-btn {
-            background-color: #0047AB;
-            color: white;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 24px;
-            font-weight: bold;
-            cursor: pointer;
-            margin-right: 20px;
+        .header-left { 
+            display: flex; 
+            align-items: center; 
+            gap: 15px; 
+        }
+        .btn-back {
+            width: 40px; 
+            height: 40px; 
+            background-color: var(--primary-blue);
+            color: white; 
+            border-radius: 50%; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            text-decoration: none; 
+            font-size: 1.1rem; /* 稍微放大箭頭 */
+            transition: transform 0.2s;
+            cursor: pointer; 
+            border: none;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+            padding: 0;
+            margin: 0;
+            box-sizing: border-box;
+            flex-shrink: 0;
+        }
+        .btn-back:hover { 
+            transform: scale(1.1); 
         }
         .page-title {
             border: 2px solid #0047AB;
@@ -369,8 +386,10 @@
 <body>
 <div class="container">
     <div class="header-bar">
-        <div class="back-btn">«</div>
-        <div class="page-title">Cerify Setting</div>
+        <div class="header-left">
+            <a href="E_firstpage.html" class="btn-back">◀</a>
+            <div class="page-title">Cerify Setting</div>
+        </div>
     </div>
     <div class="protocol-selection">
         <label for="protocol-select">Select Protocol:</label>
