@@ -217,7 +217,7 @@ body {
 .setting-item.eve-on strong { color: #ff4d4d; }
 
 .line-inactive {
-    stroke: #ccc !important;
+    stroke: #b0b0b0 !important;
     opacity: 0.5;
 }
 /* --- 左上角返回按鈕與標題區 --- */
