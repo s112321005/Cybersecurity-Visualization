@@ -233,7 +233,6 @@ body {
 
 .line-inactive {
     stroke: #b0b0b0 !important;
-    opacity: 0.5;
 }
 /* --- 左上角返回按鈕與標題區 --- */
 .btn-back {
