@@ -1,5 +1,4 @@
 :root { --primary-blue: #0047AB; --light-blue: #D0E0FF; --inactive-gray: #e0e0e0; --bg-color: #f8f9fa; --eve-red: #ff4d4d; }
-/* 一條規則定義所有共通排版屬性 (Flex & Center & Weight) */
 .nav-tabs, .tab-btn, .state-btn, .state-circle, .eve-state-circle, .prob-circle, .result-circle, .btn-back, .top-bar, .option-row, .character-avatar, .line-tooltip { display: flex; align-items: center; justify-content: center; font-weight: bold; transition: all 0.3s ease; box-sizing: border-box; }
 body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--bg-color); display: flex; flex-direction: column; align-items: center; margin: 0; padding: 20px 0; color: #333; min-width: 1450px !important; }
 .container { background: white; padding: 30px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); width: 1350px !important; max-width: 1350px !important; flex-shrink: 0 !important; margin: 0 auto; }
