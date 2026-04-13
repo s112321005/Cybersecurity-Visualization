@@ -327,6 +327,7 @@
     document.addEventListener('DOMContentLoaded', () => {
         const protocolSelect = document.getElementById('protocol-select');
         const interfaces = document.querySelectorAll('.protocol-interface');
+        
         protocolSelect.addEventListener('change', function() {
             interfaces.forEach(iface => iface.style.display = 'none');
             const selectedValue = this.value;
@@ -359,7 +360,7 @@
             toggle.addEventListener('change', function() { updatePanelState(this); });
         });
 
-        // Validation Function
+        // 通用的驗證函式
         function validateSettings(interfaceId, rules) {
             const container = document.getElementById(interfaceId);
             for (const rule of rules) {
@@ -374,18 +375,26 @@
 
         // QKD Start
         document.getElementById('qkd-start-btn').addEventListener('click', () => {
+            const interfaceDiv = document.getElementById('qkd-interface');
+            const isEveOn = interfaceDiv.querySelector('.status-toggle').checked;
+            
+            // 基本驗證規則
             const rules = [
                 {name: 'a_particle', label: 'Alice Particle'}, {name: 'a_basis', label: 'Alice Basis'},
-                {name: 'b_particle', label: 'Bob Particle'}, {name: 'b_basis', label: 'Bob Basis'},
-                {name: 'e_attack', label: 'Eve Attack Selection'}
+                {name: 'b_particle', label: 'Bob Particle'}, {name: 'b_basis', label: 'Bob Basis'}
             ];
+            
+            // 只有在 Eve 是 ON 的時候，才加入攻擊方式的驗證
+            if (isEveOn) {
+                rules.push({name: 'e_attack', label: 'Eve Attack Selection'});
+            }
+
             if (!validateSettings('qkd-interface', rules)) return;
             
-            const interfaceDiv = document.getElementById('qkd-interface');
             const qkdSettings = {
                 alice: {isOn: true, particle: interfaceDiv.querySelector('input[name="a_particle"]:checked').nextElementSibling.innerText, basis: interfaceDiv.querySelector('input[name="a_basis"]:checked').nextElementSibling.innerText},
                 bob: {isOn: true, particle: interfaceDiv.querySelector('input[name="b_particle"]:checked').nextElementSibling.innerText, basis: interfaceDiv.querySelector('input[name="b_basis"]:checked').nextElementSibling.innerText},
-                eve: {isOn: interfaceDiv.querySelector('.status-toggle').checked, attack: interfaceDiv.querySelector('input[name="e_attack"]:checked').nextElementSibling.innerText}
+                eve: {isOn: isEveOn, attack: isEveOn ? interfaceDiv.querySelector('input[name="e_attack"]:checked').nextElementSibling.innerText : "None"}
             };
             localStorage.setItem('qkdSettings', JSON.stringify(qkdSettings));
             window.location.href = 'QKDanalysis.html';
@@ -393,22 +402,36 @@
 
         // QSS Start
         document.getElementById('qss-start-btn').addEventListener('click', () => {
+            const interfaceDiv = document.getElementById('qss-interface');
+            const isEveOn = interfaceDiv.querySelector('.theme-red .status-toggle').checked;
+
             const rules = [
                 {name: 'qss_a_particle', label: 'Alice Particle'}, {name: 'qss_a_basis', label: 'Alice Basis'},
-                {name: 'qss_b_particle', label: 'Bob Particle'}, {name: 'qss_b_basis', label: 'Bob Basis'},
-                {name: 'qss_e_attack', label: 'Eve Attack Selection'}
+                {name: 'qss_b_particle', label: 'Bob Particle'}, {name: 'qss_b_basis', label: 'Bob Basis'}
             ];
+
+            if (isEveOn) {
+                rules.push({name: 'qss_e_attack', label: 'Eve Attack Selection'});
+            }
+
             if (!validateSettings('qss-interface', rules)) return;
             window.location.href = 'QSSanalysis.html';
         });
 
         // Entanglement Start
         document.getElementById('ent-start-btn').addEventListener('click', () => {
+            const interfaceDiv = document.getElementById('entanglement-interface');
+            const isEveOn = interfaceDiv.querySelector('.theme-red .status-toggle').checked;
+
             const rules = [
                 {name: 'ent_a_particle', label: 'Alice Particle'}, {name: 'ent_a_basis', label: 'Alice Basis'},
-                {name: 'ent_b_particle', label: 'Bob Particle'}, {name: 'ent_b_basis', label: 'Bob Basis'},
-                {name: 'ent_e_attack', label: 'Eve Attack Selection'}
+                {name: 'ent_b_particle', label: 'Bob Particle'}, {name: 'ent_b_basis', label: 'Bob Basis'}
             ];
+
+            if (isEveOn) {
+                rules.push({name: 'ent_e_attack', label: 'Eve Attack Selection'});
+            }
+
             if (!validateSettings('entanglement-interface', rules)) return;
             window.location.href = 'ENTanalysis.html';
         });
