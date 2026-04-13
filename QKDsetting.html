@@ -365,7 +365,7 @@
             for (const rule of rules) {
                 const isSelected = container.querySelector(`input[name="${rule.name}"]:checked`);
                 if (!isSelected) {
-                    alert(`請先完成設定：${rule.label} 尚未選擇！`);
+                    alert(`Configuration incomplete: ${rule.label} is required!`);
                     return false;
                 }
             }
