@@ -303,7 +303,6 @@
                     </label>
                 </div>
             </div>
-
             <div class="character-col">
                 <img src="pictures/cat_alice.svg" class="character-img" alt="Alice">
                 <div class="name-tag">Alice</div>
@@ -477,7 +476,6 @@
     document.getElementById('qkd-start-btn').addEventListener('click', () => {
         const interfaceDiv = document.getElementById('qkd-interface');
         const toggles = interfaceDiv.querySelectorAll('.status-toggle');
-        
         const qkdSettings = {
             entangle: document.getElementById('qkd-entangle').checked,
             alice: {isOn: toggles[0].checked, particle: interfaceDiv.querySelector('input[name="a_particle"]:checked')?.nextElementSibling?.innerText || "", basis: interfaceDiv.querySelector('input[name="a_basis"]:checked')?.nextElementSibling?.innerText || ""},
