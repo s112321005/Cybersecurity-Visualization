@@ -10,9 +10,9 @@
         body { margin: 0; padding: 40px 0; background: var(--bg-gray); font-family: 'Segoe UI', sans-serif; display: flex; justify-content: center; }
         .container { width: 1200px; background: white; padding: 35px; border-radius: 25px; box-shadow: 0 12px 40px rgba(0,0,0,0.1); }
         .header-bar { display: flex; align-items: center; margin-bottom: 30px; }
-        .btn-back { width: 42px; height: 42px; border-radius: 50%; background: var(--primary-blue); color: white; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; text-decoration: none; font-size: 1.2rem; }
+        .btn-back { width: 40px; height: 40px; border-radius: 50%; background: var(--primary-blue); color: white; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; text-decoration: none; font-size: 1.2rem; }
         .btn-back:hover { transform: scale(1.1); }
-        .page-title { border: 2px solid var(--primary-blue); padding: 8px 30px; border-radius: 50px; font-weight: bold; color: var(--primary-blue); }
+        .page-title { border: 2px solid #0047AB; color: #000; padding: 10px 40px; border-radius: 10px; font-size: 20px; font-weight: bold; margin-left:15px; }
         .main-layout { display: flex; gap: 30px; align-items: flex-start; }
         .content-left { flex: 1; display: flex; flex-direction: column; gap: 20px; min-width: 0; }
         .control-panel { background: #f1f5f9; padding: 20px 30px; border-radius: 15px; display: flex; flex-direction: column; gap: 15px; }
@@ -48,7 +48,7 @@
             <div class="content-left">
                 <div class="control-panel">
                     <div class="slider-group">
-                        <label>Analysis Range (N): <span id="nText">80</span></label>
+                        <label>Particle Number Estimator from Probability: <span id="nText">80</span></label>
                         <input type="range" id="nInput" min="4" max="150" value="80">
                     </div>
                 </div>
@@ -65,7 +65,7 @@
             </div>
 
             <div class="reverse-box">
-                <h3>Particle Number Estimator from Probability</h3>
+                <h3>Solve for N</h3>
                 <label>Target Detection Probability (P)</label>
                 <input type="number" id="targetInput" step="0.00000001" placeholder="Enter number 0 to 1">
                 <button onclick="solveN()">Calculate Required N</button>
