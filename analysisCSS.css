@@ -31,7 +31,7 @@ body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-
 .prob-circle, .result-circle { position: absolute; width: 40px; height: 40px; border-radius: 50%; font-size: 18px; z-index: 3; transform: translate(-50%, -50%); }
 .prob-circle { background: var(--light-blue); }
 .prob-circle.inactive { background-color: var(--inactive-gray); color: #333; }
-.result-circle { background: var(--light-blue); color: var(--eve-red); }
+.result-circle { background: var(--light-blue); color: #28a745; &.inactive { color: #000; } }
 .character-avatar { position: absolute; top: -10px; flex-direction: column; transform: translateX(-50%); z-index: 10; }
 .character-avatar img { width: 70px; height: 70px; object-fit: contain; }
 .result-header { position: absolute; top: -10px; left: 90%; transform: translateX(-50%); background: var(--light-blue); padding: 10px 25px; border-radius: 15px; font-weight: bold; text-align: center; z-index: 10; white-space: nowrap; }
