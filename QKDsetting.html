@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=1200">
     <base href="https://s112321005.github.io/Cybersecurity-Visualization/">
-    <link rel="stylesheet" href="settingStyle.css">
     <title>Cerify Setting</title>
     <style>
         :root { --primary-blue: #0047AB; }
@@ -91,9 +90,7 @@
         <label for="protocol-select">Select Protocol:</label>
         <select id="protocol-select" class="custom-select">
             <option value="none" disabled selected>-- 選擇要設定的介面 --</option>
-            <option value="qkd">QKD</option>
-            <option value="qss">QSS</option>
-            <option value="entanglement">Entanglement</option>
+            <option value="qkd">QKD</option><option value="qss">QSS</option><option value="entanglement">Entanglement</option>
         </select>
     </div>
     <div id="qkd-interface" class="protocol-interface" style="display: none;">
@@ -138,7 +135,6 @@
                             <label class="pill-radio"><input type="radio" name="b_basis"><span>Z</span></label>
                         </div>
                     </div>
-                    
                 </div>
             </div>
             <div class="character-col theme-red">
@@ -166,9 +162,7 @@
             <div class="connection-line">
                 <div class="connection-label">
                     <label class="square-check" for="qss-entangle" style="color: #333; font-size: 14px; cursor: pointer; padding: -5px 20px; margin: 0;">
-                        <input type="checkbox" id="qss-entangle">
-                        <span class="box"></span>
-                        <span>Entanglement Required?</span>
+                        <input type="checkbox" id="qss-entangle"><span class="box"></span><span>Entanglement Required?</span>
                     </label>
                 </div>
             </div>
@@ -305,9 +299,7 @@
             <div class="connection-line">
                 <div class="connection-label">
                     <label class="square-check" for="ent-entangle" style="color: #333; font-size: 14px; cursor: pointer; padding: -5px 20px; margin: 0;">
-                        <input type="checkbox" id="ent-entangle">
-                        <span class="box"></span>
-                        <span>Entanglement Required?</span>
+                        <input type="checkbox" id="ent-entangle"><span class="box"></span><span>Entanglement Required?</span>
                     </label>
                 </div>
             </div>
@@ -436,16 +428,13 @@
                 </div>
             </div>
         </div>
-        <div style="text-align: center; margin-top: 30px;">
-            <button id="ent-start-btn" class="name-tag start" style="cursor: pointer; font-size: 18px; padding: 10px 40px; border: none;">Start Entanglement</button>
-        </div>
+        <div style="text-align: center; margin-top: 30px;"><button id="ent-start-btn" class="name-tag start" style="cursor: pointer; font-size: 18px; padding: 10px 40px; border: none;">Start Entanglement</button></div>
     </div>
 </div>
 <script>
     document.addEventListener('DOMContentLoaded', () => {
         const protocolSelect = document.getElementById('protocol-select');
         const interfaces = document.querySelectorAll('.protocol-interface');
-
         protocolSelect.addEventListener('change', function() {
             interfaces.forEach(iface => {
                 iface.style.display = 'none';
@@ -456,14 +445,12 @@
             }
         });
         const toggles = document.querySelectorAll('.status-toggle');
-        
         function updatePanelState(toggleElement) {
             const col = toggleElement.closest('.character-col');
             const img = col.querySelector('.character-img');
             const nameTag = col.querySelector('.name-tag');
             const panel = col.querySelector('.control-panel');
             const inputs = panel.querySelectorAll('input:not(.status-toggle)');
-
             if (toggleElement.checked) {
                 img.classList.remove('disabled-img');
                 panel.classList.remove('disabled');
@@ -480,7 +467,6 @@
                 inputs.forEach(input => input.disabled = true);
             }
         }
-
         toggles.forEach(toggle => {
             updatePanelState(toggle);
             toggle.addEventListener('change', function() {
@@ -494,50 +480,22 @@
         
         const qkdSettings = {
             entangle: document.getElementById('qkd-entangle').checked,
-            alice: {
-                isOn: toggles[0].checked,
-                particle: interfaceDiv.querySelector('input[name="a_particle"]:checked')?.nextElementSibling?.innerText || "",
-                basis: interfaceDiv.querySelector('input[name="a_basis"]:checked')?.nextElementSibling?.innerText || ""
-            },
-            bob: {
-                isOn: toggles[1].checked,
-                particle: interfaceDiv.querySelector('input[name="b_particle"]:checked')?.nextElementSibling?.innerText || "",
-                basis: interfaceDiv.querySelector('input[name="b_basis"]:checked')?.nextElementSibling?.innerText || ""
-            },
-            eve: {
-                isOn: toggles[2].checked,
-                attack: interfaceDiv.querySelector('input[name="e_attack"]:checked')?.nextElementSibling?.innerText || ""
-            }
+            alice: {isOn: toggles[0].checked, particle: interfaceDiv.querySelector('input[name="a_particle"]:checked')?.nextElementSibling?.innerText || "", basis: interfaceDiv.querySelector('input[name="a_basis"]:checked')?.nextElementSibling?.innerText || ""},
+            bob: {isOn: toggles[1].checked, particle: interfaceDiv.querySelector('input[name="b_particle"]:checked')?.nextElementSibling?.innerText || "", basis: interfaceDiv.querySelector('input[name="b_basis"]:checked')?.nextElementSibling?.innerText || ""},
+            eve: { isOn: toggles[2].checked, attack: interfaceDiv.querySelector('input[name="e_attack"]:checked')?.nextElementSibling?.innerText || ""}
         };
-        
         localStorage.setItem('qkdSettings', JSON.stringify(qkdSettings)); 
         window.location.href = 'QKDanalysis.html'; 
     });
     document.getElementById('qss-start-btn').addEventListener('click', () => {
         const interfaceDiv = document.getElementById('qss-interface');
         const toggles = interfaceDiv.querySelectorAll('.status-toggle');
-        
         const qssSettings = {
             entangle: document.getElementById('qss-entangle').checked,
-            alice: {
-                isOn: toggles[0].checked,
-                particle: interfaceDiv.querySelector('input[name="qss_a_particle"]:checked')?.nextElementSibling?.innerText || "",
-                basis: interfaceDiv.querySelector('input[name="qss_a_basis"]:checked')?.nextElementSibling?.innerText || ""
-            },
-            bob: {
-                isOn: toggles[1].checked,
-                particle: interfaceDiv.querySelector('input[name="qss_b_particle"]:checked')?.nextElementSibling?.innerText || "",
-                basis: interfaceDiv.querySelector('input[name="qss_b_basis"]:checked')?.nextElementSibling?.innerText || ""
-            },
-            charlie: {
-                isOn: toggles[2].checked, 
-                particle: interfaceDiv.querySelector('input[name="qss_c_particle"]:checked')?.nextElementSibling?.innerText || "",
-                basis: interfaceDiv.querySelector('input[name="qss_c_basis"]:checked')?.nextElementSibling?.innerText || ""
-            },
-            eve: {
-                isOn: toggles[3].checked,
-                attack: interfaceDiv.querySelector('input[name="qss_e_attack"]:checked')?.nextElementSibling?.innerText || ""
-            }
+            alice: { isOn: toggles[0].checked, particle: interfaceDiv.querySelector('input[name="qss_a_particle"]:checked')?.nextElementSibling?.innerText || "", basis: interfaceDiv.querySelector('input[name="qss_a_basis"]:checked')?.nextElementSibling?.innerText || ""},
+            bob: { isOn: toggles[1].checked, particle: interfaceDiv.querySelector('input[name="qss_b_particle"]:checked')?.nextElementSibling?.innerText || "", basis: interfaceDiv.querySelector('input[name="qss_b_basis"]:checked')?.nextElementSibling?.innerText || ""},
+            charlie: { isOn: toggles[2].checked, particle: interfaceDiv.querySelector('input[name="qss_c_particle"]:checked')?.nextElementSibling?.innerText || "", basis: interfaceDiv.querySelector('input[name="qss_c_basis"]:checked')?.nextElementSibling?.innerText || ""},
+            eve: { isOn: toggles[3].checked, attack: interfaceDiv.querySelector('input[name="qss_e_attack"]:checked')?.nextElementSibling?.innerText || ""}
         };
         localStorage.setItem('qssSettings', JSON.stringify(qssSettings)); 
         window.location.href = 'QSSanalysis.html'; 
@@ -547,25 +505,10 @@
         const toggles = interfaceDiv.querySelectorAll('.status-toggle');
         const entSettings = {
             entangle: document.getElementById('ent-entangle').checked,
-            alice: {
-                isOn: toggles[0].checked,
-                particle: interfaceDiv.querySelector('input[name="ent_a_particle"]:checked')?.nextElementSibling?.innerText || "",
-                basis: interfaceDiv.querySelector('input[name="ent_a_basis"]:checked')?.nextElementSibling?.innerText || ""
-            },
-            bob: {
-                isOn: toggles[1].checked,
-                particle: interfaceDiv.querySelector('input[name="ent_b_particle"]:checked')?.nextElementSibling?.innerText || "",
-                basis: interfaceDiv.querySelector('input[name="ent_b_basis"]:checked')?.nextElementSibling?.innerText || ""
-            },
-            charlie: {
-                isOn: toggles[2].checked, 
-                particle: interfaceDiv.querySelector('input[name="ent_c_particle"]:checked')?.nextElementSibling?.innerText || "",
-                basis: interfaceDiv.querySelector('input[name="ent_c_basis"]:checked')?.nextElementSibling?.innerText || ""
-            },
-            eve: {
-                isOn: toggles[3].checked,
-                attack: interfaceDiv.querySelector('input[name="ent_e_attack"]:checked')?.nextElementSibling?.innerText || ""
-            }
+            alice: {isOn: toggles[0].checked, particle: interfaceDiv.querySelector('input[name="ent_a_particle"]:checked')?.nextElementSibling?.innerText || "", basis: interfaceDiv.querySelector('input[name="ent_a_basis"]:checked')?.nextElementSibling?.innerText || ""},
+            bob: {isOn: toggles[1].checked, particle: interfaceDiv.querySelector('input[name="ent_b_particle"]:checked')?.nextElementSibling?.innerText || "", basis: interfaceDiv.querySelector('input[name="ent_b_basis"]:checked')?.nextElementSibling?.innerText || ""},
+            charlie: {isOn: toggles[2].checked, particle: interfaceDiv.querySelector('input[name="ent_c_particle"]:checked')?.nextElementSibling?.innerText || "", basis: interfaceDiv.querySelector('input[name="ent_c_basis"]:checked')?.nextElementSibling?.innerText || ""},
+            eve: {isOn: toggles[3].checked, attack: interfaceDiv.querySelector('input[name="ent_e_attack"]:checked')?.nextElementSibling?.innerText || ""}
         };
         localStorage.setItem('entSettings', JSON.stringify(entSettings)); 
         window.location.href = 'ENTanalysis.html'; 
