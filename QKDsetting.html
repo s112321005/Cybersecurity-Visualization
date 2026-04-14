@@ -33,15 +33,16 @@
         @keyframes pulse-start-btn { 0% { box-shadow: 0 0 0 0 rgba(0, 71, 171, 0.6); } 70% { box-shadow: 0 0 0 20px rgba(0, 71, 171, 0); } 100% { box-shadow: 0 0 0 0 rgba(0, 71, 171, 0); } }
         .name-tag.start { margin-bottom: 15px; animation: pulse-start-btn 2s infinite; }
         .name-tag.start:hover { background: #003580; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,71,171,0.4); animation: none; }
-        .click-toggle { cursor: pointer; margin-bottom: -15px; z-index: 3; }
+        .click-toggle { cursor: pointer; margin-bottom: -15px; z-index: 3; display: inline-grid; grid-template-areas: "toggle-area"; border-radius: 20px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.1); transition: transform 0.2s ease, box-shadow 0.2s ease; }
+        .click-toggle:active { transform: scale(0.95); box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
         .click-toggle input { display: none; }
-        .click-toggle span { padding: 6px 30px; border-radius: 20px; font-weight: bold; font-size: 16px; text-align: center; display: inline-block; min-width: 140px; box-sizing: border-box; transition: all 0.3s ease; }
-        .click-toggle .text-off { display: none; background-color: #b0b0b0; color: white; }
+        .click-toggle span { grid-area: toggle-area; padding: 6px 30px; font-weight: bold; font-size: 16px; text-align: center; min-width: 140px; box-sizing: border-box; transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
+        .click-toggle .text-off { background-color: #b0b0b0; color: white; }
         .click-toggle .text-on  { background-color: #0047AB; color: white; }
-        .click-toggle input:checked ~ .text-on { display: inline-block; }
-        .click-toggle input:checked ~ .text-off { display: none; }
-        .click-toggle input:not(:checked) ~ .text-on { display: none; }
-        .click-toggle input:not(:checked) ~ .text-off { display: inline-block; }
+        .click-toggle input:not(:checked) ~ .text-on { transform: translateY(-100%); opacity: 0; pointer-events: none; }
+        .click-toggle input:not(:checked) ~ .text-off { transform: translateY(0); opacity: 1; }
+        .click-toggle input:checked ~ .text-on { transform: translateY(0); opacity: 1; }
+        .click-toggle input:checked ~ .text-off { transform: translateY(100%); opacity: 0; pointer-events: none; }
         .control-panel { border: 2px solid #0047AB; border-radius: 10px; padding: 15px; background-color: white; min-height: 250px; box-sizing: border-box; width: 100%; transition: all 0.3s ease; }
         .control-panel.disabled { border-color: #b0b0b0 !important; color: #777; }
         .setting-title { display: flex; align-items: center; gap: 5px; font-weight: bold; font-size: 14px; margin-bottom: 10px; }
@@ -75,367 +76,352 @@
     </style>
 </head>
 <body>
-<div class="container">
-    <div class="header-bar">
-        <div class="header-left">
-            <a href="QuantumCybersecurityEducationPlatform.html" class="btn-back text-only">◀&#xFE0E;</a>
-            <div class="page-title">Verify Setting</div>
+    <div class="container">
+        <div class="header-bar">
+            <div class="header-left">
+                <a href="QuantumCybersecurityEducationPlatform.html" class="btn-back text-only">◀&#xFE0E;</a>
+                <div class="page-title">Verify Setting</div>
+            </div>
         </div>
-    </div>
-    <div class="protocol-selection">
-        <select id="protocol-select" class="custom-select">
-            <option value="none" disabled selected>-- select protocol --</option>
-            <option value="qkd">QKD</option><option value="qss">QSS</option><option value="entanglement">Entanglement</option>
-        </select>
-    </div>
+        <div class="protocol-selection">
+            <select id="protocol-select" class="custom-select">
+                <option value="none" disabled selected>-- select protocol --</option>
+                <option value="qkd">QKD</option>
+                <option value="qss">QSS</option>
+                <option value="entanglement">Entanglement</option>
+            </select>
+        </div>
 
-    <div id="qkd-interface" class="protocol-interface" style="display: none;">
-        <div class="main-grid">
-            <div class="character-col">
-                <img src="pictures/cat_alice.svg" class="character-img" alt="Alice">
-                <div class="name-tag">Alice</div>
-                <div class="click-toggle"><span class="text-on">ON</span></div>
-                <div class="control-panel">
-                    <div class="setting-title">Particle Selection</div>
-                    <div class="flex-row" style="margin-bottom: 15px; gap: 8px;">
-                        <label class="pill-radio"><input type="radio" name="a_particle" checked><span>single</span></label>
-                    </div>
-                    <div class="setting-title">Basis Selection</div>
-                    <div style="display:flex; flex-direction:column; gap:8px; margin-bottom: 15px;">
-                        <div class="flex-row" style="gap: 8px;">
-                            <label class="pill-radio"><input type="radio" name="a_basis" checked><span>X</span></label>
-                            <label class="pill-radio"><input type="radio" name="a_basis"><span>Z</span></label>
+        <div id="qkd-interface" class="protocol-interface" style="display: none;">
+            <div class="main-grid">
+                <div class="character-col">
+                    <img src="pictures/cat_alice.svg" class="character-img" alt="Alice">
+                    <div class="name-tag">Alice</div>
+                    <div class="click-toggle"><span class="text-on">ON</span></div>
+                    <div class="control-panel">
+                        <div class="setting-title">Particle Selection</div>
+                        <div class="flex-row" style="margin-bottom: 15px; gap: 8px;">
+                            <label class="pill-radio"><input type="radio" name="a_particle" checked><span>single</span></label>
+                        </div>
+                        <div class="setting-title">Basis Selection</div>
+                        <div style="display:flex; flex-direction:column; gap:8px; margin-bottom: 15px;">
+                            <div class="flex-row" style="gap: 8px;">
+                                <label class="pill-radio"><input type="radio" name="a_basis" checked><span>X</span></label>
+                                <label class="pill-radio"><input type="radio" name="a_basis"><span>Z</span></label>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="character-col" id="bob-col">
-                <img src="pictures/cat_bob.svg" class="character-img" alt="Bob">
-                <div class="name-tag">Bob</div>
-                <div class="click-toggle"><span class="text-on status-toggle-static">ON</span></div>
-                <div class="control-panel">
-                    <div class="setting-title">Particle Selection</div>
-                    <div class="flex-row" style="margin-bottom: 15px; gap: 8px;">
-                        <label class="pill-radio"><input type="radio" name="b_particle" checked><span>single</span></label>
-                    </div>
-                    <div class="setting-title">Basis Selection</div>
-                    <div style="display:flex; flex-direction:column; gap:8px; margin-bottom: 15px;">
-                        <div class="flex-row" style="gap: 8px;">
-                            <label class="pill-radio"><input type="radio" name="b_basis" checked><span>X</span></label>
-                            <label class="pill-radio"><input type="radio" name="b_basis"><span>Z</span></label>
+                <div class="character-col" id="bob-col">
+                    <img src="pictures/cat_bob.svg" class="character-img" alt="Bob">
+                    <div class="name-tag">Bob</div>
+                    <div class="click-toggle"><span class="text-on status-toggle-static">ON</span></div>
+                    <div class="control-panel">
+                        <div class="setting-title">Particle Selection</div>
+                        <div class="flex-row" style="margin-bottom: 15px; gap: 8px;">
+                            <label class="pill-radio"><input type="radio" name="b_particle" checked><span>single</span></label>
+                        </div>
+                        <div class="setting-title">Basis Selection</div>
+                        <div style="display:flex; flex-direction:column; gap:8px; margin-bottom: 15px;">
+                            <div class="flex-row" style="gap: 8px;">
+                                <label class="pill-radio"><input type="radio" name="b_basis" checked><span>X</span></label>
+                                <label class="pill-radio"><input type="radio" name="b_basis"><span>Z</span></label>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="character-col theme-red">
-                <img src="pictures/Eavesdropper.svg" class="character-img" alt="Eavesdropper">
-                <div class="name-tag" data-role="eavesdropper">Eavesdropper</div>
-                <label class="click-toggle">
-                    <input type="checkbox" class="status-toggle">
-                    <span class="text-on">ON</span><span class="text-off">OFF</span>
-                </label>
-                <div class="control-panel">
-                    <div class="setting-title">Attack Selection</div>
-                    <div style="display:flex; flex-direction:column; gap:10px; align-items: flex-start; margin-top: 15px;">
-                        <label class="pill-radio"><input type="radio" name="e_attack"><span style="padding: 6px 20px;">CNOT</span></label>
-                        <label class="pill-radio"><input type="radio" name="e_attack"><span style="padding: 6px 20px;">Intercept-resend</span></label>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div style="text-align: center; margin-top: 30px;">
-            <button id="qkd-start-btn" class="name-tag start" style="cursor: pointer; font-size: 18px; padding: 10px 40px; border: none;">Start QKD Analysis</button>
-        </div>
-    </div>
-
-    <div id="qss-interface" class="protocol-interface" style="display: none;">
-        <div class="main-grid">
-            <div class="connection-line">
-                <div class="connection-label">
-                    <label class="square-check" for="qss-entangle" style="color: #333; font-size: 14px; cursor: pointer; padding: -5px 20px; margin: 0;">
-                        <input type="checkbox" id="qss-entangle"><span class="box"></span><span>Entanglement Required?</span>
+                <div class="character-col theme-red">
+                    <img src="pictures/Eavesdropper.svg" class="character-img" alt="Eavesdropper">
+                    <div class="name-tag" data-role="eavesdropper">Eavesdropper</div>
+                    <label class="click-toggle">
+                        <input type="checkbox" class="status-toggle">
+                        <span class="text-on">ON</span><span class="text-off">OFF</span>
                     </label>
-                </div>
-            </div>
-            <div class="character-col">
-                <img src="pictures/cat_alice.svg" class="character-img" alt="Alice">
-                <div class="name-tag">Alice</div>
-                <div class="click-toggle"><span class="text-on">ON</span></div>
-                <div class="control-panel">
-                    <div class="setting-title">Particle Selection</div>
-                    <div class="flex-row" style="margin-bottom: 15px; gap: 8px;">
-                        <label class="pill-radio"><input type="radio" name="qss_a_particle"><span>single</span></label>
-                        <label class="pill-radio"><input type="radio" name="qss_a_particle"><span>Bell</span></label>
-                        <label class="pill-radio"><input type="radio" name="qss_a_particle"><span>GHZ</span></label>
-                    </div>
-                    <div class="setting-title">Basis Selection</div>
-                    <div style="display:flex; flex-direction:column; gap:8px; margin-bottom: 15px;">
-                        <div class="flex-row" style="gap: 8px;">
-                            <label class="pill-radio"><input type="radio" name="qss_a_basis"><span>X</span></label>
-                            <label class="pill-radio"><input type="radio" name="qss_a_basis"><span>Z</span></label>
-                        </div>
-                        <div class="flex-row" style="gap: 8px;">
-                            <label class="pill-radio"><input type="radio" name="qss_a_basis"><span>Bell</span></label>
-                            <label class="pill-radio"><input type="radio" name="qss_a_basis"><span>GHZ</span></label>
-                        </div>
-                    </div>
-                    <div class="setting-title">Send Order: <input type="number" class="order-input" value="1" min="1" style="margin-left:5px;"></div>
-                </div>
-            </div>
-            <div class="character-col" id="bob-col">
-                <img src="pictures/cat_bob.svg" class="character-img" alt="Bob">
-                <div class="name-tag">Bob</div>
-                <div class="click-toggle"><span class="text-on status-toggle-static">ON</span></div>
-                <div class="control-panel">
-                    <div class="setting-title">Particle Selection</div>
-                    <div class="flex-row" style="margin-bottom: 15px; gap: 8px;">
-                        <label class="pill-radio"><input type="radio" name="qss_b_particle"><span>single</span></label>
-                        <label class="pill-radio"><input type="radio" name="qss_b_particle"><span>Bell</span></label>
-                        <label class="pill-radio"><input type="radio" name="qss_b_particle"><span>GHZ</span></label>
-                    </div>
-                    <div class="setting-title">Basis Selection</div>
-                    <div style="display:flex; flex-direction:column; gap:8px; margin-bottom: 15px;">
-                        <div class="flex-row" style="gap: 8px;">
-                            <label class="pill-radio"><input type="radio" name="qss_b_basis"><span>X</span></label>
-                            <label class="pill-radio"><input type="radio" name="qss_b_basis"><span>Z</span></label>
-                        </div>
-                        <div class="flex-row" style="gap: 8px;">
-                            <label class="pill-radio"><input type="radio" name="qss_b_basis"><span>Bell</span></label>
-                            <label class="pill-radio"><input type="radio" name="qss_b_basis"><span>GHZ</span></label>
-                        </div>
-                    </div>
-                    <div class="setting-title">Send Order: <input type="number" class="order-input" value="2" min="1" style="margin-left:5px;"></div>
-                </div>
-            </div>
-            <div class="character-col">
-                <img src="pictures/cat_charlie.svg" class="character-img" alt="Charlie">
-                <div class="name-tag">Charlie</div>
-                <label class="click-toggle"><input type="checkbox" class="status-toggle"><span class="text-on">ON</span><span class="text-off">OFF</span></label>
-                <div class="control-panel">
-                    <div class="setting-title">Particle Selection</div>
-                    <div class="flex-row" style="margin-bottom: 15px; gap: 8px;">
-                        <label class="pill-radio"><input type="radio" name="qss_c_particle"><span>single</span></label>
-                        <label class="pill-radio"><input type="radio" name="qss_c_particle"><span>Bell</span></label>
-                        <label class="pill-radio"><input type="radio" name="qss_c_particle"><span>GHZ</span></label>
-                    </div>
-                    <div class="setting-title">Basis Selection</div>
-                    <div style="display:flex; flex-direction:column; gap:8px; margin-bottom: 15px;">
-                        <div class="flex-row" style="gap: 8px;">
-                            <label class="pill-radio"><input type="radio" name="qss_c_basis"><span>X</span></label>
-                            <label class="pill-radio"><input type="radio" name="qss_c_basis"><span>Z</span></label>
-                        </div>
-                        <div class="flex-row" style="gap: 8px;">
-                            <label class="pill-radio"><input type="radio" name="qss_c_basis"><span>Bell</span></label>
-                            <label class="pill-radio"><input type="radio" name="qss_c_basis"><span>GHZ</span></label>
+                    <div class="control-panel">
+                        <div class="setting-title">Attack Selection</div>
+                        <div style="display:flex; flex-direction:column; gap:10px; align-items: flex-start; margin-top: 15px;">
+                            <label class="pill-radio"><input type="radio" name="e_attack"><span style="padding: 6px 20px;">CNOT</span></label>
+                            <label class="pill-radio"><input type="radio" name="e_attack"><span style="padding: 6px 20px;">Intercept-resend</span></label>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="character-col theme-red">
-                <img src="pictures/Eavesdropper.svg" class="character-img" alt="Eavesdropper">
-                <div class="name-tag" data-role="eavesdropper">Eavesdropper</div>
-                <label class="click-toggle"><input type="checkbox" class="status-toggle"><span class="text-on">ON</span><span class="text-off">OFF</span></label>
-                <div class="control-panel">
-                    <div class="setting-title">Attack Selection</div>
-                    <div style="display:flex; flex-direction:column; gap:10px; align-items: flex-start; margin-top: 15px;">
-                        <label class="pill-radio"><input type="radio" name="qss_e_attack"><span style="padding: 6px 20px;">CNOT</span></label>
-                        <label class="pill-radio"><input type="radio" name="qss_e_attack"><span style="padding: 6px 20px;">Intercept-resend</span></label>
-                    </div>
-                </div>
+            <div style="text-align: center; margin-top: 30px;">
+                <button id="qkd-start-btn" class="name-tag start" style="cursor: pointer; font-size: 18px; padding: 10px 40px; border: none;">Start QKD Analysis</button>
             </div>
         </div>
-        <div style="text-align: center; margin-top: 30px;">
-            <button id="qss-start-btn" class="name-tag start" style="cursor: pointer; font-size: 18px; padding: 10px 40px; border: none;">Start QSS Analysis</button>
+
+        <div id="qss-interface" class="protocol-interface" style="display: none;">
+            <div class="main-grid">
+                <div class="connection-line">
+                    <div class="connection-label">
+                        <label class="square-check" for="qss-entangle" style="color: #333; font-size: 14px; cursor: pointer; padding: -5px 20px; margin: 0;">
+                            <input type="checkbox" id="qss-entangle"><span class="box"></span><span>Entanglement Required?</span>
+                        </label>
+                    </div>
+                </div>
+                <div class="character-col">
+                    <img src="pictures/cat_alice.svg" class="character-img" alt="Alice">
+                    <div class="name-tag">Alice</div>
+                    <div class="click-toggle"><span class="text-on">ON</span></div>
+                    <div class="control-panel">
+                        <div class="setting-title">Particle Selection</div>
+                        <div class="flex-row" style="margin-bottom: 15px; gap: 8px;">
+                            <label class="pill-radio"><input type="radio" name="qss_a_particle"><span>single</span></label>
+                            <label class="pill-radio"><input type="radio" name="qss_a_particle"><span>Bell</span></label>
+                            <label class="pill-radio"><input type="radio" name="qss_a_particle"><span>GHZ</span></label>
+                        </div>
+                        <div class="setting-title">Basis Selection</div>
+                        <div style="display:flex; flex-direction:column; gap:8px; margin-bottom: 15px;">
+                            <div class="flex-row" style="gap: 8px;">
+                                <label class="pill-radio"><input type="radio" name="qss_a_basis"><span>X</span></label>
+                                <label class="pill-radio"><input type="radio" name="qss_a_basis"><span>Z</span></label>
+                            </div>
+                            <div class="flex-row" style="gap: 8px;">
+                                <label class="pill-radio"><input type="radio" name="qss_a_basis"><span>Bell</span></label>
+                                <label class="pill-radio"><input type="radio" name="qss_a_basis"><span>GHZ</span></label>
+                            </div>
+                        </div>
+                        <div class="setting-title">Send Order: <input type="number" class="order-input" value="1" min="1" style="margin-left:5px;"></div>
+                    </div>
+                </div>
+                <div class="character-col" id="bob-col">
+                    <img src="pictures/cat_bob.svg" class="character-img" alt="Bob">
+                    <div class="name-tag">Bob</div>
+                    <div class="click-toggle"><span class="text-on status-toggle-static">ON</span></div>
+                    <div class="control-panel">
+                        <div class="setting-title">Particle Selection</div>
+                        <div class="flex-row" style="margin-bottom: 15px; gap: 8px;">
+                            <label class="pill-radio"><input type="radio" name="qss_b_particle"><span>single</span></label>
+                            <label class="pill-radio"><input type="radio" name="qss_b_particle"><span>Bell</span></label>
+                            <label class="pill-radio"><input type="radio" name="qss_b_particle"><span>GHZ</span></label>
+                        </div>
+                        <div class="setting-title">Basis Selection</div>
+                        <div style="display:flex; flex-direction:column; gap:8px; margin-bottom: 15px;">
+                            <div class="flex-row" style="gap: 8px;">
+                                <label class="pill-radio"><input type="radio" name="qss_b_basis"><span>X</span></label>
+                                <label class="pill-radio"><input type="radio" name="qss_b_basis"><span>Z</span></label>
+                            </div>
+                            <div class="flex-row" style="gap: 8px;">
+                                <label class="pill-radio"><input type="radio" name="qss_b_basis"><span>Bell</span></label>
+                                <label class="pill-radio"><input type="radio" name="qss_b_basis"><span>GHZ</span></label>
+                            </div>
+                        </div>
+                        <div class="setting-title">Send Order: <input type="number" class="order-input" value="2" min="1" style="margin-left:5px;"></div>
+                    </div>
+                </div>
+                <div class="character-col">
+                    <img src="pictures/cat_charlie.svg" class="character-img" alt="Charlie">
+                    <div class="name-tag">Charlie</div>
+                    <label class="click-toggle"><input type="checkbox" class="status-toggle"><span class="text-on">ON</span><span class="text-off">OFF</span></label>
+                    <div class="control-panel">
+                        <div class="setting-title">Particle Selection</div>
+                        <div class="flex-row" style="margin-bottom: 15px; gap: 8px;">
+                            <label class="pill-radio"><input type="radio" name="qss_c_particle"><span>single</span></label>
+                            <label class="pill-radio"><input type="radio" name="qss_c_particle"><span>Bell</span></label>
+                            <label class="pill-radio"><input type="radio" name="qss_c_particle"><span>GHZ</span></label>
+                        </div>
+                        <div class="setting-title">Basis Selection</div>
+                        <div style="display:flex; flex-direction:column; gap:8px; margin-bottom: 15px;">
+                            <div class="flex-row" style="gap: 8px;">
+                                <label class="pill-radio"><input type="radio" name="qss_c_basis"><span>X</span></label>
+                                <label class="pill-radio"><input type="radio" name="qss_c_basis"><span>Z</span></label>
+                            </div>
+                            <div class="flex-row" style="gap: 8px;">
+                                <label class="pill-radio"><input type="radio" name="qss_c_basis"><span>Bell</span></label>
+                                <label class="pill-radio"><input type="radio" name="qss_c_basis"><span>GHZ</span></label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="character-col theme-red">
+                    <img src="pictures/Eavesdropper.svg" class="character-img" alt="Eavesdropper">
+                    <div class="name-tag" data-role="eavesdropper">Eavesdropper</div>
+                    <label class="click-toggle"><input type="checkbox" class="status-toggle"><span class="text-on">ON</span><span class="text-off">OFF</span></label>
+                    <div class="control-panel">
+                        <div class="setting-title">Attack Selection</div>
+                        <div style="display:flex; flex-direction:column; gap:10px; align-items: flex-start; margin-top: 15px;">
+                            <label class="pill-radio"><input type="radio" name="qss_e_attack"><span style="padding: 6px 20px;">CNOT</span></label>
+                            <label class="pill-radio"><input type="radio" name="qss_e_attack"><span style="padding: 6px 20px;">Intercept-resend</span></label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div style="text-align: center; margin-top: 30px;">
+                <button id="qss-start-btn" class="name-tag start" style="cursor: pointer; font-size: 18px; padding: 10px 40px; border: none;">Start QSS Analysis</button>
+            </div>
+        </div>
+
+        <div id="entanglement-interface" class="protocol-interface" style="display: none;">
+            <div class="main-grid">
+                <div class="connection-line">
+                    <div class="connection-label">
+                        <label class="square-check" for="ent-entangle" style="color: #333; font-size: 14px; cursor: pointer; padding: -5px 20px; margin: 0;">
+                            <input type="checkbox" id="ent-entangle"><span class="box"></span><span>Entanglement Required?</span>
+                        </label>
+                    </div>
+                </div>
+                <div class="character-col">
+                    <img src="pictures/cat_alice.svg" class="character-img" alt="Alice">
+                    <div class="name-tag">Alice</div>
+                    <div class="click-toggle"><span class="text-on">ON</span></div>
+                    <div class="control-panel">
+                        <div class="setting-title">Particle Selection</div>
+                        <div class="flex-row" style="margin-bottom: 15px; gap: 8px;">
+                            <label class="pill-radio"><input type="radio" name="ent_a_particle"><span>single</span></label>
+                            <label class="pill-radio"><input type="radio" name="ent_a_particle"><span>Bell</span></label>
+                        </div>
+                        <div class="setting-title">Basis Selection</div>
+                        <div class="flex-row" style="gap: 8px;">
+                            <label class="pill-radio"><input type="radio" name="ent_a_basis"><span>X</span></label>
+                            <label class="pill-radio"><input type="radio" name="ent_a_basis"><span>Z</span></label>
+                        </div>
+                    </div>
+                </div>
+                <div class="character-col" id="bob-col">
+                    <img src="pictures/cat_bob.svg" class="character-img" alt="Bob">
+                    <div class="name-tag">Bob</div>
+                    <div class="click-toggle"><span class="text-on status-toggle-static">ON</span></div>
+                    <div class="control-panel">
+                        <div class="setting-title">Particle Selection</div>
+                        <div class="flex-row" style="margin-bottom: 15px; gap: 8px;">
+                            <label class="pill-radio"><input type="radio" name="ent_b_particle"><span>single</span></label>
+                            <label class="pill-radio"><input type="radio" name="ent_b_particle"><span>Bell</span></label>
+                        </div>
+                        <div class="setting-title">Basis Selection</div>
+                        <div class="flex-row" style="gap: 8px;">
+                            <label class="pill-radio"><input type="radio" name="ent_b_basis"><span>X</span></label>
+                            <label class="pill-radio"><input type="radio" name="ent_b_basis"><span>Z</span></label>
+                        </div>
+                    </div>
+                </div>
+                <div class="character-col">
+                    <img src="pictures/cat_charlie.svg" class="character-img" alt="Charlie">
+                    <div class="name-tag">Charlie</div>
+                    <label class="click-toggle"><input type="checkbox" class="status-toggle"><span class="text-on">ON</span><span class="text-off">OFF</span></label>
+                    <div class="control-panel">
+                        <div class="setting-title">Particle Selection</div>
+                        <div class="flex-row" style="margin-bottom: 15px; gap: 8px;">
+                            <label class="pill-radio"><input type="radio" name="ent_c_particle"><span>single</span></label>
+                        </div>
+                        <div class="setting-title">Basis Selection</div>
+                        <div class="flex-row" style="gap: 8px;">
+                            <label class="pill-radio"><input type="radio" name="ent_c_basis"><span>X</span></label>
+                        </div>
+                    </div>
+                </div>
+                <div class="character-col theme-red">
+                    <img src="pictures/Eavesdropper.svg" class="character-img" alt="Eavesdropper">
+                    <div class="name-tag" data-role="eavesdropper">Eavesdropper</div>
+                    <label class="click-toggle"><input type="checkbox" class="status-toggle"><span class="text-on">ON</span><span class="text-off">OFF</span></label>
+                    <div class="control-panel">
+                        <div class="setting-title">Attack Selection</div>
+                        <div style="display:flex; flex-direction:column; gap:10px; align-items: flex-start; margin-top: 15px;">
+                            <label class="pill-radio"><input type="radio" name="ent_e_attack"><span style="padding: 6px 20px;">CNOT</span></label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div style="text-align: center; margin-top: 30px;"><button id="ent-start-btn" class="name-tag start" style="cursor: pointer; font-size: 18px; padding: 10px 40px; border: none;">Start Entanglement</button></div>
         </div>
     </div>
 
-    <div id="entanglement-interface" class="protocol-interface" style="display: none;">
-        <div class="main-grid">
-            <div class="connection-line">
-                <div class="connection-label">
-                    <label class="square-check" for="ent-entangle" style="color: #333; font-size: 14px; cursor: pointer; padding: -5px 20px; margin: 0;">
-                        <input type="checkbox" id="ent-entangle"><span class="box"></span><span>Entanglement Required?</span>
-                    </label>
-                </div>
-            </div>
-            <div class="character-col">
-                <img src="pictures/cat_alice.svg" class="character-img" alt="Alice">
-                <div class="name-tag">Alice</div>
-                <div class="click-toggle"><span class="text-on">ON</span></div>
-                <div class="control-panel">
-                    <div class="setting-title">Particle Selection</div>
-                    <div class="flex-row" style="margin-bottom: 15px; gap: 8px;">
-                        <label class="pill-radio"><input type="radio" name="ent_a_particle"><span>single</span></label>
-                        <label class="pill-radio"><input type="radio" name="ent_a_particle"><span>Bell</span></label>
-                    </div>
-                    <div class="setting-title">Basis Selection</div>
-                    <div class="flex-row" style="gap: 8px;">
-                        <label class="pill-radio"><input type="radio" name="ent_a_basis"><span>X</span></label>
-                        <label class="pill-radio"><input type="radio" name="ent_a_basis"><span>Z</span></label>
-                    </div>
-                </div>
-            </div>
-            <div class="character-col" id="bob-col">
-                <img src="pictures/cat_bob.svg" class="character-img" alt="Bob">
-                <div class="name-tag">Bob</div>
-                <div class="click-toggle"><span class="text-on status-toggle-static">ON</span></div>
-                <div class="control-panel">
-                    <div class="setting-title">Particle Selection</div>
-                    <div class="flex-row" style="margin-bottom: 15px; gap: 8px;">
-                        <label class="pill-radio"><input type="radio" name="ent_b_particle"><span>single</span></label>
-                        <label class="pill-radio"><input type="radio" name="ent_b_particle"><span>Bell</span></label>
-                    </div>
-                    <div class="setting-title">Basis Selection</div>
-                    <div class="flex-row" style="gap: 8px;">
-                        <label class="pill-radio"><input type="radio" name="ent_b_basis"><span>X</span></label>
-                        <label class="pill-radio"><input type="radio" name="ent_b_basis"><span>Z</span></label>
-                    </div>
-                </div>
-            </div>
-            <div class="character-col">
-                <img src="pictures/cat_charlie.svg" class="character-img" alt="Charlie">
-                <div class="name-tag">Charlie</div>
-                <label class="click-toggle"><input type="checkbox" class="status-toggle"><span class="text-on">ON</span><span class="text-off">OFF</span></label>
-                <div class="control-panel">
-                    <div class="setting-title">Particle Selection</div>
-                    <div class="flex-row" style="margin-bottom: 15px; gap: 8px;">
-                        <label class="pill-radio"><input type="radio" name="ent_c_particle"><span>single</span></label>
-                    </div>
-                    <div class="setting-title">Basis Selection</div>
-                    <div class="flex-row" style="gap: 8px;">
-                        <label class="pill-radio"><input type="radio" name="ent_c_basis"><span>X</span></label>
-                    </div>
-                </div>
-            </div>
-            <div class="character-col theme-red">
-                <img src="pictures/Eavesdropper.svg" class="character-img" alt="Eavesdropper">
-                <div class="name-tag" data-role="eavesdropper">Eavesdropper</div>
-                <label class="click-toggle"><input type="checkbox" class="status-toggle"><span class="text-on">ON</span><span class="text-off">OFF</span></label>
-                <div class="control-panel">
-                    <div class="setting-title">Attack Selection</div>
-                    <div style="display:flex; flex-direction:column; gap:10px; align-items: flex-start; margin-top: 15px;">
-                        <label class="pill-radio"><input type="radio" name="ent_e_attack"><span style="padding: 6px 20px;">CNOT</span></label>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div style="text-align: center; margin-top: 30px;"><button id="ent-start-btn" class="name-tag start" style="cursor: pointer; font-size: 18px; padding: 10px 40px; border: none;">Start Entanglement</button></div>
-    </div>
-</div>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const protocolSelect = document.getElementById('protocol-select');
+            const interfaces = document.querySelectorAll('.protocol-interface');
+            
+            protocolSelect.addEventListener('change', function() {
+                interfaces.forEach(iface => iface.style.display = 'none');
+                const selectedValue = this.value;
+                if (selectedValue !== 'none') document.getElementById(`${selectedValue}-interface`).style.display = 'block';
+            });
 
-<script>
-    document.addEventListener('DOMContentLoaded', () => {
-        const protocolSelect = document.getElementById('protocol-select');
-        const interfaces = document.querySelectorAll('.protocol-interface');
-        
-        protocolSelect.addEventListener('change', function() {
-            interfaces.forEach(iface => iface.style.display = 'none');
-            const selectedValue = this.value;
-            if (selectedValue !== 'none') document.getElementById(`${selectedValue}-interface`).style.display = 'block';
-        });
-
-        const toggles = document.querySelectorAll('.status-toggle');
-        function updatePanelState(toggleElement) {
-            const col = toggleElement.closest('.character-col');
-            const img = col.querySelector('.character-img');
-            const nameTag = col.querySelector('.name-tag');
-            const panel = col.querySelector('.control-panel');
-            const inputs = panel.querySelectorAll('input:not(.status-toggle)');
-            if (toggleElement.checked) {
-                img.classList.remove('disabled-img');
-                panel.classList.remove('disabled');
-                nameTag.classList.remove('gray');
-                if (nameTag.dataset.role === 'eavesdropper') nameTag.classList.add('red-text');
-                inputs.forEach(input => input.disabled = false);
-            } else {
-                img.classList.add('disabled-img');
-                panel.classList.add('disabled');
-                nameTag.classList.add('gray');
-                nameTag.classList.remove('red-text');
-                inputs.forEach(input => input.disabled = true);
-            }
-        }
-        toggles.forEach(toggle => {
-            updatePanelState(toggle);
-            toggle.addEventListener('change', function() { updatePanelState(this); });
-        });
-
-        // 通用的驗證函式
-        function validateSettings(interfaceId, rules) {
-            const container = document.getElementById(interfaceId);
-            for (const rule of rules) {
-                const isSelected = container.querySelector(`input[name="${rule.name}"]:checked`);
-                if (!isSelected) {
-                    alert(`Configuration incomplete: ${rule.label} is required!`);
-                    return false;
+            const toggles = document.querySelectorAll('.status-toggle');
+            function updatePanelState(toggleElement) {
+                const col = toggleElement.closest('.character-col');
+                const img = col.querySelector('.character-img');
+                const nameTag = col.querySelector('.name-tag');
+                const panel = col.querySelector('.control-panel');
+                const inputs = panel.querySelectorAll('input:not(.status-toggle)');
+                if (toggleElement.checked) {
+                    img.classList.remove('disabled-img');
+                    panel.classList.remove('disabled');
+                    nameTag.classList.remove('gray');
+                    if (nameTag.dataset.role === 'eavesdropper') nameTag.classList.add('red-text');
+                    inputs.forEach(input => input.disabled = false);
+                } else {
+                    img.classList.add('disabled-img');
+                    panel.classList.add('disabled');
+                    nameTag.classList.add('gray');
+                    nameTag.classList.remove('red-text');
+                    inputs.forEach(input => input.disabled = true);
                 }
             }
-            return true;
-        }
+            toggles.forEach(toggle => {
+                updatePanelState(toggle);
+                toggle.addEventListener('change', function() { updatePanelState(this); });
+            });
 
-        // QKD Start
-        document.getElementById('qkd-start-btn').addEventListener('click', () => {
-            const interfaceDiv = document.getElementById('qkd-interface');
-            const isEveOn = interfaceDiv.querySelector('.status-toggle').checked;
-            
-            // 基本驗證規則
-            const rules = [
-                {name: 'a_particle', label: 'Alice Particle'}, {name: 'a_basis', label: 'Alice Basis'},
-                {name: 'b_particle', label: 'Bob Particle'}, {name: 'b_basis', label: 'Bob Basis'}
-            ];
-            
-            // 只有在 Eve 是 ON 的時候，才加入攻擊方式的驗證
-            if (isEveOn) {
-                rules.push({name: 'e_attack', label: 'Eve Attack Selection'});
+            function validateSettings(interfaceId, rules) {
+                const container = document.getElementById(interfaceId);
+                for (const rule of rules) {
+                    const isSelected = container.querySelector(`input[name="${rule.name}"]:checked`);
+                    if (!isSelected) {
+                        alert(`Configuration incomplete: ${rule.label} is required!`);
+                        return false;
+                    }
+                }
+                return true;
             }
 
-            if (!validateSettings('qkd-interface', rules)) return;
-            
-            const qkdSettings = {
-                alice: {isOn: true, particle: interfaceDiv.querySelector('input[name="a_particle"]:checked').nextElementSibling.innerText, basis: interfaceDiv.querySelector('input[name="a_basis"]:checked').nextElementSibling.innerText},
-                bob: {isOn: true, particle: interfaceDiv.querySelector('input[name="b_particle"]:checked').nextElementSibling.innerText, basis: interfaceDiv.querySelector('input[name="b_basis"]:checked').nextElementSibling.innerText},
-                eve: {isOn: isEveOn, attack: isEveOn ? interfaceDiv.querySelector('input[name="e_attack"]:checked').nextElementSibling.innerText : "None"}
-            };
-            localStorage.setItem('qkdSettings', JSON.stringify(qkdSettings));
-            window.location.href = 'QKDanalysis.html';
+            document.getElementById('qkd-start-btn').addEventListener('click', () => {
+                const interfaceDiv = document.getElementById('qkd-interface');
+                const isEveOn = interfaceDiv.querySelector('.status-toggle').checked;
+                const rules = [
+                    {name: 'a_particle', label: 'Alice Particle'}, {name: 'a_basis', label: 'Alice Basis'},
+                    {name: 'b_particle', label: 'Bob Particle'}, {name: 'b_basis', label: 'Bob Basis'}
+                ];
+                if (isEveOn) {
+                    rules.push({name: 'e_attack', label: 'Eve Attack Selection'});
+                }
+                if (!validateSettings('qkd-interface', rules)) return;
+                const qkdSettings = {
+                    alice: {isOn: true, particle: interfaceDiv.querySelector('input[name="a_particle"]:checked').nextElementSibling.innerText, basis: interfaceDiv.querySelector('input[name="a_basis"]:checked').nextElementSibling.innerText},
+                    bob: {isOn: true, particle: interfaceDiv.querySelector('input[name="b_particle"]:checked').nextElementSibling.innerText, basis: interfaceDiv.querySelector('input[name="b_basis"]:checked').nextElementSibling.innerText},
+                    eve: {isOn: isEveOn, attack: isEveOn ? interfaceDiv.querySelector('input[name="e_attack"]:checked').nextElementSibling.innerText : "None"}
+                };
+                localStorage.setItem('qkdSettings', JSON.stringify(qkdSettings));
+                window.location.href = 'QKDanalysis.html';
+            });
+
+            document.getElementById('qss-start-btn').addEventListener('click', () => {
+                const interfaceDiv = document.getElementById('qss-interface');
+                const isEveOn = interfaceDiv.querySelector('.theme-red .status-toggle').checked;
+                const rules = [
+                    {name: 'qss_a_particle', label: 'Alice Particle'}, {name: 'qss_a_basis', label: 'Alice Basis'},
+                    {name: 'qss_b_particle', label: 'Bob Particle'}, {name: 'qss_b_basis', label: 'Bob Basis'}
+                ];
+                if (isEveOn) {
+                    rules.push({name: 'qss_e_attack', label: 'Eve Attack Selection'});
+                }
+                if (!validateSettings('qss-interface', rules)) return;
+                window.location.href = 'QSSanalysis.html';
+            });
+            document.getElementById('ent-start-btn').addEventListener('click', () => {
+                const interfaceDiv = document.getElementById('entanglement-interface');
+                const isEveOn = interfaceDiv.querySelector('.theme-red .status-toggle').checked;
+                const rules = [
+                    {name: 'ent_a_particle', label: 'Alice Particle'}, {name: 'ent_a_basis', label: 'Alice Basis'},
+                    {name: 'ent_b_particle', label: 'Bob Particle'}, {name: 'ent_b_basis', label: 'Bob Basis'}
+                ];
+                if (isEveOn) {
+                    rules.push({name: 'ent_e_attack', label: 'Eve Attack Selection'});
+                }
+                if (!validateSettings('entanglement-interface', rules)) return;
+                window.location.href = 'ENTanalysis.html';
+            });
         });
-
-        // QSS Start
-        document.getElementById('qss-start-btn').addEventListener('click', () => {
-            const interfaceDiv = document.getElementById('qss-interface');
-            const isEveOn = interfaceDiv.querySelector('.theme-red .status-toggle').checked;
-
-            const rules = [
-                {name: 'qss_a_particle', label: 'Alice Particle'}, {name: 'qss_a_basis', label: 'Alice Basis'},
-                {name: 'qss_b_particle', label: 'Bob Particle'}, {name: 'qss_b_basis', label: 'Bob Basis'}
-            ];
-
-            if (isEveOn) {
-                rules.push({name: 'qss_e_attack', label: 'Eve Attack Selection'});
-            }
-
-            if (!validateSettings('qss-interface', rules)) return;
-            window.location.href = 'QSSanalysis.html';
-        });
-
-        // Entanglement Start
-        document.getElementById('ent-start-btn').addEventListener('click', () => {
-            const interfaceDiv = document.getElementById('entanglement-interface');
-            const isEveOn = interfaceDiv.querySelector('.theme-red .status-toggle').checked;
-
-            const rules = [
-                {name: 'ent_a_particle', label: 'Alice Particle'}, {name: 'ent_a_basis', label: 'Alice Basis'},
-                {name: 'ent_b_particle', label: 'Bob Particle'}, {name: 'ent_b_basis', label: 'Bob Basis'}
-            ];
-
-            if (isEveOn) {
-                rules.push({name: 'ent_e_attack', label: 'Eve Attack Selection'});
-            }
-
-            if (!validateSettings('entanglement-interface', rules)) return;
-            window.location.href = 'ENTanalysis.html';
-        });
-    });
-</script>
+    </script>
 </body>
 </html>
