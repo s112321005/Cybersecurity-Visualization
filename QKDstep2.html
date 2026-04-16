@@ -220,7 +220,7 @@
         <a href="QuantumCybersecurityEducationPlatform.html" class="btn-back" title="back home">◀</a>
         <div class="title-pill">Quantum Key Distribution</div>
     </div>
-    <div class="header-center">Measurement Result</div>
+    <div class="header-center">STEP 2：Measurement Result</div>
     <div class="header-right">
         <button class="nav-btn" onclick="prevStep()">Back</button>
         <button class="nav-btn" onclick="nextStep()">Next</button>
@@ -476,13 +476,13 @@
             explainBox.style.borderLeftColor = "var(--match-green)";
             explainBox.style.backgroundColor = "#f0fdf4";
             explainTitle.style.color = "var(--match-green)";
-            explainTitle.innerHTML = "🎯 Basis Match! (Deterministic Result)";
+            explainTitle.innerHTML = "🟢 Basis Match! (Deterministic Result)";
             explainDesc.innerHTML = "Bob chose the <b>same basis</b> as Alice. The photon passed through predictably, <span class='highlight-keep'>confirming Bit " + (photonConfig[alicePhotonStr].symbol === '↑' || photonConfig[alicePhotonStr].symbol === '↖' ? '1' : '0') + " deterministically!</span> They will KEEP this bit.";
         } else {
             explainBox.style.borderLeftColor = "var(--mismatch-red)";
             explainBox.style.backgroundColor = "#fff5f5";
             explainTitle.style.color = "var(--mismatch-red)";
-            explainTitle.innerHTML = "🎲 Basis Mismatch! (Random Result)";
+            explainTitle.innerHTML = "🔴 Basis Mismatch! (Random Result)";
             explainDesc.innerHTML = "Bob used a <b>different basis</b>. The photon collapsed randomly (50/50 chance). Because the measurement is unreliable, <span class='highlight-discard'>they must DISCARD this bit.</span>";
         }
         const aliceSymbol = photonConfig[alicePhotonStr].symbol;
@@ -520,7 +520,7 @@
         if (localStorage.getItem('qkdStepData')) {
             window.location.href = 'QKDstep3.html';
         } else {
-            alert("請先讓 Bob 完成測量！");
+            alert("Complete Bob's measurement first!");
         }
     }
 </script>
