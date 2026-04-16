@@ -441,38 +441,19 @@
     }
 
     function displayFinalResult(isMatch) {
-        const resultsArea = document.getElementById("results-area");
-        const explainBox = document.getElementById("explain-box");
-        const explainTitle = document.getElementById("explain-title");
-        const explainDesc = document.getElementById("explain-desc");
+        // ... 前面的 UI 顯示程式碼保留 ...
 
-        // 取得 Bob 剛才選擇的基底文字 (S 或 D)
-        const bobBasisLabel = document.getElementById("bob-key-label").textContent;
+        // 取得 Bob 選擇的基底
+        const bobBasisLabel = document.getElementById("bob-key-label").textContent; // 'S' 或 'D'
 
-        if (isMatch) {
-            document.getElementById("output-match").style.opacity = "1";
-            explainBox.style.borderLeftColor = "var(--match-green)";
-            explainBox.style.backgroundColor = "#f0fdf4";
-            explainTitle.style.color = "var(--match-green)";
-            explainTitle.innerHTML = "🎯 Basis Match! (Deterministic Result)";
-            explainDesc.innerHTML = "Bob chose the <b>same basis</b> as Alice. The photon passed through predictably, <span class='highlight-keep'>confirming Bit " + (photonConfig[alicePhotonStr].symbol === '↑' || photonConfig[alicePhotonStr].symbol === '↖' ? '1' : '0') + " deterministically!</span> They will KEEP this bit.";
-        } else {
-            explainBox.style.borderLeftColor = "var(--mismatch-red)";
-            explainBox.style.backgroundColor = "#fff5f5";
-            explainTitle.style.color = "var(--mismatch-red)";
-            explainTitle.innerHTML = "🎲 Basis Mismatch! (Random Result)";
-            explainDesc.innerHTML = "Bob used a <b>different basis</b>. The photon collapsed randomly (50/50 chance). Because the measurement is unreliable, <span class='highlight-discard'>they must DISCARD this bit.</span>";
-        }
-
-        // --- 【新增：儲存資料供 Step 3 使用】 ---
+        // 儲存資料供 Step 3 使用
         const qkdData = {
-            aliceState: photonConfig[alicePhotonStr].symbol, // 例如: ↑, ↗
-            aliceBasis: (aliceBasisStr === 'S') ? 'Z' : 'X', // 統一轉為 Step 3 識別的 Z/X
+            aliceState: photonConfig[alicePhotonStr].symbol, // 例如 "↑"
+            aliceBasis: (aliceBasisStr === 'S') ? 'Z' : 'X', // 轉換為 Z (十字) 或 X (對角)
             bobBasis: (bobBasisLabel === 'S') ? 'Z' : 'X'
         };
         localStorage.setItem('qkdStepData', JSON.stringify(qkdData));
-        // --------------------------------------
-        
+
         resultsArea.classList.add("show-result");
         explainBox.classList.add("show");
     }

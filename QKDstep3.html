@@ -120,43 +120,60 @@
     });
 
     function renderDiagram(data) {
-        const isAliceZ = (data.aliceBasis === 'Z');
-        const isBobZ = (data.bobBasis === 'Z');
-        const isSameBasis = (isAliceZ === isBobZ);
+        // 1. 更新顯示文字與狀態
+        document.getElementById('alice-state-display').innerText = `|${data.aliceState}⟩`;
+        
+        // 定義基底圖示 (如果你有對應的圖片)
+        const basisIcons = {
+            'Z': 'images/basis-z.png', // 假設的路徑
+            'X': 'images/basis-x.png'
+        };
 
-        // 1. 設定 Alice 端的圖示與狀態
-        document.getElementById('alice-state-text').innerText = data.aliceState;
-        document.getElementById('alice-key-img').src = isAliceZ ? "pictures/vertical.svg" : "pictures/diagonal.svg";
+        // 2. 判斷路徑
+        // 如果 Alice 跟 Bob 基底相同，走 Top 路徑
+        const pathType = (data.aliceBasis === data.bobBasis) ? 'top' : 'bot';
+        
+        // 3. 獲取所有元件
+        const topElements = [
+            document.getElementById('node-bob-top'),
+            document.getElementById('node-res-top'),
+            document.getElementById('mark-top')
+        ];
+        const botElements = [
+            document.getElementById('node-bob-bot'),
+            document.getElementById('node-res-bot1'),
+            document.getElementById('node-res-bot2'),
+            document.getElementById('mark-bot1'),
+            document.getElementById('mark-bot2')
+        ];
+        const lines = {
+            top: [document.getElementById('line-a-b-top'), document.getElementById('line-b-res-top')],
+            bot: [document.getElementById('line-a-b-bot'), document.getElementById('line-b-res-bot1'), document.getElementById('line-b-res-bot2')]
+        };
 
-        // 2. 準備對應的相反基底符號 (用於不匹配時分裂的結果)
-        const zStates = ['| ↑ ⟩', '|→⟩'];
-        const xStates = ['|↗⟩', '|↖⟩'];
-        const oppoStates = isAliceZ ? xStates : zStates;
-
-        // 3. 設定結果端的狀態文字
-        document.getElementById('res-state-top').innerText = data.aliceState;
-        document.getElementById('res-state-bot1').innerText = oppoStates[0];
-        document.getElementById('res-state-bot2').innerText = oppoStates[1];
-
-        // 4. 判斷 Bob 選擇的鑰匙圖示
-        const bobTopImg = document.getElementById('bob-key-top');
-        const bobBotImg = document.getElementById('bob-key-bot');
-
-        // 如果基底相同，走上半部 (Top Path)
-        if (isSameBasis) {
-            bobTopImg.src = isAliceZ ? "pictures/b_vertical.svg" : "pictures/b_diagonal.svg";
-            bobBotImg.src = isAliceZ ? "pictures/gray_diagonal.svg" : "pictures/gray_vertical.svg";
-            
-            // 啟用上半部，淡化下半部
-            setPathActive('top');
-        } 
-        // 如果基底不同，走下半部 (Bottom Path)
-        else {
-            bobTopImg.src = isAliceZ ? "pictures/gray_vertical.svg" : "pictures/gray_diagonal.svg";
-            bobBotImg.src = isAliceZ ? "pictures/b_diagonal.svg" : "pictures/b_vertical.svg";
-            
-            // 啟用下半部，淡化上半部
-            setPathActive('bottom');
+        // 4. 執行視覺切換
+        if (pathType === 'top') {
+            topElements.forEach(el => el.classList.remove('inactive'));
+            botElements.forEach(el => el.classList.add('inactive'));
+            lines.top.forEach(l => { 
+                l.classList.add('active-line'); 
+                l.setAttribute('marker-end', 'url(#arrow-head)'); 
+            });
+            lines.bot.forEach(l => { 
+                l.classList.add('line-inactive'); 
+                l.setAttribute('marker-end', 'url(#arrow-head-inactive)'); 
+            });
+        } else {
+            topElements.forEach(el => el.classList.add('inactive'));
+            botElements.forEach(el => el.classList.remove('inactive'));
+            lines.top.forEach(l => { 
+                l.classList.add('line-inactive'); 
+                l.setAttribute('marker-end', 'url(#arrow-head-inactive)'); 
+            });
+            lines.bot.forEach(l => { 
+                l.classList.add('active-line'); 
+                l.setAttribute('marker-end', 'url(#arrow-head)'); 
+            });
         }
     }
 
