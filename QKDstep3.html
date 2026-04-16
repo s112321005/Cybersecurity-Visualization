@@ -77,25 +77,25 @@
             <div class="result-header" style="position: absolute; right: 5%; top: 5%; background:#d6e4ff; padding:8px 16px; border-radius:8px; font-weight:bold; color:#003366;">Result</div>
             
             <div class="node" style="left: 10%; top: 50%;">
-                <img id="alice-key-img" src="pictures/diagonal.svg" class="polarizer-img">
-                <div class="state-circle" id="alice-state-text" style="background:#004ba0; color:white;">|↗⟩</div>
+                <img id="alice-key-img" src="" class="polarizer-img">
+                <div class="state-circle" id="alice-state-text" style="background:#004ba0; color:white;">-</div>
             </div>
             
             <div class="node" style="left: 41%; top: 25%;">
-                <img id="bob-key-top" src="pictures/b_diagonal.svg" class="polarizer-img">
+                <img id="bob-key-top" src="" class="polarizer-img">
             </div>
             <div class="node" style="left: 41%; top: 75%;">
-                <img id="bob-key-bot" src="pictures/gray_vertical.svg" class="polarizer-img inactive">
+                <img id="bob-key-bot" src="" class="polarizer-img inactive">
             </div>
 
             <div class="node" style="left: 75%; top: 25%;">
-                <div id="res-state-top" class="state-circle" style="background:#004ba0; color:white;">|↗⟩</div>
+                <div id="res-state-top" class="state-circle" style="background:#004ba0; color:white;">-</div>
             </div>
             <div class="node" style="left: 75%; top: 55%;">
-                <div id="res-state-bot1" class="state-circle inactive" style="background:#e0e0e0; color:#666;">|↑⟩</div>
+                <div id="res-state-bot1" class="state-circle inactive" style="background:#e0e0e0; color:#666;">-</div>
             </div>
             <div class="node" style="left: 75%; top: 95%;">
-                <div id="res-state-bot2" class="state-circle inactive" style="background:#e0e0e0; color:#666;">|→⟩</div>
+                <div id="res-state-bot2" class="state-circle inactive" style="background:#e0e0e0; color:#666;">-</div>
             </div>
 
             <div id="mark-top" class="result-circle" style="left: 90%; top: 25%; width: 50px; height: 50px; background:#d4edda; color:#155724;">✔</div>
@@ -107,72 +107,65 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', () => {
-        // 模擬從 Step 1 & Step 2 傳遞過來的資料 (實際情況請改為讀取 localStorage)
-        // 假設這就是你在圖片中的情境：Alice 傳 |↗⟩ (X基底)，Bob 用 D(X) 基底測量
+        // 從 Step 2 讀取儲存的紀錄
         let testData = localStorage.getItem('qkdStepData');
+        
+        // 若沒有紀錄(直接開網頁)，預設給一組測試資料
         let stepData = testData ? JSON.parse(testData) : {
-            aliceState: '|↗⟩',
-            aliceBasis: 'X', // 'Z' (rectilinear) 或 'X' (diagonal)
-            bobBasis: 'X'    // 'Z' (rectilinear) 或 'X' (diagonal)
+            aliceState: '↗',
+            aliceBasis: 'D', 
+            bobBasis: 'D'    
         };
 
         renderDiagram(stepData);
     });
 
     function renderDiagram(data) {
-    // 1. 設定最左邊第一個偏振器 (Alice 的基底)
-    const aliceBasisIcon = document.getElementById('alice-basis-icon'); // 假設 ID 是這個
-    if (aliceBasisIcon) {
-        // 根據 Alice 的基底切換圖片 (請確保你有這兩張圖)
-        aliceBasisIcon.src = (data.aliceBasis === 'S') ? 'basis-s.png' : 'basis-d.png';
-    }
-
-    // 2. 設定 Bob 區塊的圖片
-    // 上方路徑固定跟 Alice 一樣，下方路徑則是另一個
-    const bobTopIcon = document.getElementById('bob-icon-top');
-    const bobBotIcon = document.getElementById('bob-icon-bot');
-    if (bobTopIcon) bobTopIcon.src = (data.aliceBasis === 'S') ? 'basis-s.png' : 'basis-d.png';
-    if (bobBotIcon) bobBotIcon.src = (data.aliceBasis === 'S') ? 'basis-d.png' : 'basis-s.png';
-
-    // 3. 判斷路徑：相同走 Top，不同走 Bot
-    const isSameBasis = (data.aliceBasis === data.bobBasis);
-    const pathType = isSameBasis ? 'top' : 'bot';
-
-    // 4. 更新 SVG 視覺狀態 (亮起對應路徑，淡化另一條)
-    updateSVGVisuals(pathType);
-
-    // 顯示文字狀態
-    document.getElementById('alice-state-display').innerText = `|${data.aliceState}⟩`;
-}
-
-function updateSVGVisuals(activePath) {
-    const topGroup = ['line-a-b-top', 'line-b-res-top', 'node-bob-top', 'node-res-top'];
-    const botGroup = ['line-a-b-bot', 'line-b-res-bot1', 'node-bob-bot', 'node-res-bot1'];
-
-    if (activePath === 'top') {
-        setElementsActive(topGroup, true);
-        setElementsActive(botGroup, false);
-    } else {
-        setElementsActive(topGroup, false);
-        setElementsActive(botGroup, true);
-    }
-}
-
-function setElementsActive(ids, isActive) {
-    ids.forEach(id => {
-        const el = document.getElementById(id);
-        if (!el) return;
-        if (isActive) {
-            el.classList.remove('inactive');
-            el.classList.add('active-line');
+        // --- 1. 設定 Alice 區塊 (第一行偏振器) ---
+        const aliceImg = document.getElementById('alice-key-img');
+        const aliceStateText = document.getElementById('alice-state-text');
+        
+        // 根據 Alice 基底替換圖片
+        if (data.aliceBasis === 'S') {
+            aliceImg.src = 'pictures/a_vertical.svg';
         } else {
-            el.classList.add('inactive');
-            el.classList.remove('active-line');
+            aliceImg.src = 'pictures/a_diagonal.svg';
         }
-    });
-}
+        // 顯示 Alice 發送的狀態 (↑, →, ↖, ↗)
+        aliceStateText.innerText = `|${data.aliceState}⟩`;
+
+        // --- 2. 設定 Bob 區塊 (第二行兩顆偏振器) 與結果 ---
+        const bobKeyTop = document.getElementById('bob-key-top');
+        const bobKeyBot = document.getElementById('bob-key-bot');
+        const resStateTop = document.getElementById('res-state-top');
+        const resStateBot1 = document.getElementById('res-state-bot1');
+        const resStateBot2 = document.getElementById('res-state-bot2');
+
+        // Top 永遠是放與 Alice 相同的偏振器，結果狀態也不變
+        bobKeyTop.src = (data.aliceBasis === 'S') ? 'pictures/b_vertical.svg' : 'pictures/b_diagonal.svg';
+        resStateTop.innerText = `|${data.aliceState}⟩`;
+
+        // Bot 永遠是放與 Alice 不同的偏振器
+        bobKeyBot.src = (data.aliceBasis === 'S') ? 'pictures/b_diagonal.svg' : 'pictures/b_vertical.svg';
+        
+        // Mismatch 時，光子會隨機坍縮成另一組基底的狀態
+        if (data.aliceBasis === 'S') {
+            // Alice S，錯誤路徑就是 D 測量，坍縮成 ↖ 或 ↗
+            resStateBot1.innerText = '|↖⟩';
+            resStateBot2.innerText = '|↗⟩';
+        } else {
+            // Alice D，錯誤路徑就是 S 測量，坍縮成 ↑ 或 →
+            resStateBot1.innerText = '|↑⟩';
+            resStateBot2.innerText = '|→⟩';
+        }
+
+        // --- 3. 判斷路徑亮暗 (Top or Bot) ---
+        const isSameBasis = (data.aliceBasis === data.bobBasis);
+        setPathActive(isSameBasis ? 'top' : 'bot');
+    }
 
     function setPathActive(pathType) {
+        // 取得所有需要控制的 DOM 元素
         const topElements = [
             document.getElementById('bob-key-top'),
             document.getElementById('res-state-top'),
@@ -185,27 +178,40 @@ function setElementsActive(ids, isActive) {
             document.getElementById('mark-bot1'),
             document.getElementById('mark-bot2')
         ];
-
         const lines = {
             top: [document.getElementById('line-a-b-top'), document.getElementById('line-b-res-top')],
             bot: [document.getElementById('line-a-b-bot'), document.getElementById('line-b-res-bot1'), document.getElementById('line-b-res-bot2')]
         };
 
+        // 根據路徑開啟與關閉 (新增/移除 inactive, active-line 等 class)
         if (pathType === 'top') {
-            // 顯示 Top，淡化 Bottom
-            topElements.forEach(el => { el.classList.remove('inactive'); });
-            botElements.forEach(el => { el.classList.add('inactive'); });
+            topElements.forEach(el => el.classList.remove('inactive'));
+            botElements.forEach(el => el.classList.add('inactive'));
             
-            lines.top.forEach(l => { l.classList.add('active-line'); l.classList.remove('line-inactive'); l.setAttribute('marker-end', 'url(#arrow-head)'); });
-            lines.bot.forEach(l => { l.classList.remove('active-line'); l.classList.add('line-inactive'); l.setAttribute('marker-end', 'url(#arrow-head-inactive)'); });
-            
+            lines.top.forEach(l => { 
+                l.classList.add('active-line'); 
+                l.classList.remove('line-inactive'); 
+                l.setAttribute('marker-end', 'url(#arrow-head)'); 
+            });
+            lines.bot.forEach(l => { 
+                l.classList.remove('active-line'); 
+                l.classList.add('line-inactive'); 
+                l.setAttribute('marker-end', 'url(#arrow-head-inactive)'); 
+            });
         } else {
-            // 顯示 Bottom，淡化 Top
-            topElements.forEach(el => { el.classList.add('inactive'); });
-            botElements.forEach(el => { el.classList.remove('inactive'); });
+            topElements.forEach(el => el.classList.add('inactive'));
+            botElements.forEach(el => el.classList.remove('inactive'));
             
-            lines.top.forEach(l => { l.classList.remove('active-line'); l.classList.add('line-inactive'); l.setAttribute('marker-end', 'url(#arrow-head-inactive)'); });
-            lines.bot.forEach(l => { l.classList.add('active-line'); l.classList.remove('line-inactive'); l.setAttribute('marker-end', 'url(#arrow-head)'); });
+            lines.top.forEach(l => { 
+                l.classList.remove('active-line'); 
+                l.classList.add('line-inactive'); 
+                l.setAttribute('marker-end', 'url(#arrow-head-inactive)'); 
+            });
+            lines.bot.forEach(l => { 
+                l.classList.add('active-line'); 
+                l.classList.remove('line-inactive'); 
+                l.setAttribute('marker-end', 'url(#arrow-head)'); 
+            });
         }
     }
 </script>
