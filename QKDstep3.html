@@ -120,62 +120,57 @@
     });
 
     function renderDiagram(data) {
-        // 1. 更新顯示文字與狀態
-        document.getElementById('alice-state-display').innerText = `|${data.aliceState}⟩`;
-        
-        // 定義基底圖示 (如果你有對應的圖片)
-        const basisIcons = {
-            'Z': 'images/basis-z.png', // 假設的路徑
-            'X': 'images/basis-x.png'
-        };
-
-        // 2. 判斷路徑
-        // 如果 Alice 跟 Bob 基底相同，走 Top 路徑
-        const pathType = (data.aliceBasis === data.bobBasis) ? 'top' : 'bot';
-        
-        // 3. 獲取所有元件
-        const topElements = [
-            document.getElementById('node-bob-top'),
-            document.getElementById('node-res-top'),
-            document.getElementById('mark-top')
-        ];
-        const botElements = [
-            document.getElementById('node-bob-bot'),
-            document.getElementById('node-res-bot1'),
-            document.getElementById('node-res-bot2'),
-            document.getElementById('mark-bot1'),
-            document.getElementById('mark-bot2')
-        ];
-        const lines = {
-            top: [document.getElementById('line-a-b-top'), document.getElementById('line-b-res-top')],
-            bot: [document.getElementById('line-a-b-bot'), document.getElementById('line-b-res-bot1'), document.getElementById('line-b-res-bot2')]
-        };
-
-        // 4. 執行視覺切換
-        if (pathType === 'top') {
-            topElements.forEach(el => el.classList.remove('inactive'));
-            botElements.forEach(el => el.classList.add('inactive'));
-            lines.top.forEach(l => { 
-                l.classList.add('active-line'); 
-                l.setAttribute('marker-end', 'url(#arrow-head)'); 
-            });
-            lines.bot.forEach(l => { 
-                l.classList.add('line-inactive'); 
-                l.setAttribute('marker-end', 'url(#arrow-head-inactive)'); 
-            });
-        } else {
-            topElements.forEach(el => el.classList.add('inactive'));
-            botElements.forEach(el => el.classList.remove('inactive'));
-            lines.top.forEach(l => { 
-                l.classList.add('line-inactive'); 
-                l.setAttribute('marker-end', 'url(#arrow-head-inactive)'); 
-            });
-            lines.bot.forEach(l => { 
-                l.classList.add('active-line'); 
-                l.setAttribute('marker-end', 'url(#arrow-head)'); 
-            });
-        }
+    // 1. 設定最左邊第一個偏振器 (Alice 的基底)
+    const aliceBasisIcon = document.getElementById('alice-basis-icon'); // 假設 ID 是這個
+    if (aliceBasisIcon) {
+        // 根據 Alice 的基底切換圖片 (請確保你有這兩張圖)
+        aliceBasisIcon.src = (data.aliceBasis === 'S') ? 'basis-s.png' : 'basis-d.png';
     }
+
+    // 2. 設定 Bob 區塊的圖片
+    // 上方路徑固定跟 Alice 一樣，下方路徑則是另一個
+    const bobTopIcon = document.getElementById('bob-icon-top');
+    const bobBotIcon = document.getElementById('bob-icon-bot');
+    if (bobTopIcon) bobTopIcon.src = (data.aliceBasis === 'S') ? 'basis-s.png' : 'basis-d.png';
+    if (bobBotIcon) bobBotIcon.src = (data.aliceBasis === 'S') ? 'basis-d.png' : 'basis-s.png';
+
+    // 3. 判斷路徑：相同走 Top，不同走 Bot
+    const isSameBasis = (data.aliceBasis === data.bobBasis);
+    const pathType = isSameBasis ? 'top' : 'bot';
+
+    // 4. 更新 SVG 視覺狀態 (亮起對應路徑，淡化另一條)
+    updateSVGVisuals(pathType);
+
+    // 顯示文字狀態
+    document.getElementById('alice-state-display').innerText = `|${data.aliceState}⟩`;
+}
+
+function updateSVGVisuals(activePath) {
+    const topGroup = ['line-a-b-top', 'line-b-res-top', 'node-bob-top', 'node-res-top'];
+    const botGroup = ['line-a-b-bot', 'line-b-res-bot1', 'node-bob-bot', 'node-res-bot1'];
+
+    if (activePath === 'top') {
+        setElementsActive(topGroup, true);
+        setElementsActive(botGroup, false);
+    } else {
+        setElementsActive(topGroup, false);
+        setElementsActive(botGroup, true);
+    }
+}
+
+function setElementsActive(ids, isActive) {
+    ids.forEach(id => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        if (isActive) {
+            el.classList.remove('inactive');
+            el.classList.add('active-line');
+        } else {
+            el.classList.add('inactive');
+            el.classList.remove('active-line');
+        }
+    });
+}
 
     function setPathActive(pathType) {
         const topElements = [
