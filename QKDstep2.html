@@ -446,9 +446,11 @@
         const explainTitle = document.getElementById("explain-title");
         const explainDesc = document.getElementById("explain-desc");
 
+        // 取得 Bob 剛才選擇的基底文字 (S 或 D)
+        const bobBasisLabel = document.getElementById("bob-key-label").textContent;
+
         if (isMatch) {
-            document.getElementById("output-match").style.opacity = "1"; // 顯示結果膠囊
-            
+            document.getElementById("output-match").style.opacity = "1";
             explainBox.style.borderLeftColor = "var(--match-green)";
             explainBox.style.backgroundColor = "#f0fdf4";
             explainTitle.style.color = "var(--match-green)";
@@ -461,6 +463,15 @@
             explainTitle.innerHTML = "🎲 Basis Mismatch! (Random Result)";
             explainDesc.innerHTML = "Bob used a <b>different basis</b>. The photon collapsed randomly (50/50 chance). Because the measurement is unreliable, <span class='highlight-discard'>they must DISCARD this bit.</span>";
         }
+
+        // --- 【新增：儲存資料供 Step 3 使用】 ---
+        const qkdData = {
+            aliceState: photonConfig[alicePhotonStr].symbol, // 例如: ↑, ↗
+            aliceBasis: (aliceBasisStr === 'S') ? 'Z' : 'X', // 統一轉為 Step 3 識別的 Z/X
+            bobBasis: (bobBasisLabel === 'S') ? 'Z' : 'X'
+        };
+        localStorage.setItem('qkdStepData', JSON.stringify(qkdData));
+        // --------------------------------------
         
         resultsArea.classList.add("show-result");
         explainBox.classList.add("show");
@@ -487,8 +498,8 @@
         }, 300);
     }
 
-    function prevStep() { window.history.back(); }
-    function nextStep() { alert("Ready for Sifting!"); }
+    function prevStep() { window.location.href = 'QKDstep2.html'; }
+    function nextStep() { window.location.href = 'QKDstep3.html'; }
 </script>
 
 </body>
