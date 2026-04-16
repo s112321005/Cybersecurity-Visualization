@@ -322,23 +322,62 @@
 
     document.addEventListener("DOMContentLoaded", () => {
         const params = new URLSearchParams(window.location.search);
-        let type = params.get("aliceBasis") || "S"; 
-        let msg = params.get("aliceMsg") || "0"; 
-        msg = String(msg);
+        let urlType = params.get("aliceBasis"); 
+        let urlMsg = params.get("aliceMsg"); 
 
+        const savedData = localStorage.getItem('qkdStepData');
+        let parsedData = savedData ? JSON.parse(savedData) : null;
+        let useSavedData = false;
+
+        // 判斷是否要使用儲存的紀錄 (從 Step 3 返回)
+        if (parsedData) {
+            if (!urlType || !urlMsg) {
+                // 如果沒有 URL 參數 (例如點擊 a href 返回)，直接套用紀錄
+                useSavedData = true;
+            } else {
+                // 如果有 URL 參數 (例如按瀏覽器上一頁)，檢查是否與紀錄吻合
+                let savedType = parsedData.aliceBasis; 
+                let isBit1 = (parsedData.aliceState === '↑' || parsedData.aliceState === '↖');
+                let savedMsg = isBit1 ? "1" : "0";
+                let parsedUrlType = (urlType === "rectilinear" || urlType === "S") ? "S" : "D";
+
+                if (parsedUrlType === savedType && String(urlMsg) === savedMsg) {
+                    useSavedData = true; // 條件吻合，恢復狀態
+                }
+            }
+        }
+
+        if (useSavedData) {
+            // --- 恢復紀錄模式 (從 Step 3 回來) ---
+            let isBit1 = (parsedData.aliceState === '↑' || parsedData.aliceState === '↖');
+            setupAliceState(parsedData.aliceBasis, isBit1 ? "1" : "0");
+            
+            // 跳過動畫，直接顯示 Bob 的測量結果
+            startMeasurementProcess(parsedData.bobBasis, true);
+        } else {
+            // --- 全新開始模式 (從 Step 1 過來，或條件不符) ---
+            setupAliceState(urlType || "S", urlMsg || "0");
+            localStorage.removeItem('qkdStepData'); // 清除舊紀錄確保流程正確
+        }
+    });
+
+    // 獨立出 Alice 設定邏輯
+    function setupAliceState(type, msg) {
+        msg = String(msg);
         if (type === "rectilinear" || type === "S") {
             aliceBasisStr = "S";
             alicePhotonStr = (msg === "0") ? "s0" : "s1";
-            document.getElementById("alice-polarizer-img").src = "pictures/vertical.svg";
+            document.getElementById("alice-polarizer-img").src = "pictures/a_vertical.svg";
         } else {
             aliceBasisStr = "D";
             alicePhotonStr = (msg === "0") ? "d0" : "d1";
-            document.getElementById("alice-polarizer-img").src = "pictures/diagonal.svg";
+            document.getElementById("alice-polarizer-img").src = "pictures/a_diagonal.svg";
         }
         document.getElementById("input-state").textContent = photonConfig[alicePhotonStr].display;
-    });
+    }
 
-    function startMeasurementProcess(bobChosenBasis) {
+    // 加入 skipAnimation 參數，如果為 true 就跳過動畫直接顯示
+    function startMeasurementProcess(bobChosenBasis, skipAnimation = false) {
         document.getElementById("bob-interactive").style.display = "none";
         document.getElementById("hint-text").style.opacity = "0"; 
         
@@ -368,70 +407,58 @@
             document.getElementById("output-mismatch").style.display = "flex";
         }
 
-        animateMeasurement(isMatch);
-    }
-
-    function animateMeasurement(isMatch) {
-        const stage = document.getElementById('stage');
-        const sourceEl = document.getElementById('input-state');
-        const bobEl = document.getElementById('bob-active-img');
-
-        const particle = document.createElement('div');
-        particle.className = 'photon-particle';
-        particle.innerText = photonConfig[alicePhotonStr].symbol;
-
-        const stageRect = stage.getBoundingClientRect();
-        const srcRect = sourceEl.getBoundingClientRect();
-        const bobRect = bobEl.getBoundingClientRect();
-        
-        const landingSpot = isMatch ? document.getElementById('photon-landing-spot') : document.getElementById('results-area');
-        const outRect = landingSpot.getBoundingClientRect();
-
-        const startX = srcRect.left - stageRect.left + srcRect.width / 2 - 17.5;
-        const startY = srcRect.top - stageRect.top + srcRect.height / 2 - 17.5;
-        
-        const toBobX = bobRect.left - stageRect.left + bobRect.width / 2 - 17.5;
-        const toBobY = bobRect.top - stageRect.top + bobRect.height / 2 - 17.5;
-
-        const toOutX = outRect.left - stageRect.left + outRect.width / 2 - 17.5;
-        const toOutY = outRect.top - stageRect.top + outRect.height / 2 - 17.5;
-
-        particle.style.left = startX + 'px';
-        particle.style.top = startY + 'px';
-        particle.style.setProperty('--tx-bob', (toBobX - startX) + 'px');
-        particle.style.setProperty('--ty-bob', (toBobY - startY) + 'px');
-        particle.style.setProperty('--tx-out', (toOutX - startX) + 'px');
-        particle.style.setProperty('--ty-out', (toOutY - startY) + 'px');
-
-        stage.appendChild(particle);
-
-        // 1. 光子發射到 Bob
-        requestAnimationFrame(() => {
-            particle.style.animation = 'shoot-to-bob 1.5s forwards cubic-bezier(0.4, 0, 0.2, 1)';
-        });
-
-        // 2. 在 1.5 秒時抵達，觸發箭頭伸長動畫 (光子原地停留 0.5 秒)
-        setTimeout(() => {
+        if (skipAnimation) {
+            // 直接顯示箭頭與結果面板
             if (isMatch) {
                 document.getElementById("arrow-match").classList.add("active");
             } else {
                 document.getElementById("arrow-mis-up").classList.add("active");
                 document.getElementById("arrow-mis-down").classList.add("active");
             }
+            displayFinalResult(isMatch);
+        } else {
+            animateMeasurement(isMatch);
+        }
+    }
+    function animateMeasurement(isMatch) {
+        const stage = document.getElementById('stage');
+        const sourceEl = document.getElementById('input-state');
+        const bobEl = document.getElementById('bob-active-img');
+        const particle = document.createElement('div');
+        particle.className = 'photon-particle';
+        particle.innerText = photonConfig[alicePhotonStr].symbol;
+        const stageRect = stage.getBoundingClientRect();
+        const srcRect = sourceEl.getBoundingClientRect();
+        const bobRect = bobEl.getBoundingClientRect();
+        const landingSpot = isMatch ? document.getElementById('photon-landing-spot') : document.getElementById('results-area');
+        const outRect = landingSpot.getBoundingClientRect();
+        const startX = srcRect.left - stageRect.left + srcRect.width / 2 - 17.5;
+        const startY = srcRect.top - stageRect.top + srcRect.height / 2 - 17.5;
+        const toBobX = bobRect.left - stageRect.left + bobRect.width / 2 - 17.5;
+        const toBobY = bobRect.top - stageRect.top + bobRect.height / 2 - 17.5;
+        const toOutX = outRect.left - stageRect.left + outRect.width / 2 - 17.5;
+        const toOutY = outRect.top - stageRect.top + outRect.height / 2 - 17.5;
+        particle.style.left = startX + 'px';
+        particle.style.top = startY + 'px';
+        particle.style.setProperty('--tx-bob', (toBobX - startX) + 'px');
+        particle.style.setProperty('--ty-bob', (toBobY - startY) + 'px');
+        particle.style.setProperty('--tx-out', (toOutX - startX) + 'px');
+        particle.style.setProperty('--ty-out', (toOutY - startY) + 'px');
+        stage.appendChild(particle);
+        requestAnimationFrame(() => { particle.style.animation = 'shoot-to-bob 1.5s forwards cubic-bezier(0.4, 0, 0.2, 1)'; });
+        setTimeout(() => {
+            if (isMatch) { document.getElementById("arrow-match").classList.add("active"); } 
+            else {
+                document.getElementById("arrow-mis-up").classList.add("active");
+                document.getElementById("arrow-mis-down").classList.add("active");
+            }
         }, 1500);
-
-        // 3. 在 2.0 秒時 (箭頭已經畫完)，光子才繼續移動
         setTimeout(() => {
             if (isMatch) {
                 particle.style.animation = 'shoot-bob-to-outcome 0.8s forwards ease-out';
-                
-                setTimeout(() => {
-                    displayFinalResult(true);
-                }, 800);
-
+                setTimeout(() => { displayFinalResult(true); }, 800);
             } else {
                 particle.style.animation = 'shoot-collapse 0.3s forwards ease-in';
-
                 setTimeout(() => {
                     particle.remove();
                     displayFinalResult(false);
@@ -439,17 +466,13 @@
             }
         }, 2000); 
     }
-
     function displayFinalResult(isMatch) {
         const resultsArea = document.getElementById("results-area");
         const explainBox = document.getElementById("explain-box");
         const explainTitle = document.getElementById("explain-title");
         const explainDesc = document.getElementById("explain-desc");
-
-        // --- 原有的 UI 顯示程式碼 ---
         if (isMatch) {
-            document.getElementById("output-match").style.opacity = "1"; // 顯示結果膠囊
-            
+            document.getElementById("output-match").style.opacity = "1"; 
             explainBox.style.borderLeftColor = "var(--match-green)";
             explainBox.style.backgroundColor = "#f0fdf4";
             explainTitle.style.color = "var(--match-green)";
@@ -462,54 +485,28 @@
             explainTitle.innerHTML = "🎲 Basis Mismatch! (Random Result)";
             explainDesc.innerHTML = "Bob used a <b>different basis</b>. The photon collapsed randomly (50/50 chance). Because the measurement is unreliable, <span class='highlight-discard'>they must DISCARD this bit.</span>";
         }
-        
-        // --- 新增：取得並判斷 Alice 與 Bob 的狀態，存入 localStorage 供 Step 3 使用 ---
-        // 1. 判斷 Alice 的基底
         const aliceSymbol = photonConfig[alicePhotonStr].symbol;
-        let aliceBasisType = ''; 
-        if (aliceSymbol === '↑' || aliceSymbol === '→') {
-            aliceBasisType = 'S'; // 垂直/水平 屬於 S 基底
-        } else if (aliceSymbol === '↖' || aliceSymbol === '↗') {
-            aliceBasisType = 'D'; // 對角 屬於 D 基底
-        }
-
-        // 2. 取得 Bob 剛才選擇的基底文字 (S 或 D)
+        let aliceBasisType = (aliceSymbol === '↑' || aliceSymbol === '→') ? 'S' : 'D';
         const bobBasisLabel = document.getElementById("bob-key-label").textContent;
-
-        // 3. 封裝成 JSON 並存入 localStorage
         const qkdData = {
             aliceState: aliceSymbol,
             aliceBasis: aliceBasisType, 
             bobBasis: bobBasisLabel     
         };
         localStorage.setItem('qkdStepData', JSON.stringify(qkdData));
-        // --------------------------------------------------------------------------
 
         resultsArea.classList.add("show-result");
         explainBox.classList.add("show");
     }
-
-    // 將原本只有 alert 的 nextStep 改為判斷並跳轉
-    function nextStep() { 
-        // 檢查是否已經產生結果（是否有存入 localStorage）
-        if (localStorage.getItem('qkdStepData')) {
-            window.location.href = 'QKDstep3.html';
-        } else {
-            alert("請先讓 Bob 完成測量！");
-        }
-    }
     function resetBob() {
         document.getElementById("explain-box").classList.remove("show");
         document.getElementById("results-area").classList.remove("show-result");
-        
-        // 移除連接線的 active 狀態，讓其隱藏
         document.getElementById("arrow-match").classList.remove("active");
         document.getElementById("arrow-mis-up").classList.remove("active");
         document.getElementById("arrow-mis-down").classList.remove("active");
-        
         const oldPhoton = document.querySelector('.photon-particle');
         if(oldPhoton) oldPhoton.remove();
-
+        localStorage.removeItem('qkdStepData'); // 按下重試時清除舊紀錄
         setTimeout(() => {
             document.getElementById("bob-active-basis").style.display = "none";
             document.getElementById("match-container").style.display = "none";
@@ -518,10 +515,14 @@
             document.getElementById("hint-text").style.opacity = "1";
         }, 300);
     }
-
     function prevStep() { window.location.href = 'QKDstep1.html'; }
-    function nextStep() { window.location.href = 'QKDstep3.html'; }
+    function nextStep() { 
+        if (localStorage.getItem('qkdStepData')) {
+            window.location.href = 'QKDstep3.html';
+        } else {
+            alert("請先讓 Bob 完成測量！");
+        }
+    }
 </script>
-
 </body>
 </html>
