@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=1400">
+    <base href="https://s112321005.github.io/Cybersecurity-Visualization/">
+    <title>QSS Analysis</title>
+    <style>
+        :root {
+            --primary-blue: #0047AB;
+            --bob-color: #4c80c5;
+            --charlie-color: #478CEA;
+            --bg-color: #f8f9fa;
+        }
+        body { margin: 0; padding: 20px; background-color: var(--bg-color); font-family: sans-serif; display: flex; justify-content: center; min-width: 1400px; }
+        .container { width: 1300px; background: white; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); padding: 20px; display: flex; flex-direction: column; }
+        
+        /* Header */
+        .header-bar { display: flex; align-items: center; margin-bottom: 20px; }
+        .btn-back { width: 40px; height: 40px; background-color: var(--primary-blue); color: white; border-radius: 50%; display: flex; justify-content: center; align-items: center; text-decoration: none; font-size: 1.1rem; font-weight: bold; margin-right: 15px; }
+        .page-title { border: 2px solid var(--primary-blue); padding: 8px 30px; border-radius: 10px; font-size: 20px; font-weight: bold; color: var(--primary-blue); }
+        .settings-badge { margin-left: auto; padding: 8px 20px; background: #eef4fb; border: 1px dashed var(--primary-blue); border-radius: 8px; font-size: 14px; color: var(--primary-blue); font-weight: bold; }
+
+        /* Main Layout */
+        .main-layout { display: flex; gap: 20px; height: calc(100vh - 120px); min-height: 700px; }
+        
+        /* Sidebars */
+        .sidebar { width: 250px; background: white; border: 2px solid #ddd; border-radius: 15px; padding: 15px; display: flex; flex-direction: column; gap: 20px; overflow-y: auto; }
+        .sidebar.alice { border-color: var(--primary-blue); }
+        .sidebar.bob-charlie { border-color: var(--primary-blue); }
+        
+        .section-title { font-weight: bold; font-size: 16px; margin-bottom: 10px; color: white; padding: 8px 15px; border-radius: 8px; text-align: center; }
+        .bg-alice { background-color: var(--primary-blue); }
+        .bg-bob { background-color: var(--bob-color); }
+        .bg-charlie { background-color: var(--charlie-color); }
+
+        /* Option Buttons */
+        .option-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+        .option-grid.col-3 { grid-template-columns: repeat(3, 1fr); }
+        .option-btn { border: 2px solid #ccc; border-radius: 8px; padding: 10px; text-align: center; cursor: pointer; font-weight: bold; font-size: 18px; transition: 0.2s; background: white; color: #333; }
+        .option-btn:hover { border-color: var(--primary-blue); color: var(--primary-blue); background: #f0f4f8; }
+        
+        /* Center Analysis Area */
+        .analysis-area { flex-grow: 1; border: 2px solid #ccc; border-radius: 15px; background: #fafafa; display: flex; flex-direction: column; overflow: hidden; }
+        .analysis-header { display: grid; grid-template-columns: 50px 1fr 1fr 1fr; background: #e0e0e0; font-weight: bold; text-align: center; border-bottom: 2px solid #ccc; }
+        .analysis-header div { padding: 12px; border-right: 1px solid #ccc; }
+        .analysis-header div:last-child { border-right: none; }
+        
+        .analysis-body { overflow-y: auto; flex-grow: 1; padding: 10px; display: flex; flex-direction: column; gap: 5px; }
+        .data-row { display: grid; grid-template-columns: 50px 1fr 1fr 1fr; background: white; border: 1px solid #ddd; border-radius: 8px; text-align: center; align-items: center; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .data-row div { padding: 12px; border-right: 1px solid #eee; font-size: 18px; font-weight: bold; }
+        .data-row div:last-child { border-right: none; }
+        .row-num { color: #888; font-size: 14px !important; }
+
+        /* Eve Alert Bar */
+        #eve-alert { display: none; background: #ffebee; color: #d32f2f; padding: 10px; text-align: center; font-weight: bold; border-radius: 8px; margin-bottom: 15px; border: 1px dashed #d32f2f; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header-bar">
+        <a href="QKDsetting.html" class="btn-back">◀</a>
+        <div class="page-title">QSS：Alice, Bob, and Charlie</div>
+        <div class="settings-badge" id="settings-info">Loading settings...</div>
+    </div>
+
+    <div id="eve-alert">⚠️ Eavesdropper Active: Intercepting between <span id="eve-loc"></span></div>
+
+    <div class="main-layout">
+        <div class="sidebar alice">
+            <div>
+                <div class="section-title bg-alice">3. Alice selects the message</div>
+                <div class="option-grid">
+                    <div class="option-btn">↑</div>
+                    <div class="option-btn">→</div>
+                    <div class="option-btn">↗</div>
+                    <div class="option-btn">↘</div>
+                </div>
+            </div>
+            <div>
+                <div class="section-title bg-alice">Alice's Basis</div>
+                <div class="option-grid" id="alice-basis-options">
+                    </div>
+            </div>
+        </div>
+
+        <div class="analysis-area">
+            <div class="analysis-header">
+                <div>#</div>
+                <div>1. Bob</div>
+                <div>2. Charlie</div>
+                <div>3. Alice</div>
+            </div>
+            <div class="analysis-body" id="sequence-container">
+                <div class="data-row" style="opacity: 0.5;">
+                    <div class="row-num">1</div>
+                    <div>Wait...</div>
+                    <div>Wait...</div>
+                    <div>Wait...</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="sidebar bob-charlie">
+            <div>
+                <div class="section-title bg-bob">1. Bob's Basis</div>
+                <div class="option-grid" id="bob-basis-options">
+                    </div>
+            </div>
+            <div>
+                <div class="section-title bg-charlie">2. Charlie's Basis</div>
+                <div class="option-grid col-3" id="charlie-basis-options">
+                    </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // 1. 從 localStorage 讀取設定
+        const storedSettings = localStorage.getItem('qssSettings');
+        if (!storedSettings) {
+            alert("No configuration found! Returning to setting page.");
+            window.location.href = 'QKDsetting.html';
+            return;
+        }
+
+        const settings = JSON.parse(storedSettings);
+        
+        // 2. 更新右上角資訊徽章與 Eve 警告
+        document.getElementById('settings-info').innerText = 
+            `Bob: ${settings.bob.basis} | Charlie: ${settings.charlie.bases.join(', ')} | Alice: ${settings.alice.basis}`;
+            
+        if (settings.eve.isOn) {
+            document.getElementById('eve-alert').style.display = 'block';
+            document.getElementById('eve-loc').innerText = settings.eve.location === '1_2' ? 'Bob & Charlie (1 & 2)' : 'Charlie & Alice (2 & 3)';
+        }
+
+        // 3. 根據設定動態渲染側邊欄選項
+        // Alice Basis
+        const aliceGrid = document.getElementById('alice-basis-options');
+        aliceGrid.innerHTML = `<div class="option-btn">${settings.alice.basis}</div>`; // 只顯示選中的基底
+
+        // Bob Basis
+        const bobGrid = document.getElementById('bob-basis-options');
+        bobGrid.innerHTML = `<div class="option-btn">${settings.bob.basis}</div>`;
+
+        // Charlie Basis (陣列)
+        const charlieGrid = document.getElementById('charlie-basis-options');
+        charlieGrid.innerHTML = '';
+        settings.charlie.bases.forEach(basis => {
+            const btn = document.createElement('div');
+            btn.className = 'option-btn';
+            btn.innerText = basis;
+            charlieGrid.appendChild(btn);
+        });
+
+        // 未來這裡可以加入點擊按鈕來產生 sequence（序列）的互動邏輯
+    });
+</script>
+
+</body>
+</html>
