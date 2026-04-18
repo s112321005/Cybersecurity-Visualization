@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=1200">
     <base href="https://s112321005.github.io/Cybersecurity-Visualization/">
-    <title>Cerify Setting</title>
+    <title>Verify Setting</title>
     <style>
         :root { --primary-blue: #0047AB; }
         body { margin: 0; padding: 40px 0; background-color: #f8f9fa; font-family: sans-serif; min-width: 1200px !important; display: flex; justify-content: center; }
@@ -215,7 +215,8 @@
                     <div class="name-tag">3. Alice</div>
                     <div class="click-toggle"><span class="text-on status-toggle-static">ON</span></div>
                     <div class="control-panel">
-                        <div class="setting-title">Message Selection</div> <div class="flex-row" style="margin-bottom: 15px; gap: 8px;">
+                        <div class="setting-title">Message Selection</div>
+                        <div class="flex-row" style="margin-bottom: 15px; gap: 8px;">
                             <label class="pill-radio"><input type="radio" name="qss_a_particle" checked><span>single</span></label>
                         </div>
                         <div class="setting-title">Basis Selection</div>
@@ -398,19 +399,54 @@
                 window.location.href = 'QKDanalysis.html';
             });
 
-            // QSS 按鈕邏輯
+            // ✅ QSS 按鈕邏輯 (已整合最新修改)
             document.getElementById('qss-start-btn').addEventListener('click', () => {
                 const interfaceDiv = document.getElementById('qss-interface');
                 const isEveOn = interfaceDiv.querySelector('.theme-red .status-toggle').checked;
+                
+                // 取得 Charlie 勾選的所有基底 (陣列)
+                const charlieBases = Array.from(interfaceDiv.querySelectorAll('input[name="qss_c_basis"]:checked')).map(cb => cb.value);
+                
+                // 注意這裡移除了 qss_c_basis 的 validateSettings 檢查，改在下方獨立判斷
                 const rules = [
                     {name: 'qss_b_particle', label: '1. Bob Particle'}, {name: 'qss_b_basis', label: '1. Bob Basis'},
-                    {name: 'qss_c_particle', label: '2. Charlie Particle'}, {name: 'qss_c_basis', label: '2. Charlie Basis'},
+                    {name: 'qss_c_particle', label: '2. Charlie Particle'},
                     {name: 'qss_a_particle', label: '3. Alice Message Selection'}, {name: 'qss_a_basis', label: '3. Alice Basis'}
                 ];
+                
                 if (isEveOn) {
                     rules.push({name: 'qss_e_attack', label: 'Eve Attack Selection'});
                 }
+                
                 if (!validateSettings('qss-interface', rules)) return;
+                
+                if (charlieBases.length === 0) {
+                    alert("Configuration incomplete: 2. Charlie Basis is required!");
+                    return;
+                }
+
+                // 將設定打包成 JSON 存入 localStorage
+                const qssSettings = {
+                    bob: {
+                        particle: interfaceDiv.querySelector('input[name="qss_b_particle"]:checked').nextElementSibling.innerText,
+                        basis: interfaceDiv.querySelector('input[name="qss_b_basis"]:checked').nextElementSibling.innerText
+                    },
+                    charlie: {
+                        particle: interfaceDiv.querySelector('input[name="qss_c_particle"]:checked').nextElementSibling.innerText,
+                        bases: charlieBases // 陣列形式，例如 ["I", "H"]
+                    },
+                    alice: {
+                        particle: interfaceDiv.querySelector('input[name="qss_a_particle"]:checked').nextElementSibling.innerText,
+                        basis: interfaceDiv.querySelector('input[name="qss_a_basis"]:checked').nextElementSibling.innerText
+                    },
+                    eve: {
+                        isOn: isEveOn,
+                        attack: isEveOn ? interfaceDiv.querySelector('input[name="qss_e_attack"]:checked').nextElementSibling.innerText : "None",
+                        location: isEveOn ? interfaceDiv.querySelector('select[name="qss_e_location"]').value : "None"
+                    }
+                };
+                
+                localStorage.setItem('qssSettings', JSON.stringify(qssSettings));
                 window.location.href = 'QSSanalysis.html';
             });
 
