@@ -557,13 +557,11 @@
         rows.forEach(row => row.classList.remove('active'));
         element.classList.add('active');
         const settings = JSON.parse(localStorage.getItem('qkdSettings')); 
-        const isAliceZ = (settings.alice.basis === 'rectilinear' || settings.alice.basis === 'Z');
+        const isAliceZ = (settings.alice.basis === 'Z');
         const isBobZ = (settings.bob.basis === 'Z');
         const isBobBasisSameAsAlice = (isAliceZ === isBobZ);
-
         const symbolsZ = symbols['Stype']; 
         const symbolsX = symbols['Dtype']; 
-
         let aliceOppoState = "";
         if (isAliceZ) { aliceOppoState = (stateSymbol.includes('→')) ? '|↑⟩' : '|→⟩';}
         else { aliceOppoState = (stateSymbol.includes('↗')) ? '|↖⟩' : '|↗⟩';}
@@ -581,46 +579,53 @@
             eveSameImg.src = "pictures/red_diagonal.svg";
             eveDiffImg.src = "pictures/red_vertical.svg";
         }
-
         document.getElementById('eve-state-same').innerText = stateSymbol;
         document.getElementById('eve-state-diff1').innerText = eveDiffStates[0];
         document.getElementById('eve-state-diff2').innerText = eveDiffStates[1];
-
         const bobPols = [
             document.getElementById('bob-pol-1'), document.getElementById('bob-pol-2'),
             document.getElementById('bob-pol-3'), document.getElementById('bob-pol-4'),
             document.getElementById('bob-pol-5'), document.getElementById('bob-pol-6')
         ];
         if (isAliceZ) {
-            bobPols[0].src = bobPols[2].src = bobPols[4].src = "pictures/b_vertical.svg";
-            bobPols[1].src = bobPols[3].src = bobPols[5].src = "pictures/gray_diagonal.svg";
+            if(isBobZ){
+                bobPols[0].src = bobPols[2].src = bobPols[4].src = "pictures/b_vertical.svg";
+                bobPols[1].src = bobPols[3].src = bobPols[5].src = "pictures/gray_diagonal.svg";
+            }
+            else{
+                bobPols[0].src = bobPols[2].src = bobPols[4].src = "pictures/gray_vertical.svg";
+                bobPols[1].src = bobPols[3].src = bobPols[5].src = "pictures/b_diagonal.svg";
+            }
         } else {
-            bobPols[0].src = bobPols[2].src = bobPols[4].src = "pictures/b_diagonal.svg";
-            bobPols[1].src = bobPols[3].src = bobPols[5].src = "pictures/gray_vertical.svg";
+            if(isBobZ){
+                bobPols[0].src = bobPols[2].src = bobPols[4].src = "pictures/gray_diagonal.svg";
+                bobPols[1].src = bobPols[3].src = bobPols[5].src = "pictures/b_vertical.svg";
+            }
+             else{
+                bobPols[0].src = bobPols[2].src = bobPols[4].src = "pictures/b_diagonal.svg";
+                bobPols[1].src = bobPols[3].src = bobPols[5].src = "pictures/gray_vertical.svg";
+            }
         }
         const sameNodes = document.querySelectorAll('#view-bb84-eve-resend .bob-same-node .polarizer-img, #view-bb84-eve-resend .bob-same-node .state-circle');
         const diffNodes = document.querySelectorAll('#view-bb84-eve-resend .bob-diff-node .polarizer-img, #view-bb84-eve-resend .bob-diff-node .state-circle');
         const sameLines = document.querySelectorAll('#view-bb84-eve-resend .eve-bob-line.same-path');
         const diffLines = document.querySelectorAll('#view-bb84-eve-resend .eve-bob-line.diff-path');
         function applyBB84EveLogic(nodes, isChosenPath) {
+            const alwaysActive = ['bob-final-1', 'bob-final-4', 'bob-final-7'];
+            const alwaysInactive = ['bob-final-2', 'bob-final-3', 'bob-final-6', 'bob-final-9'];
+            const errorNodes = ['bob-final-5', 'bob-final-8'];
+
             nodes.forEach(el => {
-                if (el.classList.contains('polarizer-img')) {
-                    if (!isChosenPath) el.classList.add('inactive');
-                    else el.classList.remove('inactive');
-                } 
-                else if (el.classList.contains('state-circle')) {
-                    const text = el.innerText;
-                    const targetChar = stateSymbol.includes('↑') ? '↑' : stateSymbol.includes('→') ? '→' : stateSymbol.includes('↖') ? '↖' : '↗';
-                    const errorChar = aliceOppoState.includes('↑') ? '↑' : aliceOppoState.includes('→') ? '→' : aliceOppoState.includes('↖') ? '↖' : '↗';
-                    el.classList.remove('inactive', 'eve-error');
-                    if (text.includes(targetChar)) {
-                        el.classList.remove('inactive');
-                    } else if (text.includes(errorChar)) {
-                        el.classList.remove('inactive');
-                        el.classList.add('eve-error');
-                    } else {
-                        el.classList.add('inactive');
+                if (el.classList.contains('state-circle')) {
+                    if (alwaysActive.includes(el.id)) {
+                        el.classList.remove('inactive'); // 強制亮起
+                    } else if (alwaysInactive.includes(el.id)) {
+                        el.classList.add('inactive');    // 強制熄滅
+                    } else if (errorNodes.includes(el.id)) {
+                        isChosenPath ? el.classList.remove('inactive') : el.classList.add('inactive');
                     }
+                } else if (el.classList.contains('polarizer-img')) {
+                    isChosenPath ? el.classList.remove('inactive') : el.classList.add('inactive');
                 }
             });
         }
@@ -635,8 +640,6 @@
             sameLines.forEach(l => { l.classList.add('line-inactive');});
             diffLines.forEach(l => { l.classList.remove('line-inactive');});
         }
-
-        // 4. 更新最終結果文字
         document.getElementById('bob-final-1').innerText = stateSymbol;
         document.querySelector('#bob-final-2 span').innerText = eveDiffStates[0];
         document.querySelector('#bob-final-3 span').innerText = eveDiffStates[1];
@@ -647,15 +650,13 @@
         document.getElementById('bob-final-8').innerText = aliceOppoState; 
         document.querySelector('#bob-final-9 span').innerText = eveDiffStates[1];
     }
-
-
     function selectStateB92Eve(element, stateSymbol, basisType) {
         const rows = document.querySelectorAll('#b92-eve-options .option-row');
         rows.forEach(row => row.classList.remove('active'));
         element.classList.add('active');
-
-        const isAliceZ = (basisType === 'rectilinear');
-        const isBobZ = (globalBobBasis === 'Z');
+        const settings = JSON.parse(localStorage.getItem('qkdSettings')); 
+        const isAliceZ = (settings.alice.basis === 'Z');
+        const isBobZ = (settings.bob.basis === 'Z');
         const isBobBasisSameAsAlice = (isAliceZ === isBobZ);
         document.querySelector('#view-b92-eve-resend #eve-alice-state').innerText = stateSymbol;
         document.querySelector('#view-b92-eve-resend #eve-alice-key').src = isAliceZ ? "pictures/vertical.svg" : "pictures/diagonal.svg";
@@ -664,13 +665,27 @@
             document.querySelector('#view-b92-eve-resend #bob-pol-3'), document.querySelector('#view-b92-eve-resend #bob-pol-4'),
             document.querySelector('#view-b92-eve-resend #bob-pol-5'), document.querySelector('#view-b92-eve-resend #bob-pol-6')
         ];
+
         if (isAliceZ) {
-            bobPols[0].src = bobPols[2].src = bobPols[4].src = "pictures/b_vertical.svg";
-            bobPols[1].src = bobPols[3].src = bobPols[5].src = "pictures/gray_diagonal.svg";
+            if(isBobZ){
+                bobPols[0].src = bobPols[2].src = bobPols[4].src = "pictures/b_vertical.svg";
+                bobPols[1].src = bobPols[3].src = bobPols[5].src = "pictures/gray_diagonal.svg";
+            }
+            else{
+                bobPols[0].src = bobPols[2].src = bobPols[4].src = "pictures/gray_vertical.svg";
+                bobPols[1].src = bobPols[3].src = bobPols[5].src = "pictures/b_diagonal.svg";
+            }
         } else {
-            bobPols[0].src = bobPols[2].src = bobPols[4].src = "pictures/b_diagonal.svg";
-            bobPols[1].src = bobPols[3].src = bobPols[5].src = "pictures/gray_vertical.svg";
+            if(isBobZ){
+                bobPols[0].src = bobPols[2].src = bobPols[4].src = "pictures/gray_diagonal.svg";
+                bobPols[1].src = bobPols[3].src = bobPols[5].src = "pictures/b_vertical.svg";
+            }
+             else{
+                bobPols[0].src = bobPols[2].src = bobPols[4].src = "pictures/b_diagonal.svg";
+                bobPols[1].src = bobPols[3].src = bobPols[5].src = "pictures/gray_vertical.svg";
+            }
         }
+
         const diff1StateSymbol = isAliceZ ? '|↖⟩' : '|↑⟩';
         const diff2StateSymbol = isAliceZ ? '|↗⟩' : '|→⟩';
         document.querySelector('#view-b92-eve-resend #eve-state-same').innerText = stateSymbol;
@@ -690,51 +705,35 @@
         const diffNodes = document.querySelectorAll('#view-b92-eve-resend .bob-diff-node .polarizer-img, #view-b92-eve-resend .bob-diff-node .state-circle');
         const sameLines = document.querySelectorAll('#view-b92-eve-resend .eve-bob-line.same-path');
         const diffLines = document.querySelectorAll('#view-b92-eve-resend .eve-bob-line.diff-path');
-        function applyB92Logic(nodes, isChosenPath) {
-            nodes.forEach(el => {
-                if (el.classList.contains('polarizer-img')) {
-                    if (!isChosenPath) {
-                        el.classList.add('inactive');
-                    } else {
-                        el.classList.remove('inactive');
-                    }
-                } 
-                else if (el.classList.contains('state-circle')) {
-                    const text = el.innerText;
-                    el.classList.remove('inactive', 'eve-error');
+        function applyB92EveLogic(nodes, isChosenPath) {
+            const alwaysActive = ['bob-final-2', 'bob-final-6'];
+            const alwaysInactive = ['bob-final-1', 'bob-final-3', 'bob-final-4', 'bob-final-7', 'bob-final-9'];
+            const errorNodes = ['bob-final-5', 'bob-final-8'];
 
-                    if (isAliceZ) {
-                        if (text.includes('↖')) {
-                            el.classList.remove('inactive');
-                        } else if (text.includes('↑')) {
-                            el.classList.remove('inactive');
-                            el.classList.add('eve-error');
-                        } else {
-                            el.classList.add('inactive');
-                        }
-                    } else {
-                        if (text.includes('↑')) {
-                            el.classList.remove('inactive');
-                        } else if (text.includes('↖')) {
-                            el.classList.remove('inactive');
-                            el.classList.add('eve-error');
-                        } else {
-                            el.classList.add('inactive');
-                        }
+            nodes.forEach(el => {
+                if (el.classList.contains('state-circle')) {
+                    if (alwaysActive.includes(el.id)) {
+                        el.classList.remove('inactive'); // 強制亮起
+                    } else if (alwaysInactive.includes(el.id)) {
+                        el.classList.add('inactive');    // 強制熄滅
+                    } else if (errorNodes.includes(el.id)) {
+                        isChosenPath ? el.classList.remove('inactive') : el.classList.add('inactive');
                     }
+                } else if (el.classList.contains('polarizer-img')) {
+                    isChosenPath ? el.classList.remove('inactive') : el.classList.add('inactive');
                 }
             });
         }
         if (isBobBasisSameAsAlice) {
-            applyB92Logic(sameNodes, true);
-            applyB92Logic(diffNodes, false);
-            sameLines.forEach(l => { l.classList.remove('line-inactive'); l.setAttribute('stroke-width', '4'); });
-            diffLines.forEach(l => { l.classList.add('line-inactive'); l.setAttribute('stroke-width', '2'); });
+            applyB92EveLogic(sameNodes, true);
+            applyB92EveLogic(diffNodes, false);
+            sameLines.forEach(l => { l.classList.remove('line-inactive');});
+            diffLines.forEach(l => { l.classList.add('line-inactive');});
         } else {
-            applyB92Logic(sameNodes, false);
-            applyB92Logic(diffNodes, true);
-            sameLines.forEach(l => { l.classList.add('line-inactive'); l.setAttribute('stroke-width', '2'); });
-            diffLines.forEach(l => { l.classList.remove('line-inactive'); l.setAttribute('stroke-width', '4'); });
+            applyB92EveLogic(sameNodes, false);
+            applyB92EveLogic(diffNodes, true);
+            sameLines.forEach(l => { l.classList.add('line-inactive');});
+            diffLines.forEach(l => { l.classList.remove('line-inactive');});
         }
         if (typeof updateSettingsContent === 'function') updateSettingsContent();
     }
