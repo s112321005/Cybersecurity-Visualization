@@ -4,162 +4,343 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=1400">
     <base href="https://s112321005.github.io/Cybersecurity-Visualization/">
-    <title>QSS Analysis</title>
+    <title>QSS Analysis Visualization</title>
     <style>
         :root {
-            --primary-blue: #0047AB;
-            --bob-color: #4c80c5;
-            --charlie-color: #478CEA;
-            --bg-color: #f8f9fa;
+            --alice-color: #e83e8c; /* Pink */
+            --bob-color: #0d6efd;   /* Blue */
+            --charlie-color: #6f42c1; /* Purple */
+            --bg-color: #f0f2f5;
+            --panel-bg: #ffffff;
+            --border-color: #dee2e6;
         }
-        body { margin: 0; padding: 20px; background-color: var(--bg-color); font-family: sans-serif; display: flex; justify-content: center; min-width: 1400px; }
-        .container { width: 1300px; background: white; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); padding: 20px; display: flex; flex-direction: column; }
-        
-        /* Header */
-        .header-bar { display: flex; align-items: center; margin-bottom: 20px; }
-        .btn-back { width: 40px; height: 40px; background-color: var(--primary-blue); color: white; border-radius: 50%; display: flex; justify-content: center; align-items: center; text-decoration: none; font-size: 1.1rem; font-weight: bold; margin-right: 15px; }
-        .page-title { border: 2px solid var(--primary-blue); padding: 8px 30px; border-radius: 10px; font-size: 20px; font-weight: bold; color: var(--primary-blue); }
-        .settings-badge { margin-left: auto; padding: 8px 20px; background: #eef4fb; border: 1px dashed var(--primary-blue); border-radius: 8px; font-size: 14px; color: var(--primary-blue); font-weight: bold; }
 
-        /* Main Layout */
-        .main-layout { display: flex; gap: 20px; height: calc(100vh - 120px); min-height: 700px; }
-        
-        /* Sidebars */
-        .sidebar { width: 250px; background: white; border: 2px solid #ddd; border-radius: 15px; padding: 15px; display: flex; flex-direction: column; gap: 20px; overflow-y: auto; }
-        .sidebar.alice { border-color: var(--primary-blue); }
-        .sidebar.bob-charlie { border-color: var(--primary-blue); }
-        
-        .section-title { font-weight: bold; font-size: 16px; margin-bottom: 10px; color: white; padding: 8px 15px; border-radius: 8px; text-align: center; }
-        .bg-alice { background-color: var(--primary-blue); }
+        body {
+            margin: 0;
+            padding: 20px;
+            background-color: var(--bg-color);
+            font-family: sans-serif;
+            min-width: 1200px;
+        }
+
+        /* 頂部導航 */
+        .top-bar {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            gap: 15px;
+        }
+        .btn-back {
+            width: 40px; height: 40px;
+            background-color: #333;
+            color: white;
+            border-radius: 50%;
+            display: flex; justify-content: center; align-items: center;
+            text-decoration: none;
+            font-size: 1.2rem;
+            font-weight: bold;
+            transition: 0.2s;
+        }
+        .btn-back:hover { background-color: #000; transform: scale(1.05); }
+        .page-title {
+            background: white;
+            padding: 10px 30px;
+            border-radius: 10px;
+            font-size: 20px;
+            font-weight: bold;
+            border: 2px solid #333;
+            color: #333;
+        }
+        .eve-alert {
+            display: none;
+            margin-left: auto;
+            background: #ffebee;
+            color: #d32f2f;
+            padding: 10px 20px;
+            border-radius: 8px;
+            border: 1px dashed #d32f2f;
+            font-weight: bold;
+        }
+
+        /* 主佈局：左右側邊欄 + 中間視覺化 */
+        .main-content {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+            height: 380px;
+        }
+
+        .sidebar {
+            width: 260px;
+            background: var(--panel-bg);
+            border-radius: 15px;
+            padding: 15px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            border: 2px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            overflow-y: auto;
+        }
+
+        .sidebar-title {
+            font-weight: bold;
+            color: white;
+            padding: 8px;
+            text-align: center;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+        .bg-alice { background-color: var(--alice-color); }
         .bg-bob { background-color: var(--bob-color); }
         .bg-charlie { background-color: var(--charlie-color); }
 
-        /* Option Buttons */
-        .option-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
-        .option-grid.col-3 { grid-template-columns: repeat(3, 1fr); }
-        .option-btn { border: 2px solid #ccc; border-radius: 8px; padding: 10px; text-align: center; cursor: pointer; font-weight: bold; font-size: 18px; transition: 0.2s; background: white; color: #333; }
-        .option-btn:hover { border-color: var(--primary-blue); color: var(--primary-blue); background: #f0f4f8; }
-        
-        /* Center Analysis Area */
-        .analysis-area { flex-grow: 1; border: 2px solid #ccc; border-radius: 15px; background: #fafafa; display: flex; flex-direction: column; overflow: hidden; }
-        .analysis-header { display: grid; grid-template-columns: 50px 1fr 1fr 1fr; background: #e0e0e0; font-weight: bold; text-align: center; border-bottom: 2px solid #ccc; }
-        .analysis-header div { padding: 12px; border-right: 1px solid #ccc; }
-        .analysis-header div:last-child { border-right: none; }
-        
-        .analysis-body { overflow-y: auto; flex-grow: 1; padding: 10px; display: flex; flex-direction: column; gap: 5px; }
-        .data-row { display: grid; grid-template-columns: 50px 1fr 1fr 1fr; background: white; border: 1px solid #ddd; border-radius: 8px; text-align: center; align-items: center; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
-        .data-row div { padding: 12px; border-right: 1px solid #eee; font-size: 18px; font-weight: bold; }
-        .data-row div:last-child { border-right: none; }
-        .row-num { color: #888; font-size: 14px !important; }
+        .option-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+        .option-btn {
+            border: 2px solid #ccc;
+            border-radius: 8px;
+            padding: 10px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 16px;
+            cursor: pointer;
+            transition: 0.2s;
+            background: white;
+        }
+        .option-btn:hover, .option-btn.active {
+            border-color: #333;
+            background: #f8f9fa;
+        }
 
-        /* Eve Alert Bar */
-        #eve-alert { display: none; background: #ffebee; color: #d32f2f; padding: 10px; text-align: center; font-weight: bold; border-radius: 8px; margin-bottom: 15px; border: 1px dashed #d32f2f; }
+        /* 中間 SVG 視覺化區域 */
+        .visualization-area {
+            flex-grow: 1;
+            background: var(--panel-bg);
+            border-radius: 15px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            border: 2px solid var(--border-color);
+            position: relative;
+            background-image: radial-gradient(#d5d5d5 1px, transparent 1px);
+            background-size: 20px 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        svg {
+            width: 100%;
+            height: 100%;
+        }
+        .node-circle { fill: white; stroke-width: 4; }
+        .node-alice { stroke: var(--alice-color); }
+        .node-bob { stroke: var(--bob-color); }
+        .node-charlie { stroke: var(--charlie-color); }
+        .node-text { font-family: sans-serif; font-weight: bold; font-size: 14px; text-anchor: middle; }
+        .link-line { stroke: #888; stroke-width: 3; stroke-dasharray: 5,5; fill: none; }
+        
+        /* 底部數據表 */
+        .data-table-container {
+            background: var(--panel-bg);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            border: 2px solid var(--border-color);
+            height: 250px;
+            overflow-y: auto;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: center;
+        }
+        th {
+            background: #f1f3f5;
+            padding: 12px;
+            border-bottom: 2px solid #ccc;
+            font-weight: bold;
+            color: #333;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #eee;
+            font-size: 16px;
+        }
+        tr:hover { background-color: #f8f9fa; }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <div class="header-bar">
+    <div class="top-bar">
         <a href="QKDsetting.html" class="btn-back">◀</a>
-        <div class="page-title">QSS：Alice, Bob, and Charlie</div>
-        <div class="settings-badge" id="settings-info">Loading settings...</div>
+        <div class="page-title">QSS Analysis</div>
+        <div id="eve-alert" class="eve-alert">⚠️ Eavesdropper is Active</div>
     </div>
 
-    <div id="eve-alert">⚠️ Eavesdropper Active: Intercepting between <span id="eve-loc"></span></div>
-
-    <div class="main-layout">
-        <div class="sidebar alice">
+    <div class="main-content">
+        <div class="sidebar" style="border-color: var(--alice-color);">
             <div>
-                <div class="section-title bg-alice">3. Alice selects the message</div>
-                <div class="option-grid">
-                    <div class="option-btn">↑</div>
-                    <div class="option-btn">→</div>
-                    <div class="option-btn">↗</div>
-                    <div class="option-btn">↘</div>
+                <div class="sidebar-title bg-alice">3. Alice's Message</div>
+                <div class="option-grid" id="alice-msg-grid">
+                    <div class="option-btn" onclick="addSequence('↑')">↑</div>
+                    <div class="option-btn" onclick="addSequence('→')">→</div>
+                    <div class="option-btn" onclick="addSequence('↗')">↗</div>
+                    <div class="option-btn" onclick="addSequence('↘')">↘</div>
                 </div>
             </div>
             <div>
-                <div class="section-title bg-alice">Alice's Basis</div>
-                <div class="option-grid" id="alice-basis-options">
+                <div class="sidebar-title bg-alice">3. Alice's Basis</div>
+                <div class="option-grid" id="alice-basis-grid">
                     </div>
             </div>
         </div>
 
-        <div class="analysis-area">
-            <div class="analysis-header">
-                <div>#</div>
-                <div>1. Bob</div>
-                <div>2. Charlie</div>
-                <div>3. Alice</div>
-            </div>
-            <div class="analysis-body" id="sequence-container">
-                <div class="data-row" style="opacity: 0.5;">
-                    <div class="row-num">1</div>
-                    <div>Wait...</div>
-                    <div>Wait...</div>
-                    <div>Wait...</div>
-                </div>
-            </div>
+        <div class="visualization-area">
+            <svg viewBox="0 0 800 300">
+                <defs>
+                    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                        <polygon points="0 0, 10 3.5, 0 7" fill="#888" />
+                    </marker>
+                </defs>
+
+                <line x1="180" y1="150" x2="360" y2="150" class="link-line" marker-end="url(#arrowhead)" id="line-alice-bob" />
+                <line x1="440" y1="150" x2="620" y2="150" class="link-line" marker-end="url(#arrowhead)" id="line-bob-charlie" />
+
+                <g transform="translate(140, 150)">
+                    <circle cx="0" cy="0" r="40" class="node-circle node-alice" />
+                    <text x="0" y="-55" class="node-text" fill="var(--alice-color)">3. Alice</text>
+                    <image href="pictures/cat_alice.svg" x="-25" y="-25" width="50" height="50" />
+                </g>
+
+                <g transform="translate(400, 150)">
+                    <circle cx="0" cy="0" r="40" class="node-circle node-bob" />
+                    <text x="0" y="-55" class="node-text" fill="var(--bob-color)">1. Bob</text>
+                    <image href="pictures/cat_bob.svg" x="-25" y="-25" width="50" height="50" />
+                </g>
+
+                <g transform="translate(660, 150)">
+                    <circle cx="0" cy="0" r="40" class="node-circle node-charlie" />
+                    <text x="0" y="-55" class="node-text" fill="var(--charlie-color)">2. Charlie</text>
+                    <image href="pictures/cat_charlie.svg" x="-25" y="-25" width="50" height="50" />
+                </g>
+
+                <g id="eve-node" transform="translate(270, 80)" style="display: none;">
+                    <circle cx="0" cy="0" r="30" fill="white" stroke="#d32f2f" stroke-width="3" />
+                    <text x="0" y="-40" class="node-text" fill="#d32f2f">Eve</text>
+                    <image href="pictures/Eavesdropper.svg" x="-20" y="-20" width="40" height="40" />
+                    <line x1="0" y1="30" x2="0" y2="70" stroke="#d32f2f" stroke-width="2" stroke-dasharray="4,4" />
+                </g>
+            </svg>
         </div>
 
-        <div class="sidebar bob-charlie">
+        <div class="sidebar" style="border-color: #888;">
             <div>
-                <div class="section-title bg-bob">1. Bob's Basis</div>
-                <div class="option-grid" id="bob-basis-options">
+                <div class="sidebar-title bg-bob">1. Bob's Basis</div>
+                <div class="option-grid" id="bob-basis-grid">
                     </div>
             </div>
             <div>
-                <div class="section-title bg-charlie">2. Charlie's Basis</div>
-                <div class="option-grid col-3" id="charlie-basis-options">
+                <div class="sidebar-title bg-charlie">2. Charlie's Basis</div>
+                <div class="option-grid" id="charlie-basis-grid" style="grid-template-columns: repeat(3, 1fr);">
                     </div>
             </div>
         </div>
     </div>
-</div>
 
-<script>
-    document.addEventListener('DOMContentLoaded', () => {
-        // 1. 從 localStorage 讀取設定
-        const storedSettings = localStorage.getItem('qssSettings');
-        if (!storedSettings) {
-            alert("No configuration found! Returning to setting page.");
-            window.location.href = 'QKDsetting.html';
-            return;
-        }
+    <div class="data-table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th style="color: var(--alice-color);">3. Alice Message</th>
+                    <th style="color: var(--alice-color);">3. Alice Basis</th>
+                    <th style="color: var(--bob-color);">1. Bob Basis</th>
+                    <th style="color: var(--charlie-color);">2. Charlie Basis</th>
+                </tr>
+            </thead>
+            <tbody id="sequence-table-body">
+                </tbody>
+        </table>
+    </div>
 
-        const settings = JSON.parse(storedSettings);
-        
-        // 2. 更新右上角資訊徽章與 Eve 警告
-        document.getElementById('settings-info').innerText = 
-            `Bob: ${settings.bob.basis} | Charlie: ${settings.charlie.bases.join(', ')} | Alice: ${settings.alice.basis}`;
-            
-        if (settings.eve.isOn) {
-            document.getElementById('eve-alert').style.display = 'block';
-            document.getElementById('eve-loc').innerText = settings.eve.location === '1_2' ? 'Bob & Charlie (1 & 2)' : 'Charlie & Alice (2 & 3)';
-        }
+    <script>
+        let sequenceCount = 0;
+        let currentSettings = null;
 
-        // 3. 根據設定動態渲染側邊欄選項
-        // Alice Basis
-        const aliceGrid = document.getElementById('alice-basis-options');
-        aliceGrid.innerHTML = `<div class="option-btn">${settings.alice.basis}</div>`; // 只顯示選中的基底
+        document.addEventListener('DOMContentLoaded', () => {
+            const storedSettings = localStorage.getItem('qssSettings');
+            if (!storedSettings) {
+                alert("No configuration found! Returning to setting page.");
+                window.location.href = 'QKDsetting.html';
+                return;
+            }
 
-        // Bob Basis
-        const bobGrid = document.getElementById('bob-basis-options');
-        bobGrid.innerHTML = `<div class="option-btn">${settings.bob.basis}</div>`;
+            currentSettings = JSON.parse(storedSettings);
 
-        // Charlie Basis (陣列)
-        const charlieGrid = document.getElementById('charlie-basis-options');
-        charlieGrid.innerHTML = '';
-        settings.charlie.bases.forEach(basis => {
-            const btn = document.createElement('div');
-            btn.className = 'option-btn';
-            btn.innerText = basis;
-            charlieGrid.appendChild(btn);
+            // 1. 處理 Eve 的顯示邏輯與位置
+            if (currentSettings.eve.isOn) {
+                const eveAlert = document.getElementById('eve-alert');
+                const eveNode = document.getElementById('eve-node');
+                eveAlert.style.display = 'block';
+                eveNode.style.display = 'block';
+                
+                // 根據上一頁設定的 location 決定 Eve 視覺化位置
+                // 如果是 '2_3' (Alice & Bob 之間)，位置 x=270
+                // 如果是 '1_2' (Bob & Charlie 之間)，位置 x=530
+                if (currentSettings.eve.location === '1_2') {
+                    eveNode.setAttribute('transform', 'translate(530, 80)');
+                    eveAlert.innerText = '⚠️ Eve Intercepting between Bob & Charlie';
+                } else {
+                    eveNode.setAttribute('transform', 'translate(270, 80)');
+                    eveAlert.innerText = '⚠️ Eve Intercepting between Alice & Bob';
+                }
+            }
+
+            // 2. 渲染左側 Alice 的 Basis
+            document.getElementById('alice-basis-grid').innerHTML = 
+                `<div class="option-btn active">${currentSettings.alice.basis}</div>`;
+
+            // 3. 渲染右側 Bob 的 Basis
+            document.getElementById('bob-basis-grid').innerHTML = 
+                `<div class="option-btn active">${currentSettings.bob.basis}</div>`;
+
+            // 4. 渲染右側 Charlie 的 Basis (陣列)
+            const charlieGrid = document.getElementById('charlie-basis-grid');
+            charlieGrid.innerHTML = '';
+            currentSettings.charlie.bases.forEach(basis => {
+                charlieGrid.innerHTML += `<div class="option-btn active">${basis}</div>`;
+            });
         });
 
-        // 未來這裡可以加入點擊按鈕來產生 sequence（序列）的互動邏輯
-    });
-</script>
+        // 點擊 Alice Message 新增紀錄至 Table 的互動邏輯
+        function addSequence(message) {
+            if (!currentSettings) return;
+            sequenceCount++;
+            
+            const tbody = document.getElementById('sequence-table-body');
+            const tr = document.createElement('tr');
+            
+            // 隨機從 Charlie 勾選的 Basis 中挑選一個作為本次模擬
+            const randomCharlieBasis = currentSettings.charlie.bases[Math.floor(Math.random() * currentSettings.charlie.bases.length)];
 
+            tr.innerHTML = `
+                <td style="color: #888;">${sequenceCount}</td>
+                <td style="font-weight: bold; font-size: 20px;">${message}</td>
+                <td>${currentSettings.alice.basis}</td>
+                <td>${currentSettings.bob.basis}</td>
+                <td>${randomCharlieBasis}</td>
+            `;
+            
+            // 讓最新的一筆資料顯示在最上方
+            tbody.insertBefore(tr, tbody.firstChild);
+        }
+    </script>
 </body>
 </html>
