@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <base href="https://s112321005.github.io/Cybersecurity-Visualization/">
+    <title>Quantum Secret Sharing</title>
+    <style>
+        :root { --primary-blue: #004aad; --dark-text: #333333; --bg-color: #f8f9fa; --active-blue: #e3f2fd; --bob-blue:#4C80C5;}
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes scaleUp { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+        @keyframes pulse-anim { 0% { box-shadow: 0 0 0 0 rgba(0, 74, 173, 0.4); } 70% { box-shadow: 0 0 0 15px rgba(0, 74, 173, 0); } 100% { box-shadow: 0 0 0 0 rgba(0, 74, 173, 0); } }
+        @keyframes float-anim { 0% { transform: translateY(0px); } 50% { transform: translateY(-8px); } 100% { transform: translateY(0px); } }
+        body { font-family: 'Segoe UI', sans-serif; display: flex; flex-direction: column; align-items: center; padding: 40px 20px; background-color: var(--bg-color); margin: 0; animation: fadeIn 0.8s ease-out; overflow-x: hidden; }
+        .header { width: min(1000px, 95vw); display: flex; align-items: center; justify-content: space-between; margin-bottom: 25px; height: 60px; }
+        .header-left { display: flex; align-items: center; gap: 15px; }
+        .btn-back { width: 40px; height: 40px; background-color: var(--primary-blue); color: white; border-radius: 50%; display: flex; justify-content: center; align-items: center; text-decoration: none; font-size: 1.1rem; transition: transform 0.2s; cursor: pointer; border: none; box-shadow: 0 2px 6px rgba(0,0,0,0.15); flex-shrink: 0; }
+        .btn-back:hover { transform: scale(1.1); }
+        .title-pill { border: 2px solid var(--primary-blue); height: 48px; padding: 0 25px; border-radius: 30px; font-weight: bold; background: white; display: flex; align-items: center; justify-content: center; white-space: nowrap; font-size: 1.1rem; }
+        .step-text { font-weight: bold; font-size: 1.1rem; margin: 0; color: var(--dark-text); }
+        .nav-btn { border: 2px solid var(--primary-blue); background: white; padding: 0 30px; border-radius: 30px; font-weight: bold; cursor: pointer; transition: all 0.3s; opacity: 0.3; pointer-events: none; height: 48px; display: flex; align-items: center; font-size: 1.1rem; }
+        .nav-btn.ready { opacity: 1; pointer-events: auto; background: var(--primary-blue); color: white; box-shadow: 0 4px 15px rgba(0, 74, 173, 0.3); }
+        .main-card { width: min(1000px, 95vw); height: 620px; border: 3px solid var(--primary-blue); border-radius: 35px; position: relative; background: white; display: flex; flex-direction: column; justify-content: flex-start; align-items: center; overflow: hidden; padding-top: 25px; box-sizing: border-box; }
+        .character-bob { margin-bottom: 5px; animation: float-anim 3.5s ease-in-out infinite; }
+        .bob-interactive { display: flex; flex-direction: column; align-items: center; z-index: 5; width: 100%; }
+        .prompt-text { margin: 0 0 10px 0; font-weight: bold; color: var(--primary-blue); font-size: 1.3rem; letter-spacing: 0.5px; }
+        .selector-area { display: flex; align-items: flex-start; gap: 60px; margin-bottom: 20px; }
+        .basis-column { display: flex; flex-direction: column; align-items: center; gap: 15px; width: 220px; }
+        .basis-title { font-weight: bold; color: var(--primary-blue); font-size: 1.2rem; background: #eef4ff; padding: 4px 15px; border-radius: 12px; }
+        /* 矩陣顯示放大版 */
+        .matrix-display { height: 140px; display: flex; align-items: center; justify-content: center; font-family: 'Cambria Math', serif; font-size: 2.2rem; color: var(--primary-blue); margin: 10px 0; animation: scaleUp 0.4s ease-out; }
+        .matrix-bracket { display: inline-flex; align-items: center; border-left: 3px solid var(--primary-blue); border-right: 3px solid var(--primary-blue); padding: 0 15px; margin: 0 10px; border-radius: 15px; }
+        .matrix-content { display: flex; flex-direction: column; align-items: center; gap: 8px; line-height: 1; }
+        .fraction { display: inline-flex; flex-direction: column; align-items: center; font-size: 1.6rem; margin-right: 12px; }
+        .frac-line { border-top: 2px solid var(--primary-blue); width: 110%; margin: 2px 0; }
+        .sqrt { position: relative; display: inline-block; padding-top: 2px; }
+        .sqrt::before { content: ''; position: absolute; top: 0; left: 50%; width: 50%; height: 2px; background: var(--primary-blue); }
+        /* 按鈕樣式 */
+        .options-row { display: flex; gap: 20px; }
+        .state-btn { cursor: pointer; padding: 12px; border: 2px solid #eee; border-radius: 20px; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); display: flex; flex-direction: column; align-items: center; width: 50px; background: white; animation: pulse-anim 2s infinite; }
+        .state-btn:hover { transform: translateY(-5px); border-color: #bbdefb; background: #fafcff; }
+        .state-btn.active { border-color: var(--bob-blue); background: var(--active-blue); transform: scale(1.08); animation: none; box-shadow: 0 0 15px rgba(0, 74, 173, 0.4); }
+        .braket { font-size: 1.4rem; font-weight: bold; color: var(--bob-blue); }
+        .explanation-area { display: flex; justify-content: center; align-items: center; margin-top: 10px; }
+        .explanation-text { color: #888; font-weight: bold; font-size: 1rem; text-align: center; }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <div class="header-left">
+        <a href="QuantumCybersecurityEducationPlatform.html" class="btn-back" title="back home">◀</a>
+        <div class="title-pill">Quantum Secret Sharing</div>
+    </div>
+    <div class="header-center"><p class="step-text">STEP 1: Bob prepares the photon</p></div>
+    <div class="header-right">
+        <button id="next-btn" class="nav-btn" onclick="nextStep()" disabled>Next</button>
+    </div>
+</div>
+
+<div class="main-card">
+    <div class="bob-interactive">
+        <div class="character-bob">
+            <img src="pictures/cat_bob.svg" alt="Bob" width="120"> 
+        </div>
+
+        <p class="prompt-text">Choose a state!</p>
+        
+        <div class="selector-area">
+            <div class="basis-column">
+                <div class="basis-title">X Basis</div>
+                <div class="options-row">
+                    <div class="state-btn" onclick="selectState('Xbasis', '1', this)">
+                        <span class="braket">|＋⟩</span>
+                    </div>
+                    <div class="state-btn" onclick="selectState('Xbasis', '0', this)">
+                        <span class="braket">|－⟩</span>
+                    </div>
+                </div>
+            </div>
+
+            <div style="width: 2px; height: 120px; background: #eee; align-self: center;"></div>
+
+            <div class="basis-column">
+                <div class="basis-title">Z Basis</div>
+                <div class="options-row">
+                    <div class="state-btn" onclick="selectState('Zbasis', '1', this)">
+                        <span class="braket">|０⟩</span>
+                    </div>
+                    <div class="state-btn" onclick="selectState('Zbasis', '0', this)">
+                        <span class="braket">|１⟩</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="matrix" class="matrix-display"></div>
+
+        <div class="explanation-area">
+            <p class="explanation-text">Observe the unique state vector in Hilbert space</p>
+        </div>
+    </div>
+</div>
+
+<script>
+    let selectedBasis = null;
+    let selectedMsg = null;
+
+    function selectState(basis, bit, el) {
+        document.querySelectorAll('.state-btn').forEach(btn => btn.classList.remove('active'));
+        el.classList.add('active');
+
+        const displayDiv = document.getElementById(`matrix`);
+        displayDiv.style.animation = 'none'; // 重置動畫
+        displayDiv.offsetHeight; // 觸發 reflow
+        displayDiv.style.animation = 'scaleUp 0.4s ease-out';
+
+        let html = '';
+        if (basis === 'Xbasis') {
+            const label = bit === '1' ? '＋' : '－';
+            const val = bit === '1' ? '1' : '-1';
+            html = `
+                <span style = "margin-right: 25px;"">|${label}⟩  ＝  </span>
+                <div class="fraction">
+                    <span>1</span>
+                    <div class="frac-line"></div>
+                    <span class="sqrt">√2</span>
+                </div>
+                <div class="matrix-bracket">
+                    <div class="matrix-content"><span>1</span><span>${val}</span></div>
+                </div>`;
+        } else {
+            const label = bit === '1' ? '０' : '１';
+            const top = bit === '1' ? '1' : '0';
+            const bot = bit === '1' ? '0' : '1';
+            html = `
+                <span>|${label}⟩  ＝  </span>
+                <div class="matrix-bracket">
+                    <div class="matrix-content"><span>${top}</span><span>${bot}</span></div>
+                </div>`;
+        }
+
+        displayDiv.innerHTML = html;
+
+        document.querySelector('.prompt-text').textContent = "State Prepared!";
+        document.querySelector('.prompt-text').style.color = "#28a745";
+        
+        selectedBasis = basis;
+        selectedMsg = bit;
+
+        const nextBtn = document.getElementById('next-btn');
+        nextBtn.disabled = false;
+        nextBtn.classList.add('ready');
+    }
+
+    function nextStep() {
+        if (!selectedBasis) return;
+        window.location.href = `QSSstep2.html?aliceBasis=${selectedBasis}&aliceMsg=${selectedMsg}`;
+    }
+</script>
+</body>
+</html>

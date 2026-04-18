@@ -318,10 +318,8 @@
         window.history.back();
     }
 
-    // 將 Alice 的結果傳送到 QKDstep2.html (Bob 介面)
     function nextStep() {
         if (!selectedBasis) return;
-        // 使用 URL 參數傳遞 Alice 的基底 (basis) 和位元 (msg)
         window.location.href = `QKDstep2.html?aliceBasis=${selectedBasis}&aliceMsg=${selectedMsg}`;
     }
 </script>
