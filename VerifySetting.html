@@ -31,7 +31,7 @@
         .name-tag.gray { background-color: #b0b0b0; color: white;}
         .name-tag.red-text { background-color: #D32F2F; }
         @keyframes pulse-start-btn { 0% { box-shadow: 0 0 0 0 rgba(0, 71, 171, 0.6); } 70% { box-shadow: 0 0 0 20px rgba(0, 71, 171, 0); } 100% { box-shadow: 0 0 0 0 rgba(0, 71, 171, 0); } }
-        .name-tag.start { margin-bottom: 15px; animation: pulse-start-btn 2s infinite; }
+        .name-tag.start { margin-bottom: 15px; margin-top: 20px; animation: pulse-start-btn 2s infinite; }
         .name-tag.start:hover { background: #003580; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,71,171,0.4); animation: none; }
         .click-toggle { cursor: pointer; margin-bottom: -15px; z-index: 3; display: inline-grid; grid-template-areas: "toggle-area"; border-radius: 20px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.1); transition: transform 0.2s ease, box-shadow 0.2s ease; }
         .click-toggle:active { transform: scale(0.95); box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
@@ -39,6 +39,7 @@
         .click-toggle span { grid-area: toggle-area; padding: 6px 30px; font-weight: bold; font-size: 16px; text-align: center; min-width: 140px; box-sizing: border-box; transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
         .click-toggle .text-off { background-color: #b0b0b0; color: white; }
         .click-toggle .text-on  { background-color: #0047AB; color: white; }
+        .status-toggle-static { background-color: #0047AB !important; color: white !important; }
         .click-toggle input:not(:checked) ~ .text-on { transform: translateY(-100%); opacity: 0; pointer-events: none; }
         .click-toggle input:not(:checked) ~ .text-off { transform: translateY(0); opacity: 1; }
         .click-toggle input:checked ~ .text-on { transform: translateY(0); opacity: 1; }
@@ -49,9 +50,12 @@
         .setting-title::before { content: ''; display: inline-block; width: 10px; height: 10px; border-radius: 50%; background-color: #79a6d2; transition: all 0.3s ease; }
         .disabled .setting-title::before { background-color: #b0b0b0 !important; }
         .flex-row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
-        .pill-radio input[type="radio"], .square-check input[type="checkbox"] { display: none; }
+        
+        /* Checkbox 與 Radio 按鈕樣式 */
+        .pill-radio input, .square-check input[type="checkbox"] { display: none; }
         .pill-radio span { display: inline-block; padding: 4px 12px; border: 2px solid #0047AB; border-radius: 20px; color: #0047AB; font-weight: bold; font-size: 14px; cursor: pointer; background-color: white; text-align: center; min-width: 25px; transition: all 0.3s ease; }
         .pill-radio input:checked + span { background-color: #0047AB; color: white; }
+        
         .disabled .pill-radio span { border-color: #b0b0b0 !important; color: #b0b0b0 !important; cursor: not-allowed; background-color: white !important; }
         .square-check { display: flex; align-items: center; gap: 4px; font-size: 14px; font-weight: bold; color: #0047AB; cursor: pointer; }
         .square-check span.box { display: inline-block; width: 14px; height: 14px; border: 2px solid #0047AB; border-radius: 4px; transition: all 0.3s ease; }
@@ -60,18 +64,31 @@
         .disabled .square-check span.box { border-color: #b0b0b0; background-color: white; }
         .disabled .square-check input:checked + span.box { background-color: #b0b0b0; }
         input[type="text"], input[type="number"] { border: 2px solid #0047AB; border-radius: 6px; padding: 4px 8px; outline: none; font-weight: bold; color: #0047AB; font-family: inherit; transition: all 0.3s ease; }
-        .order-input { width: 40px; text-align: center; }
-        .u-input { width: 90%; height: 50px; margin-top: 5px; box-sizing: border-box; }
-        input:disabled { border-color: #b0b0b0 !important; background-color: #f8f9fa !important; color: #b0b0b0 !important; cursor: not-allowed; }
+        
+        /* ✅ 確保 select (下拉式選單) 禁用時也變灰 */
+        input:disabled, select:disabled { border-color: #b0b0b0 !important; background-color: #f8f9fa !important; color: #b0b0b0 !important; cursor: not-allowed; }
+        
         .theme-red .click-toggle .text-on { background-color: #D32F2F; }
         .theme-red .control-panel:not(.disabled) { border-color: #D32F2F; }
         .theme-red .pill-radio span { border-color: #D32F2F; color: #D32F2F; }
         .theme-red .pill-radio input:checked + span { background-color: #D32F2F; color: white; }
         .theme-red .control-panel:not(.disabled) .setting-title::before { background-color: #e57373; }
+        
+        /* === Bob 專屬顏色 === */
         #bob-col .name-tag { background-color: #4c80c5 !important; color: #ffffff !important; }
         #bob-col .status-toggle-static { background-color: #4c80c5 !important; color: #ffffff !important; }
-        #bob-col .control-panel:not(.disabled) .pill-radio input[type="radio"]:checked + span { background-color: #4c80c5 !important; border-color: #4c80c5 !important; }
+        #bob-col .control-panel:not(.disabled) .pill-radio input:checked + span { background-color: #4c80c5 !important; border-color: #4c80c5 !important; color: white !important; }
         #bob-col .control-panel:not(.disabled) .setting-title::before { background-color: #4c80c5; }
+        #bob-col .pill-radio span { border-color: #4c80c5; color: #4c80c5; }
+
+        /* === Charlie 專屬顏色 === */
+        #charlie-col .name-tag { background-color: #478CEA !important; color: #ffffff !important;}
+        #charlie-col .status-toggle-static { background-color: #478CEA !important; color: #ffffff !important;}
+        #charlie-col .control-panel:not(.disabled) { border-color: #478CEA !important; }
+        #charlie-col .pill-radio span { border-color: #478CEA; color: #478CEA; }
+        #charlie-col .control-panel:not(.disabled) .pill-radio input:checked + span { background-color: #478CEA !important; border-color: #478CEA !important; color: white !important;}
+        #charlie-col .control-panel:not(.disabled) .setting-title::before { background-color: #79aee8; }
+
         html { font-family: "Courier New", Courier, monospace; font-variant-emoji: text; }
     </style>
 </head>
@@ -97,7 +114,7 @@
                 <div class="character-col">
                     <img src="pictures/cat_alice.svg" class="character-img" alt="Alice">
                     <div class="name-tag">Alice</div>
-                    <div class="click-toggle"><span class="text-on">ON</span></div>
+                    <div class="click-toggle"><span class="text-on status-toggle-static">ON</span></div>
                     <div class="control-panel">
                         <div class="setting-title">Particle Selection</div>
                         <div class="flex-row" style="margin-bottom: 15px; gap: 8px;">
@@ -153,48 +170,15 @@
 
         <div id="qss-interface" class="protocol-interface" style="display: none;">
             <div class="main-grid">
-                <div class="connection-line">
-                    <div class="connection-label">
-                        <label class="square-check" for="qss-entangle" style="color: #333; font-size: 14px; cursor: pointer; padding: -5px 20px; margin: 0;">
-                            <input type="checkbox" id="qss-entangle"><span class="box"></span><span>Entanglement Required?</span>
-                        </label>
-                    </div>
-                </div>
-                <div class="character-col">
-                    <img src="pictures/cat_alice.svg" class="character-img" alt="Alice">
-                    <div class="name-tag">Alice</div>
-                    <div class="click-toggle"><span class="text-on">ON</span></div>
-                    <div class="control-panel">
-                        <div class="setting-title">Particle Selection</div>
-                        <div class="flex-row" style="margin-bottom: 15px; gap: 8px;">
-                            <label class="pill-radio"><input type="radio" name="qss_a_particle"><span>single</span></label>
-                            <label class="pill-radio"><input type="radio" name="qss_a_particle"><span>Bell</span></label>
-                            <label class="pill-radio"><input type="radio" name="qss_a_particle"><span>GHZ</span></label>
-                        </div>
-                        <div class="setting-title">Basis Selection</div>
-                        <div style="display:flex; flex-direction:column; gap:8px; margin-bottom: 15px;">
-                            <div class="flex-row" style="gap: 8px;">
-                                <label class="pill-radio"><input type="radio" name="qss_a_basis"><span>X</span></label>
-                                <label class="pill-radio"><input type="radio" name="qss_a_basis"><span>Z</span></label>
-                            </div>
-                            <div class="flex-row" style="gap: 8px;">
-                                <label class="pill-radio"><input type="radio" name="qss_a_basis"><span>Bell</span></label>
-                                <label class="pill-radio"><input type="radio" name="qss_a_basis"><span>GHZ</span></label>
-                            </div>
-                        </div>
-                        <div class="setting-title">Send Order: <input type="number" class="order-input" value="1" min="1" style="margin-left:5px;"></div>
-                    </div>
-                </div>
+                
                 <div class="character-col" id="bob-col">
                     <img src="pictures/cat_bob.svg" class="character-img" alt="Bob">
-                    <div class="name-tag">Bob</div>
+                    <div class="name-tag">1. Bob</div>
                     <div class="click-toggle"><span class="text-on status-toggle-static">ON</span></div>
                     <div class="control-panel">
                         <div class="setting-title">Particle Selection</div>
                         <div class="flex-row" style="margin-bottom: 15px; gap: 8px;">
-                            <label class="pill-radio"><input type="radio" name="qss_b_particle"><span>single</span></label>
-                            <label class="pill-radio"><input type="radio" name="qss_b_particle"><span>Bell</span></label>
-                            <label class="pill-radio"><input type="radio" name="qss_b_particle"><span>GHZ</span></label>
+                            <label class="pill-radio"><input type="radio" name="qss_b_particle" checked><span>single</span></label>
                         </div>
                         <div class="setting-title">Basis Selection</div>
                         <div style="display:flex; flex-direction:column; gap:8px; margin-bottom: 15px;">
@@ -202,38 +186,48 @@
                                 <label class="pill-radio"><input type="radio" name="qss_b_basis"><span>X</span></label>
                                 <label class="pill-radio"><input type="radio" name="qss_b_basis"><span>Z</span></label>
                             </div>
-                            <div class="flex-row" style="gap: 8px;">
-                                <label class="pill-radio"><input type="radio" name="qss_b_basis"><span>Bell</span></label>
-                                <label class="pill-radio"><input type="radio" name="qss_b_basis"><span>GHZ</span></label>
-                            </div>
                         </div>
-                        <div class="setting-title">Send Order: <input type="number" class="order-input" value="2" min="1" style="margin-left:5px;"></div>
                     </div>
                 </div>
-                <div class="character-col">
+
+                <div class="character-col" id="charlie-col">
                     <img src="pictures/cat_charlie.svg" class="character-img" alt="Charlie">
-                    <div class="name-tag">Charlie</div>
-                    <label class="click-toggle"><input type="checkbox" class="status-toggle"><span class="text-on">ON</span><span class="text-off">OFF</span></label>
+                    <div class="name-tag">2. Charlie</div>
+                    <div class="click-toggle"><span class="text-on status-toggle-static">ON</span></div>
                     <div class="control-panel">
                         <div class="setting-title">Particle Selection</div>
                         <div class="flex-row" style="margin-bottom: 15px; gap: 8px;">
-                            <label class="pill-radio"><input type="radio" name="qss_c_particle"><span>single</span></label>
-                            <label class="pill-radio"><input type="radio" name="qss_c_particle"><span>Bell</span></label>
-                            <label class="pill-radio"><input type="radio" name="qss_c_particle"><span>GHZ</span></label>
+                            <label class="pill-radio"><input type="radio" name="qss_c_particle" checked><span>single</span></label>
                         </div>
                         <div class="setting-title">Basis Selection</div>
                         <div style="display:flex; flex-direction:column; gap:8px; margin-bottom: 15px;">
                             <div class="flex-row" style="gap: 8px;">
-                                <label class="pill-radio"><input type="radio" name="qss_c_basis"><span>X</span></label>
-                                <label class="pill-radio"><input type="radio" name="qss_c_basis"><span>Z</span></label>
-                            </div>
-                            <div class="flex-row" style="gap: 8px;">
-                                <label class="pill-radio"><input type="radio" name="qss_c_basis"><span>Bell</span></label>
-                                <label class="pill-radio"><input type="radio" name="qss_c_basis"><span>GHZ</span></label>
+                                <label class="pill-radio"><input type="checkbox" name="qss_c_basis" value="I"><span>I</span></label>
+                                <label class="pill-radio"><input type="checkbox" name="qss_c_basis" value="U"><span>U</span></label>
+                                <label class="pill-radio"><input type="checkbox" name="qss_c_basis" value="H"><span>H</span></label>
                             </div>
                         </div>
                     </div>
                 </div>
+
+                <div class="character-col">
+                    <img src="pictures/cat_alice.svg" class="character-img" alt="Alice">
+                    <div class="name-tag">3. Alice</div>
+                    <div class="click-toggle"><span class="text-on status-toggle-static">ON</span></div>
+                    <div class="control-panel">
+                        <div class="setting-title">Message Selection</div> <div class="flex-row" style="margin-bottom: 15px; gap: 8px;">
+                            <label class="pill-radio"><input type="radio" name="qss_a_particle" checked><span>single</span></label>
+                        </div>
+                        <div class="setting-title">Basis Selection</div>
+                        <div style="display:flex; flex-direction:column; gap:8px; margin-bottom: 15px;">
+                            <div class="flex-row" style="gap: 8px;">
+                                <label class="pill-radio"><input type="radio" name="qss_a_basis"><span>I</span></label>
+                                <label class="pill-radio"><input type="radio" name="qss_a_basis"><span>U</span></label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="character-col theme-red">
                     <img src="pictures/Eavesdropper.svg" class="character-img" alt="Eavesdropper">
                     <div class="name-tag" data-role="eavesdropper">Eavesdropper</div>
@@ -244,6 +238,11 @@
                             <label class="pill-radio"><input type="radio" name="qss_e_attack"><span style="padding: 6px 20px;">CNOT</span></label>
                             <label class="pill-radio"><input type="radio" name="qss_e_attack"><span style="padding: 6px 20px;">Intercept-resend</span></label>
                         </div>
+                        <div class="setting-title" style="margin-top: 20px;">Intercept Location</div>
+                        <select name="qss_e_location" style="width: 100%; padding: 6px 10px; border: 2px solid #D32F2F; border-radius: 8px; color: #D32F2F; font-weight: bold; outline: none; background: white; font-family: inherit;">
+                            <option value="1_2">Between 1 & 2</option>
+                            <option value="2_3">Between 2 & 3</option>
+                        </select>
                     </div>
                 </div>
             </div>
@@ -264,7 +263,7 @@
                 <div class="character-col">
                     <img src="pictures/cat_alice.svg" class="character-img" alt="Alice">
                     <div class="name-tag">Alice</div>
-                    <div class="click-toggle"><span class="text-on">ON</span></div>
+                    <div class="click-toggle"><span class="text-on status-toggle-static">ON</span></div>
                     <div class="control-panel">
                         <div class="setting-title">Particle Selection</div>
                         <div class="flex-row" style="margin-bottom: 15px; gap: 8px;">
@@ -343,7 +342,10 @@
                 const img = col.querySelector('.character-img');
                 const nameTag = col.querySelector('.name-tag');
                 const panel = col.querySelector('.control-panel');
-                const inputs = panel.querySelectorAll('input:not(.status-toggle)');
+                
+                // ✅ 確保 select 標籤也被納入禁用/啟用範圍
+                const inputs = panel.querySelectorAll('input:not(.status-toggle), select');
+                
                 if (toggleElement.checked) {
                     img.classList.remove('disabled-img');
                     panel.classList.remove('disabled');
@@ -375,9 +377,10 @@
                 return true;
             }
 
+            // QKD 按鈕邏輯
             document.getElementById('qkd-start-btn').addEventListener('click', () => {
                 const interfaceDiv = document.getElementById('qkd-interface');
-                const isEveOn = interfaceDiv.querySelector('.status-toggle').checked;
+                const isEveOn = interfaceDiv.querySelector('.theme-red .status-toggle').checked;
                 const rules = [
                     {name: 'a_particle', label: 'Alice Particle'}, {name: 'a_basis', label: 'Alice Basis'},
                     {name: 'b_particle', label: 'Bob Particle'}, {name: 'b_basis', label: 'Bob Basis'}
@@ -395,12 +398,14 @@
                 window.location.href = 'QKDanalysis.html';
             });
 
+            // QSS 按鈕邏輯
             document.getElementById('qss-start-btn').addEventListener('click', () => {
                 const interfaceDiv = document.getElementById('qss-interface');
                 const isEveOn = interfaceDiv.querySelector('.theme-red .status-toggle').checked;
                 const rules = [
-                    {name: 'qss_a_particle', label: 'Alice Particle'}, {name: 'qss_a_basis', label: 'Alice Basis'},
-                    {name: 'qss_b_particle', label: 'Bob Particle'}, {name: 'qss_b_basis', label: 'Bob Basis'}
+                    {name: 'qss_b_particle', label: '1. Bob Particle'}, {name: 'qss_b_basis', label: '1. Bob Basis'},
+                    {name: 'qss_c_particle', label: '2. Charlie Particle'}, {name: 'qss_c_basis', label: '2. Charlie Basis'},
+                    {name: 'qss_a_particle', label: '3. Alice Message Selection'}, {name: 'qss_a_basis', label: '3. Alice Basis'}
                 ];
                 if (isEveOn) {
                     rules.push({name: 'qss_e_attack', label: 'Eve Attack Selection'});
@@ -408,6 +413,8 @@
                 if (!validateSettings('qss-interface', rules)) return;
                 window.location.href = 'QSSanalysis.html';
             });
+
+            // Entanglement 按鈕邏輯
             document.getElementById('ent-start-btn').addEventListener('click', () => {
                 const interfaceDiv = document.getElementById('entanglement-interface');
                 const isEveOn = interfaceDiv.querySelector('.theme-red .status-toggle').checked;
