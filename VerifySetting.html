@@ -55,7 +55,7 @@
         .pill-radio input, .square-check input[type="checkbox"] { display: none; }
         .pill-radio span { display: inline-flex; padding: 4px 12px; border: 2px solid #0047AB; border-radius: 20px; color: #0047AB; font-weight: bold; font-size: 14px; cursor: pointer; background-color: white; text-align: center; min-width: 8px; width: auto; transition: all 0.3s ease; white-space: nowrap;}
         .pill-radio input:checked + span { background-color: #0047AB; color: white; }
-        
+        .pill-radio input:disabled + span { opacity: 0.4;   cursor: not-allowed;   pointer-events: none;   filter: grayscale(1); }
         .disabled .pill-radio span { border-color: #b0b0b0 !important; color: #b0b0b0 !important; cursor: not-allowed; background-color: white !important; }
         .square-check { display: flex; align-items: center; gap: 4px; font-size: 14px; font-weight: bold; color: #0047AB; cursor: pointer; }
         .square-check span.box { display: inline-block; width: 14px; height: 14px; border: 2px solid #0047AB; border-radius: 4px; transition: all 0.3s ease; }
@@ -323,7 +323,20 @@
                 }
                 return true;
             }
-            
+            const msg0Radios = document.querySelectorAll('input[name="op_msg_0"]');
+            const msg1Radios = document.querySelectorAll('input[name="op_msg_1"]');
+
+            function syncExclusion() {
+                const val0 = document.querySelector('input[name="op_msg_0"]:checked')?.value;
+                const val1 = document.querySelector('input[name="op_msg_1"]:checked')?.value;
+                msg1Radios.forEach(r => r.disabled = (r.value === val0));
+                msg0Radios.forEach(r => r.disabled = (r.value === val1));
+            }
+            [...msg0Radios, ...msg1Radios].forEach(r => r.addEventListener('change', syncExclusion));
+            syncExclusion();
+            msg0Radios.forEach(r => r.addEventListener('change', updateOperatorMutualExclusion));
+            msg1Radios.forEach(r => r.addEventListener('change', updateOperatorMutualExclusion));
+
             // QKD 按鈕邏輯
             document.getElementById('qkd-start-btn').addEventListener('click', () => {
                 const interfaceDiv = document.getElementById('qkd-interface');
