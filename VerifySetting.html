@@ -44,7 +44,7 @@
         .click-toggle input:not(:checked) ~ .text-off { transform: translateY(0); opacity: 1; }
         .click-toggle input:checked ~ .text-on { transform: translateY(0); opacity: 1; }
         .click-toggle input:checked ~ .text-off { transform: translateY(100%); opacity: 0; pointer-events: none; }
-        .control-panel { border: 2px solid #0047AB; border-radius: 10px; padding: 25px; background-color: white; min-height: 250px; box-sizing: border-box; width: 100%; transition: all 0.3s ease; }
+        .control-panel { border: 2px solid #0047AB; border-radius: 10px; padding: 23px; background-color: white; min-height: 250px; box-sizing: border-box; width: 100%; transition: all 0.3s ease; }
         .control-panel.disabled { border-color: #b0b0b0 !important; color: #777; }
         .setting-title { display: flex; align-items: center; gap: 5px; font-weight: bold; font-size: 14px; margin-bottom: 10px; }
         .setting-title::before { content: ''; display: inline-block; width: 10px; height: 10px; border-radius: 50%; background-color: #79a6d2; transition: all 0.3s ease; }
@@ -53,7 +53,7 @@
         
         /* Checkbox 與 Radio 按鈕樣式 */
         .pill-radio input, .square-check input[type="checkbox"] { display: none; }
-        .pill-radio span { display: inline-block; padding: 4px 12px; border: 2px solid #0047AB; border-radius: 20px; color: #0047AB; font-weight: bold; font-size: 14px; cursor: pointer; background-color: white; text-align: center; min-width: 25px; transition: all 0.3s ease; }
+        .pill-radio span { display: inline-flex; padding: 4px 12px; border: 2px solid #0047AB; border-radius: 20px; color: #0047AB; font-weight: bold; font-size: 14px; cursor: pointer; background-color: white; text-align: center; min-width: 8px; width: auto; transition: all 0.3s ease; white-space: nowrap;}
         .pill-radio input:checked + span { background-color: #0047AB; color: white; }
         
         .disabled .pill-radio span { border-color: #b0b0b0 !important; color: #b0b0b0 !important; cursor: not-allowed; background-color: white !important; }
@@ -177,12 +177,12 @@
                     <div class="click-toggle"><span class="text-on status-toggle-static">ON</span></div>
                     <div class="control-panel">
                         <div class="setting-title">Particle Selection</div>
-                        <div class="flex-row" style="margin-bottom: 15px; gap: 8px;">
+                        <div class="flex-row" style="margin-bottom: 15px; gap: 4px;">
                             <label class="pill-radio"><input type="radio" name="qss_b_particle" checked><span>single</span></label>
                         </div>
                         <div class="setting-title">Basis Selection</div>
                         <div style="display:flex; flex-direction:column; gap:8px; margin-bottom: 15px;">
-                            <div class="flex-row" style="gap: 8px;">
+                            <div class="flex-row" style="gap: 4px;">
                                 <label class="pill-radio"><input type="radio" name="qss_b_basis"><span>X</span></label>
                                 <label class="pill-radio"><input type="radio" name="qss_b_basis"><span>Z</span></label>
                             </div>
@@ -196,17 +196,17 @@
                     <div class="click-toggle"><span class="text-on status-toggle-static">ON</span></div>
                     <div class="control-panel">
                         <div class="setting-title">Particle Selection</div>
-                        <div class="flex-row" style="margin-bottom: 15px; gap: 8px;">
+                        <div class="flex-row" style="margin-bottom: 15px; gap: 4px;">
                             <label class="pill-radio"><input type="radio" name="qss_c_particle" checked><span>single</span></label>
                         </div>
                         <div class="setting-title">Operation Selection</div>
                         <div style="display:flex; flex-direction:column; gap:8px; margin-bottom: 15px;">
-                            <div class="flex-row" style="gap: 8px;">
-                                <label class="pill-radio"><input type="checkbox" name="qss_c_basis" value="I"><span>I</span></label>
-                                <label class="pill-radio"><input type="checkbox" name="qss_c_basis" value="X"><span>X</span></label>
-                                <label class="pill-radio"><input type="checkbox" name="qss_c_basis" value="Y"><span>Y</span></label>
-                                <label class="pill-radio"><input type="checkbox" name="qss_c_basis" value="Z"><span>Z</span></label>
-                                <label class="pill-radio"><input type="checkbox" name="qss_c_basis" value="H"><span>H</span></label>
+                            <div class="flex-row" style="gap: 4px;">
+                                <label class="pill-radio"><input type="radio" name="qss_c_basis" value="I"><span>I</span></label>
+                                <label class="pill-radio"><input type="radio" name="qss_c_basis" value="X"><span>X</span></label>
+                                <label class="pill-radio"><input type="radio" name="qss_c_basis" value="Y"><span>Y</span></label>
+                                <label class="pill-radio"><input type="radio" name="qss_c_basis" value="Z"><span>Z</span></label>
+                                <label class="pill-radio"><input type="radio" name="qss_c_basis" value="H"><span>H</span></label>
                             </div>
                         </div>
                     </div>
@@ -219,18 +219,18 @@
                     
                     <div class="control-panel">
                         <div class="setting-title">Message Selection</div>
-                        <div class="flex-row" style="margin-bottom: 15px; gap: 8px;">
+                        <div class="flex-row" style="margin-bottom: 15px; gap: 4px;">
                             <label class="pill-radio"><input type="radio" name="qss_a_particle" checked><span>single</span></label>
                         </div>
                 
-                        <div class="setting-title">Basis Selection</div>
+                        <div class="setting-title">Message Selection</div>
                         <div style="display:flex; flex-direction:column; gap:8px; margin-bottom: 15px;">
-                            <div class="flex-row" style="gap: 8px;">
+                            <div class="flex-row" style="gap: 4px;">
                                 <label class="pill-radio"><input type="radio" name="qss_a_basis"><span>0</span></label>
                                 <label class="pill-radio"><input type="radio" name="qss_a_basis"><span>1</span></label>
                             </div>
                         </div>
-                        <div class="setting-title">Message 0 Operator</div>
+                        <div class="setting-title">Message:0 Operator</div>
                         <div class="flex-row" style="margin-bottom: 10px; gap: 4px; flex-wrap: wrap;">
                             <label class="pill-radio"><input type="radio" name="op_msg_0" value="I" checked><span>I</span></label>
                             <label class="pill-radio"><input type="radio" name="op_msg_0" value="X"><span>X</span></label>
@@ -238,7 +238,7 @@
                             <label class="pill-radio"><input type="radio" name="op_msg_0" value="Z"><span>Z</span></label>
                             <label class="pill-radio"><input type="radio" name="op_msg_0" value="H"><span>H</span></label>
                         </div>
-                        <div class="setting-title">Message 1 Operator</div>
+                        <div class="setting-title">Message:1 Operator</div>
                         <div class="flex-row" style="margin-bottom: 15px; gap: 4px; flex-wrap: wrap;">
                             <label class="pill-radio"><input type="radio" name="op_msg_1" value="I" checked><span>I</span></label>
                             <label class="pill-radio"><input type="radio" name="op_msg_1" value="X"><span>X</span></label>
