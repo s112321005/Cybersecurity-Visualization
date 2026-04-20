@@ -183,7 +183,7 @@
                         <div class="setting-title">Basis Selection</div>
                         <div style="display:flex; flex-direction:column; gap:8px; margin-bottom: 15px;">
                             <div class="flex-row" style="gap: 4px;">
-                                <label class="pill-radio"><input type="radio" name="qss_b_basis"><span>X</span></label>
+                                <label class="pill-radio"><input type="radio" name="qss_b_basis" checked><span>X</span></label>
                                 <label class="pill-radio"><input type="radio" name="qss_b_basis"><span>Z</span></label>
                             </div>
                         </div>
@@ -226,7 +226,7 @@
                         <div class="setting-title">Message Selection</div>
                         <div style="display:flex; flex-direction:column; gap:8px; margin-bottom: 15px;">
                             <div class="flex-row" style="gap: 4px;">
-                                <label class="pill-radio"><input type="radio" name="qss_a_basis"><span>0</span></label>
+                                <label class="pill-radio"><input type="radio" name="qss_a_basis" checked><span>0</span></label>
                                 <label class="pill-radio"><input type="radio" name="qss_a_basis"><span>1</span></label>
                             </div>
                         </div>
@@ -336,7 +336,7 @@
                 r.addEventListener('change', syncExclusion);
             });
             syncExclusion();
-            
+
             // QKD 按鈕邏輯
             document.getElementById('qkd-start-btn').addEventListener('click', () => {
                 const interfaceDiv = document.getElementById('qkd-interface');
