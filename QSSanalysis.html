@@ -4,260 +4,226 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=1400">
     <base href="https://s112321005.github.io/Cybersecurity-Visualization/">
-    <title>QSS Analysis - Quantum Flow</title>
+    <title>QSS Analysis - Flow View</title>
     <link rel="stylesheet" href="QSSanalysisCSS.css">
-    <style>
-        /* 額外針對 Eve 節點與資訊面板的樣式 */
-        .eve-node { border-color: #ff4d4d !important; color: #ff4d4d !important; font-weight: 900 !important; }
-        .line-eve { stroke: #ff4d4d !important; stroke-width: 4; stroke-dasharray: 4; }
-        .config-info {
-            background: #f1f3f5; padding: 10px; border-radius: 8px; margin-bottom: 15px;
-            font-size: 13px; border-left: 4px solid var(--primary-blue);
-        }
-        .config-info b { color: var(--primary-blue); }
-        .eve-active-tag { color: #d32f2f; font-weight: bold; }
-    </style>
 </head>
 <body>
 
 <div class="container">
     <div class="top-bar">
         <a href="VerifySetting.html" class="btn-back">◀</a>
-        <div class="page-title">QSS Analysis Visualization</div>
+        <div class="page-title">QSS Sequence Visualization</div>
     </div>
 
-    <div class="main-layout">
+    <div class="main-content">
         <div class="sidebar">
-            <div class="config-info">
-                <div><b>Current Setting:</b></div>
-                <div id="setting-summary">Loading...</div>
-            </div>
-
-            <div class="control-group bob-bg">
-                <h4>1. Bob (Sender)</h4>
-                <div class="btn-grid" id="bob-btns">
-                    </div>
-            </div>
-
-            <div class="control-group charlie-bg">
-                <h4>2. Charlie 1st Op</h4>
-                <div class="btn-grid" id="c1-btns">
-                    </div>
-            </div>
-
-            <div class="control-group alice-bg">
-                <h4>3. Alice (Encode)</h4>
-                <div class="btn-grid">
-                    <button class="state-btn" onclick="setOp('aliceOp', 'I')">I (Msg:0)</button>
-                    <button class="state-btn" onclick="setOp('aliceOp', 'X')">X (Msg:1)</button>
+            <div class="selection-box" style="background:#eef5ff; border-color:var(--primary-blue);">
+                <h4 style="background:#dbe9ff; color:var(--primary-blue);">System Settings</h4>
+                <div style="padding: 10px 15px; font-size: 13px; line-height: 1.6;">
+                    <span id="info-bob-basis"></span><br>
+                    <span id="info-eve-status"></span>
                 </div>
             </div>
 
-            <div class="control-group charlie-bg">
-                <h4>4. Charlie 2nd Op</h4>
-                <div class="btn-grid" id="c2-btns">
-                    </div>
+            <div class="selection-box">
+                <h4><span class="tag-bob"></span> 1. Bob's Initial State</h4>
+                <div class="option-row" id="bob-btns"></div>
             </div>
 
-            <button class="run-btn" onclick="runSimulation()">Run Simulation</button>
+            <div class="selection-box">
+                <h4><span class="tag-c1"></span> 2. Charlie 1st Op</h4>
+                <div class="option-row" id="c1-btns"></div>
+            </div>
+
+            <div class="selection-box">
+                <h4><span class="tag-alice"></span> 3. Alice Encode</h4>
+                <div class="option-row">
+                    <button class="state-btn active" onclick="setOp('alice', 'I', this)">I (Msg:0)</button>
+                    <button class="state-btn" onclick="setOp('alice', 'X', this)">X (Msg:1)</button>
+                </div>
+            </div>
+
+            <div class="selection-box">
+                <h4><span class="tag-c2"></span> 4. Charlie 2nd Op</h4>
+                <div class="option-row" id="c2-btns"></div>
+            </div>
         </div>
 
         <div class="viz-area">
-            <svg id="svg-canvas" width="950" height="550"></svg>
-            <div id="nodes-container"></div>
+            <div class="flow-container" id="flow-container">
+                </div>
         </div>
     </div>
 </div>
 
 <script>
-    // 1. 取得資料
+    // --- 1. 讀取設定資料 ---
     const settings = JSON.parse(localStorage.getItem('qssSettings')) || {
         bob: { basis: 'Z' },
         charlie: { bases: ['I', 'H'] },
         eve: { isOn: false, attack: 'None', location: 'None' }
     };
 
-    let currentParams = {
-        bobInit: (settings.bob.basis === 'Z') ? '0' : '+',
-        charlieOp1: 'I',
-        aliceOp: 'I',
-        charlieOp2: 'I'
+    // 當前使用者的選擇狀態
+    let currentOps = {
+        bob: (settings.bob.basis === 'Z') ? '0' : '+',
+        c1: 'I',
+        alice: 'I',
+        c2: 'I'
     };
 
-    // 2. 定義欄位 (會根據 Eve 位置動態調整)
-    let columns = [
-        { id: 'bob', title: 'Bob', x: 70 },
-        { id: 'c1', title: 'Charlie 1', x: 270 },
-        { id: 'alice', title: 'Alice', x: 470 },
-        { id: 'c2', title: 'Charlie 2', x: 670 },
-        { id: 'final', title: 'Bob Result', x: 870 }
-    ];
-
-    const stateList = ['0', '1', '+', '-'];
-
-    // 3. 初始化
+    // --- 2. 初始化頁面 ---
     window.onload = () => {
-        renderUI();
-        injectEveColumn();
-        initTree();
-        runSimulation();
+        initSidebar();
+        updateFlowchart();
     };
 
-    function renderUI() {
-        // 更新資訊列
-        const summary = document.getElementById('setting-summary');
-        summary.innerHTML = `
-            Basis: <b>${settings.bob.basis}</b><br>
-            Eve: <span class="${settings.eve.isOn?'eve-active-tag':''}">
-                ${settings.eve.isOn ? `Active (${settings.eve.location})` : 'Inactive'}
-            </span>
-        `;
+    function initSidebar() {
+        // 顯示設定資訊
+        document.getElementById('info-bob-basis').innerHTML = `Bob Basis: <b>${settings.bob.basis}</b>`;
+        const eveText = settings.eve.isOn ? `<b style="color:var(--eve-red)">Active (${settings.eve.location})</b>` : `<b>Inactive</b>`;
+        document.getElementById('info-eve-status').innerHTML = `Eve Status: ${eveText}`;
 
         // 生成 Bob 按鈕
         const bobGroup = document.getElementById('bob-btns');
         const bobStates = (settings.bob.basis === 'Z') ? ['0', '1'] : ['+', '-'];
-        bobStates.forEach(s => {
-            const btn = createBtn(s, () => { currentParams.bobInit = s; runSimulation(); });
+        bobStates.forEach((s, idx) => {
+            const btn = document.createElement('button');
+            btn.className = `state-btn ${idx === 0 ? 'active' : ''}`;
+            btn.innerText = `|${s}⟩`;
+            btn.onclick = function() { setOp('bob', s, this); };
             bobGroup.appendChild(btn);
         });
 
-        // 生成 Charlie 按鈕 (根據 Setting 勾選的基底)
+        // 生成 Charlie 按鈕
         const c1Group = document.getElementById('c1-btns');
         const c2Group = document.getElementById('c2-btns');
-        settings.charlie.bases.forEach(op => {
-            c1Group.appendChild(createBtn(op, () => { currentParams.charlieOp1 = op; runSimulation(); }));
-            c2Group.appendChild(createBtn(op, () => { currentParams.charlieOp2 = op; runSimulation(); }));
+        settings.charlie.bases.forEach((op, idx) => {
+            // Charlie 1
+            const btn1 = document.createElement('button');
+            btn1.className = `state-btn ${idx === 0 ? 'active' : ''}`;
+            btn1.innerText = op;
+            btn1.onclick = function() { setOp('c1', op, this); };
+            c1Group.appendChild(btn1);
+            if(idx === 0) currentOps.c1 = op; // 預設選第一個
+
+            // Charlie 2
+            const btn2 = document.createElement('button');
+            btn2.className = `state-btn ${idx === 0 ? 'active' : ''}`;
+            btn2.innerText = op;
+            btn2.onclick = function() { setOp('c2', op, this); };
+            c2Group.appendChild(btn2);
+            if(idx === 0) currentOps.c2 = op;
         });
     }
 
-    function createBtn(txt, callback) {
-        const b = document.createElement('button');
-        b.className = 'state-btn';
-        b.innerText = txt;
-        b.onclick = (e) => {
-            const all = b.parentElement.querySelectorAll('.state-btn');
-            all.forEach(btn => btn.classList.remove('active'));
-            b.classList.add('active');
-            callback();
-        };
-        return b;
+    // 更新操作並重繪
+    function setOp(step, val, btnEl) {
+        currentOps[step] = val;
+        // 切換按鈕 active 樣式
+        const row = btnEl.parentElement;
+        row.querySelectorAll('.state-btn').forEach(b => b.classList.remove('active'));
+        btnEl.classList.add('active');
+        
+        updateFlowchart();
     }
 
-    function injectEveColumn() {
-        if (!settings.eve.isOn) return;
-        let insertIdx = 1; // 預設 B-C1
-        if (settings.eve.location === 'C1-A') insertIdx = 2;
-        if (settings.eve.location === 'A-C2') insertIdx = 3;
-
-        const eveCol = { id: 'eve', title: 'Eve', x: 0, isEve: true };
-        columns.splice(insertIdx, 0, eveCol);
-
-        // 重新計算所有 X 座標使其均勻分佈
-        const total = columns.length;
-        columns.forEach((col, i) => {
-            col.x = 60 + i * (840 / (total - 1));
-        });
-    }
-
+    // --- 3. 量子運算邏輯 ---
     function applyOp(state, op) {
         if (op === 'I') return state;
-        if (op === 'H') {
-            const m = {'0':'+', '1':'-', '+':'0', '-':'1'};
-            return m[state];
-        }
-        if (op === 'X') {
-            const m = {'0':'1', '1':'0', '+':'+', '-':'-'};
-            return m[state];
-        }
-        return state;
+        const maps = {
+            'H': {'0':'+', '1':'-', '+':'0', '-':'1'},
+            'X': {'0':'1', '1':'0', '+':'+', '-':'-'}
+        };
+        return maps[op] ? maps[op][state] : state;
     }
 
-    function initTree() {
-        const svg = document.getElementById('svg-canvas');
-        const nodesDiv = document.getElementById('nodes-container');
+    // --- 4. 繪製水平流程圖 ---
+    function updateFlowchart() {
+        const container = document.getElementById('flow-container');
+        container.innerHTML = ''; // 清空舊圖
 
-        columns.forEach((col, colIdx) => {
-            const title = document.createElement('div');
-            title.className = 'col-title' + (col.isEve ? ' eve-node' : '');
-            title.style.left = `${col.x - 65}px`;
-            title.style.top = '20px';
-            title.innerText = col.title;
-            nodesDiv.appendChild(title);
+        // 依序建立流程陣列
+        let flowSteps = [];
+        let currentState = currentOps.bob;
+        let stepCount = 1;
 
-            stateList.forEach((s, rowIdx) => {
-                const node = document.createElement('div');
-                node.id = `node-${col.id}-${s}`;
-                node.className = 'state-circle inactive' + (col.isEve ? ' eve-node' : '');
-                node.style.left = `${col.x - 25}px`;
-                node.style.top = `${100 + rowIdx * 100}px`;
-                node.innerText = `|${s}⟩`;
-                nodesDiv.appendChild(node);
-
-                if (colIdx < columns.length - 1) {
-                    const nextCol = columns[colIdx + 1];
-                    stateList.forEach(ns => {
-                        const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
-                        line.id = `line-${col.id}${s}-${nextCol.id}${ns}`;
-                        line.setAttribute("x1", col.x + 25);
-                        line.setAttribute("y1", 100 + rowIdx * 100 + 25);
-                        line.setAttribute("x2", nextCol.x - 25);
-                        line.setAttribute("y2", 100 + stateList.indexOf(ns) * 100 + 25);
-                        line.className.baseVal = "graph-line line-inactive" + (col.isEve ? ' line-eve' : '');
-                        svg.appendChild(line);
-                    });
-                }
+        // 輔助函式：推入節點並推進狀態
+        const addNode = (id, title, theme, opLabel, opVal, isFinal = false) => {
+            if (!isFinal && opVal) {
+                currentState = applyOp(currentState, opVal);
+            }
+            flowSteps.push({
+                title: title,
+                theme: theme,
+                opLabel: opLabel,
+                stateStr: `|ψ${stepCount}⟩ = |${currentState}⟩`
             });
-        });
-    }
+            stepCount++;
+        };
 
-    function runSimulation() {
-        document.querySelectorAll('.state-circle').forEach(n => n.classList.add('inactive'));
-        document.querySelectorAll('.graph-line').forEach(l => {
-            l.classList.remove('line-active');
-            l.classList.add('line-inactive');
-        });
+        // 1. Bob
+        addNode('bob', "1. Bob Init", "node-bob", `State: |${currentOps.bob}⟩`, null);
 
-        let currentState = currentParams.bobInit;
-        let fullPath = [{ id: 'bob', s: currentState }];
-
-        // 依序走過動態定義的 columns
-        for(let i=1; i < columns.length; i++) {
-            const col = columns[i];
-            if (col.id === 'eve') {
-                // Eve 攔截邏輯：強制測量（隨機崩坍到 Z 或 X 基底，此處簡化為保持當前）
-                // 模擬攻擊影響：如果是 Intercept，可能會造成誤差，這裡讓它發光通過
-                currentState = currentState; 
-            } else if (col.id === 'c1') {
-                currentState = applyOp(currentState, currentParams.charlieOp1);
-            } else if (col.id === 'alice') {
-                currentState = applyOp(currentState, currentParams.aliceOp);
-            } else if (col.id === 'c2') {
-                currentState = applyOp(currentState, currentParams.charlieOp2);
-            } else if (col.id === 'final') {
-                currentState = currentState;
-            }
-            fullPath.push({ id: col.id, s: currentState });
+        // Eve 攔截 (B-C1)
+        if (settings.eve.isOn && settings.eve.location === 'B-C1') {
+            addNode('eve', "Eve Intercept", "node-eve", "Measurement", null);
         }
 
-        // 點亮
-        fullPath.forEach((p, i) => {
-            const node = document.getElementById(`node-${p.id}-${p.s}`);
-            if(node) node.classList.remove('inactive');
-            
-            if (i < fullPath.length - 1) {
-                const next = fullPath[i+1];
-                const line = document.getElementById(`line-${p.id}${p.s}-${next.id}${next.s}`);
-                if(line) {
-                    line.classList.add('line-active');
-                    line.classList.remove('line-inactive');
-                }
+        // 2. Charlie 1
+        addNode('c1', "2. Charlie 1", "node-charlie", `Op: ${currentOps.c1}`, currentOps.c1);
+
+        // Eve 攔截 (C1-A)
+        if (settings.eve.isOn && settings.eve.location === 'C1-A') {
+            addNode('eve', "Eve Intercept", "node-eve", "Measurement", null);
+        }
+
+        // 3. Alice
+        addNode('alice', "3. Alice Encode", "node-alice", `Op: ${currentOps.alice}`, currentOps.alice);
+
+        // Eve 攔截 (A-C2)
+        if (settings.eve.isOn && settings.eve.location === 'A-C2') {
+            addNode('eve', "Eve Intercept", "node-eve", "Measurement", null);
+        }
+
+        // 4. Charlie 2
+        addNode('c2', "4. Charlie 2", "node-charlie", `Op: ${currentOps.c2}`, currentOps.c2);
+
+        // 5. Final Result
+        flowSteps.push({
+            title: "Final Result",
+            theme: "node-final",
+            opLabel: "Bob Receives",
+            stateStr: `Result = |${currentState}⟩`
+        });
+
+        // --- 渲染到畫面上 ---
+        flowSteps.forEach((step, index) => {
+            // 建立方塊
+            const nodeDiv = document.createElement('div');
+            nodeDiv.className = `flow-node ${step.theme}`;
+            nodeDiv.innerHTML = `
+                <div class="node-header">${step.title}</div>
+                <div class="node-body">
+                    <div class="op-label">${step.opLabel}</div>
+                    <div class="state-label">${step.stateStr}</div>
+                </div>
+            `;
+            container.appendChild(nodeDiv);
+
+            // 如果不是最後一個，畫一個箭頭
+            if (index < flowSteps.length - 1) {
+                const arrowDiv = document.createElement('div');
+                arrowDiv.className = 'flow-arrow';
+                arrowDiv.innerHTML = `
+                    <svg viewBox="0 0 40 20">
+                        <path d="M0,10 L35,10" stroke="#888" stroke-width="3" fill="none"/>
+                        <polygon points="32,5 40,10 32,15" fill="#888"/>
+                    </svg>
+                `;
+                container.appendChild(arrowDiv);
             }
         });
-    }
-
-    function setOp(key, val) {
-        currentParams[key] = val;
-        runSimulation();
     }
 </script>
 </body>
