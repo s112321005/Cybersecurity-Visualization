@@ -1,11 +1,14 @@
+/* =========================================
+   QSS Analysis CSS - Tree Logic
+========================================= */
+
 :root {
     --primary-blue: #0047AB;
     --bob-color: #4c80c5;
     --charlie-color: #478CEA;
     --alice-color: #e83e8c;
-    --eve-red: #D32F2F;
+    --inactive-gray: #e0e0e0;
     --bg-color: #f8f9fa;
-    --panel-bg: #ffffff;
 }
 
 body {
@@ -16,14 +19,16 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
+    min-width: 1450px; /* 確保視窗縮小不會擠壓版面 */
 }
 
 .container {
-    width: 1300px;
+    width: 1350px;
     background: white;
     padding: 25px;
     border-radius: 20px;
     box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+    box-sizing: border-box;
 }
 
 /* 頂部列 */
@@ -41,106 +46,170 @@ body {
     border-radius: 50%;
     display: flex; justify-content: center; align-items: center;
     text-decoration: none;
+    font-size: 18px;
     font-weight: bold;
 }
 
 .page-title {
-    font-size: 22px;
+    font-size: 24px;
     font-weight: bold;
-    border: 2px solid var(--primary-blue);
-    padding: 8px 25px;
-    border-radius: 10px;
+    color: var(--primary-blue);
 }
 
-/* 主版面 */
+/* 主要排版區 */
 .main-layout {
-    display: grid;
-    grid-template-columns: 280px 1fr 280px;
+    display: flex;
     gap: 20px;
-    height: 450px;
+    align-items: stretch;
 }
 
-/* 側邊欄通用樣式 */
+/* === 左側控制面板 === */
 .sidebar {
-    background: var(--panel-bg);
-    border: 2px solid #dee2e6;
-    border-radius: 15px;
-    padding: 18px;
+    width: 260px;
+    flex-shrink: 0;
     display: flex;
     flex-direction: column;
     gap: 15px;
 }
 
-.sidebar-header {
-    font-weight: bold;
-    color: white;
-    text-align: center;
-    padding: 8px;
-    border-radius: 8px;
+.control-group {
+    padding: 12px;
+    border-radius: 10px;
+    border: 2px solid #ddd;
+    background: white;
 }
 
-/* 左側 Bob 操作區 */
-.bob-ops .sidebar-header { background: var(--bob-color); }
-.state-btn-group {
+.control-group h4 {
+    margin: 0 0 12px 0;
+    font-size: 14px;
+    text-align: center;
+}
+
+.bob-bg { border-color: var(--bob-color); background: #f0f4ff; }
+.bob-bg h4 { color: var(--bob-color); }
+
+.charlie-bg { border-color: var(--charlie-color); background: #f0f8ff; }
+.charlie-bg h4 { color: var(--charlie-color); }
+
+.alice-bg { border-color: var(--alice-color); background: #fdf0f5; }
+.alice-bg h4 { color: var(--alice-color); }
+
+.btn-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 10px;
+    gap: 8px;
 }
+
 .state-btn {
-    border: 2px solid var(--bob-color);
+    padding: 10px;
+    border: 2px solid #ccc;
     background: white;
-    color: var(--bob-color);
-    padding: 15px;
-    border-radius: 10px;
-    font-size: 20px;
+    border-radius: 6px;
+    cursor: pointer;
     font-weight: bold;
+    font-size: 14px;
+    transition: 0.2s;
+}
+
+.state-btn:hover { background: #eee; }
+.state-btn.active {
+    background: var(--primary-blue);
+    color: white;
+    border-color: var(--primary-blue);
+}
+
+.run-btn {
+    width: 100%;
+    padding: 15px;
+    background: #333;
+    color: white;
+    font-weight: bold;
+    font-size: 16px;
+    border: none;
+    border-radius: 8px;
     cursor: pointer;
     transition: 0.2s;
 }
-.state-btn:hover { background: #f0f4ff; transform: translateY(-2px); }
+.run-btn:hover { background: #555; }
 
-/* 右側資訊欄 */
-.info-panel .sidebar-header { background: #333; }
-.info-card {
-    background: #f1f3f5;
-    padding: 12px;
-    border-radius: 10px;
-    font-size: 14px;
-}
-.info-card strong { display: block; margin-bottom: 4px; border-bottom: 1px solid #ccc; }
-
-/* 中間視覺化 */
+/* === 右側視覺化區 === */
 .viz-area {
-    background: white;
+    position: relative; /* 核心修正！把圓圈限制在這個框框內 */
+    flex-grow: 1;
+    min-width: 950px;
+    min-height: 550px;
+    background: #fafafa;
     border: 2px solid #eee;
     border-radius: 15px;
-    position: relative;
     overflow: hidden;
-    background-image: radial-gradient(#ddd 1px, transparent 1px);
-    background-size: 24px 24px;
 }
 
-/* 表格區 */
-.table-container {
-    margin-top: 25px;
-    height: 250px;
-    overflow-y: auto;
-    border: 1px solid #eee;
-    border-radius: 10px;
-}
-
-table {
-    width: 100%;
-    border-collapse: collapse;
-    text-align: center;
-}
-
-th {
-    background: #f8f9fa;
-    padding: 12px;
-    border-bottom: 2px solid #dee2e6;
-    position: sticky;
+#nodes-container {
+    position: absolute;
     top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
 }
 
-td { padding: 12px; border-bottom: 1px solid #eee; }
+.col-title {
+    position: absolute;
+    width: 130px;
+    text-align: center;
+    font-weight: bold;
+    color: #555;
+    font-size: 14px;
+    background: #fff;
+    border: 2px solid #ccc;
+    border-radius: 20px;
+    padding: 6px 0;
+    z-index: 10;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+.state-circle {
+    position: absolute;
+    width: 50px;
+    height: 50px;
+    background-color: white;
+    border: 3px solid var(--primary-blue);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 16px;
+    color: #333;
+    z-index: 5;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.state-circle.inactive {
+    border-color: var(--inactive-gray);
+    color: #999;
+    box-shadow: none;
+    background-color: #f9f9f9;
+}
+
+.graph-line {
+    stroke-width: 3;
+    transition: all 0.3s ease;
+}
+
+.line-active {
+    stroke: var(--primary-blue);
+    stroke-dasharray: 8;
+    animation: flow 1s linear infinite;
+}
+
+.line-inactive {
+    stroke: #e0e0e0;
+    opacity: 0.3;
+}
+
+@keyframes flow {
+    from { stroke-dashoffset: 16; }
+    to { stroke-dashoffset: 0; }
+}
