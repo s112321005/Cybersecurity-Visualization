@@ -332,11 +332,11 @@
                 msg1Radios.forEach(r => r.disabled = (r.value === val0));
                 msg0Radios.forEach(r => r.disabled = (r.value === val1));
             }
-            [...msg0Radios, ...msg1Radios].forEach(r => r.addEventListener('change', syncExclusion));
+            [...msg0Radios, ...msg1Radios].forEach(r => {
+                r.addEventListener('change', syncExclusion);
+            });
             syncExclusion();
-            msg0Radios.forEach(r => r.addEventListener('change', updateOperatorMutualExclusion));
-            msg1Radios.forEach(r => r.addEventListener('change', updateOperatorMutualExclusion));
-
+            
             // QKD 按鈕邏輯
             document.getElementById('qkd-start-btn').addEventListener('click', () => {
                 const interfaceDiv = document.getElementById('qkd-interface');
