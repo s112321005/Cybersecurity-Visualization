@@ -4,231 +4,224 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=1400">
     <base href="https://s112321005.github.io/Cybersecurity-Visualization/">
-    <title>QSS Analysis - Tree Logic</title>
+    <title>QSS Analysis - Quantum State Tree</title>
     <link rel="stylesheet" href="QSSanalysisCSS.css">
 </head>
 <body>
 
 <div class="container">
     <div class="top-bar">
-        <a href="QKDsetting.html" class="btn-back">◀</a>
-        <div class="page-title">QSS Analysis：Tree Logic Visualization</div>
+        <a href="VerifySetting.html" class="btn-back">◀</a>
+        <div class="page-title">QSS Analysis Visualization</div>
     </div>
 
-    <div class="main-layout" style="display: flex; gap: 20px;">
-        
-        <div class="sidebar" style="width: 250px; flex-shrink: 0;">
+    <div class="main-layout">
+        <div class="sidebar">
             <div class="control-group bob-bg">
-                <h4>1. Bob Init State</h4>
-                <div class="btn-grid">
-                    <button class="state-btn active" onclick="selectParam('bobInit', '0')">|0⟩</button>
-                    <button class="state-btn" onclick="selectParam('bobInit', '1')">|1⟩</button>
-                    <button class="state-btn" onclick="selectParam('bobInit', '+')">|+⟩</button>
-                    <button class="state-btn" onclick="selectParam('bobInit', '-')">|-⟩</button>
-                </div>
+                <h4>1. Bob (Sender)</h4>
+                <p style="font-size: 12px; text-align: center; margin-top:-10px;">Basis: <span id="display-bob-basis">-</span></p>
+                <div class="btn-grid" id="bob-btns">
+                    </div>
             </div>
 
             <div class="control-group charlie-bg">
                 <h4>2. Charlie 1st Op</h4>
                 <div class="btn-grid">
-                    <button class="state-btn active" onclick="selectParam('charlieOp1', 'I')">I</button>
-                    <button class="state-btn" onclick="selectParam('charlieOp1', 'H')">H</button>
-                    <button class="state-btn" onclick="selectParam('charlieOp1', 'Z')">Z</button>
+                    <button class="state-btn" onclick="setOp('charlieOp1', 'I')">I</button>
+                    <button class="state-btn" onclick="setOp('charlieOp1', 'H')">H</button>
                 </div>
             </div>
 
             <div class="control-group alice-bg">
-                <h4>3. Alice Encode (Msg)</h4>
+                <h4>3. Alice (Encode)</h4>
                 <div class="btn-grid">
-                    <button class="state-btn active" onclick="selectParam('aliceOp', 'I')">I (Msg=0)</button>
-                    <button class="state-btn" onclick="selectParam('aliceOp', 'X')">X (Msg=1)</button>
+                    <button class="state-btn" onclick="setOp('aliceOp', 'I')">I (0)</button>
+                    <button class="state-btn" onclick="setOp('aliceOp', 'X')">X (1)</button>
                 </div>
             </div>
 
             <div class="control-group charlie-bg">
                 <h4>4. Charlie 2nd Op</h4>
                 <div class="btn-grid">
-                    <button class="state-btn active" onclick="selectParam('charlieOp2', 'I')">I</button>
-                    <button class="state-btn" onclick="selectParam('charlieOp2', 'H')">H</button>
-                    <button class="state-btn" onclick="selectParam('charlieOp2', 'Z')">Z</button>
+                    <button class="state-btn" onclick="setOp('charlieOp2', 'I')">I</button>
+                    <button class="state-btn" onclick="setOp('charlieOp2', 'H')">H</button>
                 </div>
             </div>
-            
-            <button class="run-btn" onclick="runSimulation()">Run Sequence</button>
-            
-            <div class="result-box" id="final-result" style="margin-top: 15px; padding: 10px; background: #eee; border-radius: 8px; text-align: center; font-weight: bold;">
-                Waiting for run...
-            </div>
+
+            <button class="run-btn" onclick="runSimulation()">Run Quantum Flow</button>
         </div>
 
-        <div class="viz-area" id="viz-area">
-            <svg id="lines-svg" width="100%" height="100%" style="position: absolute; top: 0; left: 0; pointer-events: none;">
+        <div class="viz-area" id="viz-container">
+            <svg id="svg-canvas" width="950" height="550">
                 </svg>
-            
-            <div id="nodes-container"></div>
+            <div id="nodes-container">
+                </div>
         </div>
-
     </div>
 </div>
 
 <script>
-    // 當前選擇的參數
+    // --- 1. 資料接收與變數設定 ---
+    const savedSettings = JSON.parse(localStorage.getItem('qssSettings')) || {};
+    const bobBasis = savedSettings.bob?.basis || 'Z'; 
+    
     let currentParams = {
-        bobInit: '0',
+        bobInit: (bobBasis === 'Z') ? '0' : '+',
         charlieOp1: 'I',
         aliceOp: 'I',
         charlieOp2: 'I'
     };
 
-    // 介面選擇邏輯
-    function selectParam(type, value) {
-        currentParams[type] = value;
-        const group = event.target.parentElement;
-        group.querySelectorAll('.state-btn').forEach(btn => btn.classList.remove('active'));
-        event.target.classList.add('active');
-        runSimulation(); // 即時更新圖表
+    // 樹狀圖結構定義
+    const columns = [
+        { id: 'bob', title: 'Bob Init', x: 80, states: ['0', '1', '+', '-'] },
+        { id: 'c1', title: 'After Charlie 1', x: 280, states: ['0', '1', '+', '-'] },
+        { id: 'alice', title: 'After Alice', x: 480, states: ['0', '1', '+', '-'] },
+        { id: 'c2', title: 'After Charlie 2', x: 680, states: ['0', '1', '+', '-'] },
+        { id: 'final', title: 'Final State', x: 880, states: ['0', '1', '+', '-'] }
+    ];
+
+    // --- 2. 初始化頁面 ---
+    window.onload = () => {
+        document.getElementById('display-bob-basis').innerText = bobBasis + " Basis";
+        renderBobButtons();
+        initTree();
+        runSimulation(); // 預設跑一次
+    };
+
+    function renderBobButtons() {
+        const container = document.getElementById('bob-btns');
+        const states = (bobBasis === 'Z') ? ['0', '1'] : ['+', '-'];
+        states.forEach(s => {
+            const btn = document.createElement('button');
+            btn.className = 'state-btn';
+            btn.innerText = s;
+            btn.onclick = () => {
+                currentParams.bobInit = s;
+                runSimulation();
+            };
+            container.appendChild(btn);
+        });
     }
 
-    // 量子態轉換邏輯 (簡易版模擬)
-    function applyOperation(state, op) {
+    function setOp(key, val) {
+        currentParams[key] = val;
+        runSimulation();
+    }
+
+    // --- 3. 量子邏輯閘計算 ---
+    function applyOp(state, op) {
         if (op === 'I') return state;
-        if (op === 'H') {
-            if (state === '0') return '+';
-            if (state === '1') return '-';
-            if (state === '+') return '0';
-            if (state === '-') return '1';
+        if (op === 'X') {
+            const map = { '0':'1', '1':'0', '+':'+', '-':'-' };
+            return map[state];
         }
         if (op === 'Z') {
-            if (state === '0') return '0';
-            if (state === '1') return '1'; 
-            if (state === '+') return '-';
-            if (state === '-') return '+';
+            const map = { '0':'0', '1':'1', '+':'-', '-':'+' };
+            return map[state];
         }
-        if (op === 'X') { // Alice's encoding
-            if (state === '0') return '1';
-            if (state === '1') return '0';
-            if (state === '+') return '+';
-            if (state === '-') return '-';
+        if (op === 'H') {
+            const map = { '0':'+', '1':'-', '+':'0', '-': '1' };
+            return map[state];
         }
         return state;
     }
 
-    // 建立視覺化網格
-    const columns = [
-        { id: 'col-bob1', x: 50, title: "Bob", nodes: ['0', '1', '+', '-'] },
-        { id: 'col-ch1', x: 250, title: "Charlie Op1", nodes: ['I', 'H', 'Z'] },
-        { id: 'col-alice', x: 450, title: "Alice Encode", nodes: ['I', 'X'] },
-        { id: 'col-ch2', x: 650, title: "Charlie Op2", nodes: ['I', 'H', 'Z'] },
-        { id: 'col-bob2', x: 850, title: "Bob Measure", nodes: ['0', '1', '+', '-'] }
-    ];
+    // --- 4. 繪製樹狀圖 ---
+    function initTree() {
+        const svg = document.getElementById('svg-canvas');
+        const nodesDiv = document.getElementById('nodes-container');
 
-    function initGraph() {
-        const container = document.getElementById('nodes-container');
-        const svg = document.getElementById('lines-svg');
-        container.innerHTML = '';
-        svg.innerHTML = '';
-
-        // 建立節點
+        // 畫標題與節點
         columns.forEach((col, colIdx) => {
-            // 加入標題
+            // 標題
             const title = document.createElement('div');
             title.className = 'col-title';
-            title.style.left = `${col.x - 40}px`;
-            title.style.top = `20px`;
+            title.style.left = `${col.x - 65}px`;
+            title.style.top = '20px';
             title.innerText = col.title;
-            container.appendChild(title);
+            nodesDiv.appendChild(title);
 
-            const spacing = 400 / col.nodes.length;
-            col.nodes.forEach((nodeVal, rowIdx) => {
-                const y = 80 + rowIdx * spacing + (spacing/2);
-                
+            // 圓圈
+            col.states.forEach((state, rowIdx) => {
                 const node = document.createElement('div');
-                node.className = 'state-circle';
-                node.id = `node-${colIdx}-${rowIdx}`;
-                node.innerText = nodeVal;
-                node.style.left = `${col.x}px`;
-                node.style.top = `${y}px`;
-                node.dataset.val = nodeVal;
-                container.appendChild(node);
+                node.id = `node-${col.id}-${state}`;
+                node.className = 'state-circle inactive';
+                node.style.left = `${col.x - 25}px`;
+                node.style.top = `${100 + rowIdx * 100}px`;
+                node.innerText = `|${state}⟩`;
+                nodesDiv.appendChild(node);
+
+                // 畫線 (連到下一排的所有可能)
+                if (colIdx < columns.length - 1) {
+                    const nextCol = columns[colIdx + 1];
+                    nextCol.states.forEach(nextState => {
+                        const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+                        line.id = `line-${col.id}${state}-${nextCol.id}${nextState}`;
+                        line.setAttribute("x1", col.x + 25);
+                        line.setAttribute("y1", 100 + rowIdx * 100 + 25);
+                        line.setAttribute("x2", nextCol.x - 25);
+                        line.setAttribute("y2", 100 + nextCol.states.indexOf(nextState) * 100 + 25);
+                        line.className.baseVal = "graph-line line-inactive";
+                        svg.appendChild(line);
+                    });
+                }
             });
         });
-
-        // 建立連線 (將每一層連到下一層)
-        for (let i = 0; i < columns.length - 1; i++) {
-            const colA = columns[i];
-            const colB = columns[i+1];
-            
-            colA.nodes.forEach((_, aIdx) => {
-                colB.nodes.forEach((_, bIdx) => {
-                    const y1 = 80 + aIdx * (400/colA.nodes.length) + (400/colA.nodes.length)/2 + 25;
-                    const y2 = 80 + bIdx * (400/colB.nodes.length) + (400/colB.nodes.length)/2 + 25;
-                    
-                    const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
-                    line.setAttribute("x1", colA.x + 50);
-                    line.setAttribute("y1", y1);
-                    line.setAttribute("x2", colB.x);
-                    line.setAttribute("y2", y2);
-                    line.setAttribute("class", "graph-line line-inactive");
-                    line.id = `line-${i}-${aIdx}-${bIdx}`;
-                    svg.appendChild(line);
-                });
-            });
-        }
     }
 
+    // --- 5. 執行模擬並更新路徑 ---
     function runSimulation() {
-        // 1. 計算量子態演化
-        const s0 = currentParams.bobInit;
-        const s1 = applyOperation(s0, currentParams.charlieOp1); // 中間態 1
-        const s2 = applyOperation(s1, currentParams.aliceOp);    // 中間態 2
-        const s3 = applyOperation(s2, currentParams.charlieOp2); // 中間態 3 (Bob收到的態)
-        
-        // 找到各階段對應的 Node Index
-        const idx0 = columns[0].nodes.indexOf(s0);
-        const idx1 = columns[1].nodes.indexOf(currentParams.charlieOp1);
-        const idx2 = columns[2].nodes.indexOf(currentParams.aliceOp);
-        const idx3 = columns[3].nodes.indexOf(currentParams.charlieOp2);
-        const idx4 = columns[4].nodes.indexOf(s3); // Bob 最終測量到的結果
-
-        // 2. 更新視覺 (熄滅所有，點亮 Active)
+        // 全域熄滅
         document.querySelectorAll('.state-circle').forEach(n => n.classList.add('inactive'));
         document.querySelectorAll('.graph-line').forEach(l => {
-            l.classList.add('line-inactive');
             l.classList.remove('line-active');
+            l.classList.add('line-inactive');
         });
 
-        const activePaths = [
-            { col: 0, nodeIdx: idx0 },
-            { col: 1, nodeIdx: idx1 },
-            { col: 2, nodeIdx: idx2 },
-            { col: 3, nodeIdx: idx3 },
-            { col: 4, nodeIdx: idx4 }
+        // 計算路徑
+        const s1 = currentParams.bobInit;
+        const s2 = applyOp(s1, currentParams.charlieOp1);
+        const s3 = applyOp(s2, currentParams.aliceOp);
+        const s4 = applyOp(s3, currentParams.charlieOp2);
+        const s5 = s4; // 最終狀態
+
+        const path = [
+            { col: 'bob', state: s1 },
+            { col: 'c1', state: s2 },
+            { col: 'alice', state: s3 },
+            { col: 'c2', state: s4 },
+            { col: 'final', state: s5 }
         ];
 
-        // 點亮 Node 與 Line
-        for(let i=0; i<activePaths.length; i++) {
-            const p = activePaths[i];
-            document.getElementById(`node-${p.col}-${p.nodeIdx}`).classList.remove('inactive');
-            
-            if (i < activePaths.length - 1) {
-                const pNext = activePaths[i+1];
-                const line = document.getElementById(`line-${i}-${p.nodeIdx}-${pNext.nodeIdx}`);
-                line.classList.remove('line-inactive');
+        // 點亮路徑
+        path.forEach((p, i) => {
+            document.getElementById(`node-${p.col}-${p.state}`).classList.remove('inactive');
+            if (i < path.length - 1) {
+                const next = path[i+1];
+                const lineId = `line-${p.col}${p.state}-${next.col}${next.state}`;
+                const line = document.getElementById(lineId);
                 line.classList.add('line-active');
+                line.classList.remove('line-inactive');
             }
-        }
+        });
 
-        // 顯示結果
-        const resBox = document.getElementById('final-result');
-        const aliceMsg = currentParams.aliceOp === 'I' ? '0' : '1';
-        resBox.innerHTML = `Bob Measured: <b>|${s3}⟩</b><br>Deduced Alice Msg: <b>${aliceMsg}</b>`;
+        // 更新左側按鈕 UI 狀態
+        updateButtonUI();
     }
 
-    // 初始化
-    window.onload = () => {
-        initGraph();
-        runSimulation();
-    };
+    function updateButtonUI() {
+        // 這邊可以加入讓當前選中的按鈕變色的邏輯
+        const btns = document.querySelectorAll('.state-btn');
+        btns.forEach(b => {
+            b.classList.remove('active');
+            if (b.innerText.includes(currentParams.charlieOp1) || 
+                b.innerText.includes(currentParams.aliceOp) || 
+                b.innerText === currentParams.bobInit) {
+                // 簡單判斷，實際可依需求精確化
+            }
+        });
+    }
 </script>
 </body>
 </html>
