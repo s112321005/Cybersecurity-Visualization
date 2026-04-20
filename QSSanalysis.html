@@ -2,228 +2,340 @@
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=1400">
+    <meta name="viewport" content="width=1900">
     <base href="https://s112321005.github.io/Cybersecurity-Visualization/">
-    <title>QSS Analysis - Flow View</title>
-    <link rel="stylesheet" href="QSSanalysisCSS.css">
+    <title>QSS Visalization：Single Particle Flow</title>
+    <link rel="stylesheet" href="analysisCSS.css">
+    <style>
+        .container {
+            max-width: 1800px; 
+            width: 1800px;
+        }
+
+        /* --- 節點容器設定 (依照您的需求) --- */
+        .node { 
+            position: absolute; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            z-index: 2; 
+            transform: translate(-50%, -50%); 
+        }
+
+        /* --- 實心填滿的圓，白色大字體 --- */
+        .qss-shape {
+            width: 55px;
+            height: 55px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.4rem;
+            color: #ffffff;
+            box-shadow: 2px 3px 6px rgba(0,0,0,0.2);
+        }
+
+        /* --- 角色與運算專屬顏色設定 --- */
+        .color-alice { background-color: #0047AB; }
+        .color-bob { background-color: #4C80C5; }
+        .color-charlie { background-color: #478CEA; }
+        /* 推薦的運算顏色：深紫色 (與藍色系對比且避開紅色) */
+        .color-op { background-color: #673AB7; } 
+
+        .node-label {
+            font-size: 0.8rem;
+            color: #555;
+            background: rgba(255,255,255,0.9);
+            padding: 2px 6px;
+            border-radius: 4px;
+            white-space: nowrap;
+            margin-bottom: 4px;
+            font-weight: bold;
+            border: 1px solid #ddd;
+        }
+
+        #prob-tooltip {
+            position: absolute;
+            background: rgba(33, 37, 41, 0.9);
+            color: #f8f9fa;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            pointer-events: none;
+            display: none;
+            z-index: 1000;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            transition: opacity 0.1s;
+        }
+        
+        .character-avatar { position: absolute; top: 2%; transform: translateX(-50%); z-index: 5; }
+        .character-avatar img { width: 50px; }
+    </style>
 </head>
 <body>
 
-<div class="container">
-    <div class="top-bar">
-        <a href="VerifySetting.html" class="btn-back">◀</a>
-        <div class="page-title">QSS Sequence Visualization</div>
-    </div>
+<div id="prob-tooltip">累積機率: 100%</div>
 
-    <div class="main-content">
-        <div class="sidebar">
-            <div class="selection-box" style="background:#eef5ff; border-color:var(--primary-blue);">
-                <h4 style="background:#dbe9ff; color:var(--primary-blue);">System Settings</h4>
-                <div style="padding: 10px 15px; font-size: 13px; line-height: 1.6;">
-                    <span id="info-bob-basis"></span><br>
-                    <span id="info-eve-status"></span>
-                </div>
-            </div>
-
-            <div class="selection-box">
-                <h4><span class="tag-bob"></span> 1. Bob's Initial State</h4>
-                <div class="option-row" id="bob-btns"></div>
-            </div>
-
-            <div class="selection-box">
-                <h4><span class="tag-c1"></span> 2. Charlie 1st Op</h4>
-                <div class="option-row" id="c1-btns"></div>
-            </div>
-
-            <div class="selection-box">
-                <h4><span class="tag-alice"></span> 3. Alice Encode</h4>
-                <div class="option-row">
-                    <button class="state-btn active" onclick="setOp('alice', 'I', this)">I (Msg:0)</button>
-                    <button class="state-btn" onclick="setOp('alice', 'X', this)">X (Msg:1)</button>
-                </div>
-            </div>
-
-            <div class="selection-box">
-                <h4><span class="tag-c2"></span> 4. Charlie 2nd Op</h4>
-                <div class="option-row" id="c2-btns"></div>
-            </div>
+<div class="nav-tabs">
+    <button class="tab-btn active">QSS Protocol (Eve OFF)</button>
+</div>
+<div id="view-qss" class="page-view active-view">
+    <div class="container">
+        <div class="top-bar" style="display: flex; align-items: center; justify-content: flex-start; gap: 20px; margin-bottom: 20px;">            
+            <a href="QKDsetting.html" class="btn-back">◀</a>
+            <div class="page-title">QSS：Single Particle Flow</div>
         </div>
-
-        <div class="viz-area">
-            <div class="flow-container" id="flow-container">
+        <div class="main-content">
+            <div class="sidebar">
+                <div class="selection-box" id="qss-options">
+                    <h4>Bob Prepares</h4>
+                    <div class="option-row basis-z" onclick="selectStateQSS(this, '|0⟩', 'Z')">
+                        <div class="state-btn" style="background:#4C80C5;color:#fff;">Z Basis</div><div class="arrow-icon">➔</div><div class="state-btn" style="background:#4C80C5;color:#fff;">|0⟩</div>
+                    </div>
+                    <div class="option-row basis-z" onclick="selectStateQSS(this, '|1⟩', 'Z')">
+                        <div class="state-btn" style="background:#4C80C5;color:#fff;">Z Basis</div><div class="arrow-icon">➔</div><div class="state-btn" style="background:#4C80C5;color:#fff;">|1⟩</div>
+                    </div>
+                    <div class="option-row basis-x" onclick="selectStateQSS(this, '|+⟩', 'X')">
+                        <div class="state-btn" style="background:#4C80C5;color:#fff;">X Basis</div><div class="arrow-icon">➔</div><div class="state-btn" style="background:#4C80C5;color:#fff;">|+⟩</div>
+                    </div>
+                    <div class="option-row basis-x" onclick="selectStateQSS(this, '|−⟩', 'X')">
+                        <div class="state-btn" style="background:#4C80C5;color:#fff;">X Basis</div><div class="arrow-icon">➔</div><div class="state-btn" style="background:#4C80C5;color:#fff;">|−⟩</div>
+                    </div>
                 </div>
+                <div class="hint-text">Select initial state <br>for the protocol</div>
+            </div>
+            
+            <div class="diagram-area" style="position: relative; height: 600px; overflow-x: auto; background: #fafafa; border-radius: 12px; border: 1px solid #eaeaea;">
+                
+                <div class="character-avatar" style="left: 6%;"><img src="pictures/cat_bob.svg" alt="Bob"><div class="node-label">Bob</div></div>
+                <div class="character-avatar" style="left: 22.5%;"><img src="pictures/cat_charlie.svg" alt="Charlie"><div class="node-label">Charlie</div></div>
+                <div class="character-avatar" style="left: 44.5%;"><img src="pictures/cat_alice.svg" alt="Alice"><div class="node-label">Alice</div></div>
+                <div class="character-avatar" style="left: 66.5%;"><img src="pictures/cat_charlie.svg" alt="Charlie"><div class="node-label">Charlie</div></div>
+                <div class="character-avatar" style="left: 88.5%;"><img src="pictures/cat_bob.svg" alt="Bob"><div class="node-label">Bob</div></div>
+
+                <svg id="qss-lines" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1;">
+                    <defs>
+                        <marker id="arrow-qss" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                            <path d="M 0 0 L 10 5 L 0 10 z" fill="#333" />
+                        </marker>
+                    </defs>
+                </svg>
+                <div id="qss-nodes" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 2; pointer-events: none;"></div>
+            </div>
+
+            <div class="settings-panel">
+                <h4>Current Settings</h4>
+                <div class="settings-content" id="settings-display"></div>
+            </div>
         </div>
     </div>
 </div>
 
 <script>
-    // --- 1. 讀取設定資料 ---
-    const settings = JSON.parse(localStorage.getItem('qssSettings')) || {
-        bob: { basis: 'Z' },
-        charlie: { bases: ['I', 'H'] },
-        eve: { isOn: false, attack: 'None', location: 'None' }
-    };
-
-    // 當前使用者的選擇狀態
-    let currentOps = {
-        bob: (settings.bob.basis === 'Z') ? '0' : '+',
-        c1: 'I',
-        alice: 'I',
-        c2: 'I'
-    };
-
-    // --- 2. 初始化頁面 ---
-    window.onload = () => {
-        initSidebar();
-        updateFlowchart();
-    };
-
-    function initSidebar() {
-        // 顯示設定資訊
-        document.getElementById('info-bob-basis').innerHTML = `Bob Basis: <b>${settings.bob.basis}</b>`;
-        const eveText = settings.eve.isOn ? `<b style="color:var(--eve-red)">Active (${settings.eve.location})</b>` : `<b>Inactive</b>`;
-        document.getElementById('info-eve-status').innerHTML = `Eve Status: ${eveText}`;
-
-        // 生成 Bob 按鈕
-        const bobGroup = document.getElementById('bob-btns');
-        const bobStates = (settings.bob.basis === 'Z') ? ['0', '1'] : ['+', '-'];
-        bobStates.forEach((s, idx) => {
-            const btn = document.createElement('button');
-            btn.className = `state-btn ${idx === 0 ? 'active' : ''}`;
-            btn.innerText = `|${s}⟩`;
-            btn.onclick = function() { setOp('bob', s, this); };
-            bobGroup.appendChild(btn);
-        });
-
-        // 生成 Charlie 按鈕
-        const c1Group = document.getElementById('c1-btns');
-        const c2Group = document.getElementById('c2-btns');
-        settings.charlie.bases.forEach((op, idx) => {
-            // Charlie 1
-            const btn1 = document.createElement('button');
-            btn1.className = `state-btn ${idx === 0 ? 'active' : ''}`;
-            btn1.innerText = op;
-            btn1.onclick = function() { setOp('c1', op, this); };
-            c1Group.appendChild(btn1);
-            if(idx === 0) currentOps.c1 = op; // 預設選第一個
-
-            // Charlie 2
-            const btn2 = document.createElement('button');
-            btn2.className = `state-btn ${idx === 0 ? 'active' : ''}`;
-            btn2.innerText = op;
-            btn2.onclick = function() { setOp('c2', op, this); };
-            c2Group.appendChild(btn2);
-            if(idx === 0) currentOps.c2 = op;
-        });
+    // --- Tooltip ---
+    function showTooltip(evt, text) {
+        const tooltip = document.getElementById("prob-tooltip");
+        tooltip.innerHTML = text;
+        tooltip.style.display = "block";
+        tooltip.style.left = (evt.pageX + 15) + 'px';
+        tooltip.style.top = (evt.pageY + 15) + 'px';
     }
 
-    // 更新操作並重繪
-    function setOp(step, val, btnEl) {
-        currentOps[step] = val;
-        // 切換按鈕 active 樣式
-        const row = btnEl.parentElement;
-        row.querySelectorAll('.state-btn').forEach(b => b.classList.remove('active'));
-        btnEl.classList.add('active');
+    function hideTooltip() {
+        document.getElementById("prob-tooltip").style.display = "none";
+    }
+
+    // --- 量子閘邏輯 ---
+    const quantumMath = {
+        '|0⟩': {'I': '|0⟩', 'X': '|1⟩', 'Y': '-|1⟩', 'Z': '|0⟩', 'H': '|+⟩'},
+        '|1⟩': {'I': '|1⟩', 'X': '|0⟩', 'Y': '|0⟩',  'Z': '-|1⟩', 'H': '|−⟩'},
+        '|+⟩': {'I': '|+⟩', 'X': '|+⟩', 'Y': '|−⟩',  'Z': '|−⟩', 'H': '|0⟩'},
+        '|−⟩': {'I': '|−⟩', 'X': '-|−⟩', 'Y': '-|+⟩', 'Z': '|+⟩',  'H': '|1⟩'}
+    };
+
+    function applyGate(stateStr, gate) {
+        if (!stateStr || !gate) return stateStr;
+        let isNegative = stateStr.startsWith('-');
+        let baseState = isNegative ? stateStr.substring(1) : stateStr;
+        let result = quantumMath[baseState][gate];
+        if (!result) return baseState; 
+        if (isNegative) result = result.startsWith('-') ? result.substring(1) : '-' + result;
+        return result;
+    }
+
+    function measureState(stateStr, basis) {
+        let s = stateStr.replace('-', '').replace('−', '-'); 
+        if (basis === 'Z') {
+            if (s.includes('0')) return [{state: '|0⟩', probSplit: 1.0}];
+            if (s.includes('1')) return [{state: '|1⟩', probSplit: 1.0}];
+            if (s.includes('+') || s.includes('-')) return [{state: '|0⟩', probSplit: 0.5}, {state: '|1⟩', probSplit: 0.5}];
+        } else if (basis === 'X') {
+            if (s.includes('+')) return [{state: '|+⟩', probSplit: 1.0}];
+            if (s.includes('-')) return [{state: '|−⟩', probSplit: 1.0}];
+            if (s.includes('0') || s.includes('1')) return [{state: '|+⟩', probSplit: 0.5}, {state: '|−⟩', probSplit: 0.5}];
+        }
+        return [{state: stateStr, probSplit: 1.0}];
+    }
+
+    // --- 讀取設定檔 ---
+    let qssSettings = JSON.parse(localStorage.getItem('qssSettings')) || {
+        "bob": {"particle": "single", "basis": "X"},
+        "charlie": {"particle": "single", "operator": ["I", "Y", "H"]},
+        "alice": {"particle": "single", "msg": "1", "message0Op": "I", "message1Op": "X"},
+        "eve": {"isOn": false, "attack": "Intercept-resend", "location": "1_2"}
+    };
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const settingsHtml = `
+            <div class="setting-item"><strong>Bob</strong><span>Basis: ${qssSettings.bob.basis}</span></div>
+            <div class="setting-item"><strong>Charlie</strong><span>Operators: ${qssSettings.charlie.operator.join(', ')}</span></div>
+            <div class="setting-item"><strong>Alice</strong><span>Msg: ${qssSettings.alice.msg} (Op: ${qssSettings.alice.msg === "1" ? qssSettings.alice.message1Op : qssSettings.alice.message0Op})</span></div>
+        `;
+        document.getElementById('settings-display').innerHTML = settingsHtml;
+
+        const isBobZ = qssSettings.bob.basis.toUpperCase() === 'Z';
+        document.querySelectorAll('.basis-z').forEach(el => el.style.display = isBobZ ? 'flex' : 'none');
+        document.querySelectorAll('.basis-x').forEach(el => el.style.display = !isBobZ ? 'flex' : 'none');
+
+        const defaultOption = document.querySelector(isBobZ ? '.basis-z' : '.basis-x');
+        if (defaultOption) selectStateQSS(defaultOption, isBobZ ? '|0⟩' : '|+⟩', qssSettings.bob.basis);
+    });
+
+    function selectStateQSS(element, initialState, basis) {
+        document.querySelectorAll('#qss-options .option-row').forEach(row => row.classList.remove('active'));
+        element.classList.add('active');
+        renderQSSTree(initialState, basis);
+    }
+
+    // --- 繪製連線：包含縮進避免被大圓圈遮擋 ---
+    function drawArrowedLine(container, x1, y1, x2, y2, probVal) {
+        const probStr = (probVal * 100).toFixed(1).replace('.0', '') + '%';
+        // 因為圓形變大(55px)，在1800px畫布下約佔3%，所以縮進設為1.7%
+        const offsetX = 1.7; 
+        let startX = x1 + offsetX;
+        let endX = x2 - offsetX;
+        let startY = y1;
+        let endY = y2;
+
+        if (y1 !== y2) {
+            const dy = y2 - y1;
+            startY = y1 + dy * 0.15;
+            endY = y2 - dy * 0.15;
+        }
+
+        const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
+        g.setAttribute("style", "cursor: pointer;");
+        g.onmousemove = (e) => showTooltip(e, `累積機率: ${probStr}`);
+        g.onmouseout = hideTooltip;
+
+        const visLine = document.createElementNS("http://www.w3.org/2000/svg", "line");
+        visLine.setAttribute("x1", startX + "%");
+        visLine.setAttribute("y1", startY + "px");
+        visLine.setAttribute("x2", endX + "%");
+        visLine.setAttribute("y2", endY + "px");
+        visLine.setAttribute("stroke", "#333");
+        visLine.setAttribute("stroke-width", "3");
+        visLine.setAttribute("marker-end", "url(#arrow-qss)"); 
+        visLine.setAttribute("pointer-events", "none"); 
         
-        updateFlowchart();
+        const sensorLine = document.createElementNS("http://www.w3.org/2000/svg", "line");
+        sensorLine.setAttribute("x1", startX + "%");
+        sensorLine.setAttribute("y1", startY + "px");
+        sensorLine.setAttribute("x2", endX + "%");
+        sensorLine.setAttribute("y2", endY + "px");
+        sensorLine.setAttribute("stroke", "transparent");
+        sensorLine.setAttribute("stroke-width", "15");
+        sensorLine.setAttribute("pointer-events", "stroke");
+
+        g.appendChild(sensorLine);
+        g.appendChild(visLine);
+        container.appendChild(g);
     }
 
-    // --- 3. 量子運算邏輯 ---
-    function applyOp(state, op) {
-        if (op === 'I') return state;
-        const maps = {
-            'H': {'0':'+', '1':'-', '+':'0', '-':'1'},
-            'X': {'0':'1', '1':'0', '+':'+', '-':'-'}
-        };
-        return maps[op] ? maps[op][state] : state;
+    // --- 動態創建 Node，分配顏色 ---
+    function createNodeHtml(x, y, content, type, label = '', character) {
+        let colorClass = `color-${character}`;
+        // 若為運算或測量基底，使用推薦的深紫色
+        if (type === 'operator' || type === 'basis') {
+            colorClass = 'color-op';
+        }
+        
+        return `
+            <div class="node" style="left: ${x}%; top: ${y}px;">
+                ${label ? `<span class="node-label">${label}</span>` : ''}
+                <div class="qss-shape ${colorClass}" style="pointer-events: auto;">${content}</div>
+            </div>`;
     }
 
-    // --- 4. 繪製水平流程圖 ---
-    function updateFlowchart() {
-        const container = document.getElementById('flow-container');
-        container.innerHTML = ''; // 清空舊圖
+    function renderQSSTree(initialState, bobBasis) {
+        const linesContainer = document.getElementById('qss-lines');
+        const nodesContainer = document.getElementById('qss-nodes');
+        
+        linesContainer.innerHTML = `<defs><marker id="arrow-qss" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#333" /></marker></defs>`;
+        nodesContainer.innerHTML = '';
 
-        // 依序建立流程陣列
-        let flowSteps = [];
-        let currentState = currentOps.bob;
-        let stepCount = 1;
+        let nodesHtml = '';
 
-        // 輔助函式：推入節點並推進狀態
-        const addNode = (id, title, theme, opLabel, opVal, isFinal = false) => {
-            if (!isFinal && opVal) {
-                currentState = applyOp(currentState, opVal);
-            }
-            flowSteps.push({
-                title: title,
-                theme: theme,
-                opLabel: opLabel,
-                stateStr: `|ψ${stepCount}⟩ = |${currentState}⟩`
-            });
-            stepCount++;
-        };
+        const operators = qssSettings.charlie.operator;
+        const numBranches = operators.length;
+        const aliceOp = qssSettings.alice.msg === "1" ? qssSettings.alice.message1Op : qssSettings.alice.message0Op;
+        
+        // 加寬後的 9 個 X 座標位置，間隔更加開闊
+        const X = [6, 17, 28, 39, 50, 61, 72, 83, 94];
+        const initialY = 320; 
+        const spacing = 600 / (numBranches + 1); 
+        
+        // 1. Bob 準備狀態
+        nodesHtml += createNodeHtml(X[0], initialY, initialState, 'state', 'Prepare', 'bob');
 
-        // 1. Bob
-        addNode('bob', "1. Bob Init", "node-bob", `State: |${currentOps.bob}⟩`, null);
+        operators.forEach((charlieOp, index) => {
+            const yPos = spacing * (index + 1);
+            const branchProb = 1.0 / numBranches; 
 
-        // Eve 攔截 (B-C1)
-        if (settings.eve.isOn && settings.eve.location === 'B-C1') {
-            addNode('eve', "Eve Intercept", "node-eve", "Measurement", null);
-        }
+            // 計算狀態變化
+            const s1 = applyGate(initialState, charlieOp);
+            const s2 = applyGate(s1, aliceOp);
+            const s3 = applyGate(s2, charlieOp);
+            const measurementResults = measureState(s3, bobBasis);
 
-        // 2. Charlie 1
-        addNode('c1', "2. Charlie 1", "node-charlie", `Op: ${currentOps.c1}`, currentOps.c1);
+            // 繪製連線
+            drawArrowedLine(linesContainer, X[0], initialY, X[1], yPos, branchProb);
+            drawArrowedLine(linesContainer, X[1], yPos, X[2], yPos, branchProb);
+            drawArrowedLine(linesContainer, X[2], yPos, X[3], yPos, branchProb);
+            drawArrowedLine(linesContainer, X[3], yPos, X[4], yPos, branchProb);
+            drawArrowedLine(linesContainer, X[4], yPos, X[5], yPos, branchProb);
+            drawArrowedLine(linesContainer, X[5], yPos, X[6], yPos, branchProb);
+            drawArrowedLine(linesContainer, X[6], yPos, X[7], yPos, branchProb);
 
-        // Eve 攔截 (C1-A)
-        if (settings.eve.isOn && settings.eve.location === 'C1-A') {
-            addNode('eve', "Eve Intercept", "node-eve", "Measurement", null);
-        }
+            // 繪製節點，代入相應的 character 以套用背景色
+            nodesHtml += createNodeHtml(X[1], yPos, charlieOp, 'operator', 'Op', 'charlie');
+            nodesHtml += createNodeHtml(X[2], yPos, s1, 'state', '', 'charlie');
+            
+            nodesHtml += createNodeHtml(X[3], yPos, aliceOp, 'operator', 'Op', 'alice');
+            nodesHtml += createNodeHtml(X[4], yPos, s2, 'state', '', 'alice');
+            
+            nodesHtml += createNodeHtml(X[5], yPos, charlieOp, 'operator', 'Op', 'charlie');
+            nodesHtml += createNodeHtml(X[6], yPos, s3, 'state', '', 'charlie');
+            
+            nodesHtml += createNodeHtml(X[7], yPos, bobBasis, 'basis', 'Basis', 'bob');
 
-        // 3. Alice
-        addNode('alice', "3. Alice Encode", "node-alice", `Op: ${currentOps.alice}`, currentOps.alice);
-
-        // Eve 攔截 (A-C2)
-        if (settings.eve.isOn && settings.eve.location === 'A-C2') {
-            addNode('eve', "Eve Intercept", "node-eve", "Measurement", null);
-        }
-
-        // 4. Charlie 2
-        addNode('c2', "4. Charlie 2", "node-charlie", `Op: ${currentOps.c2}`, currentOps.c2);
-
-        // 5. Final Result
-        flowSteps.push({
-            title: "Final Result",
-            theme: "node-final",
-            opLabel: "Bob Receives",
-            stateStr: `Result = |${currentState}⟩`
-        });
-
-        // --- 渲染到畫面上 ---
-        flowSteps.forEach((step, index) => {
-            // 建立方塊
-            const nodeDiv = document.createElement('div');
-            nodeDiv.className = `flow-node ${step.theme}`;
-            nodeDiv.innerHTML = `
-                <div class="node-header">${step.title}</div>
-                <div class="node-body">
-                    <div class="op-label">${step.opLabel}</div>
-                    <div class="state-label">${step.stateStr}</div>
-                </div>
-            `;
-            container.appendChild(nodeDiv);
-
-            // 如果不是最後一個，畫一個箭頭
-            if (index < flowSteps.length - 1) {
-                const arrowDiv = document.createElement('div');
-                arrowDiv.className = 'flow-arrow';
-                arrowDiv.innerHTML = `
-                    <svg viewBox="0 0 40 20">
-                        <path d="M0,10 L35,10" stroke="#888" stroke-width="3" fill="none"/>
-                        <polygon points="32,5 40,10 32,15" fill="#888"/>
-                    </svg>
-                `;
-                container.appendChild(arrowDiv);
+            // Bob 的最終測量結果分岔
+            if (measurementResults.length === 1) {
+                drawArrowedLine(linesContainer, X[7], yPos, X[8], yPos, branchProb);
+                nodesHtml += createNodeHtml(X[8], yPos, measurementResults[0].state, 'result', 'Result', 'bob');
+            } else {
+                measurementResults.forEach((res, i) => {
+                    const splitY = yPos + (i === 0 ? -30 : 30);
+                    const finalProb = branchProb * res.probSplit;
+                    drawArrowedLine(linesContainer, X[7], yPos, X[8], splitY, finalProb);
+                    nodesHtml += createNodeHtml(X[8], splitY, res.state, 'result', 'Result', 'bob');
+                });
             }
         });
+
+        nodesContainer.innerHTML = nodesHtml;
     }
 </script>
 </body>
