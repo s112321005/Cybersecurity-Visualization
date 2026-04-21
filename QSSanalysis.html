@@ -12,7 +12,7 @@
             width: 1800px;
         }
 
-        /* --- 節點容器設定 (依照您的需求) --- */
+        /* --- 節點容器設定 --- */
         .node { 
             position: absolute; 
             display: flex; 
@@ -22,16 +22,16 @@
             transform: translate(-50%, -50%); 
         }
 
-        /* --- 實心填滿的圓，白色大字體 --- */
+        /* --- 實心填滿的圓 (已縮小尺寸) --- */
         .qss-shape {
-            width: 55px;
-            height: 55px;
+            width: 45px;      /* 從 55px 縮小為 45px */
+            height: 45px;     /* 從 55px 縮小為 45px */
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: bold;
-            font-size: 1.4rem;
+            font-size: 1.2rem; /* 字體稍微縮小 */
             color: #ffffff;
             box-shadow: 2px 3px 6px rgba(0,0,0,0.2);
         }
@@ -40,20 +40,7 @@
         .color-alice { background-color: #0047AB; }
         .color-bob { background-color: #4C80C5; }
         .color-charlie { background-color: #478CEA; }
-        /* 推薦的運算顏色：深紫色 (與藍色系對比且避開紅色) */
         .color-op { background-color: #673AB7; } 
-
-        .node-label {
-            font-size: 0.8rem;
-            color: #555;
-            background: rgba(255,255,255,0.9);
-            padding: 2px 6px;
-            border-radius: 4px;
-            white-space: nowrap;
-            margin-bottom: 4px;
-            font-weight: bold;
-            border: 1px solid #ddd;
-        }
 
         #prob-tooltip {
             position: absolute;
@@ -71,7 +58,29 @@
         }
         
         .character-avatar { position: absolute; top: 2%; transform: translateX(-50%); z-index: 5; }
-        .character-avatar img { width: 50px; }
+        /* 放大 SVG 頭像 */
+        .character-avatar img { width: 75px; } 
+
+        /* --- 右側資訊欄專屬樣式 --- */
+        .setting-item {
+            background: #fff;
+            padding: 12px;
+            margin-bottom: 12px;
+            border-radius: 8px;
+            border-left: 4px solid #0047AB;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            font-size: 14px;
+        }
+        .setting-item strong { 
+            display: block; 
+            color: #0047AB; 
+            margin-bottom: 6px; 
+            border-bottom: 1px solid #eee; 
+            padding-bottom: 4px; 
+            font-size: 15px;
+        }
+        .setting-item span { display: block; color: #444; line-height: 1.6; }
+        .setting-item span div { margin-bottom: 3px; }
     </style>
 </head>
 <body>
@@ -79,7 +88,7 @@
 <div id="prob-tooltip">累積機率: 100%</div>
 
 <div class="nav-tabs">
-    <button class="tab-btn active">QSS Protocol (Eve OFF)</button>
+    <button class="tab-btn active">QSS Protocol</button>
 </div>
 <div id="view-qss" class="page-view active-view">
     <div class="container">
@@ -91,12 +100,6 @@
             <div class="sidebar">
                 <div class="selection-box" id="qss-options">
                     <h4>Bob Prepares</h4>
-                    <div class="option-row basis-z" onclick="selectStateQSS(this, '|0⟩', 'Z')">
-                        <div class="state-btn" style="background:#4C80C5;color:#fff;">Z Basis</div><div class="arrow-icon">➔</div><div class="state-btn" style="background:#4C80C5;color:#fff;">|0⟩</div>
-                    </div>
-                    <div class="option-row basis-z" onclick="selectStateQSS(this, '|1⟩', 'Z')">
-                        <div class="state-btn" style="background:#4C80C5;color:#fff;">Z Basis</div><div class="arrow-icon">➔</div><div class="state-btn" style="background:#4C80C5;color:#fff;">|1⟩</div>
-                    </div>
                     <div class="option-row basis-x" onclick="selectStateQSS(this, '|+⟩', 'X')">
                         <div class="state-btn" style="background:#4C80C5;color:#fff;">X Basis</div><div class="arrow-icon">➔</div><div class="state-btn" style="background:#4C80C5;color:#fff;">|+⟩</div>
                     </div>
@@ -109,11 +112,11 @@
             
             <div class="diagram-area" style="position: relative; height: 600px; overflow-x: auto; background: #fafafa; border-radius: 12px; border: 1px solid #eaeaea;">
                 
-                <div class="character-avatar" style="left: 6%;"><img src="pictures/cat_bob.svg" alt="Bob"><div class="node-label">Bob</div></div>
-                <div class="character-avatar" style="left: 22.5%;"><img src="pictures/cat_charlie.svg" alt="Charlie"><div class="node-label">Charlie</div></div>
-                <div class="character-avatar" style="left: 44.5%;"><img src="pictures/cat_alice.svg" alt="Alice"><div class="node-label">Alice</div></div>
-                <div class="character-avatar" style="left: 66.5%;"><img src="pictures/cat_charlie.svg" alt="Charlie"><div class="node-label">Charlie</div></div>
-                <div class="character-avatar" style="left: 88.5%;"><img src="pictures/cat_bob.svg" alt="Bob"><div class="node-label">Bob</div></div>
+                <div class="character-avatar" style="left: 6%;"><img src="pictures/cat_bob.svg" alt="Bob"></div>
+                <div class="character-avatar" style="left: 22.5%;"><img src="pictures/cat_charlie.svg" alt="Charlie"></div>
+                <div class="character-avatar" style="left: 44.5%;"><img src="pictures/cat_alice.svg" alt="Alice"></div>
+                <div class="character-avatar" style="left: 66.5%;"><img src="pictures/cat_charlie.svg" alt="Charlie"></div>
+                <div class="character-avatar" style="left: 88.5%;"><img src="pictures/cat_bob.svg" alt="Bob"></div>
 
                 <svg id="qss-lines" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1;">
                     <defs>
@@ -188,19 +191,45 @@
     };
 
     document.addEventListener('DOMContentLoaded', () => {
+        
+        // 格式化角色的資訊面板
+        function formatRole(role, data) {
+            if (!data) return '';
+            let details = '';
+            for (const [key, value] of Object.entries(data)) {
+                if (key !== 'isOn') { // isOn 狀態統一在 Environment 顯示
+                    let displayValue = Array.isArray(value) ? value.join(', ') : value;
+                    details += `<div><b>${key}</b>: ${displayValue}</div>`;
+                }
+            }
+            return `
+                <div class="setting-item">
+                    <strong>${role}</strong>
+                    <span>${details}</span>
+                </div>
+            `;
+        }
+
+        // 產生右側資訊面板 HTML
         const settingsHtml = `
-            <div class="setting-item"><strong>Bob</strong><span>Basis: ${qssSettings.bob.basis}</span></div>
-            <div class="setting-item"><strong>Charlie</strong><span>Operators: ${qssSettings.charlie.operator.join(', ')}</span></div>
-            <div class="setting-item"><strong>Alice</strong><span>Msg: ${qssSettings.alice.msg} (Op: ${qssSettings.alice.msg === "1" ? qssSettings.alice.message1Op : qssSettings.alice.message0Op})</span></div>
+            <div class="setting-item">
+                <strong>Protocol Order</strong>
+                <span>Bob ➔ Charlie ➔ Alice ➔ Charlie ➔ Bob</span>
+            </div>
+            <div class="setting-item">
+                <strong>Environment</strong>
+                <span>Eve: ${qssSettings.eve.isOn ? '<span style="color:#dc3545;font-weight:bold;">ON</span>' : 'OFF'}</span>
+            </div>
+            ${formatRole('Alice', qssSettings.alice)}
+            ${formatRole('Bob', qssSettings.bob)}
+            ${formatRole('Charlie', qssSettings.charlie)}
+            ${qssSettings.eve.isOn ? formatRole('Eavesdropper', qssSettings.eve) : ''}
         `;
         document.getElementById('settings-display').innerHTML = settingsHtml;
 
-        const isBobZ = qssSettings.bob.basis.toUpperCase() === 'Z';
-        document.querySelectorAll('.basis-z').forEach(el => el.style.display = isBobZ ? 'flex' : 'none');
-        document.querySelectorAll('.basis-x').forEach(el => el.style.display = !isBobZ ? 'flex' : 'none');
-
-        const defaultOption = document.querySelector(isBobZ ? '.basis-z' : '.basis-x');
-        if (defaultOption) selectStateQSS(defaultOption, isBobZ ? '|0⟩' : '|+⟩', qssSettings.bob.basis);
+        // 預設點擊第一個 |+⟩ 按鈕
+        const defaultOption = document.querySelector('#qss-options .option-row');
+        if (defaultOption) selectStateQSS(defaultOption, '|+⟩', 'X');
     });
 
     function selectStateQSS(element, initialState, basis) {
@@ -209,11 +238,11 @@
         renderQSSTree(initialState, basis);
     }
 
-    // --- 繪製連線：包含縮進避免被大圓圈遮擋 ---
+    // --- 繪製連線 ---
     function drawArrowedLine(container, x1, y1, x2, y2, probVal) {
         const probStr = (probVal * 100).toFixed(1).replace('.0', '') + '%';
-        // 因為圓形變大(55px)，在1800px畫布下約佔3%，所以縮進設為1.7%
-        const offsetX = 1.7; 
+        // Node 縮小為 45px 後，X軸的縮進(offset)稍微減小，讓箭頭對齊圓圈邊緣
+        const offsetX = 1.4; 
         let startX = x1 + offsetX;
         let endX = x2 - offsetX;
         let startY = y1;
@@ -254,17 +283,15 @@
         container.appendChild(g);
     }
 
-    // --- 動態創建 Node，分配顏色 ---
-    function createNodeHtml(x, y, content, type, label = '', character) {
+    // --- 動態創建 Node (移除了 label 參數) ---
+    function createNodeHtml(x, y, content, type, character) {
         let colorClass = `color-${character}`;
-        // 若為運算或測量基底，使用推薦的深紫色
         if (type === 'operator' || type === 'basis') {
             colorClass = 'color-op';
         }
         
         return `
             <div class="node" style="left: ${x}%; top: ${y}px;">
-                ${label ? `<span class="node-label">${label}</span>` : ''}
                 <div class="qss-shape ${colorClass}" style="pointer-events: auto;">${content}</div>
             </div>`;
     }
@@ -282,13 +309,12 @@
         const numBranches = operators.length;
         const aliceOp = qssSettings.alice.msg === "1" ? qssSettings.alice.message1Op : qssSettings.alice.message0Op;
         
-        // 加寬後的 9 個 X 座標位置，間隔更加開闊
         const X = [6, 17, 28, 39, 50, 61, 72, 83, 94];
         const initialY = 320; 
         const spacing = 600 / (numBranches + 1); 
         
         // 1. Bob 準備狀態
-        nodesHtml += createNodeHtml(X[0], initialY, initialState, 'state', 'Prepare', 'bob');
+        nodesHtml += createNodeHtml(X[0], initialY, initialState, 'state', 'bob');
 
         operators.forEach((charlieOp, index) => {
             const yPos = spacing * (index + 1);
@@ -309,28 +335,28 @@
             drawArrowedLine(linesContainer, X[5], yPos, X[6], yPos, branchProb);
             drawArrowedLine(linesContainer, X[6], yPos, X[7], yPos, branchProb);
 
-            // 繪製節點，代入相應的 character 以套用背景色
-            nodesHtml += createNodeHtml(X[1], yPos, charlieOp, 'operator', 'Op', 'charlie');
-            nodesHtml += createNodeHtml(X[2], yPos, s1, 'state', '', 'charlie');
+            // 繪製節點 (移除了 label 引數)
+            nodesHtml += createNodeHtml(X[1], yPos, charlieOp, 'operator', 'charlie');
+            nodesHtml += createNodeHtml(X[2], yPos, s1, 'state', 'charlie');
             
-            nodesHtml += createNodeHtml(X[3], yPos, aliceOp, 'operator', 'Op', 'alice');
-            nodesHtml += createNodeHtml(X[4], yPos, s2, 'state', '', 'alice');
+            nodesHtml += createNodeHtml(X[3], yPos, aliceOp, 'operator', 'alice');
+            nodesHtml += createNodeHtml(X[4], yPos, s2, 'state', 'alice');
             
-            nodesHtml += createNodeHtml(X[5], yPos, charlieOp, 'operator', 'Op', 'charlie');
-            nodesHtml += createNodeHtml(X[6], yPos, s3, 'state', '', 'charlie');
+            nodesHtml += createNodeHtml(X[5], yPos, charlieOp, 'operator', 'charlie');
+            nodesHtml += createNodeHtml(X[6], yPos, s3, 'state', 'charlie');
             
-            nodesHtml += createNodeHtml(X[7], yPos, bobBasis, 'basis', 'Basis', 'bob');
+            nodesHtml += createNodeHtml(X[7], yPos, bobBasis, 'basis', 'bob');
 
             // Bob 的最終測量結果分岔
             if (measurementResults.length === 1) {
                 drawArrowedLine(linesContainer, X[7], yPos, X[8], yPos, branchProb);
-                nodesHtml += createNodeHtml(X[8], yPos, measurementResults[0].state, 'result', 'Result', 'bob');
+                nodesHtml += createNodeHtml(X[8], yPos, measurementResults[0].state, 'result', 'bob');
             } else {
                 measurementResults.forEach((res, i) => {
                     const splitY = yPos + (i === 0 ? -30 : 30);
                     const finalProb = branchProb * res.probSplit;
                     drawArrowedLine(linesContainer, X[7], yPos, X[8], splitY, finalProb);
-                    nodesHtml += createNodeHtml(X[8], splitY, res.state, 'result', 'Result', 'bob');
+                    nodesHtml += createNodeHtml(X[8], splitY, res.state, 'result', 'bob');
                 });
             }
         });
