@@ -7,7 +7,8 @@
     <title>QSS Visalization：Single Particle Flow</title>
     <link rel="stylesheet" href="analysisCSS.css">
     <style>
-        .container {max-width: 1800px; width: 1800px;}
+        /* 容器稍微加寬以增加整體節點距離 */
+        .container {max-width: 1850px; width: 1850px;}
         .node { position: absolute; display: flex; flex-direction: column; align-items: center; z-index: 2; transform: translate(-50%, -50%); }
         .qss-shape { width: 55px; height: 55px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1.4rem; color: #ffffff; box-shadow: 2px 3px 6px rgba(0,0,0,0.2);}
         .color-alice { background-color: #0047AB; }
@@ -30,6 +31,37 @@
         
         .character-avatar { position: absolute; top: 2%; transform: translateX(-50%); z-index: 5; }
         .character-avatar img { width: 75px; } 
+
+        /* --- 左側選項列樣式 (藍框白底) --- */
+        .option-row {
+            display: flex; 
+            align-items: center; 
+            gap: 12px; 
+            cursor: pointer; 
+            padding: 10px; 
+            border-radius: 8px;
+            margin-bottom: 10px;
+            transition: all 0.2s;
+        }
+        .option-row:hover { background-color: #f0f4f8; }
+        .state-btn {
+            background-color: #ffffff;
+            color: #4C80C5;
+            border: 2px solid #4C80C5;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-weight: bold;
+            text-align: center;
+            transition: all 0.2s;
+            white-space: nowrap; /* 👉 加入這行，強制文字不換行 */
+        }
+        .arrow-icon { color: #4C80C5; font-size: 1.2rem; font-weight: bold;}
+        
+        /* 選取後的狀態 */
+        .option-row.active .state-btn {
+            background-color: #4C80C5;
+            color: #ffffff;
+        }
 
         /* --- 右側資訊欄 --- */
         .setting-item {
@@ -77,14 +109,7 @@
         <div class="main-content">
             <div class="sidebar">
                 <div class="selection-box" id="qss-options">
-                    <h4>Bob Prepares</h4>
-                    <div class="option-row basis-x" onclick="selectStateQSS(this, '|+⟩', 'X')">
-                        <div class="state-btn" style="background:#4C80C5;color:#fff;">X Basis</div><div class="arrow-icon">➔</div><div class="state-btn" style="background:#4C80C5;color:#fff;">|+⟩</div>
                     </div>
-                    <div class="option-row basis-x" onclick="selectStateQSS(this, '|−⟩', 'X')">
-                        <div class="state-btn" style="background:#4C80C5;color:#fff;">X Basis</div><div class="arrow-icon">➔</div><div class="state-btn" style="background:#4C80C5;color:#fff;">|−⟩</div>
-                    </div>
-                </div>
                 <div class="hint-text">Select initial state <br>for the protocol</div>
             </div>
             
@@ -158,25 +183,45 @@
         return [{state: stateStr, probSplit: 1.0}];
     }
 
-    let qssSettings = JSON.parse(localStorage.getItem('qssSettings')) || {
+    let qssSettings = JSON.parse(localStorage.getItem('qssSettings')) /* || {
         "bob": {"particle": "single", "basis": "X"},
         "charlie": {"particle": "single", "operator": ["I", "Y", "H"]},
         "alice": {"particle": "single", "msg": "1", "message0Op": "I", "message1Op": "X"},
         "eve": {"isOn": false, "attack": "Intercept-resend", "location": "1_2"}
     };
-
+ */
     document.addEventListener('DOMContentLoaded', () => {
-        function formatRole(roleName, data, orderNum) {
+        // --- 根據Bob選的基底動態生成選項 ---
+        const bobBasis = qssSettings.bob.basis;
+        const optionsContainer = document.getElementById('qss-options');
+        let optionsHtml = `<h4>Bob</h4>`;
+
+        if (bobBasis === 'X') {
+            optionsHtml += `
+            <div style="display: flex; gap: 10px; justify-content: center;">
+                <div class="option-row" onclick="selectStateQSS(this, '|+⟩', 'X')"><div class="state-btn">|＋⟩</div></div>
+                <div class="option-row" onclick="selectStateQSS(this, '|−⟩', 'X')"><div class="state-btn">|－⟩</div></div>
+            </div>`;
+        } else {
+            optionsHtml += `
+            <div style="display: flex; gap: 10px; justify-content: center;">
+                <div class="option-row" onclick="selectStateQSS(this, '|0⟩', 'Z')"><div class="state-btn">|０⟩</div></div>
+                <div class="option-row" onclick="selectStateQSS(this, '|1⟩', 'Z')"><div class="state-btn">|１⟩</div></div>
+            </div>`;
+        }
+        optionsContainer.innerHTML = optionsHtml;
+
+        // --- 右側欄位 ---
+        function formatRole(roleName, data) {
             if (!data) return '';
             let extraClass = '';
-            let title = `${orderNum}. ${roleName}`;
+            let title = `${roleName}`;
             
-            // 針對 Eve 的顏色邏輯
+            // 針對 Eve 的顏色邏輯與標題調整
             if (roleName === 'Eavesdropper') {
                 extraClass = data.isOn ? 'eve-on' : 'eve-off';
-                title = `Environment: ${roleName} (${data.isOn ? 'ON' : 'OFF'})`;
+                title = `${roleName} ：${data.isOn ? 'ON' : 'OFF'}`;
             }
-
             let details = '';
             for (const [key, value] of Object.entries(data)) {
                 if (key !== 'isOn') {
@@ -193,17 +238,19 @@
         }
 
         const settingsHtml = `
-            ${formatRole('Bob (Prepare)', qssSettings.bob, 1)}
-            ${formatRole('Charlie', qssSettings.charlie, 2)}
-            ${formatRole('Alice', qssSettings.alice, 3)}
-            ${formatRole('Charlie', qssSettings.charlie, 4)}
-            ${formatRole('Bob (Measure)', qssSettings.bob, 5)}
-            ${formatRole('Eavesdropper', qssSettings.eve, '')}
+            ${formatRole('Bob (Prepare)', qssSettings.bob)}
+            ${formatRole('Charlie', qssSettings.charlie)}
+            ${formatRole('Alice', qssSettings.alice)}
+            ${formatRole('Eavesdropper', qssSettings.eve)}
         `;
         document.getElementById('settings-display').innerHTML = settingsHtml;
 
+        // --- 預設選中第一個選項 ---
         const defaultOption = document.querySelector('#qss-options .option-row');
-        if (defaultOption) selectStateQSS(defaultOption, '|+⟩', 'X');
+        if (defaultOption) {
+            const defaultState = bobBasis === 'X' ? '|+⟩' : '|0⟩';
+            selectStateQSS(defaultOption, defaultState, bobBasis);
+        }
     });
 
     function selectStateQSS(element, initialState, basis) {
@@ -214,8 +261,8 @@
 
     function drawArrowedLine(container, x1, y1, x2, y2, probVal) {
         const probStr = (probVal * 100).toFixed(1).replace('.0', '') + '%';
-        // 增加 offsetX (從 1.4 改為 2.2) 確保不會遮擋 Node
-        const offsetX = 2.2; 
+        // 將 offsetX 從 2.2 增加至 2.6 (大約為 +5px 視覺寬度)，確保線條留白空間更開闊
+        const offsetX = 2.6; 
         let startX = x1 + offsetX;
         let endX = x2 - offsetX;
         let startY = y1;
@@ -274,7 +321,6 @@
         const numBranches = operators.length;
         const aliceOp = qssSettings.alice.msg === "1" ? qssSettings.alice.message1Op : qssSettings.alice.message0Op;
         
-        // 重新分配 X 座標間距 (拉開距離)
         const X = [4.5, 16, 26, 38, 50, 62, 74, 84, 94];
         const initialY = 320; 
         const spacing = 600 / (numBranches + 1); 
