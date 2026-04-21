@@ -398,12 +398,11 @@
                     },
                     charlie: {
                         particle: interfaceDiv.querySelector('input[name="qss_c_particle"]:checked').nextElementSibling.innerText,
-                        bases: charlieBases 
+                        operator: charlieBases // 將 bases 改名為 operator
                     },
                     alice: {
                         particle: interfaceDiv.querySelector('input[name="qss_a_particle"]:checked').nextElementSibling.innerText,
-                        basis: interfaceDiv.querySelector('input[name="qss_a_basis"]:checked').nextElementSibling.innerText,
-                        // ✅ 新增：打包 Message 0 和 1 的運算子
+                        msg: interfaceDiv.querySelector('input[name="qss_a_basis"]:checked').nextElementSibling.innerText, // 將 basis 改名為 msg
                         message0Op: interfaceDiv.querySelector('input[name="op_msg_0"]:checked').value,
                         message1Op: interfaceDiv.querySelector('input[name="op_msg_1"]:checked').value
                     },
