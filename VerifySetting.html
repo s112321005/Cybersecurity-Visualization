@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=1200">
     <base href="https://s112321005.github.io/Cybersecurity-Visualization/">
-    <title>Cerify Setting</title>
+    <title>Verify Setting</title>
     <style>
         :root { --primary-blue: #0047AB; }
         body { margin: 0; padding: 40px 0; background-color: #f8f9fa; font-family: sans-serif; min-width: 1200px !important; display: flex; justify-content: center; }
@@ -43,7 +43,7 @@
         .click-toggle input:not(:checked) ~ .text-off { transform: translateY(0); opacity: 1; }
         .click-toggle input:checked ~ .text-on { transform: translateY(0); opacity: 1; }
         .click-toggle input:checked ~ .text-off { transform: translateY(100%); opacity: 0; pointer-events: none; }
-        .control-panel { border: 2px solid #0047AB; border-radius: 10px; padding: 25px; background-color: white; min-height: 250px; box-sizing: border-box; width: 100%; transition: all 0.3s ease; }
+        .control-panel { border: 2px solid #0047AB; border-radius: 10px; padding: 25px; background-color: white; height: 320px; box-sizing: border-box; width: 100%; transition: all 0.3s ease; }
         .control-panel.disabled { border-color: #b0b0b0 !important; color: #777; }
         .setting-title { display: flex; align-items: center; gap: 5px; font-weight: bold; font-size: 14px; margin-bottom: 10px; }
         .setting-title::before { content: ''; display: inline-block; width: 10px; height: 10px; border-radius: 50%; background-color: #79a6d2; transition: all 0.3s ease; }
@@ -63,7 +63,7 @@
         input[type="text"], input[type="number"] { border: 2px solid #0047AB; border-radius: 6px; padding: 4px 8px; outline: none; font-weight: bold; color: #0047AB; font-family: inherit; transition: all 0.3s ease; }
         .order-input { width: 40px; text-align: center; }
         .u-input { width: 90%; height: 50px; margin-top: 5px; box-sizing: border-box; }
-        input:disabled { border-color: #b0b0b0 !important; background-color: #f8f9fa !important; color: #b0b0b0 !important; cursor: not-allowed; }
+        input:disabled, select:disabled { border-color: #b0b0b0 !important; background-color: #f8f9fa !important; color: #b0b0b0 !important; cursor: not-allowed; }
         .theme-red .click-toggle .text-on { background-color: #D32F2F; }
         .theme-red .control-panel:not(.disabled) { border-color: #D32F2F; }
         .theme-red .pill-radio span { border-color: #D32F2F; color: #D32F2F; }
@@ -347,7 +347,7 @@
                 const img = col.querySelector('.character-img');
                 const nameTag = col.querySelector('.name-tag');
                 const panel = col.querySelector('.control-panel');
-                const inputs = panel.querySelectorAll('input:not(.status-toggle)');
+                const inputs = panel.querySelectorAll('input:not(.status-toggle),select');
                 if (toggleElement.checked) {
                     img.classList.remove('disabled-img');
                     panel.classList.remove('disabled');
@@ -360,6 +360,7 @@
                     nameTag.classList.add('gray');
                     nameTag.classList.remove('red-text');
                     inputs.forEach(input => input.disabled = true);
+                    
                 }
             }
             toggles.forEach(toggle => {
