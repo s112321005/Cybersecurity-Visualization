@@ -7,39 +7,13 @@
     <title>QSS Visalization：Single Particle Flow</title>
     <link rel="stylesheet" href="analysisCSS.css">
     <style>
-        .container {
-            max-width: 1800px; 
-            width: 1800px;
-        }
-
-        /* --- 節點容器設定 --- */
-        .node { 
-            position: absolute; 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            z-index: 2; 
-            transform: translate(-50%, -50%); 
-        }
-
-        /* --- 實心填滿的圓 (45px) --- */
-        .qss-shape {
-            width: 45px;
-            height: 45px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            font-size: 1.1rem;
-            color: #ffffff;
-            box-shadow: 2px 3px 6px rgba(0,0,0,0.15);
-        }
-
+        .container {max-width: 1800px; width: 1800px;}
+        .node { position: absolute; display: flex; flex-direction: column; align-items: center; z-index: 2; transform: translate(-50%, -50%); }
+        .qss-shape { width: 55px; height: 55px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1.4rem; color: #ffffff; box-shadow: 2px 3px 6px rgba(0,0,0,0.2);}
         .color-alice { background-color: #0047AB; }
         .color-bob { background-color: #4C80C5; }
         .color-charlie { background-color: #478CEA; }
-        .color-op { background-color: #673AB7; } 
+        .color-op { background-color: #b7abcd; } 
 
         #prob-tooltip {
             position: absolute;
