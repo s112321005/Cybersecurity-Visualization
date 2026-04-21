@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=1200">
     <base href="https://s112321005.github.io/Cybersecurity-Visualization/">
-    <title>Verify Setting</title>
+    <title>Cerify Setting</title>
     <style>
         :root { --primary-blue: #0047AB; }
         body { margin: 0; padding: 40px 0; background-color: #f8f9fa; font-family: sans-serif; min-width: 1200px !important; display: flex; justify-content: center; }
@@ -31,7 +31,7 @@
         .name-tag.gray { background-color: #b0b0b0; color: white;}
         .name-tag.red-text { background-color: #D32F2F; }
         @keyframes pulse-start-btn { 0% { box-shadow: 0 0 0 0 rgba(0, 71, 171, 0.6); } 70% { box-shadow: 0 0 0 20px rgba(0, 71, 171, 0); } 100% { box-shadow: 0 0 0 0 rgba(0, 71, 171, 0); } }
-        .name-tag.start { margin-bottom: 15px; margin-top: 20px; animation: pulse-start-btn 2s infinite; }
+        .name-tag.start { margin-bottom: 15px; animation: pulse-start-btn 2s infinite; }
         .name-tag.start:hover { background: #003580; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,71,171,0.4); animation: none; }
         .click-toggle { cursor: pointer; margin-bottom: -15px; z-index: 3; display: inline-grid; grid-template-areas: "toggle-area"; border-radius: 20px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.1); transition: transform 0.2s ease, box-shadow 0.2s ease; }
         .click-toggle:active { transform: scale(0.95); box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
@@ -39,22 +39,19 @@
         .click-toggle span { grid-area: toggle-area; padding: 6px 30px; font-weight: bold; font-size: 16px; text-align: center; min-width: 140px; box-sizing: border-box; transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
         .click-toggle .text-off { background-color: #b0b0b0; color: white; }
         .click-toggle .text-on  { background-color: #0047AB; color: white; }
-        .status-toggle-static { background-color: #0047AB !important; color: white !important; }
         .click-toggle input:not(:checked) ~ .text-on { transform: translateY(-100%); opacity: 0; pointer-events: none; }
         .click-toggle input:not(:checked) ~ .text-off { transform: translateY(0); opacity: 1; }
         .click-toggle input:checked ~ .text-on { transform: translateY(0); opacity: 1; }
         .click-toggle input:checked ~ .text-off { transform: translateY(100%); opacity: 0; pointer-events: none; }
-        .control-panel { border: 2px solid #0047AB; border-radius: 10px; padding: 23px; background-color: white; min-height: 250px; box-sizing: border-box; width: 100%; transition: all 0.3s ease; }
+        .control-panel { border: 2px solid #0047AB; border-radius: 10px; padding: 25px; background-color: white; min-height: 250px; box-sizing: border-box; width: 100%; transition: all 0.3s ease; }
         .control-panel.disabled { border-color: #b0b0b0 !important; color: #777; }
         .setting-title { display: flex; align-items: center; gap: 5px; font-weight: bold; font-size: 14px; margin-bottom: 10px; }
         .setting-title::before { content: ''; display: inline-block; width: 10px; height: 10px; border-radius: 50%; background-color: #79a6d2; transition: all 0.3s ease; }
         .disabled .setting-title::before { background-color: #b0b0b0 !important; }
         .flex-row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
-        
-        /* Checkbox 與 Radio 按鈕樣式 */
         .pill-radio input{ display: none; }
-        .pill-radio span { display: inline-flex; padding: 4px 12px; border: 2px solid #0047AB; border-radius: 20px; color: #0047AB; font-weight: bold; font-size: 14px; cursor: pointer; background-color: white; text-align: center; min-width: 8px; width: auto; transition: all 0.3s ease; white-space: nowrap;}
-        .pill-radio input:checked + span { background-color: #0047AB; color: white; }
+        .pill-radio span { display: inline-flex; padding: 4px 12px; border: 2px solid #0047AB; border-radius: 20px; color: #0047AB; font-weight: bold; font-size: 14px; cursor: pointer; background-color: white; text-align: center; min-width: 6px; width: auto; transition: all 0.3s ease; white-space: nowrap;}
+        .pill-radio input:checked + span {  background-color: #478CEA;  color: white;}
         .pill-radio input:disabled + span { opacity: 0.4;   cursor: not-allowed;   pointer-events: none;   filter: grayscale(1); }
         .disabled .pill-radio span { border-color: #b0b0b0 !important; color: #b0b0b0 !important; cursor: not-allowed; background-color: white !important; }
         .square-check { display: flex; align-items: center; gap: 4px; font-size: 14px; font-weight: bold; color: #0047AB; cursor: pointer; }
@@ -64,31 +61,18 @@
         .disabled .square-check span.box { border-color: #b0b0b0; background-color: white; }
         .disabled .square-check input:checked + span.box { background-color: #b0b0b0; }
         input[type="text"], input[type="number"] { border: 2px solid #0047AB; border-radius: 6px; padding: 4px 8px; outline: none; font-weight: bold; color: #0047AB; font-family: inherit; transition: all 0.3s ease; }
-        
-        /* ✅ 確保 select (下拉式選單) 禁用時也變灰 */
-        input:disabled, select:disabled { border-color: #b0b0b0 !important; background-color: #f8f9fa !important; color: #b0b0b0 !important; cursor: not-allowed; }
-        
+        .order-input { width: 40px; text-align: center; }
+        .u-input { width: 90%; height: 50px; margin-top: 5px; box-sizing: border-box; }
+        input:disabled { border-color: #b0b0b0 !important; background-color: #f8f9fa !important; color: #b0b0b0 !important; cursor: not-allowed; }
         .theme-red .click-toggle .text-on { background-color: #D32F2F; }
         .theme-red .control-panel:not(.disabled) { border-color: #D32F2F; }
         .theme-red .pill-radio span { border-color: #D32F2F; color: #D32F2F; }
         .theme-red .pill-radio input:checked + span { background-color: #D32F2F; color: white; }
         .theme-red .control-panel:not(.disabled) .setting-title::before { background-color: #e57373; }
-        
-        /* === Bob 專屬顏色 === */
         #bob-col .name-tag { background-color: #4c80c5 !important; color: #ffffff !important; }
         #bob-col .status-toggle-static { background-color: #4c80c5 !important; color: #ffffff !important; }
-        #bob-col .control-panel:not(.disabled) .pill-radio input:checked + span { background-color: #4c80c5 !important; border-color: #4c80c5 !important; color: white !important; }
+        #bob-col .control-panel:not(.disabled) .pill-radio input[type="radio"]:checked + span { background-color: #4c80c5 !important; border-color: #4c80c5 !important; }
         #bob-col .control-panel:not(.disabled) .setting-title::before { background-color: #4c80c5; }
-        #bob-col .pill-radio span { border-color: #4c80c5; color: #4c80c5; }
-
-        /* === Charlie 專屬顏色 === */
-        #charlie-col .name-tag { background-color: #478CEA !important; color: #ffffff !important;}
-        #charlie-col .status-toggle-static { background-color: #478CEA !important; color: #ffffff !important;}
-        #charlie-col .control-panel:not(.disabled) { border-color: #478CEA !important; }
-        #charlie-col .pill-radio span { border-color: #478CEA; color: #478CEA; }
-        #charlie-col .control-panel:not(.disabled) .pill-radio input:checked + span { background-color: #478CEA !important; border-color: #478CEA !important; color: white !important;}
-        #charlie-col .control-panel:not(.disabled) .setting-title::before { background-color: #79aee8; }
-
         html { font-family: "Courier New", Courier, monospace; font-variant-emoji: text; }
     </style>
 </head>
@@ -114,7 +98,7 @@
                 <div class="character-col">
                     <img src="pictures/cat_alice.svg" class="character-img" alt="Alice">
                     <div class="name-tag">Alice</div>
-                    <div class="click-toggle"><span class="text-on status-toggle-static">ON</span></div>
+                    <div class="click-toggle"><span class="text-on">ON</span></div>
                     <div class="control-panel">
                         <div class="setting-title">Particle Selection</div>
                         <div class="flex-row" style="margin-bottom: 15px; gap: 8px;">
@@ -202,11 +186,11 @@
                         <div class="setting-title">Operation Selection</div>
                         <div style="display:flex; flex-direction:column; gap:8px; margin-bottom: 15px;">
                             <div class="flex-row" style="gap: 4px;">
-                                <label class="pill-radio"><input type="checkbox" name="qss_c_basis" value="I" checked><span>I</span></label>
-                                <label class="pill-radio"><input type="checkbox" name="qss_c_basis" value="X"><span>X</span></label>
-                                <label class="pill-radio"><input type="checkbox" name="qss_c_basis" value="Y" checked><span>Y</span></label>
-                                <label class="pill-radio"><input type="checkbox" name="qss_c_basis" value="Z"><span>Z</span></label>
-                                <label class="pill-radio"><input type="checkbox" name="qss_c_basis" value="H" checked><span>H</span></label>
+                                <label class="pill-radio"><input type="checkbox" name="qss_c_operator" value="I" checked><span>I</span></label>
+                                <label class="pill-radio"><input type="checkbox" name="qss_c_operator" value="X"><span>X</span></label>
+                                <label class="pill-radio"><input type="checkbox" name="qss_c_operator" value="Y" checked><span>Y</span></label>
+                                <label class="pill-radio"><input type="checkbox" name="qss_c_operator" value="Z"><span>Z</span></label>
+                                <label class="pill-radio"><input type="checkbox" name="qss_c_operator" value="H" checked><span>H</span></label>
                             </div>
                         </div>
                     </div>
@@ -226,8 +210,8 @@
                         <div class="setting-title">Message Selection</div>
                         <div style="display:flex; flex-direction:column; gap:8px; margin-bottom: 15px;">
                             <div class="flex-row" style="gap: 4px;">
-                                <label class="pill-radio"><input type="radio" name="qss_a_basis" checked><span>0</span></label>
-                                <label class="pill-radio"><input type="radio" name="qss_a_basis"><span>1</span></label>
+                                <label class="pill-radio"><input type="radio" name="qss_a_msg" checked><span>0</span></label>
+                                <label class="pill-radio"><input type="radio" name="qss_a_msg"><span>1</span></label>
                             </div>
                         </div>
                         <div class="setting-title">Message:0 Operator</div>
@@ -271,6 +255,79 @@
                 <button id="qss-start-btn" class="name-tag start" style="cursor: pointer; font-size: 18px; padding: 10px 40px; border: none;">Start QSS Analysis</button>
             </div>
         </div>
+
+        <div id="entanglement-interface" class="protocol-interface" style="display: none;">
+            <div class="main-grid">
+                <div class="connection-line">
+                    <div class="connection-label">
+                        <label class="square-check" for="ent-entangle" style="color: #333; font-size: 14px; cursor: pointer; padding: -5px 20px; margin: 0;">
+                            <input type="checkbox" id="ent-entangle"><span class="box"></span><span>Entanglement Required?</span>
+                        </label>
+                    </div>
+                </div>
+                <div class="character-col">
+                    <img src="pictures/cat_alice.svg" class="character-img" alt="Alice">
+                    <div class="name-tag">Alice</div>
+                    <div class="click-toggle"><span class="text-on">ON</span></div>
+                    <div class="control-panel">
+                        <div class="setting-title">Particle Selection</div>
+                        <div class="flex-row" style="margin-bottom: 15px; gap: 8px;">
+                            <label class="pill-radio"><input type="radio" name="ent_a_particle"><span>single</span></label>
+                            <label class="pill-radio"><input type="radio" name="ent_a_particle"><span>Bell</span></label>
+                        </div>
+                        <div class="setting-title">Basis Selection</div>
+                        <div class="flex-row" style="gap: 8px;">
+                            <label class="pill-radio"><input type="radio" name="ent_a_basis"><span>X</span></label>
+                            <label class="pill-radio"><input type="radio" name="ent_a_basis"><span>Z</span></label>
+                        </div>
+                    </div>
+                </div>
+                <div class="character-col" id="bob-col">
+                    <img src="pictures/cat_bob.svg" class="character-img" alt="Bob">
+                    <div class="name-tag">Bob</div>
+                    <div class="click-toggle"><span class="text-on status-toggle-static">ON</span></div>
+                    <div class="control-panel">
+                        <div class="setting-title">Particle Selection</div>
+                        <div class="flex-row" style="margin-bottom: 15px; gap: 8px;">
+                            <label class="pill-radio"><input type="radio" name="ent_b_particle"><span>single</span></label>
+                            <label class="pill-radio"><input type="radio" name="ent_b_particle"><span>Bell</span></label>
+                        </div>
+                        <div class="setting-title">Basis Selection</div>
+                        <div class="flex-row" style="gap: 8px;">
+                            <label class="pill-radio"><input type="radio" name="ent_b_basis"><span>X</span></label>
+                            <label class="pill-radio"><input type="radio" name="ent_b_basis"><span>Z</span></label>
+                        </div>
+                    </div>
+                </div>
+                <div class="character-col">
+                    <img src="pictures/cat_charlie.svg" class="character-img" alt="Charlie">
+                    <div class="name-tag">Charlie</div>
+                    <label class="click-toggle"><input type="checkbox" class="status-toggle"><span class="text-on">ON</span><span class="text-off">OFF</span></label>
+                    <div class="control-panel">
+                        <div class="setting-title">Particle Selection</div>
+                        <div class="flex-row" style="margin-bottom: 15px; gap: 8px;">
+                            <label class="pill-radio"><input type="radio" name="ent_c_particle"><span>single</span></label>
+                        </div>
+                        <div class="setting-title">Basis Selection</div>
+                        <div class="flex-row" style="gap: 8px;">
+                            <label class="pill-radio"><input type="radio" name="ent_c_basis"><span>X</span></label>
+                        </div>
+                    </div>
+                </div>
+                <div class="character-col theme-red">
+                    <img src="pictures/Eavesdropper.svg" class="character-img" alt="Eavesdropper">
+                    <div class="name-tag" data-role="eavesdropper">Eavesdropper</div>
+                    <label class="click-toggle"><input type="checkbox" class="status-toggle"><span class="text-on">ON</span><span class="text-off">OFF</span></label>
+                    <div class="control-panel">
+                        <div class="setting-title">Attack Selection</div>
+                        <div style="display:flex; flex-direction:column; gap:10px; align-items: flex-start; margin-top: 15px;">
+                            <label class="pill-radio"><input type="radio" name="ent_e_attack"><span style="padding: 6px 20px;">CNOT</span></label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div style="text-align: center; margin-top: 30px;"><button id="ent-start-btn" class="name-tag start" style="cursor: pointer; font-size: 18px; padding: 10px 40px; border: none;">Start Entanglement</button></div>
+        </div>
     </div>
 
     <script>
@@ -290,9 +347,7 @@
                 const img = col.querySelector('.character-img');
                 const nameTag = col.querySelector('.name-tag');
                 const panel = col.querySelector('.control-panel');
-                
-                const inputs = panel.querySelectorAll('input:not(.status-toggle), select');
-                
+                const inputs = panel.querySelectorAll('input:not(.status-toggle)');
                 if (toggleElement.checked) {
                     img.classList.remove('disabled-img');
                     panel.classList.remove('disabled');
@@ -337,10 +392,9 @@
             });
             syncExclusion();
 
-            // QKD 按鈕邏輯
             document.getElementById('qkd-start-btn').addEventListener('click', () => {
                 const interfaceDiv = document.getElementById('qkd-interface');
-                const isEveOn = interfaceDiv.querySelector('.theme-red .status-toggle').checked;
+                const isEveOn = interfaceDiv.querySelector('.status-toggle').checked;
                 const rules = [
                     {name: 'a_particle', label: 'Alice Particle'}, {name: 'a_basis', label: 'Alice Basis'},
                     {name: 'b_particle', label: 'Bob Particle'}, {name: 'b_basis', label: 'Bob Basis'}
@@ -358,13 +412,12 @@
                 window.location.href = 'QKDanalysis.html';
             });
 
-            // ✅ QSS 按鈕邏輯 (整合 Alice 的 Message Operator)
             document.getElementById('qss-start-btn').addEventListener('click', () => {
                 const interfaceDiv = document.getElementById('qss-interface');
                 const isEveOn = interfaceDiv.querySelector('.theme-red .status-toggle').checked;
                 
                 // 取得 Charlie 勾選的所有基底 (陣列)
-                const charlieBases = Array.from(interfaceDiv.querySelectorAll('input[name="qss_c_basis"]:checked')).map(cb => cb.value);
+                const charlieOpe = Array.from(interfaceDiv.querySelectorAll('input[name="qss_c_operator"]:checked')).map(cb => cb.value);
                 
                 // 定義驗證規則
                 const rules = [
@@ -372,7 +425,7 @@
                     {name: 'qss_b_basis', label: '1. Bob Basis'},
                     {name: 'qss_c_particle', label: '2. Charlie Particle'},
                     {name: 'qss_a_particle', label: '3. Alice Message Selection'}, 
-                    {name: 'qss_a_basis', label: '3. Alice Basis'},
+                    {name: 'qss_a_msg', label: '3. Alice Basis'},
                     {name: 'op_msg_0', label: '3. Alice Message 0 Operator'}, // 新增驗證
                     {name: 'op_msg_1', label: '3. Alice Message 1 Operator'}  // 新增驗證
                 ];
@@ -385,12 +438,11 @@
                 if (!validateSettings('qss-interface', rules)) return;
                 
                 // 獨立驗證 Charlie (因為是多選)
-                if (charlieBases.length === 0) {
+                if (charlieOpe.length === 0) {
                     alert("Configuration incomplete: 2. Charlie Basis is required!");
                     return;
                 }
 
-                // --- 打包資料 ---
                 const qssSettings = {
                     bob: {
                         particle: interfaceDiv.querySelector('input[name="qss_b_particle"]:checked').nextElementSibling.innerText,
@@ -398,11 +450,11 @@
                     },
                     charlie: {
                         particle: interfaceDiv.querySelector('input[name="qss_c_particle"]:checked').nextElementSibling.innerText,
-                        operator: charlieBases // 將 bases 改名為 operator
+                        operator: charlieOpe
                     },
                     alice: {
                         particle: interfaceDiv.querySelector('input[name="qss_a_particle"]:checked').nextElementSibling.innerText,
-                        msg: interfaceDiv.querySelector('input[name="qss_a_basis"]:checked').nextElementSibling.innerText, // 將 basis 改名為 msg
+                        msg: interfaceDiv.querySelector('input[name="qss_a_msg"]:checked').nextElementSibling.innerText,
                         message0Op: interfaceDiv.querySelector('input[name="op_msg_0"]:checked').value,
                         message1Op: interfaceDiv.querySelector('input[name="op_msg_1"]:checked').value
                     },
@@ -412,7 +464,6 @@
                         location: isEveOn ? interfaceDiv.querySelector('select[name="qss_e_location"]').value : "None"
                     }
                 };
-                
                 // 儲存並跳轉
                 localStorage.setItem('qssSettings', JSON.stringify(qssSettings));
                 window.location.href = 'QSSanalysis.html';
