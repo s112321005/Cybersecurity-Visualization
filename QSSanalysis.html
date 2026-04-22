@@ -18,7 +18,9 @@
         .top-bar { margin-bottom: 30px; }
         .page-title { border: 2px solid var(--primary-blue); color: #000; padding: 10px 40px; border-radius: 10px; font-size: 20px; font-weight: bold; }
         .main-content { display: flex; flex-direction: row !important; gap: 30px; align-items: flex-start; width: 100%; }
+        
         .sidebar { width: 220px; display: flex; flex-direction: column; align-items: center; z-index: 10; gap: 20px; flex-shrink: 0; }
+        
         .selection-box { background: var(--light-blue); border-radius: 15px; padding: 20px 15px; width: 100%; box-sizing: border-box; }
         .selection-box h4 { margin: 0 0 15px 0; text-align: center; color: #333; }
         .option-row { gap: 12px; cursor: pointer; padding: 10px; border-radius: 8px; margin-bottom: 10px; justify-content: space-between; }
@@ -35,7 +37,9 @@
         .color-alice { background-color: var(--primary-blue); }
         .color-bob { background-color: var(--bob-blue); }
         .color-charlie { background-color: var(--charlie-blue); }
+        
         .color-op { background-color: var(--op-purple); color: #af7754 !important; width: 42px !important; height: 42px !important; font-size: 1.1rem !important; }
+        
         .state-circle, .eve-state-circle { width: 45px; height: 45px; border-radius: 50%; font-size: 18px; margin-top: 10px; }
         .state-circle { background: var(--primary-blue); color: white; }
         .state-circle.inactive { background-color: var(--inactive-gray); color: #666; }
@@ -48,6 +52,7 @@
         .result-circle { background: var(--light-blue); color: #28a745; }
         .result-circle.inactive { color: #000; }
         #prob-tooltip { position: absolute; background: rgba(33, 37, 41, 0.9); color: #f8f9fa; padding: 6px 12px; border-radius: 6px; font-size: 0.9rem; font-weight: bold; pointer-events: none; display: none; z-index: 1000; }
+        
         .character-avatar { position: absolute; top: 2%; transform: translateX(-50%); z-index: 10; flex-direction: column; padding: 8px 12px; border-radius: 16px; box-shadow: 0 4px 8px rgba(0,0,0,0.15); background-color: #ffffff; }
         .character-avatar img { width: 75px; object-fit: contain; }
         .avatar-alice { border: 3px solid var(--primary-blue); width: 350px; left:40%;}
@@ -55,7 +60,9 @@
         .avatar-bob-2 { border: 3px solid var(--bob-blue);  width: 252px;}
         .avatar-charlie { border: 3px solid var(--charlie-blue); width: 225px; }
         .result-header { position: absolute; top: -10px; left: 90%; transform: translateX(-50%); background: var(--light-blue); padding: 10px 25px; border-radius: 15px; font-weight: bold; text-align: center; z-index: 10; white-space: nowrap; }
+        
         .settings-panel { width: 100%; box-sizing: border-box; background: var(--light-blue); border-radius: 15px; padding: 20px 15px; display: flex; flex-direction: column; gap: 10px; z-index: 10; }
+        
         .settings-panel h4 { margin: 0 0 10px 0; text-align: center; color: #333; border-bottom: 2px solid var(--primary-blue); padding-bottom: 8px; }
         .setting-item { background: #fff; padding: 12px; margin-bottom: 12px; border-radius: 8px; border-left: 4px solid var(--primary-blue); box-shadow: 0 2px 5px rgba(0,0,0,0.05); font-size: 14px; }
         .setting-item strong { display: block; color: var(--primary-blue); margin-bottom: 6px; border-bottom: 1px solid #eee; padding-bottom: 4px; font-size: 15px; }
@@ -72,7 +79,16 @@
         .line-tooltip { position: absolute; background: rgba(0, 0, 0, 0.6); color: #ffffff; padding: 8px 12px; border-radius: 8px; font-size: 14px; opacity: 0; pointer-events: none; z-index: 1000; white-space: nowrap; box-shadow: 0px 4px 6px rgba(0,0,0,0.3); }
         svg.arrows line { cursor: pointer; transition: stroke-width 0.2s ease; pointer-events: stroke !important; }
         svg.arrows line:hover { stroke-width: 5 !important; }
+        
+        .clickable-node { 
+            cursor: pointer; 
+            transition: transform 0.2s, box-shadow 0.2s; 
+            pointer-events: auto; 
+        }
+        .clickable-node:hover { transform: scale(1.15) translate(-43%, -43%); z-index: 100; border-radius: 50%; }
+        .clickable-node:hover .qss-shape { box-shadow: 0 0 15px var(--primary-blue); }
     </style>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 </head>
 <body>
 
@@ -84,32 +100,35 @@
             <div class="page-title">Quantum Secret Sharing</div>
         </div>
         <div class="main-content">
-            
             <div class="sidebar">
                 <div class="selection-box" id="qss-options"></div>
-                
                 <div class="settings-panel">
                     <h4>Experiment Info</h4>
                     <div class="settings-content" id="settings-display"></div>
                 </div>
             </div>
 
-            <div class="diagram-area" style="position: relative; height: 600px; overflow-x: auto; background: #fafafa; border-radius: 12px; border: 1px solid #eaeaea;">
+            <div style="display: flex; flex-direction: column; flex-grow: 1; gap: 20px; width: 100%;">
+                <div class="diagram-area" style="position: relative; height: 600px; overflow-x: auto; background: #fafafa; border-radius: 12px; border: 1px solid #eaeaea;">
+                    <div class="character-avatar avatar-bob-1" style="left: 6%;"><img src="pictures/cat_bob.svg" alt="Bob"></div>
+                    <div class="character-avatar avatar-charlie" style="left: 21%;"><img src="pictures/cat_charlie.svg" alt="Charlie"></div>
+                    <div class="character-avatar avatar-alice" style="left: 45%;"><img src="pictures/cat_alice.svg" alt="Alice"></div>
+                    <div class="character-avatar avatar-charlie" style="left: 69%;"><img src="pictures/cat_charlie.svg" alt="Charlie"></div>
+                    <div class="character-avatar avatar-bob-2" style="left: 89%;"><img src="pictures/cat_bob.svg" alt="Bob"></div>
+                    <svg id="qss-lines" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1;">
+                        <defs>
+                            <marker id="arrow-qss" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                                <path d="M 0 0 L 10 5 L 0 10 z" fill="#333" />
+                            </marker>
+                        </defs>
+                    </svg>
+                    <div id="qss-nodes" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 2; pointer-events: none;"></div>
+                </div>
                 
-                <div class="character-avatar avatar-bob-1" style="left: 6%;"><img src="pictures/cat_bob.svg" alt="Bob"></div>
-                <div class="character-avatar avatar-charlie" style="left: 21%;"><img src="pictures/cat_charlie.svg" alt="Charlie"></div>
-                <div class="character-avatar avatar-alice" style="left: 45%;"><img src="pictures/cat_alice.svg" alt="Alice"></div>
-                <div class="character-avatar avatar-charlie" style="left: 69%;"><img src="pictures/cat_charlie.svg" alt="Charlie"></div>
-                <div class="character-avatar avatar-bob-2" style="left: 89%;"><img src="pictures/cat_bob.svg" alt="Bob"></div>
-
-                <svg id="qss-lines" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1;">
-                    <defs>
-                        <marker id="arrow-qss" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-                            <path d="M 0 0 L 10 5 L 0 10 z" fill="#333" />
-                        </marker>
-                    </defs>
-                </svg>
-                <div id="qss-nodes" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 2; pointer-events: none;"></div>
+                <div id="calculation-panel" style="background: white; border-radius: 12px; padding: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.08); display: none;">
+                    <h4 style="margin-top: 0; margin-bottom: 15px; color: var(--primary-blue); border-bottom: 2px solid var(--light-blue); padding-bottom: 10px;">Quantum Gate Calculation</h4>
+                    <div id="math-display" style="font-size: 18px; text-align: center; overflow-x: auto; padding: 10px;"></div>
+                </div>
             </div>
         </div>
     </div>
@@ -167,7 +186,7 @@
     document.addEventListener('DOMContentLoaded', () => {
         const bobBasis = qssSettings.bob.basis;
         const optionsContainer = document.getElementById('qss-options');
-        let optionsHtml = `<h4>Bob</h4>`;
+        let optionsHtml = `<h4>Bob prepares the particle</h4>`;
 
         if (bobBasis === 'X') {
             optionsHtml += `
@@ -226,6 +245,7 @@
     function selectStateQSS(element, initialState, basis) {
         document.querySelectorAll('#qss-options .option-row').forEach(row => row.classList.remove('active'));
         element.classList.add('active');
+        document.getElementById('calculation-panel').style.display = 'none';
         renderQSSTree(initialState, basis);
     }
 
@@ -272,10 +292,18 @@
         container.appendChild(g);
     }
 
-    function createNodeHtml(x, y, content, type, character) {
+    function createNodeHtml(x, y, content, type, character, inState = null, gate = null) {
         let colorClass = `color-${character}`;
-        if (type === 'operator' || type === 'basis') colorClass = 'color-op';
-        return `<div class="node" style="left: ${x}%; top: ${y}px;"><div class="qss-shape ${colorClass}">${content}</div></div>`;
+        let extraProps = '';
+        let extraClass = '';
+        
+        if (type === 'operator' || type === 'basis') {
+            colorClass = 'color-op';
+        } else if (inState !== null && gate !== null) {
+            extraClass = 'clickable-node';
+            extraProps = `onclick="showCalculation('${inState}', '${gate}', '${content}')" title="Click to view calculation"`;
+        }
+        return `<div class="node ${extraClass}" style="left: ${x}%; top: ${y}px;" ${extraProps}><div class="qss-shape ${colorClass}">${content}</div></div>`;
     }
 
     function renderQSSTree(initialState, bobBasis) {
@@ -315,11 +343,11 @@
             drawArrowedLine(linesContainer, X[6], yPos, X[7], yPos, branchProb);
 
             nodesHtml += createNodeHtml(X[1], yPos, charlieOp, 'operator', 'charlie');
-            nodesHtml += createNodeHtml(X[2], yPos, s1, 'state', 'charlie');
+            nodesHtml += createNodeHtml(X[2], yPos, s1, 'state', 'charlie', initialState, charlieOp);
             nodesHtml += createNodeHtml(X[3], yPos, aliceOp, 'operator', 'alice');
-            nodesHtml += createNodeHtml(X[4], yPos, s2, 'state', 'alice');
+            nodesHtml += createNodeHtml(X[4], yPos, s2, 'state', 'alice', s1, aliceOp);
             nodesHtml += createNodeHtml(X[5], yPos, charlieOp, 'operator', 'charlie');
-            nodesHtml += createNodeHtml(X[6], yPos, s3, 'state', 'charlie');
+            nodesHtml += createNodeHtml(X[6], yPos, s3, 'state', 'charlie', s2, charlieOp);
             nodesHtml += createNodeHtml(X[7], yPos, bobBasis, 'basis', 'bob');
 
             if (measurementResults.length === 1) {
@@ -336,6 +364,76 @@
         });
 
         nodesContainer.innerHTML = nodesHtml;
+    }
+
+    // --- MathJax 相關運算函數（修正負號解析邏輯） ---
+
+    function getStateLatexParts(state) {
+        // 只提取最前面的負號，代表整個相位的負號
+        let sign = state.startsWith('-') ? '-' : '';
+        let base = state.startsWith('-') ? state.substring(1) : state;
+        
+        // 統一識別內部帶有減號的狀態名稱
+        if (base === '|-⟩' || base === '|−⟩') {
+            base = '|−⟩';
+        }
+        
+        let coeff = (base === '|+⟩' || base === '|−⟩') ? '\\frac{1}{\\sqrt{2}}' : '';
+        
+        let matrix = '';
+        if (base === '|0⟩') matrix = '\\begin{bmatrix} 1 \\\\ 0 \\end{bmatrix}';
+        else if (base === '|1⟩') matrix = '\\begin{bmatrix} 0 \\\\ 1 \\end{bmatrix}';
+        else if (base === '|+⟩') matrix = '\\begin{bmatrix} 1 \\\\ 1 \\end{bmatrix}';
+        else if (base === '|−⟩') matrix = '\\begin{bmatrix} 1 \\\\ -1 \\end{bmatrix}';
+        
+        return { sign, coeff, matrix };
+    }
+
+    function getGateLatexParts(gate) {
+        let coeff = (gate === 'H') ? '\\frac{1}{\\sqrt{2}}' : '';
+        
+        let matrix = '';
+        if (gate === 'I') matrix = '\\begin{bmatrix} 1 & 0 \\\\ 0 & 1 \\end{bmatrix}';
+        if (gate === 'X') matrix = '\\begin{bmatrix} 0 & 1 \\\\ 1 & 0 \\end{bmatrix}';
+        if (gate === 'Y') matrix = '\\begin{bmatrix} 0 & 1 \\\\ -1 & 0 \\end{bmatrix}';
+        if (gate === 'Z') matrix = '\\begin{bmatrix} 1 & 0 \\\\ 0 & -1 \\end{bmatrix}';
+        if (gate === 'H') matrix = '\\begin{bmatrix} 1 & 1 \\\\ 1 & -1 \\end{bmatrix}';
+        
+        return { coeff, matrix };
+    }
+
+    function showCalculation(inState, gate, outState) {
+        const panel = document.getElementById('calculation-panel');
+        const display = document.getElementById('math-display');
+        
+        panel.style.display = 'block';
+        
+        let inParts = getStateLatexParts(inState);
+        let gateParts = getGateLatexParts(gate);
+        let outParts = getStateLatexParts(outState);
+        
+        let countFrac = (gateParts.coeff === '\\frac{1}{\\sqrt{2}}' ? 1 : 0) + (inParts.coeff === '\\frac{1}{\\sqrt{2}}' ? 1 : 0);
+        let combinedCoeff = inParts.sign; 
+        
+        if (countFrac === 1) {
+            combinedCoeff += '\\frac{1}{\\sqrt{2}}';
+        } else if (countFrac === 2) {
+            combinedCoeff += '\\frac{1}{2}'; 
+        }
+        
+        // 加入 \cdot 作為乘號，並讓結果能正確渲染矩陣
+        let mathString = `\\[
+            ${gate} \\cdot ${inState.replace('−', '-')} 
+            = ${combinedCoeff} ${gateParts.matrix} ${inParts.matrix} 
+            = ${outParts.sign}${outParts.coeff}${outParts.matrix} 
+            = ${outState.replace('−', '-')}
+        \\]`;
+        
+        display.innerHTML = mathString;
+        
+        if (window.MathJax) {
+            MathJax.typesetPromise([display]);
+        }
     }
 </script>
 </body>
