@@ -297,7 +297,14 @@
         let extraProps = '';
         let extraClass = '';
         
-        if (type === 'operator' || type === 'basis') {
+        // 若類別為 basis (Bob 的測量方式)，則改為輸出圖片
+        if (type === 'basis') {
+            let imgSrc = content === 'X' ? 'pictures/b_eyex.svg' : 'pictures/b_eyez.svg';
+            // 將寬高設定為符合原本圓形的 55px (或套用適當 CSS) 確保不會破壞排版
+            return `<div class="node" style="left: ${x}%; top: ${y}px;"><img src="${imgSrc}" style="width: 55px; height: 55px; object-fit: contain;" alt="${content} Basis"></div>`;
+        }
+
+        if (type === 'operator') {
             colorClass = 'color-op';
         } else if (inState !== null && gate !== null) {
             extraClass = 'clickable-node';
