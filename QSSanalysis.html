@@ -103,7 +103,7 @@
             <div class="sidebar">
                 <div class="selection-box" id="qss-options"></div>
                 <div class="settings-panel">
-                    <h4>Experiment Info</h4>
+                    <h4>Current Settings</h4>
                     <div class="settings-content" id="settings-display"></div>
                 </div>
             </div>
@@ -154,8 +154,9 @@
 
     function applyGate(stateStr, gate) {
         if (!stateStr || !gate) return stateStr;
-        let isNegative = stateStr.startsWith('-');
+        let isNegative = stateStr.startsWith('-') || stateStr.startsWith('−');
         let baseState = isNegative ? stateStr.substring(1) : stateStr;
+        if (baseState === '|-⟩') baseState = '|−⟩'; 
         let result = quantumMath[baseState][gate];
         if (!result) return baseState; 
         if (isNegative) result = result.startsWith('-') ? result.substring(1) : '-' + result;
@@ -213,10 +214,24 @@
                 title = `${roleName} ：${data.isOn ? 'ON' : 'OFF'}`;
             }
             let details = '';
+            
+            // 加入 keyMap 轉換 JSON key 為友善名稱
+            const keyMap = {
+                "particle": "Particle",
+                "basis": "Measurement Basis",
+                "operator": "Operators",
+                "msg": "Secret Message",
+                "message0Op": "Operation (Bit 0)",
+                "message1Op": "Operation (Bit 1)",
+                "attack": "Attack Strategy",
+                "location": "Attack Location"
+            };
+
             for (const [key, value] of Object.entries(data)) {
                 if (key !== 'isOn') {
                     let displayValue = Array.isArray(value) ? value.join(', ') : value;
-                    details += `<div><b>${key}</b>: ${displayValue}</div>`;
+                    let displayKey = keyMap[key] || key;
+                    details += `<div><b>${displayKey}</b>: ${displayValue}</div>`;
                 }
             }
             return `
@@ -245,7 +260,13 @@
     function selectStateQSS(element, initialState, basis) {
         document.querySelectorAll('#qss-options .option-row').forEach(row => row.classList.remove('active'));
         element.classList.add('active');
-        document.getElementById('calculation-panel').style.display = 'none';
+        
+        // 隱藏並清空面板，確保下一次點擊能正確渲染
+        const calcPanel = document.getElementById('calculation-panel');
+        const mathDisplay = document.getElementById('math-display');
+        calcPanel.style.display = 'none';
+        mathDisplay.innerHTML = '';
+        
         renderQSSTree(initialState, basis);
     }
 
@@ -297,11 +318,9 @@
         let extraProps = '';
         let extraClass = '';
         
-        // 若類別為 basis (Bob 的測量方式)，則改為輸出圖片
         if (type === 'basis') {
             let imgSrc = content === 'X' ? 'pictures/b_eyex.svg' : 'pictures/b_eyez.svg';
-            // 將寬高設定為符合原本圓形的 55px (或套用適當 CSS) 確保不會破壞排版
-            return `<div class="node" style="left: ${x}%; top: ${y}px;"><img src="${imgSrc}" style="width: 55px; height: 55px; object-fit: contain;" alt="${content} Basis"></div>`;
+            return `<div class="node" style="left: ${x}%; top: ${y-5}px;"><img src="${imgSrc}" style="width: 80px; height: 80px; object-fit: contain;" alt="${content} Basis"></div>`;
         }
 
         if (type === 'operator') {
@@ -327,7 +346,7 @@
         
         const X = [4.5, 16, 26, 38, 50, 62, 74, 84, 94];
         const yOffset = 60;
-        const initialY = 280 + yOffset; 
+        const initialY = 270 + yOffset; 
         const spacing = (600 - yOffset) / (numBranches + 1); 
         
         nodesHtml += createNodeHtml(X[0], initialY, initialState, 'state', 'bob');
@@ -373,14 +392,14 @@
         nodesContainer.innerHTML = nodesHtml;
     }
 
-    // --- MathJax 相關運算函數（修正負號解析邏輯） ---
+    // --- MathJax 相關運算函數 ---
 
     function getStateLatexParts(state) {
-        // 只提取最前面的負號，代表整個相位的負號
-        let sign = state.startsWith('-') ? '-' : '';
-        let base = state.startsWith('-') ? state.substring(1) : state;
+        // 安全地提取負號和主體
+        let sign = (state.charAt(0) === '-' || state.charAt(0) === '−') ? '-' : '';
+        let base = sign === '-' ? state.substring(1) : state;
         
-        // 統一識別內部帶有減號的狀態名稱
+        // 正規化狀態符號
         if (base === '|-⟩' || base === '|−⟩') {
             base = '|−⟩';
         }
@@ -428,7 +447,6 @@
             combinedCoeff += '\\frac{1}{2}'; 
         }
         
-        // 加入 \cdot 作為乘號，並讓結果能正確渲染矩陣
         let mathString = `\\[
             ${gate} \\cdot ${inState.replace('−', '-')} 
             = ${combinedCoeff} ${gateParts.matrix} ${inParts.matrix} 
@@ -439,6 +457,8 @@
         display.innerHTML = mathString;
         
         if (window.MathJax) {
+            // 強制清除 MathJax 對該元素的緩存狀態，確保動態運算能被正確渲染
+            MathJax.typesetClear([display]);
             MathJax.typesetPromise([display]);
         }
     }
