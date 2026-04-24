@@ -6,7 +6,17 @@
     <base href="https://s112321005.github.io/Cybersecurity-Visualization/">
     <title>Verify: Quantum Secret Sharing (Eve Mode)</title>
     <style>
-        :root { --primary-blue: #0047AB; --light-blue: #D0E0FF; --inactive-gray: #e0e0e0; --bg-color: #f8f9fa; --eve-red: #ff4d4d; --bob-blue: #4C80C5; --charlie-blue: #478CEA; --op-purple: #FFE69A; }
+        /* 更新角色專屬色碼 */
+        :root { 
+            --primary-blue: #0047AB; 
+            --light-blue: #D0E0FF; 
+            --inactive-gray: #e0e0e0; 
+            --bg-color: #f8f9fa; 
+            --eve-red: #D32F2F; 
+            --bob-blue: #4C80C5; 
+            --charlie-blue: #478CEA; 
+            --op-purple: #FFE69A; 
+        }
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--bg-color); display: flex; flex-direction: column; align-items: center; margin: 0; padding: 20px 0; color: #333; min-width: 1450px !important; }
         .container { background: white; padding: 20px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); width: 1450px !important; max-width: 1850px !important; flex-shrink: 0 !important; margin: 0 auto; }
         .nav-tabs, .tab-btn, .state-btn, .state-circle, .eve-state-circle, .prob-circle, .result-circle, .btn-back, .top-bar, .option-row, .character-avatar, .line-tooltip { display: flex; align-items: center; justify-content: center; font-weight: bold; transition: all 0.3s ease; box-sizing: border-box; }
@@ -41,9 +51,19 @@
         .state-circle.eve-error { background-color: var(--eve-red); color: white; border: 2px solid var(--eve-red); }
         #prob-tooltip { position: absolute; background: rgba(33, 37, 41, 0.9); color: #f8f9fa; padding: 6px 12px; border-radius: 6px; font-size: 0.9rem; font-weight: bold; pointer-events: none; display: none; z-index: 1000; }
         
+        /* 角色背景與框線設定 */
         .character-avatar { position: absolute; top: 2%; transform: translateX(-50%); z-index: 10; flex-direction: column; padding: 8px 12px; border-radius: 16px; box-shadow: 0 4px 8px rgba(0,0,0,0.15); background-color: #ffffff; }
-        .character-avatar img { width: 75px; object-fit: contain; }
-        
+        .character-avatar img { width: 75px; object-fit: contain; }    
+        .avatar-alice { border: 3px solid var(--primary-blue); width: 350px; left:40%;}
+        .avatar-bob-1 { border: 3px solid var(--bob-blue);  width: 132px;}
+        .avatar-bob-2 { border: 3px solid var(--bob-blue);  width: 252px;}
+        .avatar-charlie { border: 3px solid var(--charlie-blue); width: 225px; }
+        .avatar-alice-eve { border: 3px solid var(--primary-blue); }
+        .avatar-bob-eve { border: 3px solid var(--bob-blue); }
+        .avatar-charlie-eve { border: 3px solid var(--charlie-blue); }
+        .avatar-eve { border: 3px solid var(--eve-red); }
+        .result-header { position: absolute; top: -10px; left: 90%; transform: translateX(-50%); background: var(--light-blue); padding: 10px 25px; border-radius: 15px; font-weight: bold; text-align: center; z-index: 10; white-space: nowrap; }
+
         .settings-panel { width: 100%; box-sizing: border-box; background: var(--light-blue); border-radius: 15px; padding: 20px 15px; display: flex; flex-direction: column; gap: 10px; z-index: 10; }
         .settings-panel h4 { margin: 0 0 10px 0; text-align: center; color: #333; border-bottom: 2px solid var(--primary-blue); padding-bottom: 8px; }
         .setting-item { background: #fff; padding: 12px; margin-bottom: 12px; border-radius: 8px; border-left: 4px solid var(--primary-blue); box-shadow: 0 2px 5px rgba(0,0,0,0.05); font-size: 14px; }
@@ -149,7 +169,6 @@
         return {num: Math.round(dec*100), den: 100};
     }
 
-    // 強制將預設值 Eve 設為 true 供本頁面直接展示效果
     let qssSettings = JSON.parse(localStorage.getItem('qssSettings')) || {
         "bob": {"particle": "single", "basis": "X"},
         "charlie": {"particle": "single", "operator": ["I", "Y", "H"]},
@@ -321,22 +340,23 @@
         const aliceOp = qssSettings.alice.msg === "1" ? qssSettings.alice.message1Op : qssSettings.alice.message0Op;
         const eveIsOn = qssSettings.eve.isOn && qssSettings.eve.location === "1_2";
 
+        // 更新加入專屬框線類別 (avatar-bob, avatar-eve, avatar-charlie, avatar-alice)
         if (eveIsOn) {
             avatarsContainer.innerHTML = `
-                <div class="character-avatar avatar-bob-1" style="left: 4%; width: 70px; top: 1%;"><img src="pictures/cat_bob.svg" alt="Bob"></div>
-                <div class="character-avatar" style="left: 4%; width: 70px; top: 1%;"><img src="pictures/Eavedropper.svg" alt="Bob"></div>
-                <div class="character-avatar avatar-charlie" style="left: 35.5%; width: 140px; top: 1%;"><img src="pictures/cat_charlie.svg" alt="Charlie"></div>
-                <div class="character-avatar avatar-alice" style="left: 53.5%; width: 140px; top: 1%;"><img src="pictures/cat_alice.svg" alt="Alice"></div>
-                <div class="character-avatar avatar-charlie" style="left: 71.5%; width: 140px; top: 1%;"><img src="pictures/cat_charlie.svg" alt="Charlie"></div>
-                <div class="character-avatar avatar-bob-2" style="left: 89.5%; width: 140px; top: 1%;"><img src="pictures/cat_bob.svg" alt="Bob"></div>
+                <div class="character-avatar avatar-bob-eve" style="left: 4%; width: 70px; top: 1%;"><img src="pictures/cat_bob.svg" alt="Bob"></div>
+                <div class="character-avatar avatar-eve" style="left: 17%; width: 70px; top: 1%;"><img style="width: 60px;"src="pictures/Eavesdropper.svg" alt="Eve"></div>
+                <div class="character-avatar avatar-charlie-eve" style="left: 35.5%; width: 140px; top: 1%;"><img src="pictures/cat_charlie.svg" alt="Charlie"></div>
+                <div class="character-avatar avatar-alice-eve" style="left: 53.5%; width: 140px; top: 1%;"><img src="pictures/cat_alice.svg" alt="Alice"></div>
+                <div class="character-avatar avatar-charlie-eve" style="left: 71.5%; width: 140px; top: 1%;"><img src="pictures/cat_charlie.svg" alt="Charlie"></div>
+                <div class="character-avatar avatar-bob-eve" style="left: 89.5%; width: 140px; top: 1%;"><img src="pictures/cat_bob.svg" alt="Bob"></div>
             `;
         } else {
             avatarsContainer.innerHTML = `
-                <div class="character-avatar avatar-bob-1" style="left: 6%;"><img src="pictures/cat_bob.svg" alt="Bob"></div>
+                <div class="character-avatar avatar-bob" style="left: 6%;"><img src="pictures/cat_bob.svg" alt="Bob"></div>
                 <div class="character-avatar avatar-charlie" style="left: 21%;"><img src="pictures/cat_charlie.svg" alt="Charlie"></div>
                 <div class="character-avatar avatar-alice" style="left: 45%;"><img src="pictures/cat_alice.svg" alt="Alice"></div>
                 <div class="character-avatar avatar-charlie" style="left: 69%;"><img src="pictures/cat_charlie.svg" alt="Charlie"></div>
-                <div class="character-avatar avatar-bob-2" style="left: 89%;"><img src="pictures/cat_bob.svg" alt="Bob"></div>
+                <div class="character-avatar avatar-bob" style="left: 89%;"><img src="pictures/cat_bob.svg" alt="Bob"></div>
             `;
         }
 
@@ -409,7 +429,6 @@
             if (parentX !== null && parentY !== null) {
                 drawArrowedLine(linesContainer, parentX, parentY, x, y, currentProb);
 
-                // 僅在最後結果 (bob_result) 加上機率圈圈，中間節點不顯示
                 if (node.type === 'bob_result') {
                     nodesHtml += createFinalProbCircle(x, y, currentProb, node.isError);
                 }
