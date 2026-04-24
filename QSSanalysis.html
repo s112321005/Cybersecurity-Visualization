@@ -61,7 +61,7 @@
         .avatar-alice-eve { border: 3px solid var(--primary-blue); }
         .avatar-bob-eve { border: 3px solid var(--bob-blue); }
         .avatar-charlie-eve { border: 3px solid var(--charlie-blue); }
-        .avatar-eve { border: 3px solid var(--eve-red); }
+        .avatar-eve { border: 3px solid var(--eve-red); width: 350px; }
         .result-header { position: absolute; top: -10px; left: 90%; transform: translateX(-50%); background: var(--light-blue); padding: 10px 25px; border-radius: 15px; font-weight: bold; text-align: center; z-index: 10; white-space: nowrap; }
 
         .settings-panel { width: 100%; box-sizing: border-box; background: var(--light-blue); border-radius: 15px; padding: 20px 15px; display: flex; flex-direction: column; gap: 10px; z-index: 10; }
@@ -343,20 +343,20 @@
         // 更新加入專屬框線類別 (avatar-bob, avatar-eve, avatar-charlie, avatar-alice)
         if (eveIsOn) {
             avatarsContainer.innerHTML = `
-                <div class="character-avatar avatar-bob-eve" style="left: 4%; width: 70px; top: 1%;"><img src="pictures/cat_bob.svg" alt="Bob"></div>
-                <div class="character-avatar avatar-eve" style="left: 17%; width: 70px; top: 1%;"><img style="width: 60px;"src="pictures/Eavesdropper.svg" alt="Eve"></div>
-                <div class="character-avatar avatar-charlie-eve" style="left: 35.5%; width: 140px; top: 1%;"><img src="pictures/cat_charlie.svg" alt="Charlie"></div>
-                <div class="character-avatar avatar-alice-eve" style="left: 53.5%; width: 140px; top: 1%;"><img src="pictures/cat_alice.svg" alt="Alice"></div>
-                <div class="character-avatar avatar-charlie-eve" style="left: 71.5%; width: 140px; top: 1%;"><img src="pictures/cat_charlie.svg" alt="Charlie"></div>
-                <div class="character-avatar avatar-bob-eve" style="left: 89.5%; width: 140px; top: 1%;"><img src="pictures/cat_bob.svg" alt="Bob"></div>
+                <div class="character-avatar avatar-bob-1" style="left: 4.5%; width: 94px; top: 1%;"><img src="pictures/cat_bob.svg" alt="Bob"></div>
+                <div class="character-avatar avatar-eve" style="left: 16%; width: 175px; top: 1%;"><img style="width: 60px;"src="pictures/Eavesdropper.svg" alt="Eve"></div>
+                <div class="character-avatar avatar-charlie" style="left: 35.5%; width: 140px; top: 1%;"><img src="pictures/cat_charlie.svg" alt="Charlie"></div>
+                <div class="character-avatar avatar-alice" style="left: 53.5%; width: 140px; top: 1%;"><img src="pictures/cat_alice.svg" alt="Alice"></div>
+                <div class="character-avatar avatar-charlie" style="left: 71.5%; width: 140px; top: 1%;"><img src="pictures/cat_charlie.svg" alt="Charlie"></div>
+                <div class="character-avatar avatar-bob-2" style="left: 89.5%; width: 140px; top: 1%;"><img src="pictures/cat_bob.svg" alt="Bob"></div>
             `;
         } else {
             avatarsContainer.innerHTML = `
-                <div class="character-avatar avatar-bob" style="left: 6%;"><img src="pictures/cat_bob.svg" alt="Bob"></div>
+                <div class="character-avatar avatar-bob-1" style="left: 6%;"><img src="pictures/cat_bob.svg" alt="Bob"></div>
                 <div class="character-avatar avatar-charlie" style="left: 21%;"><img src="pictures/cat_charlie.svg" alt="Charlie"></div>
                 <div class="character-avatar avatar-alice" style="left: 45%;"><img src="pictures/cat_alice.svg" alt="Alice"></div>
                 <div class="character-avatar avatar-charlie" style="left: 69%;"><img src="pictures/cat_charlie.svg" alt="Charlie"></div>
-                <div class="character-avatar avatar-bob" style="left: 89%;"><img src="pictures/cat_bob.svg" alt="Bob"></div>
+                <div class="character-avatar avatar-bob-2" style="left: 89%;"><img src="pictures/cat_bob.svg" alt="Bob"></div>
             `;
         }
 
@@ -399,7 +399,7 @@
         }
 
         let currentY = 130;
-        let rowHeight = eveIsOn ? 42 : 75;
+        let rowHeight = eveIsOn ? 85 : 100;
 
         function calculateNodeY(node) {
             if (node.children.length === 0) {
