@@ -58,6 +58,9 @@
         .avatar-bob-1 { border: 3px solid var(--bob-blue);  width: 132px;}
         .avatar-bob-2 { border: 3px solid var(--bob-blue);  width: 252px;}
         .avatar-charlie { border: 3px solid var(--charlie-blue); width: 225px; }
+        .avatar-alice-eve { border: 3px solid var(--primary-blue); }
+        .avatar-bob-eve { border: 3px solid var(--bob-blue); }
+        .avatar-charlie-eve { border: 3px solid var(--charlie-blue); }
         .avatar-eve { border: 3px solid var(--eve-red); width: 350px; }
         .result-header { position: absolute; top: -10px; left: 90%; transform: translateX(-50%); background: var(--light-blue); padding: 10px 25px; border-radius: 15px; font-weight: bold; text-align: center; z-index: 10; white-space: nowrap; }
 
@@ -78,6 +81,34 @@
         .clickable-node { cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; pointer-events: auto; }
         .clickable-node:hover { transform: scale(1.15) translate(-43%, -43%); z-index: 100; border-radius: 50%; }
         .clickable-node:hover .qss-shape { box-shadow: 0 0 15px var(--primary-blue); }
+
+        /* Eve 切換按鈕的專屬樣式 */
+        .eve-nav-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: var(--eve-red);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 26px;
+            height: 26px;
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+            transition: transform 0.2s, background-color 0.2s;
+            z-index: 20;
+        }
+        .eve-nav-btn:hover:not(:disabled) {
+            background-color: #b71c1c;
+            transform: translateY(-50%) scale(1.15);
+        }
+        .eve-nav-left { left: 15px; }
+        .eve-nav-right { right: 15px; }
+        .eve-nav-disabled { opacity: 0.3; cursor: not-allowed; }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 </head>
@@ -116,6 +147,10 @@
 </div>
 
 <script>
+    // 全域變數以記憶目前選擇的初始狀態與基底
+    let currentInitialState = '';
+    let currentBasis = '';
+
     function showTooltip(evt, text) {
         const tooltip = document.getElementById("prob-tooltip");
         tooltip.innerHTML = text;
@@ -166,13 +201,59 @@
         return {num: Math.round(dec*100), den: 100};
     }
 
-    // 依照需求將預設測試資料改為: location: "2_3", Bob=Z, msg=0, op=I
     let qssSettings = JSON.parse(localStorage.getItem('qssSettings')) || {
         "bob": {"particle": "single", "basis": "Z"},
         "charlie": {"particle": "single", "operator": ["I", "Y", "H"]},
         "alice": {"particle": "single", "msg": "0", "message0Op": "I", "message1Op": "X"},
-        "eve": {"isOn": true, "attack": "Intercept-resend", "location": "2_3"}
+        "eve": {"isOn": true, "attack": "Intercept-resend", "location": "1_2"}
     };
+
+    // 格式化設定項，以供動態更新 Sidebar
+    function formatRole(roleName, data) {
+        if (!data) return '';
+        let extraClass = '';
+        let title = `${roleName}`;
+        
+        if (roleName === 'Eavesdropper') {
+            extraClass = data.isOn ? 'eve-on' : 'eve-off';
+            title = `${roleName} ：${data.isOn ? 'ON' : 'OFF'}`;
+        }
+        let details = '';
+        const keyMap = {
+            "particle": "Particle", "basis": "Measurement Basis", "operator": "Operators",
+            "msg": "Secret Message", "message0Op": "Operation (Bit 0)", "message1Op": "Operation (Bit 1)",
+            "attack": "Attack Strategy", "location": "Attack Location"
+        };
+
+        for (const [key, value] of Object.entries(data)) {
+            if (key !== 'isOn') {
+                let displayValue = Array.isArray(value) ? value.join(', ') : value;
+                let displayKey = keyMap[key] || key;
+                details += `<div><b>${displayKey}</b>: ${displayValue}</div>`;
+            }
+        }
+        return `<div class="setting-item ${extraClass}"><strong>${title}</strong><span>${details}</span></div>`;
+    }
+
+    function updateSettingsDisplay() {
+        const settingsHtml = `
+            ${formatRole('Bob (Prepare)', qssSettings.bob)}
+            ${formatRole('Charlie', qssSettings.charlie)}
+            ${formatRole('Alice', qssSettings.alice)}
+            ${formatRole('Eavesdropper', qssSettings.eve)}
+        `;
+        document.getElementById('settings-display').innerHTML = settingsHtml;
+    }
+
+    // 切換 Eve 的位置事件
+    function switchEveLocation(newLoc) {
+        qssSettings.eve.location = newLoc;
+        localStorage.setItem('qssSettings', JSON.stringify(qssSettings));
+        updateSettingsDisplay();
+        
+        // 重新繪製整個 Quantum Tree
+        renderQSSTree(currentInitialState, currentBasis);
+    }
 
     document.addEventListener('DOMContentLoaded', () => {
         const bobBasis = qssSettings.bob.basis;
@@ -193,40 +274,7 @@
             </div>`;
         }
         optionsContainer.innerHTML = optionsHtml;
-
-        function formatRole(roleName, data) {
-            if (!data) return '';
-            let extraClass = '';
-            let title = `${roleName}`;
-            
-            if (roleName === 'Eavesdropper') {
-                extraClass = data.isOn ? 'eve-on' : 'eve-off';
-                title = `${roleName} ：${data.isOn ? 'ON' : 'OFF'}`;
-            }
-            let details = '';
-            const keyMap = {
-                "particle": "Particle", "basis": "Measurement Basis", "operator": "Operators",
-                "msg": "Secret Message", "message0Op": "Operation (Bit 0)", "message1Op": "Operation (Bit 1)",
-                "attack": "Attack Strategy", "location": "Attack Location"
-            };
-
-            for (const [key, value] of Object.entries(data)) {
-                if (key !== 'isOn') {
-                    let displayValue = Array.isArray(value) ? value.join(', ') : value;
-                    let displayKey = keyMap[key] || key;
-                    details += `<div><b>${displayKey}</b>: ${displayValue}</div>`;
-                }
-            }
-            return `<div class="setting-item ${extraClass}"><strong>${title}</strong><span>${details}</span></div>`;
-        }
-
-        const settingsHtml = `
-            ${formatRole('Bob (Prepare)', qssSettings.bob)}
-            ${formatRole('Charlie', qssSettings.charlie)}
-            ${formatRole('Alice', qssSettings.alice)}
-            ${formatRole('Eavesdropper', qssSettings.eve)}
-        `;
-        document.getElementById('settings-display').innerHTML = settingsHtml;
+        updateSettingsDisplay();
 
         const defaultOption = document.querySelector('#qss-options .option-row');
         if (defaultOption) {
@@ -236,6 +284,9 @@
     });
 
     function selectStateQSS(element, initialState, basis) {
+        currentInitialState = initialState;
+        currentBasis = basis;
+        
         document.querySelectorAll('#qss-options .option-row').forEach(row => row.classList.remove('active'));
         element.classList.add('active');
         
@@ -338,11 +389,15 @@
         const aliceOp = qssSettings.alice.msg === "1" ? qssSettings.alice.message1Op : qssSettings.alice.message0Op;
         const eveLoc = qssSettings.eve.isOn ? qssSettings.eve.location : "none";
 
-        // 更新頭像位置
+        // 更新頭像位置並加入切換按鈕
         if (eveLoc === "1_2") {
             avatarsContainer.innerHTML = `
                 <div class="character-avatar avatar-bob-1" style="left: 5%; width: 95px; top: 1%;"><img src="pictures/cat_bob.svg" alt="Bob"></div>
-                <div class="character-avatar avatar-eve" style="left: 17%; width: 195px; top: 1%;"><img style="width: 60px;"src="pictures/Eavesdropper.svg" alt="Eve"></div>
+                <div class="character-avatar avatar-eve" style="left: 17%; width: 195px; top: 1%;">
+                    <button class="eve-nav-btn eve-nav-left eve-nav-disabled" disabled title="無法再往左移">◀</button>
+                    <img style="width: 60px;" src="pictures/Eavesdropper.svg" alt="Eve">
+                    <button class="eve-nav-btn eve-nav-right" onclick="switchEveLocation('2_3')" title="切換至 Charlie 和 Alice 之間">▶</button>
+                </div>
                 <div class="character-avatar avatar-charlie" style="left: 34.4%; width: 222px; top: 1%;"><img src="pictures/cat_charlie.svg" alt="Charlie"></div>
                 <div class="character-avatar avatar-alice" style="left: 52.9%; width: 223px; top: 1%;"><img src="pictures/cat_alice.svg" alt="Alice"></div>
                 <div class="character-avatar avatar-charlie" style="left: 71.5%; width: 223px; top: 1%;"><img src="pictures/cat_charlie.svg" alt="Charlie"></div>
@@ -352,7 +407,11 @@
             avatarsContainer.innerHTML = `
                 <div class="character-avatar avatar-bob-1" style="left: 5%; width: 95px; top: 1%;"><img src="pictures/cat_bob.svg" alt="Bob"></div>
                 <div class="character-avatar avatar-charlie" style="left: 17.5%; width: 200px; top: 1%;"><img src="pictures/cat_charlie.svg" alt="Charlie"></div>
-                <div class="character-avatar avatar-eve" style="left: 35.5%; width: 195px; top: 1%;"><img style="width: 60px;"src="pictures/Eavesdropper.svg" alt="Eve"></div>
+                <div class="character-avatar avatar-eve" style="left: 35.5%; width: 195px; top: 1%;">
+                    <button class="eve-nav-btn eve-nav-left" onclick="switchEveLocation('1_2')" title="切換至 Bob 和 Charlie 之間">◀</button>
+                    <img style="width: 60px;" src="pictures/Eavesdropper.svg" alt="Eve">
+                    <button class="eve-nav-btn eve-nav-right eve-nav-disabled" disabled title="無法再往右移">▶</button>
+                </div>
                 <div class="character-avatar avatar-alice" style="left: 53.5%; width: 200px; top: 1%;"><img src="pictures/cat_alice.svg" alt="Alice"></div>
                 <div class="character-avatar avatar-charlie" style="left: 71.5%; width: 200px; top: 1%;"><img src="pictures/cat_charlie.svg" alt="Charlie"></div>
                 <div class="character-avatar avatar-bob-2" style="left: 88.5%; width: 160px; top: 1%;"><img src="pictures/cat_bob.svg" alt="Bob"></div>
@@ -413,17 +472,14 @@
                 });
             });
         } else if (eveLoc === "2_3") {
-            // Eve 在 2_3 之間
             operators.forEach(cOp => {
                 let cOpNode = { type: 'charlie_op1', val: cOp, prob: 1.0 / operators.length, children: [] };
                 root.children.push(cOpNode);
 
-                // Charlie 先做第一次操作
                 let s1 = applyGate(initialState, cOp);
                 let cState1Node = { type: 'charlie_state1', val: s1, state: s1, prob: 1.0, gate: cOp, inState: initialState, children: [] };
                 cOpNode.children.push(cState1Node);
 
-                // Eve 攔截 Charlie 的結果
                 ['X', 'Z'].forEach(eBasis => {
                     let eBasisNode = { type: 'eve_basis', val: eBasis, prob: 0.5, children: [] };
                     cState1Node.children.push(eBasisNode);
@@ -433,7 +489,6 @@
                         let eStateNode = { type: 'eve_state', val: eRes.state, state: eRes.state, prob: eRes.probSplit, children: [] };
                         eBasisNode.children.push(eStateNode);
 
-                        // Alice 接著對 Eve 重傳的態進行操作
                         let aOpNode = { type: 'alice_op', val: aliceOp, prob: 1.0, children: [] };
                         eStateNode.children.push(aOpNode);
 
@@ -441,7 +496,6 @@
                         let aStateNode = { type: 'alice_state', val: s2, state: s2, prob: 1.0, gate: aliceOp, inState: eRes.state, children: [] };
                         aOpNode.children.push(aStateNode);
 
-                        // Charlie 第二次操作
                         let cOp2Node = { type: 'charlie_op2', val: cOp, prob: 1.0, children: [] };
                         aStateNode.children.push(cOp2Node);
 
@@ -449,13 +503,11 @@
                         let cState2Node = { type: 'charlie_state2', val: s3, state: s3, prob: 1.0, gate: cOp, inState: s2, children: [] };
                         cOp2Node.children.push(cState2Node);
 
-                        // Bob 測量
                         let bBasisNode = { type: 'bob_basis', val: bobBasis, prob: 1.0, children: [] };
                         cState2Node.children.push(bBasisNode);
 
                         let bResults = measureState(s3, bobBasis);
                         bResults.forEach(bRes => {
-                            // 計算正確無Eve干擾情況下應該得到的結果，用來比對 Error
                             let ideal1 = applyGate(initialState, cOp);
                             let ideal2 = applyGate(ideal1, aliceOp);
                             let ideal3 = applyGate(ideal2, cOp);
