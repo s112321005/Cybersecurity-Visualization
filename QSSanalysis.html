@@ -151,9 +151,9 @@
     function toFraction(dec) {
         for (let den = 1; den <= 64; den++) {
             let num = Math.round(dec * den);
-            if (Math.abs(dec - num/den) < 0.001) return {num, den};
+            if (Math.abs(dec - num/den) < 0.00001) return {num, den};
         }
-        return {num: Math.round(dec*100), den: 100};
+        return {num: Math.round(dec*1000), den: 1000};
     }
 
     let qssSettings = JSON.parse(localStorage.getItem('qssSettings')) || {
