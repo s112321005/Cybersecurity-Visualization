@@ -58,9 +58,6 @@
         .avatar-bob-1 { border: 3px solid var(--bob-blue);  width: 132px;}
         .avatar-bob-2 { border: 3px solid var(--bob-blue);  width: 252px;}
         .avatar-charlie { border: 3px solid var(--charlie-blue); width: 225px; }
-        .avatar-alice-eve { border: 3px solid var(--primary-blue); }
-        .avatar-bob-eve { border: 3px solid var(--bob-blue); }
-        .avatar-charlie-eve { border: 3px solid var(--charlie-blue); }
         .avatar-eve { border: 3px solid var(--eve-red); width: 350px; }
         .result-header { position: absolute; top: -10px; left: 90%; transform: translateX(-50%); background: var(--light-blue); padding: 10px 25px; border-radius: 15px; font-weight: bold; text-align: center; z-index: 10; white-space: nowrap; }
 
@@ -169,11 +166,12 @@
         return {num: Math.round(dec*100), den: 100};
     }
 
+    // 依照需求將預設測試資料改為: location: "2_3", Bob=Z, msg=0, op=I
     let qssSettings = JSON.parse(localStorage.getItem('qssSettings')) || {
-        "bob": {"particle": "single", "basis": "X"},
+        "bob": {"particle": "single", "basis": "Z"},
         "charlie": {"particle": "single", "operator": ["I", "Y", "H"]},
-        "alice": {"particle": "single", "msg": "1", "message0Op": "I", "message1Op": "X"},
-        "eve": {"isOn": true, "attack": "Intercept-resend", "location": "1_2"}
+        "alice": {"particle": "single", "msg": "0", "message0Op": "I", "message1Op": "X"},
+        "eve": {"isOn": true, "attack": "Intercept-resend", "location": "2_3"}
     };
 
     document.addEventListener('DOMContentLoaded', () => {
@@ -338,10 +336,10 @@
 
         const operators = qssSettings.charlie.operator;
         const aliceOp = qssSettings.alice.msg === "1" ? qssSettings.alice.message1Op : qssSettings.alice.message0Op;
-        const eveIsOn = qssSettings.eve.isOn && qssSettings.eve.location === "1_2";
+        const eveLoc = qssSettings.eve.isOn ? qssSettings.eve.location : "none";
 
-        // 更新加入專屬框線類別 (avatar-bob, avatar-eve, avatar-charlie, avatar-alice)
-        if (eveIsOn) {
+        // 更新頭像位置
+        if (eveLoc === "1_2") {
             avatarsContainer.innerHTML = `
                 <div class="character-avatar avatar-bob-1" style="left: 5%; width: 95px; top: 1%;"><img src="pictures/cat_bob.svg" alt="Bob"></div>
                 <div class="character-avatar avatar-eve" style="left: 17%; width: 195px; top: 1%;"><img style="width: 60px;"src="pictures/Eavesdropper.svg" alt="Eve"></div>
@@ -349,6 +347,15 @@
                 <div class="character-avatar avatar-alice" style="left: 52.9%; width: 223px; top: 1%;"><img src="pictures/cat_alice.svg" alt="Alice"></div>
                 <div class="character-avatar avatar-charlie" style="left: 71.5%; width: 223px; top: 1%;"><img src="pictures/cat_charlie.svg" alt="Charlie"></div>
                 <div class="character-avatar avatar-bob-2" style="left: 87.9%; width: 170px; top: 1%;"><img src="pictures/cat_bob.svg" alt="Bob"></div>
+            `;
+        } else if (eveLoc === "2_3") {
+            avatarsContainer.innerHTML = `
+                <div class="character-avatar avatar-bob-1" style="left: 5%; width: 95px; top: 1%;"><img src="pictures/cat_bob.svg" alt="Bob"></div>
+                <div class="character-avatar avatar-charlie" style="left: 17.5%; width: 200px; top: 1%;"><img src="pictures/cat_charlie.svg" alt="Charlie"></div>
+                <div class="character-avatar avatar-eve" style="left: 35.5%; width: 195px; top: 1%;"><img style="width: 60px;"src="pictures/Eavesdropper.svg" alt="Eve"></div>
+                <div class="character-avatar avatar-alice" style="left: 53.5%; width: 200px; top: 1%;"><img src="pictures/cat_alice.svg" alt="Alice"></div>
+                <div class="character-avatar avatar-charlie" style="left: 71.5%; width: 200px; top: 1%;"><img src="pictures/cat_charlie.svg" alt="Charlie"></div>
+                <div class="character-avatar avatar-bob-2" style="left: 88.5%; width: 160px; top: 1%;"><img src="pictures/cat_bob.svg" alt="Bob"></div>
             `;
         } else {
             avatarsContainer.innerHTML = `
@@ -360,20 +367,35 @@
             `;
         }
 
-        const X_MAP = eveIsOn ? {
-            'bob_prep': 4, 'eve_basis': 12, 'eve_state': 20,
-            'charlie_op1': 31, 'charlie_state1': 40, 'alice_op': 49,
-            'alice_state': 58, 'charlie_op2': 67, 'charlie_state2': 76,
-            'bob_basis': 85, 'bob_result': 93
-        } : {
-            'bob_prep': 4.5, 'charlie_op1': 16, 'charlie_state1': 26,
-            'alice_op': 38, 'alice_state': 50, 'charlie_op2': 62,
-            'charlie_state2': 74, 'bob_basis': 84, 'bob_result': 94
-        };
+        // 動態分配各節點 X 座標
+        let X_MAP = {};
+        if (eveLoc === "1_2") {
+            X_MAP = {
+                'bob_prep': 4, 'eve_basis': 12, 'eve_state': 20,
+                'charlie_op1': 31, 'charlie_state1': 40, 'alice_op': 49,
+                'alice_state': 58, 'charlie_op2': 67, 'charlie_state2': 76,
+                'bob_basis': 85, 'bob_result': 93
+            };
+        } else if (eveLoc === "2_3") {
+            X_MAP = {
+                'bob_prep': 4, 
+                'charlie_op1': 13, 'charlie_state1': 22,
+                'eve_basis': 31, 'eve_state': 40,
+                'alice_op': 49, 'alice_state': 58, 
+                'charlie_op2': 67, 'charlie_state2': 76,
+                'bob_basis': 85, 'bob_result': 93
+            };
+        } else {
+            X_MAP = {
+                'bob_prep': 4.5, 'charlie_op1': 16, 'charlie_state1': 26,
+                'alice_op': 38, 'alice_state': 50, 'charlie_op2': 62,
+                'charlie_state2': 74, 'bob_basis': 84, 'bob_result': 94
+            };
+        }
 
         let root = { type: 'bob_prep', val: initialState, state: initialState, prob: 1.0, children: [] };
 
-        if (eveIsOn) {
+        if (eveLoc === "1_2") {
             ['X', 'Z'].forEach(eBasis => {
                 let eBasisNode = { type: 'eve_basis', val: eBasis, prob: 0.5, children: [] };
                 root.children.push(eBasisNode);
@@ -390,6 +412,62 @@
                     });
                 });
             });
+        } else if (eveLoc === "2_3") {
+            // Eve 在 2_3 之間
+            operators.forEach(cOp => {
+                let cOpNode = { type: 'charlie_op1', val: cOp, prob: 1.0 / operators.length, children: [] };
+                root.children.push(cOpNode);
+
+                // Charlie 先做第一次操作
+                let s1 = applyGate(initialState, cOp);
+                let cState1Node = { type: 'charlie_state1', val: s1, state: s1, prob: 1.0, gate: cOp, inState: initialState, children: [] };
+                cOpNode.children.push(cState1Node);
+
+                // Eve 攔截 Charlie 的結果
+                ['X', 'Z'].forEach(eBasis => {
+                    let eBasisNode = { type: 'eve_basis', val: eBasis, prob: 0.5, children: [] };
+                    cState1Node.children.push(eBasisNode);
+
+                    let eResults = measureState(s1, eBasis);
+                    eResults.forEach(eRes => {
+                        let eStateNode = { type: 'eve_state', val: eRes.state, state: eRes.state, prob: eRes.probSplit, children: [] };
+                        eBasisNode.children.push(eStateNode);
+
+                        // Alice 接著對 Eve 重傳的態進行操作
+                        let aOpNode = { type: 'alice_op', val: aliceOp, prob: 1.0, children: [] };
+                        eStateNode.children.push(aOpNode);
+
+                        let s2 = applyGate(eRes.state, aliceOp);
+                        let aStateNode = { type: 'alice_state', val: s2, state: s2, prob: 1.0, gate: aliceOp, inState: eRes.state, children: [] };
+                        aOpNode.children.push(aStateNode);
+
+                        // Charlie 第二次操作
+                        let cOp2Node = { type: 'charlie_op2', val: cOp, prob: 1.0, children: [] };
+                        aStateNode.children.push(cOp2Node);
+
+                        let s3 = applyGate(s2, cOp);
+                        let cState2Node = { type: 'charlie_state2', val: s3, state: s3, prob: 1.0, gate: cOp, inState: s2, children: [] };
+                        cOp2Node.children.push(cState2Node);
+
+                        // Bob 測量
+                        let bBasisNode = { type: 'bob_basis', val: bobBasis, prob: 1.0, children: [] };
+                        cState2Node.children.push(bBasisNode);
+
+                        let bResults = measureState(s3, bobBasis);
+                        bResults.forEach(bRes => {
+                            // 計算正確無Eve干擾情況下應該得到的結果，用來比對 Error
+                            let ideal1 = applyGate(initialState, cOp);
+                            let ideal2 = applyGate(ideal1, aliceOp);
+                            let ideal3 = applyGate(ideal2, cOp);
+                            let idealRes = measureState(ideal3, bobBasis)[0].state;
+                            let isError = (bRes.state !== idealRes);
+
+                            let bResNode = { type: 'bob_result', val: bRes.state, prob: bRes.probSplit, isError: isError, children: [] };
+                            bBasisNode.children.push(bResNode);
+                        });
+                    });
+                });
+            });
         } else {
             operators.forEach(cOp => {
                 let cOpNode = { type: 'charlie_op1', val: cOp, prob: 1.0 / operators.length, children: [] };
@@ -399,7 +477,7 @@
         }
 
         let currentY = 130;
-        let rowHeight = eveIsOn ? 85 : 100;
+        let rowHeight = (eveLoc !== "none") ? 85 : 100;
 
         function calculateNodeY(node) {
             if (node.children.length === 0) {
