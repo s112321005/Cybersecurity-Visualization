@@ -6,17 +6,7 @@
     <base href="https://s112321005.github.io/Cybersecurity-Visualization/">
     <title>Verify: Quantum Secret Sharing (Eve Mode)</title>
     <style>
-        /* 更新角色專屬色碼 */
-        :root { 
-            --primary-blue: #0047AB; 
-            --light-blue: #D0E0FF; 
-            --inactive-gray: #e0e0e0; 
-            --bg-color: #f8f9fa; 
-            --eve-red: #D32F2F; 
-            --bob-blue: #4C80C5; 
-            --charlie-blue: #478CEA; 
-            --op-purple: #FFE69A; 
-        }
+        :root { --primary-blue: #0047AB; --light-blue: #D0E0FF; --inactive-gray: #e0e0e0; --bg-color: #f8f9fa; --eve-red: #D32F2F; --bob-blue: #4C80C5; --charlie-blue: #478CEA; --op-purple: #FFE69A; }
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--bg-color); display: flex; flex-direction: column; align-items: center; margin: 0; padding: 20px 0; color: #333; min-width: 1450px !important; }
         .container { background: white; padding: 20px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); width: 1450px !important; max-width: 1850px !important; flex-shrink: 0 !important; margin: 0 auto; }
         .nav-tabs, .tab-btn, .state-btn, .state-circle, .eve-state-circle, .prob-circle, .result-circle, .btn-back, .top-bar, .option-row, .character-avatar, .line-tooltip { display: flex; align-items: center; justify-content: center; font-weight: bold; transition: all 0.3s ease; box-sizing: border-box; }
@@ -28,7 +18,6 @@
         .top-bar { margin-bottom: 30px; }
         .page-title { border: 2px solid var(--primary-blue); color: #000; padding: 10px 40px; border-radius: 10px; font-size: 20px; font-weight: bold; }
         .main-content { display: flex; flex-direction: row !important; gap: 30px; align-items: flex-start; width: 100%; }
-        
         .sidebar { width: 220px; display: flex; flex-direction: column; align-items: center; z-index: 10; gap: 20px; flex-shrink: 0; }
         .selection-box { background: var(--light-blue); border-radius: 15px; padding: 20px 15px; width: 100%; box-sizing: border-box; }
         .selection-box h4 { margin: 0 0 15px 0; text-align: center; color: #333; }
@@ -44,14 +33,11 @@
         .color-bob { background-color: var(--bob-blue); }
         .color-charlie { background-color: var(--charlie-blue); }
         .color-op { background-color: var(--op-purple); color: #af7754 !important; width: 42px !important; height: 42px !important; font-size: 1.1rem !important; }
-        
         .state-circle, .eve-state-circle { width: 45px; height: 45px; border-radius: 50%; font-size: 18px; margin-top: 10px; display: flex; align-items: center; justify-content: center; font-weight: bold; }
         .state-circle { background: var(--primary-blue); color: white; }
         .eve-state-circle { background: var(--eve-red); color: white; }
         .state-circle.eve-error { background-color: var(--eve-red); color: white; border: 2px solid var(--eve-red); }
         #prob-tooltip { position: absolute; background: rgba(33, 37, 41, 0.9); color: #f8f9fa; padding: 6px 12px; border-radius: 6px; font-size: 0.9rem; font-weight: bold; pointer-events: none; display: none; z-index: 1000; }
-        
-        /* 角色背景與框線設定 */
         .character-avatar { position: absolute; top: 2%; transform: translateX(-50%); z-index: 10; flex-direction: column; padding: 8px 12px; border-radius: 16px; box-shadow: 0 4px 8px rgba(0,0,0,0.15); background-color: #ffffff; }
         .character-avatar img { width: 75px; object-fit: contain; }    
         .avatar-alice { border: 3px solid var(--primary-blue); width: 350px; left:40%;}
@@ -63,7 +49,6 @@
         .avatar-charlie-eve { border: 3px solid var(--charlie-blue); }
         .avatar-eve { border: 3px solid var(--eve-red); width: 350px; }
         .result-header { position: absolute; top: -10px; left: 90%; transform: translateX(-50%); background: var(--light-blue); padding: 10px 25px; border-radius: 15px; font-weight: bold; text-align: center; z-index: 10; white-space: nowrap; }
-
         .settings-panel { width: 100%; box-sizing: border-box; background: var(--light-blue); border-radius: 15px; padding: 20px 15px; display: flex; flex-direction: column; gap: 10px; z-index: 10; }
         .settings-panel h4 { margin: 0 0 10px 0; text-align: center; color: #333; border-bottom: 2px solid var(--primary-blue); padding-bottom: 8px; }
         .setting-item { background: #fff; padding: 12px; margin-bottom: 12px; border-radius: 8px; border-left: 4px solid var(--primary-blue); box-shadow: 0 2px 5px rgba(0,0,0,0.05); font-size: 14px; }
@@ -75,37 +60,13 @@
         .setting-item.eve-on strong { color: var(--eve-red) !important; border-bottom-color: #ffcccc !important; }
         .setting-item.eve-off { border-left-color: #999 !important; color: #999 !important; }
         .setting-item.eve-off strong { color: #999 !important; border-bottom-color: #eee !important; }
-        
         .btn-back { background-color: var(--primary-blue); color: white; text-decoration: none; width: 40px; height: 40px; border-radius: 50%; font-size: 18px; box-shadow: 0 4px 10px rgba(0,0,0,0.15); flex-shrink: 0; }
         .btn-back:hover { transform: scale(1.1); background-color: #003380; color: white; }
         .clickable-node { cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; pointer-events: auto; }
         .clickable-node:hover { transform: scale(1.15) translate(-43%, -43%); z-index: 100; border-radius: 50%; }
         .clickable-node:hover .qss-shape { box-shadow: 0 0 15px var(--primary-blue); }
-
-        /* Eve 切換按鈕的專屬樣式 */
-        .eve-nav-btn {
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            background-color: var(--eve-red);
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 26px;
-            height: 26px;
-            cursor: pointer;
-            font-size: 14px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
-            transition: transform 0.2s, background-color 0.2s;
-            z-index: 20;
-        }
-        .eve-nav-btn:hover:not(:disabled) {
-            background-color: #b71c1c;
-            transform: translateY(-50%) scale(1.15);
-        }
+        .eve-nav-btn { position: absolute; top: 50%; transform: translateY(-50%); background-color: var(--eve-red); color: white; border: none; border-radius: 50%; width: 26px; height: 26px; cursor: pointer; font-size: 14px; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 5px rgba(0,0,0,0.3); transition: transform 0.2s, background-color 0.2s; z-index: 20; }
+        .eve-nav-btn:hover:not(:disabled) { background-color: #b71c1c; transform: translateY(-50%) scale(1.15); }
         .eve-nav-left { left: 15px; }
         .eve-nav-right { right: 15px; }
         .eve-nav-disabled { opacity: 0.3; cursor: not-allowed; }
@@ -113,7 +74,6 @@
     <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 </head>
 <body>
-
 <div id="prob-tooltip">Probability: 100%</div>
 <div id="view-qss" class="page-view active-view">
     <div class="container">
@@ -129,14 +89,12 @@
                     <div class="settings-content" id="settings-display"></div>
                 </div>
             </div>
-
             <div style="display: flex; flex-direction: column; flex-grow: 1; gap: 20px; width: 100%;">
                 <div class="diagram-area" style="position: relative; overflow-y: auto; overflow-x: hidden; background: #fafafa; border-radius: 12px; border: 1px solid #eaeaea; transition: height 0.3s ease;">
                     <div id="avatars-container"></div>
                     <svg id="qss-lines" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1;"></svg>
                     <div id="qss-nodes" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 2; pointer-events: none;"></div>
                 </div>
-                
                 <div id="calculation-panel" style="background: white; border-radius: 12px; padding: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.08); display: none;">
                     <h4 style="margin-top: 0; margin-bottom: 15px; color: var(--primary-blue); border-bottom: 2px solid var(--light-blue); padding-bottom: 10px;">Quantum Gate Calculation</h4>
                     <div id="math-display" style="font-size: 18px; text-align: center; overflow-x: auto; padding: 10px;"></div>
@@ -145,9 +103,7 @@
         </div>
     </div>
 </div>
-
 <script>
-    // 全域變數以記憶目前選擇的初始狀態與基底
     let currentInitialState = '';
     let currentBasis = '';
 
@@ -158,7 +114,6 @@
         tooltip.style.left = (evt.pageX + 15) + 'px';
         tooltip.style.top = (evt.pageY + 15) + 'px';
     }
-
     function hideTooltip() { document.getElementById("prob-tooltip").style.display = "none"; }
 
     const quantumMath = {
@@ -208,7 +163,6 @@
         "eve": {"isOn": true, "attack": "Intercept-resend", "location": "1_2"}
     };
 
-    // 格式化設定項，以供動態更新 Sidebar
     function formatRole(roleName, data) {
         if (!data) return '';
         let extraClass = '';
@@ -224,7 +178,6 @@
             "msg": "Secret Message", "message0Op": "Operation (Bit 0)", "message1Op": "Operation (Bit 1)",
             "attack": "Attack Strategy", "location": "Attack Location"
         };
-
         for (const [key, value] of Object.entries(data)) {
             if (key !== 'isOn') {
                 let displayValue = Array.isArray(value) ? value.join(', ') : value;
@@ -240,18 +193,14 @@
             ${formatRole('Bob (Prepare)', qssSettings.bob)}
             ${formatRole('Charlie', qssSettings.charlie)}
             ${formatRole('Alice', qssSettings.alice)}
-            ${formatRole('Eavesdropper', qssSettings.eve)}
-        `;
+            ${formatRole('Eavesdropper', qssSettings.eve)} `;
         document.getElementById('settings-display').innerHTML = settingsHtml;
     }
 
-    // 切換 Eve 的位置事件
     function switchEveLocation(newLoc) {
         qssSettings.eve.location = newLoc;
         localStorage.setItem('qssSettings', JSON.stringify(qssSettings));
         updateSettingsDisplay();
-        
-        // 重新繪製整個 Quantum Tree
         renderQSSTree(currentInitialState, currentBasis);
     }
 
@@ -259,7 +208,6 @@
         const bobBasis = qssSettings.bob.basis;
         const optionsContainer = document.getElementById('qss-options');
         let optionsHtml = `<h4>Bob prepares the particle</h4>`;
-
         if (bobBasis === 'X') {
             optionsHtml += `
             <div style="display: flex; gap: 10px; justify-content: center;">
@@ -275,7 +223,6 @@
         }
         optionsContainer.innerHTML = optionsHtml;
         updateSettingsDisplay();
-
         const defaultOption = document.querySelector('#qss-options .option-row');
         if (defaultOption) {
             const defaultState = bobBasis === 'X' ? '|+⟩' : '|0⟩';
@@ -286,15 +233,12 @@
     function selectStateQSS(element, initialState, basis) {
         currentInitialState = initialState;
         currentBasis = basis;
-        
         document.querySelectorAll('#qss-options .option-row').forEach(row => row.classList.remove('active'));
         element.classList.add('active');
-        
         const calcPanel = document.getElementById('calculation-panel');
         const mathDisplay = document.getElementById('math-display');
         calcPanel.style.display = 'none';
         mathDisplay.innerHTML = '';
-        
         renderQSSTree(initialState, basis);
     }
 
@@ -303,12 +247,10 @@
         const offsetX = 2.6; 
         let startX = x1 + offsetX;
         let endX = x2 - offsetX;
-        
         const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
         g.setAttribute("style", "cursor: pointer;");
         g.onmousemove = (e) => showTooltip(e, `Probability: ${probStr}`);
         g.onmouseout = hideTooltip;
-
         const visLine = document.createElementNS("http://www.w3.org/2000/svg", "line");
         visLine.setAttribute("x1", startX + "%");
         visLine.setAttribute("y1", y1 + "px");
@@ -318,7 +260,6 @@
         visLine.setAttribute("stroke-width", "2.5");
         visLine.setAttribute("marker-end", "url(#arrow-qss)"); 
         visLine.setAttribute("pointer-events", "none"); 
-
         const sensorLine = document.createElementNS("http://www.w3.org/2000/svg", "line");
         sensorLine.setAttribute("x1", startX + "%");
         sensorLine.setAttribute("y1", y1 + "px");
@@ -327,7 +268,6 @@
         sensorLine.setAttribute("stroke", "transparent");
         sensorLine.setAttribute("stroke-width", "15");
         sensorLine.setAttribute("pointer-events", "stroke");
-
         g.appendChild(sensorLine);
         g.appendChild(visLine);
         container.appendChild(g);
@@ -347,33 +287,18 @@
         let nodeContent = '';
         let extraClass = '';
         let extraProps = '';
-
         if (inState !== null && gate !== null) {
             extraClass = 'clickable-node';
             extraProps = `onclick="showCalculation('${inState}', '${gate}', '${content}')" title="Click to view calculation"`;
         }
-
-        if (type === 'bob_basis') {
-            let imgSrc = content === 'X' ? 'pictures/b_eyex.svg' : 'pictures/b_eyez.svg';
-            nodeContent = `<img src="${imgSrc}" style="width: 70px; height: 70px; object-fit: contain;">`;
-        } else if (type === 'eve_basis') {
-            let imgSrc = content === 'X' ? 'pictures/e_eyex.svg' : 'pictures/e_eyez.svg';
-            nodeContent = `<img src="${imgSrc}" style="width: 70px; height: 70px; object-fit: contain;">`;
-        } else if (type === 'bob_prep') {
-            nodeContent = `<div class="qss-shape color-bob">${content}</div>`;
-        } else if (type === 'eve_state') {
-            nodeContent = `<div class="eve-state-circle" style="font-size: 1.1rem; width: 45px; height: 45px;">${content}</div>`;
-        } else if (type === 'charlie_state1' || type === 'charlie_state2') {
-            nodeContent = `<div class="qss-shape color-charlie">${content}</div>`;
-        } else if (type === 'alice_state') {
-            nodeContent = `<div class="qss-shape color-alice">${content}</div>`;
-        } else if (type === 'bob_result') {
-            let circleClass = isError ? 'state-circle eve-error' : 'state-circle';
-            nodeContent = `<div class="${circleClass}">${content}</div>`;
-        } else if (type.includes('op')) {
-            nodeContent = `<div class="qss-shape color-op">${content}</div>`;
-        }
-
+        if (type === 'bob_basis') {let imgSrc = content === 'X' ? 'pictures/b_eyex.svg' : 'pictures/b_eyez.svg'; nodeContent = `<img src="${imgSrc}" style="width: 70px; height: 70px; object-fit: contain;">`;
+        } else if (type === 'eve_basis') {let imgSrc = content === 'X' ? 'pictures/e_eyex.svg' : 'pictures/e_eyez.svg'; nodeContent = `<img src="${imgSrc}" style="width: 70px; height: 70px; object-fit: contain;">`;
+        } else if (type === 'bob_prep') { nodeContent = `<div class="qss-shape color-bob">${content}</div>`;
+        } else if (type === 'eve_state') { nodeContent = `<div class="eve-state-circle" style="font-size: 1.1rem; width: 45px; height: 45px;">${content}</div>`;
+        } else if (type === 'charlie_state1' || type === 'charlie_state2') { nodeContent = `<div class="qss-shape color-charlie">${content}</div>`;
+        } else if (type === 'alice_state') { nodeContent = `<div class="qss-shape color-alice">${content}</div>`;
+        } else if (type === 'bob_result') { let circleClass = isError ? 'state-circle eve-error' : 'state-circle'; nodeContent = `<div class="${circleClass}">${content}</div>`;
+        } else if (type.includes('op')) { nodeContent = `<div class="qss-shape color-op">${content}</div>`; }
         return `<div class="node ${extraClass}" style="left: ${x}%; top: ${y}px;" ${extraProps}>${nodeContent}</div>`;
     }
 
@@ -381,15 +306,14 @@
         const linesContainer = document.getElementById('qss-lines');
         const nodesContainer = document.getElementById('qss-nodes');
         const avatarsContainer = document.getElementById('avatars-container');
-        
         linesContainer.innerHTML = `<defs><marker id="arrow-qss" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#333" /></marker></defs>`;
         nodesContainer.innerHTML = '';
-
+        
         const operators = qssSettings.charlie.operator;
         const aliceOp = qssSettings.alice.msg === "1" ? qssSettings.alice.message1Op : qssSettings.alice.message0Op;
         const eveLoc = qssSettings.eve.isOn ? qssSettings.eve.location : "none";
-
-        // 更新頭像位置並加入切換按鈕
+        
+        // 渲染對應的 Avatar 與左右切換按鈕
         if (eveLoc === "1_2") {
             avatarsContainer.innerHTML = `
                 <div class="character-avatar avatar-bob-1" style="left: 5%; width: 95px; top: 1%;"><img src="pictures/cat_bob.svg" alt="Bob"></div>
@@ -410,10 +334,36 @@
                 <div class="character-avatar avatar-eve" style="left: 35.5%; width: 195px; top: 1%;">
                     <button class="eve-nav-btn eve-nav-left" onclick="switchEveLocation('1_2')" title="切換至 Bob 和 Charlie 之間">◀</button>
                     <img style="width: 60px;" src="pictures/Eavesdropper.svg" alt="Eve">
-                    <button class="eve-nav-btn eve-nav-right eve-nav-disabled" disabled title="無法再往右移">▶</button>
+                    <button class="eve-nav-btn eve-nav-right" onclick="switchEveLocation('3_4')" title="切換至 Alice 和 第二個 Charlie 之間">▶</button>
                 </div>
                 <div class="character-avatar avatar-alice" style="left: 53.5%; width: 200px; top: 1%;"><img src="pictures/cat_alice.svg" alt="Alice"></div>
                 <div class="character-avatar avatar-charlie" style="left: 71.5%; width: 200px; top: 1%;"><img src="pictures/cat_charlie.svg" alt="Charlie"></div>
+                <div class="character-avatar avatar-bob-2" style="left: 88.5%; width: 160px; top: 1%;"><img src="pictures/cat_bob.svg" alt="Bob"></div>
+            `;
+        } else if (eveLoc === "3_4") {
+            avatarsContainer.innerHTML = `
+                <div class="character-avatar avatar-bob-1" style="left: 5%; width: 95px; top: 1%;"><img src="pictures/cat_bob.svg" alt="Bob"></div>
+                <div class="character-avatar avatar-charlie" style="left: 17.5%; width: 200px; top: 1%;"><img src="pictures/cat_charlie.svg" alt="Charlie"></div>
+                <div class="character-avatar avatar-alice" style="left: 35.5%; width: 200px; top: 1%;"><img src="pictures/cat_alice.svg" alt="Alice"></div>
+                <div class="character-avatar avatar-eve" style="left: 53.5%; width: 195px; top: 1%;">
+                    <button class="eve-nav-btn eve-nav-left" onclick="switchEveLocation('2_3')" title="切換至 Charlie 和 Alice 之間">◀</button>
+                    <img style="width: 60px;" src="pictures/Eavesdropper.svg" alt="Eve">
+                    <button class="eve-nav-btn eve-nav-right" onclick="switchEveLocation('4_5')" title="切換至 第二個 Charlie 和 Bob 之間">▶</button>
+                </div>
+                <div class="character-avatar avatar-charlie" style="left: 71.5%; width: 200px; top: 1%;"><img src="pictures/cat_charlie.svg" alt="Charlie"></div>
+                <div class="character-avatar avatar-bob-2" style="left: 88.5%; width: 160px; top: 1%;"><img src="pictures/cat_bob.svg" alt="Bob"></div>
+            `;
+        } else if (eveLoc === "4_5") {
+            avatarsContainer.innerHTML = `
+                <div class="character-avatar avatar-bob-1" style="left: 5%; width: 95px; top: 1%;"><img src="pictures/cat_bob.svg" alt="Bob"></div>
+                <div class="character-avatar avatar-charlie" style="left: 17.5%; width: 200px; top: 1%;"><img src="pictures/cat_charlie.svg" alt="Charlie"></div>
+                <div class="character-avatar avatar-alice" style="left: 35.5%; width: 200px; top: 1%;"><img src="pictures/cat_alice.svg" alt="Alice"></div>
+                <div class="character-avatar avatar-charlie" style="left: 53.5%; width: 200px; top: 1%;"><img src="pictures/cat_charlie.svg" alt="Charlie"></div>
+                <div class="character-avatar avatar-eve" style="left: 71.5%; width: 195px; top: 1%;">
+                    <button class="eve-nav-btn eve-nav-left" onclick="switchEveLocation('3_4')" title="切換至 Alice 和 第二個 Charlie 之間">◀</button>
+                    <img style="width: 60px;" src="pictures/Eavesdropper.svg" alt="Eve">
+                    <button class="eve-nav-btn eve-nav-right eve-nav-disabled" disabled title="無法再往右移">▶</button>
+                </div>
                 <div class="character-avatar avatar-bob-2" style="left: 88.5%; width: 160px; top: 1%;"><img src="pictures/cat_bob.svg" alt="Bob"></div>
             `;
         } else {
@@ -426,7 +376,7 @@
             `;
         }
 
-        // 動態分配各節點 X 座標
+        // 定義每一種情境的橫向座標
         let X_MAP = {};
         if (eveLoc === "1_2") {
             X_MAP = {
@@ -437,12 +387,21 @@
             };
         } else if (eveLoc === "2_3") {
             X_MAP = {
-                'bob_prep': 4, 
-                'charlie_op1': 13, 'charlie_state1': 22,
-                'eve_basis': 31, 'eve_state': 40,
-                'alice_op': 49, 'alice_state': 58, 
-                'charlie_op2': 67, 'charlie_state2': 76,
-                'bob_basis': 85, 'bob_result': 93
+                'bob_prep': 4, 'charlie_op1': 13, 'charlie_state1': 22,
+                'eve_basis': 31, 'eve_state': 40, 'alice_op': 49, 'alice_state': 58, 
+                'charlie_op2': 67, 'charlie_state2': 76, 'bob_basis': 85, 'bob_result': 93
+            };
+        } else if (eveLoc === "3_4") {
+            X_MAP = {
+                'bob_prep': 4, 'charlie_op1': 13, 'charlie_state1': 22,
+                'alice_op': 31, 'alice_state': 40, 'eve_basis': 49, 'eve_state': 58, 
+                'charlie_op2': 67, 'charlie_state2': 76, 'bob_basis': 85, 'bob_result': 93
+            };
+        } else if (eveLoc === "4_5") {
+            X_MAP = {
+                'bob_prep': 4, 'charlie_op1': 13, 'charlie_state1': 22,
+                'alice_op': 31, 'alice_state': 40, 'charlie_op2': 49, 'charlie_state2': 58, 
+                'eve_basis': 67, 'eve_state': 76, 'bob_basis': 85, 'bob_result': 93
             };
         } else {
             X_MAP = {
@@ -453,12 +412,12 @@
         }
 
         let root = { type: 'bob_prep', val: initialState, state: initialState, prob: 1.0, children: [] };
-
+        
+        // --- 根據 Eve 位置建構不同的量子狀態樹 ---
         if (eveLoc === "1_2") {
             ['X', 'Z'].forEach(eBasis => {
                 let eBasisNode = { type: 'eve_basis', val: eBasis, prob: 0.5, children: [] };
                 root.children.push(eBasisNode);
-
                 let eResults = measureState(initialState, eBasis);
                 eResults.forEach(eRes => {
                     let eStateNode = { type: 'eve_state', val: eRes.state, state: eRes.state, prob: eRes.probSplit, children: [] };
@@ -475,38 +434,119 @@
             operators.forEach(cOp => {
                 let cOpNode = { type: 'charlie_op1', val: cOp, prob: 1.0 / operators.length, children: [] };
                 root.children.push(cOpNode);
-
                 let s1 = applyGate(initialState, cOp);
                 let cState1Node = { type: 'charlie_state1', val: s1, state: s1, prob: 1.0, gate: cOp, inState: initialState, children: [] };
                 cOpNode.children.push(cState1Node);
-
                 ['X', 'Z'].forEach(eBasis => {
                     let eBasisNode = { type: 'eve_basis', val: eBasis, prob: 0.5, children: [] };
                     cState1Node.children.push(eBasisNode);
-
                     let eResults = measureState(s1, eBasis);
                     eResults.forEach(eRes => {
                         let eStateNode = { type: 'eve_state', val: eRes.state, state: eRes.state, prob: eRes.probSplit, children: [] };
                         eBasisNode.children.push(eStateNode);
-
                         let aOpNode = { type: 'alice_op', val: aliceOp, prob: 1.0, children: [] };
                         eStateNode.children.push(aOpNode);
-
                         let s2 = applyGate(eRes.state, aliceOp);
                         let aStateNode = { type: 'alice_state', val: s2, state: s2, prob: 1.0, gate: aliceOp, inState: eRes.state, children: [] };
                         aOpNode.children.push(aStateNode);
-
                         let cOp2Node = { type: 'charlie_op2', val: cOp, prob: 1.0, children: [] };
                         aStateNode.children.push(cOp2Node);
-
                         let s3 = applyGate(s2, cOp);
                         let cState2Node = { type: 'charlie_state2', val: s3, state: s3, prob: 1.0, gate: cOp, inState: s2, children: [] };
+                        cOp2Node.children.push(cState2Node);
+                        let bBasisNode = { type: 'bob_basis', val: bobBasis, prob: 1.0, children: [] };
+                        cState2Node.children.push(bBasisNode);
+                        let bResults = measureState(s3, bobBasis);
+                        bResults.forEach(bRes => {
+                            let ideal1 = applyGate(initialState, cOp);
+                            let ideal2 = applyGate(ideal1, aliceOp);
+                            let ideal3 = applyGate(ideal2, cOp);
+                            let idealRes = measureState(ideal3, bobBasis)[0].state;
+                            let isError = (bRes.state !== idealRes);
+
+                            let bResNode = { type: 'bob_result', val: bRes.state, prob: bRes.probSplit, isError: isError, children: [] };
+                            bBasisNode.children.push(bResNode);
+                        });
+                    });
+                });
+            });
+        } else if (eveLoc === "3_4") {
+            operators.forEach(cOp => {
+                let cOpNode = { type: 'charlie_op1', val: cOp, prob: 1.0 / operators.length, children: [] };
+                root.children.push(cOpNode);
+                let s1 = applyGate(initialState, cOp);
+                let cState1Node = { type: 'charlie_state1', val: s1, state: s1, prob: 1.0, gate: cOp, inState: initialState, children: [] };
+                cOpNode.children.push(cState1Node);
+
+                let aOpNode = { type: 'alice_op', val: aliceOp, prob: 1.0, children: [] };
+                cState1Node.children.push(aOpNode);
+                let s2 = applyGate(s1, aliceOp);
+                let aStateNode = { type: 'alice_state', val: s2, state: s2, prob: 1.0, gate: aliceOp, inState: s1, children: [] };
+                aOpNode.children.push(aStateNode);
+
+                ['X', 'Z'].forEach(eBasis => {
+                    let eBasisNode = { type: 'eve_basis', val: eBasis, prob: 0.5, children: [] };
+                    aStateNode.children.push(eBasisNode);
+                    let eResults = measureState(s2, eBasis);
+                    eResults.forEach(eRes => {
+                        let eStateNode = { type: 'eve_state', val: eRes.state, state: eRes.state, prob: eRes.probSplit, children: [] };
+                        eBasisNode.children.push(eStateNode);
+
+                        let cOp2Node = { type: 'charlie_op2', val: cOp, prob: 1.0, children: [] };
+                        eStateNode.children.push(cOp2Node);
+                        let s3 = applyGate(eRes.state, cOp);
+                        let cState2Node = { type: 'charlie_state2', val: s3, state: s3, prob: 1.0, gate: cOp, inState: eRes.state, children: [] };
                         cOp2Node.children.push(cState2Node);
 
                         let bBasisNode = { type: 'bob_basis', val: bobBasis, prob: 1.0, children: [] };
                         cState2Node.children.push(bBasisNode);
 
                         let bResults = measureState(s3, bobBasis);
+                        bResults.forEach(bRes => {
+                            let ideal1 = applyGate(initialState, cOp);
+                            let ideal2 = applyGate(ideal1, aliceOp);
+                            let ideal3 = applyGate(ideal2, cOp);
+                            let idealRes = measureState(ideal3, bobBasis)[0].state;
+                            let isError = (bRes.state !== idealRes);
+
+                            let bResNode = { type: 'bob_result', val: bRes.state, prob: bRes.probSplit, isError: isError, children: [] };
+                            bBasisNode.children.push(bResNode);
+                        });
+                    });
+                });
+            });
+        } else if (eveLoc === "4_5") {
+            operators.forEach(cOp => {
+                let cOpNode = { type: 'charlie_op1', val: cOp, prob: 1.0 / operators.length, children: [] };
+                root.children.push(cOpNode);
+                let s1 = applyGate(initialState, cOp);
+                let cState1Node = { type: 'charlie_state1', val: s1, state: s1, prob: 1.0, gate: cOp, inState: initialState, children: [] };
+                cOpNode.children.push(cState1Node);
+
+                let aOpNode = { type: 'alice_op', val: aliceOp, prob: 1.0, children: [] };
+                cState1Node.children.push(aOpNode);
+                let s2 = applyGate(s1, aliceOp);
+                let aStateNode = { type: 'alice_state', val: s2, state: s2, prob: 1.0, gate: aliceOp, inState: s1, children: [] };
+                aOpNode.children.push(aStateNode);
+
+                let cOp2Node = { type: 'charlie_op2', val: cOp, prob: 1.0, children: [] };
+                aStateNode.children.push(cOp2Node);
+                let s3 = applyGate(s2, cOp);
+                let cState2Node = { type: 'charlie_state2', val: s3, state: s3, prob: 1.0, gate: cOp, inState: s2, children: [] };
+                cOp2Node.children.push(cState2Node);
+
+                ['X', 'Z'].forEach(eBasis => {
+                    let eBasisNode = { type: 'eve_basis', val: eBasis, prob: 0.5, children: [] };
+                    cState2Node.children.push(eBasisNode);
+                    let eResults = measureState(s3, eBasis);
+                    eResults.forEach(eRes => {
+                        let eStateNode = { type: 'eve_state', val: eRes.state, state: eRes.state, prob: eRes.probSplit, children: [] };
+                        eBasisNode.children.push(eStateNode);
+
+                        let bBasisNode = { type: 'bob_basis', val: bobBasis, prob: 1.0, children: [] };
+                        eStateNode.children.push(bBasisNode);
+
+                        let bResults = measureState(eRes.state, bobBasis);
                         bResults.forEach(bRes => {
                             let ideal1 = applyGate(initialState, cOp);
                             let ideal2 = applyGate(ideal1, aliceOp);
@@ -530,7 +570,6 @@
 
         let currentY = 130;
         let rowHeight = (eveLoc !== "none") ? 85 : 100;
-
         function calculateNodeY(node) {
             if (node.children.length === 0) {
                 node.y = currentY;
@@ -550,30 +589,22 @@
         document.querySelector('.diagram-area').style.height = Math.max(450, totalHeight) + 'px';
 
         let nodesHtml = '';
-
         function drawNode(node, parentX, parentY, cumulativeProb) {
             let x = X_MAP[node.type];
             let y = node.y;
             let currentProb = cumulativeProb * node.prob;
-
             if (parentX !== null && parentY !== null) {
                 drawArrowedLine(linesContainer, parentX, parentY, x, y, currentProb);
-
-                if (node.type === 'bob_result') {
-                    nodesHtml += createFinalProbCircle(x, y, currentProb, node.isError);
-                }
+                if (node.type === 'bob_result') nodesHtml += createFinalProbCircle(x, y, currentProb, node.isError);
             }
-
             let char = '';
             if(node.type.startsWith('bob')) char = 'bob';
             if(node.type.startsWith('charlie')) char = 'charlie';
             if(node.type.startsWith('alice')) char = 'alice';
             if(node.type.startsWith('eve')) char = 'eve';
-
             nodesHtml += createNodeHtml(x, y, node.val, node.type, char, node.isError, node.inState, node.gate);
             node.children.forEach(child => drawNode(child, x, y, currentProb));
         }
-
         drawNode(root, null, null, 1.0);
         nodesContainer.innerHTML = nodesHtml;
     }
@@ -582,24 +613,18 @@
         let s1 = applyGate(inState, cOp);
         let cState1Node = { type: 'charlie_state1', val: s1, state: s1, prob: 1.0, gate: cOp, inState: inState, children: [] };
         parentOpNode.children.push(cState1Node);
-
         let aOpNode = { type: 'alice_op', val: aliceOp, prob: 1.0, children: [] };
         cState1Node.children.push(aOpNode);
-
         let s2 = applyGate(s1, aliceOp);
         let aStateNode = { type: 'alice_state', val: s2, state: s2, prob: 1.0, gate: aliceOp, inState: s1, children: [] };
         aOpNode.children.push(aStateNode);
-
         let cOp2Node = { type: 'charlie_op2', val: cOp, prob: 1.0, children: [] };
         aStateNode.children.push(cOp2Node);
-
         let s3 = applyGate(s2, cOp);
         let cState2Node = { type: 'charlie_state2', val: s3, state: s3, prob: 1.0, gate: cOp, inState: s2, children: [] };
         cOp2Node.children.push(cState2Node);
-
         let bBasisNode = { type: 'bob_basis', val: bobBasis, prob: 1.0, children: [] };
         cState2Node.children.push(bBasisNode);
-
         let bResults = measureState(s3, bobBasis);
         bResults.forEach(bRes => {
             let ideal1 = applyGate(originalState, cOp);
@@ -643,24 +668,19 @@
         const panel = document.getElementById('calculation-panel');
         const display = document.getElementById('math-display');
         panel.style.display = 'block';
-        
         let inParts = getStateLatexParts(inState);
         let gateParts = getGateLatexParts(gate);
         let outParts = getStateLatexParts(outState);
-        
         let countFrac = (gateParts.coeff === '\\frac{1}{\\sqrt{2}}' ? 1 : 0) + (inParts.coeff === '\\frac{1}{\\sqrt{2}}' ? 1 : 0);
         let combinedCoeff = inParts.sign; 
-        
         if (countFrac === 1) combinedCoeff += '\\frac{1}{\\sqrt{2}}';
         else if (countFrac === 2) combinedCoeff += '\\frac{1}{2}'; 
-        
         let mathString = `\\[
             ${gate} \\cdot ${inState.replace('−', '-')} 
             = ${combinedCoeff} ${gateParts.matrix} ${inParts.matrix} 
             = ${outParts.sign}${outParts.coeff}${outParts.matrix} 
             = ${outState.replace('−', '-')}
         \\]`;
-        
         display.innerHTML = mathString;
         if (window.MathJax) {
             MathJax.typesetClear([display]);
