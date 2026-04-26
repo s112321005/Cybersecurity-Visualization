@@ -8,16 +8,20 @@
     <style>
         :root { --primary-blue: #0047AB; }
         body { margin: 0; padding: 40px 0; background-color: #f8f9fa; font-family: sans-serif; min-width: 1200px !important; display: flex; justify-content: center; }
-        .container { background: white; padding-top: 20px; padding-left: 20px; padding-right: 20px; padding-bottom: -10px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); width: 1100px !important; max-width: 1100px !important; flex-shrink: 0 !important; box-sizing: border-box; position: relative; }
+        .container { background: white; padding-top: 20px; padding-left: 20px; padding-right: 20px; padding-bottom: 20px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); width: 1100px !important; max-width: 1100px !important; flex-shrink: 0 !important; box-sizing: border-box; position: relative; }
         .header-bar { display: flex; align-items: center; margin-bottom: 30px; }
         .header-left { display: flex; align-items: center; gap: 15px; }
         .btn-back { width: 40px; height: 40px; background-color: var(--primary-blue); color: white; border-radius: 50%; display: flex; justify-content: center; align-items: center; text-decoration: none; font-size: 1.1rem; transition: transform 0.2s; cursor: pointer; border: none; box-shadow: 0 2px 6px rgba(0,0,0,0.15); padding: 0; margin: 0; box-sizing: border-box; flex-shrink: 0; }
         .btn-back:hover { transform: scale(1.1); }
         .page-title { border: 2px solid #0047AB; color: #000; padding: 10px 40px; border-radius: 10px; font-size: 20px; font-weight: bold; }
-        .protocol-selection { text-align: center; margin-bottom: 30px; padding: 20px; background-color: #f0f4f8; border-radius: 10px; border: 1px dashed #0047AB; }
-        .protocol-selection label { font-size: 18px; font-weight: bold; color: #0047AB; margin-right: 15px; }
+        
+        /* 頂部選單區域：使用 Flexbox 並排顯示 */
+        .top-selection-area { display: flex; justify-content: center; align-items: center; gap: 40px; margin-bottom: 30px; padding: 20px; background-color: #f0f4f8; border-radius: 10px; border: 1px dashed #0047AB; }
+        .selection-group { display: flex; align-items: center; }
+        .selection-group label { font-size: 18px; font-weight: bold; color: #0047AB; margin-right: 15px; }
         .custom-select { padding: 8px 20px; font-size: 16px; border: 2px solid #0047AB; border-radius: 8px; color: #0047AB; font-weight: bold; outline: none; cursor: pointer; background-color: white; transition: all 0.3s ease; }
         .custom-select:hover { box-shadow: 0 4px 12px rgba(0,71,171,0.15); }
+
         .main-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; position: relative; }
         .connection-line { position: absolute; top: 150px; left: 11.5%; width: 26%; height: 2px; background-color: #b0b0b0; z-index: 1; display: flex; justify-content: center; align-items: center; }
         .connection-line::before, .connection-line::after { content: ''; position: absolute; width: 15px; height: 15px; background-color: #b0b0b0; border-radius: 50%; top: 50%; transform: translateY(-50%); }
@@ -50,7 +54,8 @@
         .disabled .setting-title::before { background-color: #b0b0b0 !important; }
         .flex-row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
         .pill-radio input{ display: none; }
-        .pill-radio span { display: inline-flex; padding: 4px 8px; border: 2px solid #0047AB; border-radius: 20px; color: #0047AB; font-weight: bold; font-size: 14px; cursor: pointer; background-color: white; text-align: center; min-width: 16px; justify-content: center; transition: all 0.3s ease; white-space: nowrap; }        .pill-radio input:checked + span {  background-color: #478CEA;  color: white;}
+        .pill-radio span { display: inline-flex; padding: 4px 8px; border: 2px solid #0047AB; border-radius: 20px; color: #0047AB; font-weight: bold; font-size: 14px; cursor: pointer; background-color: white; text-align: center; min-width: 16px; justify-content: center; transition: all 0.3s ease; white-space: nowrap; }        
+        .pill-radio input:checked + span {  background-color: #478CEA;  color: white;}
         .pill-radio input:disabled + span { opacity: 0.4;   cursor: not-allowed;   pointer-events: none;   filter: grayscale(1); }
         .disabled .pill-radio span { border-color: #b0b0b0 !important; color: #b0b0b0 !important; cursor: not-allowed; background-color: white !important; }
         .square-check { display: flex; align-items: center; gap: 4px; font-size: 14px; font-weight: bold; color: #0047AB; cursor: pointer; }
@@ -94,13 +99,26 @@
                 <div class="page-title">Verify Setting</div>
             </div>
         </div>
-        <div class="protocol-selection">
-            <select id="protocol-select" class="custom-select">
-                <option value="none" disabled selected>-- select protocol --</option>
-                <option value="qkd">QKD</option>
-                <option value="qss">QSS</option>
-                <option value="entanglement">Entanglement</option>
-            </select>
+        
+        <div class="top-selection-area">
+            <div class="selection-group">
+                <label for="protocol-select">Protocol:</label>
+                <select id="protocol-select" class="custom-select">
+                    <option value="none" disabled selected>-- select protocol --</option>
+                    <option value="qkd">QKD</option>
+                    <option value="qss">QSS</option>
+                    <option value="entanglement">Entanglement</option>
+                </select>
+            </div>
+            <div class="selection-group" id="algo-group" style="display: none;">
+                <select id="qkd-algo-select" class="custom-select algo-select" style="display: none;">
+                    <option value="bb84" selected>BB84</option>
+                    <option value="b92">B92</option>
+                </select>
+                <select id="qss-algo-select" class="custom-select algo-select" style="display: none;">
+                    <option value="hbb" selected>HBB</option>
+                </select>
+            </div>
         </div>
 
         <div id="qkd-interface" class="protocol-interface" style="display: none;">
@@ -164,7 +182,6 @@
 
         <div id="qss-interface" class="protocol-interface" style="display: none;">
             <div class="main-grid">
-                
                 <div class="character-col" id="bob-col">
                     <img src="pictures/cat_bob.svg" class="character-img" alt="Bob">
                     <div class="name-tag">1. Bob</div>
@@ -205,18 +222,15 @@
                         </div>
                     </div>
                 </div>
-
                 <div class="character-col" id="alice-col">
                     <img src="pictures/cat_alice.svg" class="character-img" alt="Alice">
                     <div class="name-tag">3. Alice</div>
                     <div class="click-toggle"><span class="text-on status-toggle-static">ON</span></div>
-                    
                     <div class="control-panel">
                         <div class="setting-title">Particle Selection</div>
                         <div class="flex-row" style="margin-bottom: 15px; gap: 4px;">
                             <label class="pill-radio"><input type="radio" name="qss_a_particle" checked><span>single</span></label>
-                        </div>
-                
+                        </div>                
                         <div class="setting-title">Message Selection</div>
                         <div style="display:flex; flex-direction:column; gap:8px; margin-bottom: 15px;">
                             <div class="flex-row" style="gap: 4px;">
@@ -242,7 +256,6 @@
                         </div>
                     </div>
                 </div>
-
                 <div class="character-col theme-red">
                     <img src="pictures/Eavesdropper.svg" class="character-img" alt="Eavesdropper">
                     <div class="name-tag" data-role="eavesdropper">Eavesdropper</div>
@@ -347,10 +360,29 @@
             const protocolSelect = document.getElementById('protocol-select');
             const interfaces = document.querySelectorAll('.protocol-interface');
             
+            // 下拉選單控制邏輯
+            const algoGroup = document.getElementById('algo-group');
+            const algoSelects = document.querySelectorAll('.algo-select');
+
             protocolSelect.addEventListener('change', function() {
+                // 1. 隱藏所有的區塊與演算法下拉選單
                 interfaces.forEach(iface => iface.style.display = 'none');
+                algoSelects.forEach(select => select.style.display = 'none');
+                
                 const selectedValue = this.value;
-                if (selectedValue !== 'none') document.getElementById(`${selectedValue}-interface`).style.display = 'block';
+                if (selectedValue !== 'none') {
+                    // 2. 顯示對應的 protocol 介面
+                    document.getElementById(`${selectedValue}-interface`).style.display = 'block';
+                    
+                    // 3. 顯示對應的 Algorithm 選單
+                    const correspondingAlgoSelect = document.getElementById(`${selectedValue}-algo-select`);
+                    if (correspondingAlgoSelect) {
+                        algoGroup.style.display = 'flex'; // 顯示整個 Algorithm 區塊
+                        correspondingAlgoSelect.style.display = 'block'; // 顯示該 protocol 的 specific select
+                    } else {
+                        algoGroup.style.display = 'none'; // Entanglement 時隱藏
+                    }
+                }
             });
 
             const toggles = document.querySelectorAll('.status-toggle');
@@ -372,7 +404,6 @@
                     nameTag.classList.add('gray');
                     nameTag.classList.remove('red-text');
                     inputs.forEach(input => input.disabled = true);
-                    
                 }
             }
             toggles.forEach(toggle => {
@@ -380,20 +411,9 @@
                 toggle.addEventListener('change', function() { updatePanelState(this); });
             });
 
-            function validateSettings(interfaceId, rules) {
-                const container = document.getElementById(interfaceId);
-                for (const rule of rules) {
-                    const isSelected = container.querySelector(`input[name="${rule.name}"]:checked`);
-                    if (!isSelected) {
-                        alert(`Configuration incomplete: ${rule.label} is required!`);
-                        return false;
-                    }
-                }
-                return true;
-            }
+            // QSS 中，Message 0 和 Message 1 的算子不能重複
             const msg0Radios = document.querySelectorAll('input[name="op_msg_0"]');
             const msg1Radios = document.querySelectorAll('input[name="op_msg_1"]');
-
             function syncExclusion() {
                 const val0 = document.querySelector('input[name="op_msg_0"]:checked')?.value;
                 const val1 = document.querySelector('input[name="op_msg_1"]:checked')?.value;
@@ -405,81 +425,22 @@
             });
             syncExclusion();
 
+            // QKD Start 按鈕邏輯
             document.getElementById('qkd-start-btn').addEventListener('click', () => {
-                const interfaceDiv = document.getElementById('qkd-interface');
-                const isEveOn = interfaceDiv.querySelector('.status-toggle').checked;
-                const rules = [
-                    {name: 'a_particle', label: 'Alice Particle'}, {name: 'a_basis', label: 'Alice Basis'},
-                    {name: 'b_particle', label: 'Bob Particle'}, {name: 'b_basis', label: 'Bob Basis'}
-                ];
-                if (isEveOn) {
-                    rules.push({name: 'e_attack', label: 'Eve Attack Selection'});
+                const algo = document.getElementById('qkd-algo-select').value;
+                if (algo === 'bb84') {
+                    window.location.href = 'bb84_analysis.html';
+                } else if (algo === 'b92') {
+                    window.location.href = 'b92_analysis.html';
                 }
-                if (!validateSettings('qkd-interface', rules)) return;
-                const qkdSettings = {
-                    alice: {isOn: true, particle: interfaceDiv.querySelector('input[name="a_particle"]:checked').nextElementSibling.innerText, basis: interfaceDiv.querySelector('input[name="a_basis"]:checked').nextElementSibling.innerText},
-                    bob: {isOn: true, particle: interfaceDiv.querySelector('input[name="b_particle"]:checked').nextElementSibling.innerText, basis: interfaceDiv.querySelector('input[name="b_basis"]:checked').nextElementSibling.innerText},
-                    eve: {isOn: isEveOn, attack: isEveOn ? interfaceDiv.querySelector('input[name="e_attack"]:checked').nextElementSibling.innerText : "None"}
-                };
-                localStorage.setItem('qkdSettings', JSON.stringify(qkdSettings));
-                window.location.href = 'QKDanalysis.html';
             });
 
+            // QSS Start 按鈕邏輯
             document.getElementById('qss-start-btn').addEventListener('click', () => {
-                const interfaceDiv = document.getElementById('qss-interface');
-                const isEveOn = interfaceDiv.querySelector('.theme-red .status-toggle').checked;
-                
-                // 取得 Charlie 勾選的所有基底 (陣列)
-                const charlieOpe = Array.from(interfaceDiv.querySelectorAll('input[name="qss_c_operator"]:checked')).map(cb => cb.value);
-                
-                // 定義驗證規則
-                const rules = [
-                    {name: 'qss_b_particle', label: '1. Bob Particle'}, 
-                    {name: 'qss_b_basis', label: '1. Bob Basis'},
-                    {name: 'qss_c_particle', label: '2. Charlie Particle'},
-                    {name: 'qss_a_particle', label: '3. Alice Message Selection'}, 
-                    {name: 'qss_a_msg', label: '3. Alice Basis'},
-                    {name: 'op_msg_0', label: '3. Alice Message 0 Operator'}, // 新增驗證
-                    {name: 'op_msg_1', label: '3. Alice Message 1 Operator'}  // 新增驗證
-                ];
-                
-                if (isEveOn) {
-                    rules.push({name: 'qss_e_attack', label: 'Eve Attack Selection'});
+                const algo = document.getElementById('qss-algo-select').value;
+                if (algo === 'hbb') {
+                    window.location.href = 'hbb_analysis.html'; 
                 }
-                
-                // 基礎驗證
-                if (!validateSettings('qss-interface', rules)) return;
-                
-                // 獨立驗證 Charlie (因為是多選)
-                if (charlieOpe.length === 0) {
-                    alert("Configuration incomplete: 2. Charlie Basis is required!");
-                    return;
-                }
-
-                const qssSettings = {
-                    bob: {
-                        particle: interfaceDiv.querySelector('input[name="qss_b_particle"]:checked').nextElementSibling.innerText,
-                        basis: interfaceDiv.querySelector('input[name="qss_b_basis"]:checked').nextElementSibling.innerText
-                    },
-                    charlie: {
-                        particle: interfaceDiv.querySelector('input[name="qss_c_particle"]:checked').nextElementSibling.innerText,
-                        operator: charlieOpe
-                    },
-                    alice: {
-                        particle: interfaceDiv.querySelector('input[name="qss_a_particle"]:checked').nextElementSibling.innerText,
-                        msg: interfaceDiv.querySelector('input[name="qss_a_msg"]:checked').nextElementSibling.innerText,
-                        message0Op: interfaceDiv.querySelector('input[name="op_msg_0"]:checked').value,
-                        message1Op: interfaceDiv.querySelector('input[name="op_msg_1"]:checked').value
-                    },
-                    eve: {
-                        isOn: isEveOn,
-                        attack: isEveOn ? interfaceDiv.querySelector('input[name="qss_e_attack"]:checked').nextElementSibling.innerText : "None",
-                        location: isEveOn ? interfaceDiv.querySelector('select[name="qss_e_location"]').value : "None"
-                    }
-                };
-                // 儲存並跳轉
-                localStorage.setItem('qssSettings', JSON.stringify(qssSettings));
-                window.location.href = 'QSSanalysis.html';
             });
         });
     </script>
