@@ -122,7 +122,6 @@
         '|+⟩': {'I': '|+⟩', 'X': '|+⟩', 'Y': '|−⟩',  'Z': '|−⟩', 'H': '|0⟩'},
         '|−⟩': {'I': '|−⟩', 'X': '-|−⟩', 'Y': '-|+⟩', 'Z': '|+⟩',  'H': '|1⟩'}
     };
-
     function applyGate(stateStr, gate) {
         if (!stateStr || !gate) return stateStr;
         let isNegative = stateStr.startsWith('-') || stateStr.startsWith('−');
@@ -133,7 +132,6 @@
         if (isNegative) result = result.startsWith('-') ? result.substring(1) : '-' + result;
         return result;
     }
-
     function measureState(stateStr, basis) {
         let s = stateStr.replace('-', '').replace('−', '-'); 
         if (basis === 'Z') {
@@ -147,7 +145,6 @@
         }
         return [{state: stateStr, probSplit: 1.0}];
     }
-
     function toFraction(dec) {
         for (let den = 1; den <= 64; den++) {
             let num = Math.round(dec * den);
@@ -155,35 +152,29 @@
         }
         return {num: Math.round(dec*1000), den: 1000};
     }
-
     let qssSettings = JSON.parse(localStorage.getItem('qssSettings')) || {
         "bob": {"particle": "single", "basis": "Z"},
         "charlie": {"particle": "single", "operator": ["I", "Y", "H"]},
         "alice": {"particle": "single", "msg": "0", "message0Op": "I", "message1Op": "X"},
         "eve": {"isOn": true, "attack": "Intercept-resend", "location": "1_2"}
     };
-
     function formatRole(roleName, data) {
         if (!data) return '';
         let extraClass = '';
         let title = `${roleName}`;
-        
         if (roleName === 'Eavesdropper') {
             extraClass = data.isOn ? 'eve-on' : 'eve-off';
-            title = `${roleName} ：${data.isOn ? 'ON' : 'OFF'}`;
-        }
+            title = `${roleName} ：${data.isOn ? 'ON' : 'OFF'}`;}
         let details = '';
         const keyMap = {
             "particle": "Particle", "basis": "Measurement Basis", "operator": "Operators",
             "msg": "Secret Message", "message0Op": "Operation (Bit 0)", "message1Op": "Operation (Bit 1)",
-            "attack": "Attack Strategy", "location": "Attack Location"
-        };
+            "attack": "Attack Strategy", "location": "Attack Location"};
         for (const [key, value] of Object.entries(data)) {
             if (key !== 'isOn') {
                 let displayValue = Array.isArray(value) ? value.join(', ') : value;
                 let displayKey = keyMap[key] || key;
-                details += `<div><b>${displayKey}</b>: ${displayValue}</div>`;
-            }
+                details += `<div><b>${displayKey}</b>: ${displayValue}</div>`;}
         }
         return `<div class="setting-item ${extraClass}"><strong>${title}</strong><span>${details}</span></div>`;
     }
@@ -301,19 +292,15 @@
         } else if (type.includes('op')) { nodeContent = `<div class="qss-shape color-op">${content}</div>`; }
         return `<div class="node ${extraClass}" style="left: ${x}%; top: ${y}px;" ${extraProps}>${nodeContent}</div>`;
     }
-
     function renderQSSTree(initialState, bobBasis) {
         const linesContainer = document.getElementById('qss-lines');
         const nodesContainer = document.getElementById('qss-nodes');
         const avatarsContainer = document.getElementById('avatars-container');
         linesContainer.innerHTML = `<defs><marker id="arrow-qss" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#333" /></marker></defs>`;
         nodesContainer.innerHTML = '';
-        
         const operators = qssSettings.charlie.operator;
         const aliceOp = qssSettings.alice.msg === "1" ? qssSettings.alice.message1Op : qssSettings.alice.message0Op;
         const eveLoc = qssSettings.eve.isOn ? qssSettings.eve.location : "none";
-        
-        // 渲染對應的 Avatar 與左右切換按鈕
         if (eveLoc === "1_2") {
             avatarsContainer.innerHTML = `
                 <div class="character-avatar avatar-bob-1" style="left: 4.3%; width: 88px; top: 1%;"><img src="pictures/cat_bob.svg" alt="Bob"></div>
@@ -375,8 +362,6 @@
                 <div class="character-avatar avatar-bob-2" style="left: 89%;"><img src="pictures/cat_bob.svg" alt="Bob"></div>
             `;
         }
-
-        // 定義每一種情境的橫向座標
         let X_MAP = {};
         if (eveLoc === "1_2") {
             X_MAP = {
