@@ -169,6 +169,10 @@
             if (key !== 'isOn') {
                 let displayValue = Array.isArray(value) ? value.join(', ') : value;
                 let displayKey = keyMap[key] || key;
+                if (key === 'location' && typeof value === 'string' && value.includes('_')) {
+                const [a, b] = value.split('_');
+                displayValue = `between ${a} and ${b}`;
+            }
                 details += `<div><b>${displayKey}</b>: ${displayValue}</div>`;}
         }
         return `<div class="setting-item ${extraClass}"><strong>${title}</strong><span>${details}</span></div>`;
