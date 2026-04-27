@@ -30,14 +30,14 @@
         input:checked + .slider:before { transform: translateX(24px); }
         .eve-switch-card { position: absolute; top: -50px; left: 800px; display: flex; align-items: center; gap: 15px; background: #fff; padding: 8px 20px; border-radius: 30px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 10; border: 2px solid #D32F2F; }
         .character-avatar { position: absolute; top: -2%; transform: translateX(-50%); z-index: 10; display: flex; flex-direction: column; padding: 8px 20px; border-radius: 16px; box-shadow: 0 4px 8px rgba(0,0,0,0.15); background-color: #ffffff; }
-        .avatar-alice { border: 3px solid #004BA0; }
-        .avatar-bob { border: 3px solid #4C80C5; }
-        .avatar-eve { border: 3px solid #D32F2F; }
+        .avatar-alice { border: 3px solid #004BA0; width: 200px;}
+        .avatar-bob { border: 3px solid #4C80C5; width: 200px;}
+        .avatar-eve { border: 3px solid #D32F2F; width: 200px; }
         .eve-line { transition: all 0.3s ease; }
         .eve-detected { background: #D32F2F !important; color: white !important; border: none !important; box-shadow: 0 0 10px rgba(211, 47, 47, 0.4); }
         .eve-undetected { background: #f5f5f5 !important; color: #999 !important; border: 3px solid #D32F2F !important; }
         .eve-active-normal { background: #004ba0 !important; color: white !important; border: none !important; }
-        .eve-active-red { background: #d32f2f !important; color: white !important; border: none !important; }
+        .eve-active-red { background: #D32F2F !important; color: white !important; border: none !important; }
         .eve-inactive-normal { background: #e0e0e0 !important; color: #666 !important; border: none !important; }
     </style>
 </head>
@@ -98,7 +98,7 @@
 
             <div class="diagram-inner" id="eve-diagram" style="display: none;">
                 <div class="character-avatar avatar-alice" style="left: 8%;"><img src="pictures/cat_alice.svg" alt="Alice"></div>
-                <div class="character-avatar avatar-eve" style="left: 29%;"><img src="pictures/Eavesdropper.svg" alt="Eve" style="width: 60px;"></div>
+                <div class="character-avatar avatar-eve" style="left: 37%;"><img src="pictures/Eavesdropper.svg" alt="Eve" style="width: 60px;"></div>
                 <div class="character-avatar avatar-bob" style="left: 65%;"><img src="pictures/cat_bob.svg" alt="Bob"></div>
 
                 <svg class="arrows" style="width: 100%; height: 100%; position: absolute; top: 0; left: 0; z-index: 1;">
@@ -130,21 +130,18 @@
                     <line id="bl-8" x1="69%" y1="87%" x2="82%" y2="91%" stroke-width="3" class="eve-line" />
                     <line id="bl-9" x1="69%" y1="103%" x2="82%" y2="103%" stroke-width="3" class="eve-line" />
                 </svg>
-
                 <div class="node" style="left: 8%; top: 55%;"><img id="eve-view-alice-key" class="polarizer-img" src=""><div id="eve-view-alice-state" class="state-circle" style="background:#004ba0; color:white;">-</div></div>
                 <div class="node" style="left: 29%; top: 30%;"><img id="eve-pol-same" class="polarizer-img" src=""></div>
                 <div class="node" style="left: 29%; top: 80%;"><img id="eve-pol-diff" class="polarizer-img" src=""></div>
                 <div class="node" style="left: 46%; top: 30%;"><div id="eve-state-same" class="state-circle eve-active-red">-</div></div>
                 <div class="node" style="left: 46%; top: 65%;"><div id="eve-state-diff1" class="state-circle eve-active-red">-</div></div>
                 <div class="node" style="left: 46%; top: 95%;"><div id="eve-state-diff2" class="state-circle eve-active-red">-</div></div>
-
                 <div class="node" style="left: 65%; top: 20%;"><img id="eve-bob-pol-1" class="polarizer-img"></div>
                 <div class="node" style="left: 65%; top: 40%;"><img id="eve-bob-pol-2" class="polarizer-img"></div>
                 <div class="node" style="left: 65%; top: 57%;"><img id="eve-bob-pol-3" class="polarizer-img"></div>
                 <div class="node" style="left: 65%; top: 73%;"><img id="eve-bob-pol-4" class="polarizer-img"></div>
                 <div class="node" style="left: 65%; top: 87%;"><img id="eve-bob-pol-5" class="polarizer-img"></div>
                 <div class="node" style="left: 65%; top: 103%;"><img id="eve-bob-pol-6" class="polarizer-img"></div>
-
                 <div class="result-header" style="position: absolute; left: 85%; top: 1%; transform: translateX(-50%); background:#d6e4ff; padding:8px 16px; border-radius:8px; font-weight:bold; color:#003366; z-index:2; text-align:center;">Bob's<br>Measure</div>
                 <div class="node" style="left: 85%; top: 20%;"><div id="eve-bob-res-1" class="state-circle">-</div></div>
                 <div class="node" style="left: 85%; top: 35%;"><div id="eve-bob-res-2" class="state-circle">-</div></div>
@@ -155,7 +152,6 @@
                 <div class="node" style="left: 85%; top: 83%;"><div id="eve-bob-res-7" class="state-circle">-</div></div>
                 <div class="node" style="left: 85%; top: 91%;"><div id="eve-bob-res-8" class="state-circle">-</div></div>
                 <div class="node" style="left: 85%; top: 103%;"><div id="eve-bob-res-9" class="state-circle">-</div></div>
-
                 <div class="result-header" style="position: absolute; left: 96%; top: 1%; transform: translateX(-50%); background:#ffebee; padding:8px 16px; border-radius:8px; font-weight:bold; color:#D32F2F; z-index:2; text-align:center; height: 43px; display:flex; align-items:center;">Detected</div>
                 <div class="node" style="left: 98%; top: 20%;"><div id="eve-bob-mark-1" class="result-circle">✖</div></div>
                 <div class="node" style="left: 98%; top: 35%;"><div id="eve-bob-mark-2" class="result-circle">✖</div></div>
