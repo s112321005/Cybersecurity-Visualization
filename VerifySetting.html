@@ -16,6 +16,11 @@
         .page-title { border: 2px solid #0047AB; color: #000; padding: 10px 40px; border-radius: 10px; font-size: 20px; font-weight: bold; }
         .protocol-selection { text-align: center; margin-bottom: 30px; padding: 20px; background-color: #f0f4f8; border-radius: 10px; border: 1px dashed #0047AB; }
         .protocol-selection label { font-size: 18px; font-weight: bold; color: #0047AB; margin-right: 15px; }
+        .top-selection-area { display: flex; justify-content: center; align-items: center; gap: 40px; margin-bottom: 30px; padding: 20px; background-color: #f0f4f8; border-radius: 10px; border: 1px dashed #0047AB; }
+        .selection-group { display: flex; align-items: center; }
+        .selection-group label { font-size: 18px; font-weight: bold; color: #0047AB; margin-right: 15px; }
+        .custom-select { padding: 8px 20px; font-size: 16px; border: 2px solid #0047AB; border-radius: 8px; color: #0047AB; font-weight: bold; outline: none; cursor: pointer; background-color: white; transition: all 0.3s ease; }
+        .custom-select:hover { box-shadow: 0 4px 12px rgba(0,71,171,0.15); }
         .custom-select { padding: 8px 20px; font-size: 16px; border: 2px solid #0047AB; border-radius: 8px; color: #0047AB; font-weight: bold; outline: none; cursor: pointer; background-color: white; transition: all 0.3s ease; }
         .custom-select:hover { box-shadow: 0 4px 12px rgba(0,71,171,0.15); }
         .main-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; position: relative; }
@@ -95,24 +100,30 @@
                 <div class="page-title">Verify Setting</div>
             </div>
         </div>
-        <div class="protocol-selection">
-            <label for="protocol-select">Protocol:</label>
-            <select id="protocol-select" class="custom-select">
-                <option value="none" disabled selected>-- select protocol --</option>
-                <option value="qkd">QKD</option>
-                <option value="qss">QSS</option>
-                <option value="entanglement">Entanglement</option>
-            </select>
-        </div>
-
-        <div id="qkd-interface" class="protocol-interface" style="display: none;">
-            <div style="text-align: center; margin-bottom: 25px;">
-                <label style="font-size: 18px; font-weight: bold; color: #0047AB; margin-right: 15px;">Sub-Protocol:</label>
-                <select id="qkd-sub-select" class="custom-select">
+         <div class="top-selection-area">
+            <div class="selection-group">
+                <label for="protocol-select">Protocol:</label>
+                <select id="protocol-select" class="custom-select">
+                    <option value="none" disabled selected>-- select protocol --</option>
+                    <option value="qkd">QKD</option>
+                    <option value="qss">QSS</option>
+                    <option value="entanglement">Entanglement</option>
+                </select>
+            </div>
+            <div class="selection-group" id="algo-group" style="display: none;">
+                <select id="qkd-sub-select" class="custom-select algo-select" style="display: none;">
                     <option value="bb84" selected>BB84</option>
                     <option value="b92">B92</option>
                 </select>
+                <select id="qss-sub-select" class="custom-select algo-select" style="display: none;">
+                    <option value="zlm" selected>ZhangLiMan</option>
+                </select>
             </div>
+        </div>
+
+
+        <div id="qkd-interface" class="protocol-interface" style="display: none;">
+            
 
             <div class="main-grid">
                 <div class="character-col" id="alice-col">
@@ -173,12 +184,6 @@
         </div>
 
         <div id="qss-interface" class="protocol-interface" style="display: none;">
-            <div style="text-align: center; margin-bottom: 25px;">
-                <label style="font-size: 18px; font-weight: bold; color: #0047AB; margin-right: 15px;">Sub-Protocol:</label>
-                <select id="qss-sub-select" class="custom-select">
-                    <option value="hbb" selected>HBB</option>
-                </select>
-            </div>
 
             <div class="main-grid">
                 <div class="character-col" id="bob-col">
@@ -358,12 +363,22 @@
         document.addEventListener('DOMContentLoaded', () => {
             const protocolSelect = document.getElementById('protocol-select');
             const interfaces = document.querySelectorAll('.protocol-interface');
-            
+            const algoGroup = document.getElementById('algo-group');
+            const algoSelects = document.querySelectorAll('.algo-select');
             protocolSelect.addEventListener('change', function() {
                 interfaces.forEach(iface => iface.style.display = 'none');
+                                algoSelects.forEach(select => select.style.display = 'none');
                 const selectedValue = this.value;
-                if (selectedValue !== 'none') document.getElementById(`${selectedValue}-interface`).style.display = 'block';
-            });
+                if (selectedValue !== 'none') {
+                    document.getElementById(`${selectedValue}-interface`).style.display = 'block';
+                    const correspondingAlgoSelect = document.getElementById(`${selectedValue}-algo-select`);
+                    if (correspondingAlgoSelect) {
+                        algoGroup.style.display = 'flex'; // 顯示整個 Algorithm 區塊
+                        correspondingAlgoSelect.style.display = 'block'; // 顯示該 protocol 的 specific select
+                    } else {
+                        algoGroup.style.display = 'none'; // Entanglement 時隱藏
+                    }
+                }});
 
             const toggles = document.querySelectorAll('.status-toggle');
             function updatePanelState(toggleElement) {
@@ -507,8 +522,8 @@
                 localStorage.setItem('qssSettings', JSON.stringify(qssSettings));
                 
                 // 依照子選項跳轉
-                if(subProtocol === 'hbb'){
-                    window.location.href = 'hbb_analysis.html';
+                if(subProtocol === 'zlm'){
+                    window.location.href = 'zlm_analysis.html';
                 }
             });
         });
