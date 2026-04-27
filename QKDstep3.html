@@ -36,7 +36,8 @@
         .eve-line { transition: all 0.3s ease; }
         .eve-detected { background: #D32F2F !important; color: white !important; border: none !important; box-shadow: 0 0 10px rgba(211, 47, 47, 0.4); }
         .eve-undetected { background: #f5f5f5 !important; color: #999 !important; border: 3px solid #D32F2F !important; }
-        .eve-active-normal { background: #D32F2F !important; color: white !important; border: none !important; }
+        .eve-active-normal { background: #004ba0 !important; color: white !important; border: none !important; }
+        .eve-active-red { background: #d32f2f !important; color: white !important; border: none !important; }
         .eve-inactive-normal { background: #e0e0e0 !important; color: #666 !important; border: none !important; }
     </style>
 </head>
@@ -133,9 +134,9 @@
                 <div class="node" style="left: 8%; top: 55%;"><img id="eve-view-alice-key" class="polarizer-img" src=""><div id="eve-view-alice-state" class="state-circle" style="background:#004ba0; color:white;">-</div></div>
                 <div class="node" style="left: 29%; top: 30%;"><img id="eve-pol-same" class="polarizer-img" src=""></div>
                 <div class="node" style="left: 29%; top: 80%;"><img id="eve-pol-diff" class="polarizer-img" src=""></div>
-                <div class="node" style="left: 46%; top: 30%;"><div id="eve-state-same" class="state-circle eve-active-normal">-</div></div>
-                <div class="node" style="left: 46%; top: 65%;"><div id="eve-state-diff1" class="state-circle eve-active-normal">-</div></div>
-                <div class="node" style="left: 46%; top: 95%;"><div id="eve-state-diff2" class="state-circle eve-active-normal">-</div></div>
+                <div class="node" style="left: 46%; top: 30%;"><div id="eve-state-same" class="state-circle eve-active-red">-</div></div>
+                <div class="node" style="left: 46%; top: 65%;"><div id="eve-state-diff1" class="state-circle eve-active-red">-</div></div>
+                <div class="node" style="left: 46%; top: 95%;"><div id="eve-state-diff2" class="state-circle eve-active-red">-</div></div>
 
                 <div class="node" style="left: 65%; top: 20%;"><img id="eve-bob-pol-1" class="polarizer-img"></div>
                 <div class="node" style="left: 65%; top: 40%;"><img id="eve-bob-pol-2" class="polarizer-img"></div>
