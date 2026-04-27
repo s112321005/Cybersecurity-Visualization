@@ -26,8 +26,11 @@
                     <div class="option-row basis-z" onclick="selectStateBB84(this, '| ↑ ⟩', 'rectilinear')"><div class="state-btn">| 1 ⟩</div><div class="arrow-icon">➔</div><div class="state-btn">| ↑ ⟩</div></div>
                     <div class="option-row basis-x" onclick="selectStateBB84(this, '|↗⟩', 'diagonal')"><div class="state-btn">|十⟩</div><div class="arrow-icon">➔</div><div class="state-btn">|↗⟩</div></div>
                     <div class="option-row basis-x" onclick="selectStateBB84(this, '|↖⟩', 'diagonal')"><div class="state-btn">|一⟩</div><div class="arrow-icon">➔</div><div class="state-btn">|↖⟩</div></div>
+                </div>                
+                <div class="settings-panel" style="margin-top: 20px;">
+                    <h4>Current Settings</h4>
+                    <div class="settings-content"></div>
                 </div>
-                <div class="hint-text">Select to prepare <br>Alice's message</div>
             </div>
             <div class="diagram-area">
                 <svg class="arrows">
@@ -73,10 +76,6 @@
                 <div class="result-circle inactive" style="left: 90%; top: 56%; width: 50px; height: 50px;">✖</div>
                 <div class="result-circle inactive" style="left: 90%; top: 96%; width: 50px; height: 50px;">✖</div>
             </div>
-            <div class="settings-panel">
-                <h4>Current Settings</h4>
-                <div class="settings-content"></div>
-            </div>
         </div>
     </div>
 </div>
@@ -103,8 +102,11 @@
                     <div class="option-row basis-x" onclick="selectStateBB84Eve(this, '|↖⟩', 'diagonal')">
                         <div class="state-btn">|一⟩</div><div class="arrow-icon">➔</div><div class="state-btn">|↖⟩</div>
                     </div>
+                </div>                
+                <div class="settings-panel" style="margin-top: 20px;">
+                    <h4>Current Settings</h4>
+                    <div class="settings-content"></div>
                 </div>
-                <div class="hint-text">Select to prepare <br>Alice's message</div>
             </div>
             <div class="diagram-area eve-layout" style="height: 900px;">
                 <svg class="arrows" style="width: 100%; height: 100%; position: absolute; z-index: 1;">
@@ -166,10 +168,6 @@
                 <div class="node bob-same-node" style="left: 88%; top: 78%;"><div class="state-circle" id="bob-final-7">|→⟩</div></div>
                 <div class="node bob-same-node" style="left: 88%; top: 86%;"><div class="state-circle eve-error" id="bob-final-8">|↑⟩</div></div>
                 <div class="node bob-diff-node" style="left: 88%; top: 98%;"><div class="state-circle inactive" id="bob-final-9" style="transform: rotate(45deg);"><span style="transform: rotate(-45deg); display:block;">|↗⟩</span></div></div>
-            </div>
-            <div class="settings-panel">
-                <h4>Current Settings</h4>
-                <div class="settings-content"></div>
             </div>
         </div>
     </div>
