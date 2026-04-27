@@ -111,20 +111,16 @@
                 </select>
             </div>
             <div class="selection-group" id="algo-group" style="display: none;">
-                <select id="qkd-sub-select" class="custom-select algo-select" style="display: none;">
+                <select id="qkd-sub-select" class="custom-select sub-select" style="display: none;">
                     <option value="bb84" selected>BB84</option>
                     <option value="b92">B92</option>
                 </select>
-                <select id="qss-sub-select" class="custom-select algo-select" style="display: none;">
+                <select id="qss-sub-select" class="custom-select sub-select" style="display: none;">
                     <option value="zlm" selected>ZhangLiMan</option>
                 </select>
             </div>
         </div>
-
-
         <div id="qkd-interface" class="protocol-interface" style="display: none;">
-            
-
             <div class="main-grid">
                 <div class="character-col" id="alice-col">
                     <img src="pictures/cat_alice.svg" class="character-img" alt="Alice">
@@ -358,28 +354,25 @@
             <div style="text-align: center; margin-top: 30px;"><button id="ent-start-btn" class="name-tag start" style="cursor: pointer; font-size: 18px; padding: 10px 40px; border: none;">Start Entanglement</button></div>
         </div>
     </div>
-
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const protocolSelect = document.getElementById('protocol-select');
             const interfaces = document.querySelectorAll('.protocol-interface');
             const algoGroup = document.getElementById('algo-group');
-            const algoSelects = document.querySelectorAll('.algo-select');
+            const algoSelects = document.querySelectorAll('.sub-select');
             protocolSelect.addEventListener('change', function() {
                 interfaces.forEach(iface => iface.style.display = 'none');
-                                algoSelects.forEach(select => select.style.display = 'none');
+                algoSelects.forEach(select => select.style.display = 'none');
                 const selectedValue = this.value;
                 if (selectedValue !== 'none') {
                     document.getElementById(`${selectedValue}-interface`).style.display = 'block';
-                    const correspondingAlgoSelect = document.getElementById(`${selectedValue}-algo-select`);
+                    const correspondingAlgoSelect = document.getElementById(`${selectedValue}-sub-select`);
                     if (correspondingAlgoSelect) {
                         algoGroup.style.display = 'flex'; // 顯示整個 Algorithm 區塊
                         correspondingAlgoSelect.style.display = 'block'; // 顯示該 protocol 的 specific select
-                    } else {
-                        algoGroup.style.display = 'none'; // Entanglement 時隱藏
-                    }
-                }});
+                    } else algoGroup.style.display = 'none'; // Entanglement 時隱藏
 
+                }});
             const toggles = document.querySelectorAll('.status-toggle');
             function updatePanelState(toggleElement) {
                 const col = toggleElement.closest('.character-col');
@@ -401,12 +394,10 @@
                     inputs.forEach(input => input.disabled = true);
                 }
             }
-            
             toggles.forEach(toggle => {
                 updatePanelState(toggle);
                 toggle.addEventListener('change', function() { updatePanelState(this); });
             });
-            
             function validateSettings(interfaceId, rules) {
                 const container = document.getElementById(interfaceId);
                 for (const rule of rules) {
@@ -418,7 +409,6 @@
                 }
                 return true;
             }
-
             const msg0Radios = document.querySelectorAll('input[name="op_msg_0"]');
             const msg1Radios = document.querySelectorAll('input[name="op_msg_1"]');
             function syncExclusion() {
@@ -431,8 +421,6 @@
                 r.addEventListener('change', syncExclusion);
             });
             syncExclusion();
-
-            // QKD Start 按鈕邏輯
             document.getElementById('qkd-start-btn').addEventListener('click', () => {
                 const interfaceDiv = document.getElementById('qkd-interface');
                 const isEveOn = interfaceDiv.querySelector('.status-toggle').checked;
@@ -440,38 +428,26 @@
                     {name: 'a_particle', label: 'Alice Particle'}, {name: 'a_basis', label: 'Alice Basis'},
                     {name: 'b_particle', label: 'Bob Particle'}, {name: 'b_basis', label: 'Bob Basis'}
                 ];
-                if (isEveOn) {
-                    rules.push({name: 'e_attack', label: 'Eve Attack Selection'});
-                }
+                if (isEveOn) rules.push({name: 'e_attack', label: 'Eve Attack Selection'});
                 if (!validateSettings('qkd-interface', rules)) return;
-                
                 const qkdSettings = {
                     alice: {isOn: true, particle: interfaceDiv.querySelector('input[name="a_particle"]:checked').nextElementSibling.innerText, basis: interfaceDiv.querySelector('input[name="a_basis"]:checked').nextElementSibling.innerText},
                     bob: {isOn: true, particle: interfaceDiv.querySelector('input[name="b_particle"]:checked').nextElementSibling.innerText, basis: interfaceDiv.querySelector('input[name="b_basis"]:checked').nextElementSibling.innerText},
                     eve: {isOn: isEveOn, attack: isEveOn ? interfaceDiv.querySelector('input[name="e_attack"]:checked').nextElementSibling.innerText : "None"}
                 };
-                
-                // 取得子選項並決定跳轉網址
                 const subProtocol = document.getElementById('qkd-sub-select').value;
                 qkdSettings.subProtocol = subProtocol; // 儲存起來備用 (可選)
-                
                 localStorage.setItem('qkdSettings', JSON.stringify(qkdSettings));
-                
-                // 依照子選項跳轉
                 if(subProtocol === 'bb84'){
                     window.location.href = 'bb84_analysis.html';
                 } else if (subProtocol === 'b92'){
                     window.location.href = 'b92_analysis.html';
                 }
             });
-
-            // QSS Start 按鈕邏輯
             document.getElementById('qss-start-btn').addEventListener('click', () => {
                 const interfaceDiv = document.getElementById('qss-interface');
                 const isEveOn = interfaceDiv.querySelector('.theme-red .status-toggle').checked;
-
                 const charlieOpe = Array.from(interfaceDiv.querySelectorAll('input[name="qss_c_operator"]:checked')).map(cb => cb.value);
-
                 const rules = [
                     {name: 'qss_b_particle', label: '1. Bob Particle'}, 
                     {name: 'qss_b_basis', label: '1. Bob Basis'},
@@ -481,47 +457,22 @@
                     {name: 'op_msg_0', label: '3. Alice Message 0 Operator'}, 
                     {name: 'op_msg_1', label: '3. Alice Message 1 Operator'}
                 ];
-
-                if (isEveOn) {
+                if (isEveOn) 
                     rules.push({name: 'qss_e_attack', label: 'Eve Attack Selection'});
-                }
-
                 if (!validateSettings('qss-interface', rules)) return;
-
                 if (charlieOpe.length === 0) {
                     alert("Configuration incomplete: 2. Charlie Basis is required!");
                     return;
                 }
-
                 const qssSettings = {
-                    bob: {
-                        particle: interfaceDiv.querySelector('input[name="qss_b_particle"]:checked').nextElementSibling.innerText,
-                        basis: interfaceDiv.querySelector('input[name="qss_b_basis"]:checked').nextElementSibling.innerText
-                    },
-                    charlie: {
-                        particle: interfaceDiv.querySelector('input[name="qss_c_particle"]:checked').nextElementSibling.innerText,
-                        operator: charlieOpe
-                    },
-                    alice: {
-                        particle: interfaceDiv.querySelector('input[name="qss_a_particle"]:checked').nextElementSibling.innerText,
-                        msg: interfaceDiv.querySelector('input[name="qss_a_msg"]:checked').nextElementSibling.innerText,
-                        message0Op: interfaceDiv.querySelector('input[name="op_msg_0"]:checked').value,
-                        message1Op: interfaceDiv.querySelector('input[name="op_msg_1"]:checked').value
-                    },
-                    eve: {
-                        isOn: isEveOn,
-                        attack: isEveOn ? interfaceDiv.querySelector('input[name="qss_e_attack"]:checked').nextElementSibling.innerText : "None",
-                        location: isEveOn ? interfaceDiv.querySelector('select[name="qss_e_location"]').value : "None"
-                    }
+                    bob: {particle: interfaceDiv.querySelector('input[name="qss_b_particle"]:checked').nextElementSibling.innerText, basis: interfaceDiv.querySelector('input[name="qss_b_basis"]:checked').nextElementSibling.innerText},
+                    charlie: { particle: interfaceDiv.querySelector('input[name="qss_c_particle"]:checked').nextElementSibling.innerText, operator: charlieOpe},
+                    alice: { particle: interfaceDiv.querySelector('input[name="qss_a_particle"]:checked').nextElementSibling.innerText, msg: interfaceDiv.querySelector('input[name="qss_a_msg"]:checked').nextElementSibling.innerText, message0Op: interfaceDiv.querySelector('input[name="op_msg_0"]:checked').value, message1Op: interfaceDiv.querySelector('input[name="op_msg_1"]:checked').value },
+                    eve: {isOn: isEveOn, attack: isEveOn ? interfaceDiv.querySelector('input[name="qss_e_attack"]:checked').nextElementSibling.innerText : "None", location: isEveOn ? interfaceDiv.querySelector('select[name="qss_e_location"]').value : "None"}
                 };
-                
-                // 取得子選項並決定跳轉網址
                 const subProtocol = document.getElementById('qss-sub-select').value;
                 qssSettings.subProtocol = subProtocol;
-
                 localStorage.setItem('qssSettings', JSON.stringify(qssSettings));
-                
-                // 依照子選項跳轉
                 if(subProtocol === 'zlm'){
                     window.location.href = 'zlm_analysis.html';
                 }
