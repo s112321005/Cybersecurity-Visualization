@@ -3,7 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <base href="https://s112321005.github.io/Cybersecurity-Visualization/">
-    <title>Quantum Secret Sharing：ＺhangLiMan</title>
+    <title>Quantum Secret Sharing：ZhangLiMan</title>
+    
+    <script>
+        window.MathJax = {
+            tex: { inlineMath: [['\\(', '\\)']] }
+        };
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
     <style>
         :root {
             --primary-blue: #004aad;
@@ -64,7 +72,7 @@
         }
         .nav-btn:hover { background: var(--primary-blue); color: white; }
 
-        /* 主卡片（加高以容納底部運算框） */
+        /* 主卡片 */
         .main-card {
             width: min(1000px, 95vw); height: 650px; border: 3px solid var(--primary-blue); border-radius: 35px;
             position: relative; background: white; box-sizing: border-box; overflow: hidden;
@@ -79,58 +87,61 @@
 
         /* 網格排版 */
         .decision-grid { display: flex; align-items: center; justify-content: center; gap: 20px; width: 100%; }
-        .col { display: flex; flex-direction: column; justify-content: center; align-items: center; position: relative; }
+        
+        .col { 
+            display: flex; 
+            flex-direction: column; 
+            justify-content: center; 
+            align-items: center; 
+            position: relative; 
+            height: 60px; 
+        }
 
-        /* 角色圖片定位 */
-        .character-avatar { position: absolute; bottom: 100%; margin-bottom: 20px; z-index: 10; }
+        .character-avatar { 
+            position: absolute; 
+            top: -220px; 
+            height: 110px; 
+            width: auto;
+            z-index: 10; 
+        }
 
-        /* 膠囊標籤 */
+        .stage-title {
+            position: absolute;
+            top: -90px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: var(--primary-blue);
+            margin: 0;
+            width: 100%;
+            text-align: center;
+        }
+
         .result-capsule {
             padding: 12px 25px; border-radius: 30px; border: 2px solid var(--primary-blue);
             color: var(--primary-blue); font-weight: bold; font-size: 1.4rem;
             background: white; display: flex; align-items: center; justify-content: center;
             height: 30px; min-width: 100px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            z-index: 2;
         }
         .result-capsule.active { background: var(--primary-blue); color: white; }
 
         /* Charlie 選擇區域 */
-        .charlie-interactive { display: flex; flex-direction: column; align-items: center; gap: 15px; transition: opacity 0.3s ease; }
+        .charlie-interactive { 
+            position: absolute; top: 50%; transform: translateY(-50%); 
+            display: flex; flex-direction: column; align-items: center; gap: 15px; 
+            transition: opacity 0.3s ease; width: 100%;
+        }
         .charlie-choices { display: flex; gap: 15px; }
         
         .gate-btn {
             display: flex; flex-direction: column; align-items: center; cursor: pointer;
             padding: 15px; border-radius: 15px; border: 2px solid transparent; transition: all 0.2s; background: white;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-            min-width: 90px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05); min-width: 90px;
         }
         .gate-btn:hover { background-color: #f4f9ff; border-color: #80d8ff; transform: translateY(-5px); }
-        .gate-title { font-size: 1.5rem; font-weight: bold; color: var(--primary-blue); margin-bottom: 10px; }
+        .gate-title { font-size: 1.5rem; font-weight: bold; color: var(--primary-blue); margin-bottom: 5px; }
         
-        /* 矩陣與向量排版 (改為背景透明，模擬真實數學括號) */
-        .matrix-box {
-            display: grid; grid-template-columns: 1fr 1fr; gap: 5px 12px; text-align: center;
-            background: transparent; padding: 6px; font-weight: bold; font-size: 0.95rem; color: #333;
-            position: relative; border-left: 2px solid #333; border-right: 2px solid #333;
-        }
-        .matrix-box::before, .matrix-box::after {
-            content: ''; position: absolute; width: 4px; height: 100%; border: 2px solid #333; top: -2px;
-        }
-        .matrix-box::before { left: -2px; border-right: none; }
-        .matrix-box::after { right: -2px; border-left: none; }
-
-        .vector-box {
-            display: grid; grid-template-columns: 1fr; gap: 5px; text-align: center;
-            background: transparent; padding: 6px 10px; font-weight: bold; font-size: 0.95rem; color: #333;
-            position: relative; border-left: 2px solid #333; border-right: 2px solid #333;
-        }
-        .vector-box::before, .vector-box::after {
-            content: ''; position: absolute; width: 4px; height: 100%; border: 2px solid #333; top: -2px;
-        }
-        .vector-box::before { left: -2px; border-right: none; }
-        .vector-box::after { right: -2px; border-left: none; }
-        
-        .matrix-wrapper { display: flex; align-items: center; gap: 5px; }
-        .matrix-coeff { font-weight: bold; font-size: 1rem; color: #333; }
+        .math-display { font-size: 1.05rem; }
 
         .pulse { animation: pulse-anim 2s infinite; }
         @keyframes pulse-anim {
@@ -141,16 +152,20 @@
 
         /* Charlie 運算中的顯示 */
         .charlie-active-gate {
-            display: none; flex-direction: column; align-items: center;
+            position: absolute; top: 50%; transform: translateY(-50%);
+            display: none; flex-direction: column; align-items: center; width: 100%;
             animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+            z-index: 2; 
         }
-        @keyframes popIn { 0% { transform: scale(0.5); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+        @keyframes popIn { 
+            0% { transform: translateY(-50%) scale(0.5); opacity: 0; } 
+            100% { transform: translateY(-50%) scale(1); opacity: 1; } 
+        }
 
         /* 連接線條與箭頭 */
         .connector { 
             position: relative; display: flex; align-items: center; 
-            height: 50px; width: 0; opacity: 0;
-            transition: width 0.5s ease-out, opacity 0.2s ease; 
+            height: 50px; width: 0; opacity: 0; transition: width 0.5s ease-out, opacity 0.2s ease; 
         }
         .connector::before {
             content: ""; position: absolute; top: 50%; left: 0; width: 100%; height: 3px;
@@ -162,17 +177,11 @@
             border-left: 14px solid var(--primary-blue); transform: translateY(-50%);
             opacity: 0; transition: opacity 0.2s ease 0.4s;
         }
-        
         .connector.active { opacity: 1; width: 80px; }
         .arrow-connector.active::after { opacity: 1; }
-        .arrow-single { position: absolute; left: 0; top: 50%; transform: translateY(-50%); }
 
         /* 結果顯示 */
-        #results-area {
-            min-width: 150px; height: 180px; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative;
-        }
-        #results-area-title { color: gray; font-weight: bold; margin: 0; position: absolute; top: 5px; font-size: 0.9rem; }
-        .output-group { display: flex; align-items: center; margin-top: 25px; opacity: 0; transition: opacity 0.5s ease; }
+        .output-group { display: flex; align-items: center; opacity: 0; transition: opacity 0.5s ease; }
         .show-result .output-group { opacity: 1; }
 
         /* 解說面板與運算框 */
@@ -187,13 +196,11 @@
         .explain-title { font-weight: bold; font-size: 1.25rem; margin: 0; display: flex; align-items: center; gap: 8px; color: var(--primary-blue); }
         .explain-desc { color: #555; font-size: 1.1rem; margin: 0; line-height: 1.4; font-weight: bold; }
         
-        /* 專屬運算過程容器 */
         .calc-process-container {
             margin-top: 10px; background: white; border: 1px solid #d0e1f9; border-radius: 10px;
-            padding: 15px; display: flex; align-items: center; justify-content: center; gap: 12px;
+            padding: 15px; display: flex; align-items: center; justify-content: center; gap: 15px;
             font-size: 1.2rem; color: #333; box-shadow: inset 0 2px 4px rgba(0,0,0,0.02); overflow-x: auto;
         }
-        .math-operator { font-weight: bold; color: #666; margin: 0 5px; font-size: 1.2rem; }
 
         .retry-btn {
             padding: 8px 20px; border-radius: 20px; border: 2px solid #ccc;
@@ -226,7 +233,7 @@
 <div class="header">
     <div class="header-left">
         <a href="QuantumCybersecurityEducationPlatform.html" class="btn-back" title="back home">◀</a>
-        <div class="title-pill">Quantum Secret Sharing：ＺhangLiMan</div>
+        <div class="title-pill">Quantum Secret Sharing：ZhangLiMan</div>
     </div>
     <div class="header-center">STEP 2：Charlie's Operation</div>
     <div class="header-right">
@@ -240,9 +247,9 @@
     <div class="decision-grid" id="grid-container">
         
         <div class="col" style="min-width: 150px;">
-            <img src="pictures/cat_bob.svg" width="120" alt="Bob" class="character-avatar">
-            <p style="color:gray; font-weight:bold; margin-bottom: 5px; font-size: 0.9rem;">Bob Sent</p>
-            <div class="result-capsule active" style="margin-bottom: 10px;" id="input-state">-</div>
+            <img src="pictures/cat_bob.svg" alt="Bob" class="character-avatar">
+            <p class="stage-title">Bob Sent</p>
+            <div class="result-capsule active" id="input-state">-</div>
         </div>
 
         <div class="col" style="width: 80px;">
@@ -250,57 +257,45 @@
         </div>
 
         <div class="col" style="min-width: 320px;" id="charlie-col">
-            <img src="pictures/cat_alice.svg" width="120" alt="Charlie" class="character-avatar">
+            <img src="pictures/cat_alice.svg" alt="Charlie" class="character-avatar">
             
+            <p class="stage-title" id="charlie-title">Choose an Operation!</p>
+
             <div class="charlie-interactive" id="charlie-interactive">
-                <p style="margin:0; font-weight:bold; color:var(--primary-blue); font-size:1.1rem;">Choose an Operation!</p>
                 <div class="charlie-choices">
                     
                     <div class="gate-btn pulse" onclick="startOperationProcess('I')">
                         <div class="gate-title">I</div>
-                        <div class="matrix-box">
-                            <span>1</span><span>0</span>
-                            <span>0</span><span>1</span>
-                        </div>
+                        <div class="math-display">\( \begin{bmatrix} 1 & 0 \\ 0 & 1 \end{bmatrix} \)</div>
                     </div>
 
                     <div class="gate-btn pulse" onclick="startOperationProcess('Y')">
                         <div class="gate-title">Y</div>
-                        <div class="matrix-box">
-                            <span>0</span><span>1</span>
-                            <span>-1</span><span>0</span>
-                        </div>
+                        <div class="math-display">\( \begin{bmatrix} 0 & 1 \\ -1 & 0 \end{bmatrix} \)</div>
                     </div>
 
                     <div class="gate-btn pulse" onclick="startOperationProcess('H')">
                         <div class="gate-title">H</div>
-                        <div class="matrix-wrapper">
-                            <span class="matrix-coeff">1/√2</span>
-                            <div class="matrix-box">
-                                <span>1</span><span>1</span>
-                                <span>1</span><span>-1</span>
-                            </div>
-                        </div>
+                        <div class="math-display">\( \frac{1}{\sqrt{2}} \begin{bmatrix} 1 & 1 \\ 1 & -1 \end{bmatrix} \)</div>
                     </div>
 
                 </div>
             </div>
 
             <div class="charlie-active-gate" id="charlie-active-gate">
-                <p style="color:gray; font-weight:bold; margin-bottom: 5px; font-size: 0.9rem;">Charlie Applied</p>
                 <div class="gate-btn" id="charlie-gate-display" style="cursor: default; transform: none; border-color: var(--primary-blue); background: #f4f9ff;">
                     </div>
             </div>
         </div>
 
-        <div class="col" style="width: 80px; height: 160px; position:relative;">
-            <div class="connector arrow-connector arrow-single" id="arrow-out"></div>
+        <div class="col" style="width: 80px; margin-left: -15px;">
+            <div class="connector arrow-connector" id="arrow-out" style="width: 100%;"></div>
         </div>
 
-        <div class="col" id="results-area">
-            <p id="results-area-title">Outcome</p>
-            <div id="photon-landing-spot" style="width: 40px; height: 40px; margin-top: 25px;"></div>
-            <div class="output-group" id="output-result">
+        <div class="col" id="results-area" style="min-width: 150px;">
+            <p class="stage-title">Outcome</p>
+            <div id="photon-landing-spot" style="position: absolute; width: 40px; height: 40px; z-index: 5;"></div>
+            <div class="output-group" id="output-result" style="margin: 0; z-index: 2;">
                 <div class="result-capsule active" style="background:var(--match-green); border-color:var(--match-green);" id="final-state"> Waiting... </div>
             </div>
         </div>
@@ -327,25 +322,27 @@
     let finalStateStr = "";
     let selectedGate = "";
 
-    // 定義閘門在 Charlie Active 中要顯示的 HTML (保留英文字與底下的矩陣)
+    const gateLatex = {
+        'I': '\\begin{bmatrix} 1 & 0 \\\\ 0 & 1 \\end{bmatrix}',
+        'Y': '\\begin{bmatrix} 0 & 1 \\\\ -1 & 0 \\end{bmatrix}',
+        'H': '\\frac{1}{\\sqrt{2}}\\begin{bmatrix} 1 & 1 \\\\ 1 & -1 \\end{bmatrix}'
+    };
+
+    const vectorLatex = {
+        '|0⟩': '\\begin{bmatrix} 1 \\\\ 0 \\end{bmatrix}',
+        '|1⟩': '\\begin{bmatrix} 0 \\\\ 1 \\end{bmatrix}',
+        '|+⟩': '\\frac{1}{\\sqrt{2}}\\begin{bmatrix} 1 \\\\ 1 \\end{bmatrix}',
+        '|-⟩': '\\frac{1}{\\sqrt{2}}\\begin{bmatrix} 1 \\\\ -1 \\end{bmatrix}',
+        '-|1⟩': '-\\begin{bmatrix} 0 \\\\ 1 \\end{bmatrix}',
+        '-|+⟩': '-\\frac{1}{\\sqrt{2}}\\begin{bmatrix} 1 \\\\ 1 \\end{bmatrix}'
+    };
+
     const gateDisplayHTML = {
-        'I': `<div class="gate-title">I</div><div class="matrix-box"><span>1</span><span>0</span><span>0</span><span>1</span></div>`,
-        'Y': `<div class="gate-title">Y</div><div class="matrix-box"><span>0</span><span>1</span><span>-1</span><span>0</span></div>`,
-        'H': `<div class="gate-title">H</div><div class="matrix-wrapper"><span class="matrix-coeff">1/√2</span><div class="matrix-box"><span>1</span><span>1</span><span>1</span><span>-1</span></div></div>`
+        'I': `<div class="gate-title">I</div><div class="math-display">\\( ${gateLatex['I']} \\)</div>`,
+        'Y': `<div class="gate-title">Y</div><div class="math-display">\\( ${gateLatex['Y']} \\)</div>`,
+        'H': `<div class="gate-title">H</div><div class="math-display">\\( ${gateLatex['H']} \\)</div>`
     };
 
-    // 定義運算過程框框用的「矩陣」與「向量」結構 HTML
-    const matrixHTML = gateDisplayHTML; // 閘門直接沿用上面定義的 HTML 格式
-    const vectorHTML = {
-        '|0⟩': `<div class="vector-box"><span>1</span><span>0</span></div>`,
-        '|1⟩': `<div class="vector-box"><span>0</span><span>1</span></div>`,
-        '|+⟩': `<div class="matrix-wrapper"><span class="matrix-coeff">1/√2</span><div class="vector-box"><span>1</span><span>1</span></div></div>`,
-        '|-⟩': `<div class="matrix-wrapper"><span class="matrix-coeff">1/√2</span><div class="vector-box"><span>1</span><span>-1</span></div></div>`,
-        '-|1⟩': `<div class="matrix-wrapper"><span class="matrix-coeff">-1</span><div class="vector-box"><span>0</span><span>1</span></div></div>`,
-        '-|+⟩': `<div class="matrix-wrapper"><span class="matrix-coeff">-1/√2</span><div class="vector-box"><span>1</span><span>1</span></div></div>`
-    };
-
-    // 狀態對應規則定義
     const operationRules = {
         '|0⟩': { 'I': '|0⟩', 'Y': '-|1⟩', 'H': '|+⟩' },
         '|1⟩': { 'I': '|1⟩', 'Y': '|0⟩', 'H': '|-⟩' },
@@ -354,7 +351,6 @@
     };
 
     document.addEventListener("DOMContentLoaded", () => {
-        // 從 Step 1 獲取 Bob 的選擇
         const params = new URLSearchParams(window.location.search);
         let bobBasis = params.get("bobBasis"); 
         let bobMsg = params.get("bobMsg"); 
@@ -363,7 +359,6 @@
         let parsedData = savedData ? JSON.parse(savedData) : null;
         let useSavedData = false;
 
-        // 若從 Step 3 返回，嘗試恢復狀態
         if (parsedData) {
             if (!bobBasis || !bobMsg) {
                 useSavedData = true;
@@ -386,7 +381,6 @@
         }
     });
 
-    // 將 Bob 在 Step 1 的選擇轉換為量子態字串
     function getBobStateFromParams(basis, msg) {
         msg = String(msg);
         if (basis === "Z") {
@@ -396,21 +390,21 @@
         }
     }
 
-    // 點擊閘門按鈕或自動恢復時觸發
     function startOperationProcess(gate, skipAnimation = false) {
         selectedGate = gate;
         
-        // 隱藏選單，顯示已選閘門
         document.getElementById("charlie-interactive").style.display = "none";
         document.getElementById("hint-text").style.display = "none"; 
+        document.getElementById("charlie-title").innerText = "Charlie Applied"; 
         
         const activeGateUI = document.getElementById("charlie-active-gate");
         activeGateUI.style.display = "flex";
         
-        // 將選定的閘門（含文字與矩陣）完整注入
-        document.getElementById("charlie-gate-display").innerHTML = gateDisplayHTML[gate];
+        const gateDisplay = document.getElementById("charlie-gate-display");
+        gateDisplay.innerHTML = gateDisplayHTML[gate];
 
-        // 計算最終結果
+        if (window.MathJax && MathJax.typesetPromise) {MathJax.typesetPromise([gateDisplay]);}
+
         finalStateStr = operationRules[bobStateStr][gate];
         document.getElementById("final-state").textContent = finalStateStr;
         document.getElementById("results-area").classList.remove("show-result");
@@ -423,7 +417,6 @@
         }
     }
 
-    // 光子傳遞動畫
     function animateOperation() {
         const stage = document.getElementById('stage');
         const sourceEl = document.getElementById('input-state');
@@ -455,10 +448,8 @@
         
         stage.appendChild(particle);
         
-        // 第一段：Bob 到 Charlie
         requestAnimationFrame(() => { particle.style.animation = 'shoot-to-charlie 1.2s forwards cubic-bezier(0.4, 0, 0.2, 1)'; });
         
-        // 抵達 Charlie 後變化內容並前往 Outcome
         setTimeout(() => {
             document.getElementById("arrow-out").classList.add("active");
             particle.innerText = finalStateStr.replace('⟩', '').replace('|', ''); 
@@ -471,24 +462,23 @@
         }, 1300);
     }
 
-    // 顯示解說面板與運算過程框
     function displayFinalResult() {
         const resultsArea = document.getElementById("results-area");
         const explainBox = document.getElementById("explain-box");
         const calcContainer = document.getElementById("calc-process-container");
         
-        // 組合運算過程的 HTML：[矩陣] × [輸入向量] = [輸出向量] = 最終狀態
-        let calcHTML = `
-            ${matrixHTML[selectedGate]}
-            <span class="math-operator">×</span>
-            ${vectorHTML[bobStateStr]}
-            <span class="math-operator">=</span>
-            ${vectorHTML[finalStateStr]}
-            <span class="math-operator" style="color:var(--primary-blue); margin-left: 10px;">= ${finalStateStr}</span>
-        `;
+        // 組合純 LaTeX 的運算過程，並確保 "=" 對齊
+        let calcHTML = `<div class="math-display" style="display: flex; align-items: center; gap: 10px;">
+            \\( ${gateLatex[selectedGate]} \\times ${vectorLatex[bobStateStr]} = ${vectorLatex[finalStateStr]} \\)
+            <span style="color:var(--primary-blue); font-weight:bold;">= ${finalStateStr}</span>
+        </div>`;
         calcContainer.innerHTML = calcHTML;
 
-        // 將這回合的資料儲存至 LocalStorage
+        // 動態注入公式後，呼叫 MathJax 重新渲染
+        if (window.MathJax && MathJax.typesetPromise) {
+            MathJax.typesetPromise([calcContainer]);
+        }
+
         const qssData = {
             bobState: bobStateStr,
             charlieGate: selectedGate,
@@ -514,6 +504,7 @@
             document.getElementById("charlie-active-gate").style.display = "none";
             document.getElementById("charlie-interactive").style.display = "flex";
             document.getElementById("hint-text").style.display = "block";
+            document.getElementById("charlie-title").innerText = "Choose an Operation!";
         }, 300);
     }
 
