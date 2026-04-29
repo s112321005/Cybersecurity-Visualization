@@ -49,8 +49,10 @@
         .pill-radio span { display: inline-flex; padding: 4px 12px; border: 2px solid var(--primary-blue); border-radius: 20px; color: var(--primary-blue); font-weight: bold; font-size: 14px; cursor: pointer; background-color: white; text-align: center; min-width: 20px; justify-content: center; transition: all 0.3s ease; white-space: nowrap; }
         .pill-radio input:checked + span { background-color: #478CEA; color: white; border-color: #478CEA; }
         .disabled .pill-radio span { border-color: #b0b0b0 !important; color: #b0b0b0 !important; cursor: not-allowed; background-color: white !important; }
-        #alice-col .name-tag, #alice-col .status-toggle-static { background-color: var(--primary-blue) !important; }
-        #bob-col .name-tag, #bob-col .status-toggle-static { background-color: var(--bob-blue) !important; }
+        #alice-col .name-tag { background-color: #0047AB !important; color: #ffffff !important; }
+        #alice-col .status-toggle-static { background-color: #0047AB !important; color: #ffffff !important; }
+        #alice-col .control-panel:not(.disabled) .pill-radio input[type="radio"]:checked + span { background-color: #0047AB !important; border-color: #0047AB !important; }
+        #alice-col .control-panel:not(.disabled) .setting-title::before { background-color: #0047AB; }        #bob-col .name-tag, #bob-col .status-toggle-static { background-color: var(--bob-blue) !important; }
         #bob-col .control-panel:not(.disabled) { border-color: var(--bob-blue) !important; }
         #bob-col .control-panel:not(.disabled) .pill-radio span { border-color: var(--bob-blue) !important; color: var(--bob-blue) !important; }
         #bob-col .control-panel:not(.disabled) .pill-radio input:checked + span { background-color: var(--bob-blue) !important; color: white !important; }
@@ -132,7 +134,7 @@
     <div class="container">
         <div class="top-bar" style="display: flex; align-items: center; justify-content: flex-start; gap: 20px; margin-bottom: 20px;">            
             <a href="VerifySetting.html" class="btn-back">◀</a>
-            <div class="page-title">QKD：BB84</div>
+            <div class="page-title">Quantum Key Distribution：BB84</div>
         </div>
         <div class="main-content">
             <div class="sidebar">
@@ -197,7 +199,7 @@
     <div class="container">
         <div class="top-bar" style="display: flex; align-items: center; justify-content: flex-start; gap: 20px; margin-bottom: 20px;">            
             <a href="VerifySetting.html" class="btn-back">◀</a>
-            <div class="page-title">QKD：BB84 (Eve Intercept-Resend)</div>
+            <div class="page-title">Quantum Key Distribution：BB84</div>
         </div>
         <div class="main-content">
             <div class="sidebar">
@@ -310,7 +312,7 @@
         if (overlay.classList.contains('show')) {
             overlay.classList.remove('show');
             icon.innerText = '▼';
-            text.innerText = 'Quick Settings (BB84)';
+            text.innerText = ' Settings ⚙️';
         } else {
             overlay.classList.add('show');
             icon.innerText = '▲';
