@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <base href="https://s112321005.github.io/Cybersecurity-Visualization/">
+    <title>Quantum Secret Sharing：ＺhangLiMan</title>
+    <style>
+        :root {
+            --primary-blue: #004aad;
+            --dark-text: #333333;
+            --bg-color: #f8f9fa;
+            --photon-yellow: #ffeb3b; 
+            --match-green: #28a745;
+            --mismatch-red: #dc3545;
+        }
+
+        body {
+            font-family: 'Segoe UI', sans-serif; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center;    
+            padding: 40px 20px; 
+            background-color: var(--bg-color);
+            margin: 0;
+            overflow-y: scroll; 
+        }
+
+        /* 頂部導覽列 */
+        .header {
+            width: min(1000px, 95vw);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 25px;
+            animation: fadeIn 0.8s ease-out forwards;
+        }
+        
+        .header-left { display: flex; align-items: center; gap: 15px; }
+
+        .btn-back {
+            width: 40px; height: 40px; background-color: var(--primary-blue);
+            color: white; border-radius: 50%; display: flex; justify-content: center; align-items: center; 
+            text-decoration: none; font-size: 1rem; transition: transform 0.2s; cursor: pointer; border: none;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .btn-back:hover { transform: scale(1.1); }
+
+        .title-pill {
+            border: 2px solid var(--primary-blue); padding: 8px 20px;
+            border-radius: 30px; font-weight: bold; background: white; color: var(--dark-text);
+        }
+
+        .header-center { 
+            flex-grow: 1; margin-left: 20px; font-weight: bold; 
+            font-size: 1.2rem; color: var(--dark-text); text-align: center; 
+        }
+        
+        .header-right { display: flex; gap: 15px; }
+        
+        .nav-btn {
+            border: 2px solid var(--primary-blue); background: white; color: var(--dark-text);
+            padding: 10px 25px; border-radius: 30px; font-weight: bold; font-size: 1rem;
+            cursor: pointer; transition: all 0.2s;
+        }
+        .nav-btn:hover { background: var(--primary-blue); color: white; }
+
+        /* 主卡片（加高以容納底部運算框） */
+        .main-card {
+            width: min(1000px, 95vw); height: 650px; border: 3px solid var(--primary-blue); border-radius: 35px;
+            position: relative; background: white; box-sizing: border-box; overflow: hidden;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            padding-top: 15px; padding-bottom: 80px; animation: fadeIn 0.8s ease-out forwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* 網格排版 */
+        .decision-grid { display: flex; align-items: center; justify-content: center; gap: 20px; width: 100%; }
+        .col { display: flex; flex-direction: column; justify-content: center; align-items: center; position: relative; }
+
+        /* 角色圖片定位 */
+        .character-avatar { position: absolute; bottom: 100%; margin-bottom: 20px; z-index: 10; }
+
+        /* 膠囊標籤 */
+        .result-capsule {
+            padding: 12px 25px; border-radius: 30px; border: 2px solid var(--primary-blue);
+            color: var(--primary-blue); font-weight: bold; font-size: 1.4rem;
+            background: white; display: flex; align-items: center; justify-content: center;
+            height: 30px; min-width: 100px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+        .result-capsule.active { background: var(--primary-blue); color: white; }
+
+        /* Charlie 選擇區域 */
+        .charlie-interactive { display: flex; flex-direction: column; align-items: center; gap: 15px; transition: opacity 0.3s ease; }
+        .charlie-choices { display: flex; gap: 15px; }
+        
+        .gate-btn {
+            display: flex; flex-direction: column; align-items: center; cursor: pointer;
+            padding: 15px; border-radius: 15px; border: 2px solid transparent; transition: all 0.2s; background: white;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            min-width: 90px;
+        }
+        .gate-btn:hover { background-color: #f4f9ff; border-color: #80d8ff; transform: translateY(-5px); }
+        .gate-title { font-size: 1.5rem; font-weight: bold; color: var(--primary-blue); margin-bottom: 10px; }
+        
+        /* 矩陣與向量排版 (改為背景透明，模擬真實數學括號) */
+        .matrix-box {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 5px 12px; text-align: center;
+            background: transparent; padding: 6px; font-weight: bold; font-size: 0.95rem; color: #333;
+            position: relative; border-left: 2px solid #333; border-right: 2px solid #333;
+        }
+        .matrix-box::before, .matrix-box::after {
+            content: ''; position: absolute; width: 4px; height: 100%; border: 2px solid #333; top: -2px;
+        }
+        .matrix-box::before { left: -2px; border-right: none; }
+        .matrix-box::after { right: -2px; border-left: none; }
+
+        .vector-box {
+            display: grid; grid-template-columns: 1fr; gap: 5px; text-align: center;
+            background: transparent; padding: 6px 10px; font-weight: bold; font-size: 0.95rem; color: #333;
+            position: relative; border-left: 2px solid #333; border-right: 2px solid #333;
+        }
+        .vector-box::before, .vector-box::after {
+            content: ''; position: absolute; width: 4px; height: 100%; border: 2px solid #333; top: -2px;
+        }
+        .vector-box::before { left: -2px; border-right: none; }
+        .vector-box::after { right: -2px; border-left: none; }
+        
+        .matrix-wrapper { display: flex; align-items: center; gap: 5px; }
+        .matrix-coeff { font-weight: bold; font-size: 1rem; color: #333; }
+
+        .pulse { animation: pulse-anim 2s infinite; }
+        @keyframes pulse-anim {
+            0% { box-shadow: 0 0 0 0 rgba(0, 74, 173, 0.2); }
+            70% { box-shadow: 0 0 0 10px rgba(0, 74, 173, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(0, 74, 173, 0); }
+        }
+
+        /* Charlie 運算中的顯示 */
+        .charlie-active-gate {
+            display: none; flex-direction: column; align-items: center;
+            animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+        @keyframes popIn { 0% { transform: scale(0.5); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+
+        /* 連接線條與箭頭 */
+        .connector { 
+            position: relative; display: flex; align-items: center; 
+            height: 50px; width: 0; opacity: 0;
+            transition: width 0.5s ease-out, opacity 0.2s ease; 
+        }
+        .connector::before {
+            content: ""; position: absolute; top: 50%; left: 0; width: 100%; height: 3px;
+            background-color: var(--primary-blue); transform: translateY(-50%); 
+        }
+        .arrow-connector::after {
+            content: ""; position: absolute; top: 50%; right: -2px; width: 0; height: 0;
+            border-top: 8px solid transparent; border-bottom: 8px solid transparent;
+            border-left: 14px solid var(--primary-blue); transform: translateY(-50%);
+            opacity: 0; transition: opacity 0.2s ease 0.4s;
+        }
+        
+        .connector.active { opacity: 1; width: 80px; }
+        .arrow-connector.active::after { opacity: 1; }
+        .arrow-single { position: absolute; left: 0; top: 50%; transform: translateY(-50%); }
+
+        /* 結果顯示 */
+        #results-area {
+            min-width: 150px; height: 180px; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative;
+        }
+        #results-area-title { color: gray; font-weight: bold; margin: 0; position: absolute; top: 5px; font-size: 0.9rem; }
+        .output-group { display: flex; align-items: center; margin-top: 25px; opacity: 0; transition: opacity 0.5s ease; }
+        .show-result .output-group { opacity: 1; }
+
+        /* 解說面板與運算框 */
+        .explanation-box {
+            position: absolute; bottom: 25px; width: 85%; background: #f8fbff;
+            border-left: 6px solid var(--primary-blue); padding: 18px 30px; border-radius: 15px; 
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08); display: flex; flex-direction: column; gap: 8px; box-sizing: border-box;
+            opacity: 0; transform: translateY(20px); pointer-events: none; transition: all 0.5s ease;
+        }
+        .explanation-box.show { opacity: 1; transform: translateY(0); pointer-events: auto; }
+        .explain-header { display: flex; justify-content: space-between; align-items: center; }
+        .explain-title { font-weight: bold; font-size: 1.25rem; margin: 0; display: flex; align-items: center; gap: 8px; color: var(--primary-blue); }
+        .explain-desc { color: #555; font-size: 1.1rem; margin: 0; line-height: 1.4; font-weight: bold; }
+        
+        /* 專屬運算過程容器 */
+        .calc-process-container {
+            margin-top: 10px; background: white; border: 1px solid #d0e1f9; border-radius: 10px;
+            padding: 15px; display: flex; align-items: center; justify-content: center; gap: 12px;
+            font-size: 1.2rem; color: #333; box-shadow: inset 0 2px 4px rgba(0,0,0,0.02); overflow-x: auto;
+        }
+        .math-operator { font-weight: bold; color: #666; margin: 0 5px; font-size: 1.2rem; }
+
+        .retry-btn {
+            padding: 8px 20px; border-radius: 20px; border: 2px solid #ccc;
+            background: white; color: #555; cursor: pointer; font-weight: bold; transition: all 0.2s; font-size: 0.95rem;
+        }
+        .retry-btn:hover { background: #f0f0f0; border-color: #999; color: black; transform: scale(1.05); }
+
+        .bottom-hint { position: absolute; bottom: 30px; color: gray; font-weight: bold; font-size: 1.1rem; transition: opacity 0.3s; z-index: 5;}
+
+        /* 光子動畫 */
+        @keyframes shoot-to-charlie {
+            0% { transform: translate(0, 0) scale(0); opacity: 1; }
+            20% { transform: translate(calc(var(--tx-mid) * 0.2), calc(var(--ty-mid) * 0.2)) scale(1.3); }
+            100% { transform: translate(var(--tx-mid), var(--ty-mid)) scale(1); opacity: 1; } 
+        }
+        @keyframes shoot-charlie-to-outcome {
+            0% { transform: translate(var(--tx-mid), var(--ty-mid)) scale(1); opacity: 1; }
+            100% { transform: translate(var(--tx-out), var(--ty-out)) scale(1); opacity: 1; } 
+        }
+
+        .photon-particle {
+            position: absolute; width: 40px; height: 40px; background: var(--photon-yellow); border-radius: 50%; 
+            box-shadow: 0 0 25px var(--photon-yellow); display: flex; justify-content: center; align-items: center;
+            font-weight: bold; font-size: 1.3rem; color: var(--primary-blue); pointer-events: none; z-index: 100;
+        }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <div class="header-left">
+        <a href="QuantumCybersecurityEducationPlatform.html" class="btn-back" title="back home">◀</a>
+        <div class="title-pill">Quantum Secret Sharing：ＺhangLiMan</div>
+    </div>
+    <div class="header-center">STEP 2：Charlie's Operation</div>
+    <div class="header-right">
+        <button class="nav-btn" onclick="prevStep()">Back</button>
+        <button class="nav-btn" onclick="nextStep()">Next</button>
+    </div>
+</div>
+
+<div class="main-card" id="stage">
+    
+    <div class="decision-grid" id="grid-container">
+        
+        <div class="col" style="min-width: 150px;">
+            <img src="pictures/cat_bob.svg" width="120" alt="Bob" class="character-avatar">
+            <p style="color:gray; font-weight:bold; margin-bottom: 5px; font-size: 0.9rem;">Bob Sent</p>
+            <div class="result-capsule active" style="margin-bottom: 10px;" id="input-state">-</div>
+        </div>
+
+        <div class="col" style="width: 80px;">
+            <div class="connector active" style="width: 100%;" id="conn-1"></div> 
+        </div>
+
+        <div class="col" style="min-width: 320px;" id="charlie-col">
+            <img src="pictures/cat_alice.svg" width="120" alt="Charlie" class="character-avatar">
+            
+            <div class="charlie-interactive" id="charlie-interactive">
+                <p style="margin:0; font-weight:bold; color:var(--primary-blue); font-size:1.1rem;">Choose an Operation!</p>
+                <div class="charlie-choices">
+                    
+                    <div class="gate-btn pulse" onclick="startOperationProcess('I')">
+                        <div class="gate-title">I</div>
+                        <div class="matrix-box">
+                            <span>1</span><span>0</span>
+                            <span>0</span><span>1</span>
+                        </div>
+                    </div>
+
+                    <div class="gate-btn pulse" onclick="startOperationProcess('Y')">
+                        <div class="gate-title">Y</div>
+                        <div class="matrix-box">
+                            <span>0</span><span>1</span>
+                            <span>-1</span><span>0</span>
+                        </div>
+                    </div>
+
+                    <div class="gate-btn pulse" onclick="startOperationProcess('H')">
+                        <div class="gate-title">H</div>
+                        <div class="matrix-wrapper">
+                            <span class="matrix-coeff">1/√2</span>
+                            <div class="matrix-box">
+                                <span>1</span><span>1</span>
+                                <span>1</span><span>-1</span>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="charlie-active-gate" id="charlie-active-gate">
+                <p style="color:gray; font-weight:bold; margin-bottom: 5px; font-size: 0.9rem;">Charlie Applied</p>
+                <div class="gate-btn" id="charlie-gate-display" style="cursor: default; transform: none; border-color: var(--primary-blue); background: #f4f9ff;">
+                    </div>
+            </div>
+        </div>
+
+        <div class="col" style="width: 80px; height: 160px; position:relative;">
+            <div class="connector arrow-connector arrow-single" id="arrow-out"></div>
+        </div>
+
+        <div class="col" id="results-area">
+            <p id="results-area-title">Outcome</p>
+            <div id="photon-landing-spot" style="width: 40px; height: 40px; margin-top: 25px;"></div>
+            <div class="output-group" id="output-result">
+                <div class="result-capsule active" style="background:var(--match-green); border-color:var(--match-green);" id="final-state"> Waiting... </div>
+            </div>
+        </div>
+
+    </div>
+
+    <p class="bottom-hint" id="hint-text">Help Charlie perform a quantum gate operation</p>
+
+    <div class="explanation-box" id="explain-box">
+        <div class="explain-header">
+            <p class="explain-title" id="explain-title">Operation Result</p>
+            <button class="retry-btn" onclick="resetCharlie()">↺ Try Another Gate</button>
+        </div>
+        <p class="explain-desc" id="explain-desc">Charlie applied the gate to Bob's state. Below is the calculation process:</p>
+        
+        <div class="calc-process-container" id="calc-process-container">
+            </div>
+    </div>
+
+</div>
+
+<script>
+    let bobStateStr = ""; 
+    let finalStateStr = "";
+    let selectedGate = "";
+
+    // 定義閘門在 Charlie Active 中要顯示的 HTML (保留英文字與底下的矩陣)
+    const gateDisplayHTML = {
+        'I': `<div class="gate-title">I</div><div class="matrix-box"><span>1</span><span>0</span><span>0</span><span>1</span></div>`,
+        'Y': `<div class="gate-title">Y</div><div class="matrix-box"><span>0</span><span>1</span><span>-1</span><span>0</span></div>`,
+        'H': `<div class="gate-title">H</div><div class="matrix-wrapper"><span class="matrix-coeff">1/√2</span><div class="matrix-box"><span>1</span><span>1</span><span>1</span><span>-1</span></div></div>`
+    };
+
+    // 定義運算過程框框用的「矩陣」與「向量」結構 HTML
+    const matrixHTML = gateDisplayHTML; // 閘門直接沿用上面定義的 HTML 格式
+    const vectorHTML = {
+        '|0⟩': `<div class="vector-box"><span>1</span><span>0</span></div>`,
+        '|1⟩': `<div class="vector-box"><span>0</span><span>1</span></div>`,
+        '|+⟩': `<div class="matrix-wrapper"><span class="matrix-coeff">1/√2</span><div class="vector-box"><span>1</span><span>1</span></div></div>`,
+        '|-⟩': `<div class="matrix-wrapper"><span class="matrix-coeff">1/√2</span><div class="vector-box"><span>1</span><span>-1</span></div></div>`,
+        '-|1⟩': `<div class="matrix-wrapper"><span class="matrix-coeff">-1</span><div class="vector-box"><span>0</span><span>1</span></div></div>`,
+        '-|+⟩': `<div class="matrix-wrapper"><span class="matrix-coeff">-1/√2</span><div class="vector-box"><span>1</span><span>1</span></div></div>`
+    };
+
+    // 狀態對應規則定義
+    const operationRules = {
+        '|0⟩': { 'I': '|0⟩', 'Y': '-|1⟩', 'H': '|+⟩' },
+        '|1⟩': { 'I': '|1⟩', 'Y': '|0⟩', 'H': '|-⟩' },
+        '|+⟩': { 'I': '|+⟩', 'Y': '|-⟩', 'H': '|0⟩' },
+        '|-⟩': { 'I': '|-⟩', 'Y': '-|+⟩', 'H': '|1⟩' }
+    };
+
+    document.addEventListener("DOMContentLoaded", () => {
+        // 從 Step 1 獲取 Bob 的選擇
+        const params = new URLSearchParams(window.location.search);
+        let bobBasis = params.get("bobBasis"); 
+        let bobMsg = params.get("bobMsg"); 
+
+        const savedData = localStorage.getItem('qssStepData');
+        let parsedData = savedData ? JSON.parse(savedData) : null;
+        let useSavedData = false;
+
+        // 若從 Step 3 返回，嘗試恢復狀態
+        if (parsedData) {
+            if (!bobBasis || !bobMsg) {
+                useSavedData = true;
+            } else {
+                let urlState = getBobStateFromParams(bobBasis, bobMsg);
+                if (urlState === parsedData.bobState) {
+                    useSavedData = true;
+                }
+            }
+        }
+
+        if (useSavedData) {
+            bobStateStr = parsedData.bobState;
+            document.getElementById("input-state").textContent = bobStateStr;
+            startOperationProcess(parsedData.charlieGate, true);
+        } else {
+            bobStateStr = getBobStateFromParams(bobBasis || "Z", bobMsg || "0");
+            document.getElementById("input-state").textContent = bobStateStr;
+            localStorage.removeItem('qssStepData');
+        }
+    });
+
+    // 將 Bob 在 Step 1 的選擇轉換為量子態字串
+    function getBobStateFromParams(basis, msg) {
+        msg = String(msg);
+        if (basis === "Z") {
+            return (msg === "0") ? "|0⟩" : "|1⟩";
+        } else {
+            return (msg === "0") ? "|+⟩" : "|-⟩";
+        }
+    }
+
+    // 點擊閘門按鈕或自動恢復時觸發
+    function startOperationProcess(gate, skipAnimation = false) {
+        selectedGate = gate;
+        
+        // 隱藏選單，顯示已選閘門
+        document.getElementById("charlie-interactive").style.display = "none";
+        document.getElementById("hint-text").style.display = "none"; 
+        
+        const activeGateUI = document.getElementById("charlie-active-gate");
+        activeGateUI.style.display = "flex";
+        
+        // 將選定的閘門（含文字與矩陣）完整注入
+        document.getElementById("charlie-gate-display").innerHTML = gateDisplayHTML[gate];
+
+        // 計算最終結果
+        finalStateStr = operationRules[bobStateStr][gate];
+        document.getElementById("final-state").textContent = finalStateStr;
+        document.getElementById("results-area").classList.remove("show-result");
+
+        if (skipAnimation) {
+            document.getElementById("arrow-out").classList.add("active");
+            displayFinalResult();
+        } else {
+            animateOperation();
+        }
+    }
+
+    // 光子傳遞動畫
+    function animateOperation() {
+        const stage = document.getElementById('stage');
+        const sourceEl = document.getElementById('input-state');
+        const charlieEl = document.getElementById('charlie-gate-display');
+        
+        const particle = document.createElement('div');
+        particle.className = 'photon-particle';
+        particle.innerText = bobStateStr.replace('⟩', '').replace('|', ''); 
+        
+        const stageRect = stage.getBoundingClientRect();
+        const srcRect = sourceEl.getBoundingClientRect();
+        const midRect = charlieEl.getBoundingClientRect();
+        const landingSpot = document.getElementById('photon-landing-spot');
+        const outRect = landingSpot.getBoundingClientRect();
+        
+        const startX = srcRect.left - stageRect.left + srcRect.width / 2 - 20;
+        const startY = srcRect.top - stageRect.top + srcRect.height / 2 - 20;
+        const toMidX = midRect.left - stageRect.left + midRect.width / 2 - 20;
+        const toMidY = midRect.top - stageRect.top + midRect.height / 2 - 20;
+        const toOutX = outRect.left - stageRect.left + outRect.width / 2 - 20;
+        const toOutY = outRect.top - stageRect.top + outRect.height / 2 - 20;
+        
+        particle.style.left = startX + 'px';
+        particle.style.top = startY + 'px';
+        particle.style.setProperty('--tx-mid', (toMidX - startX) + 'px');
+        particle.style.setProperty('--ty-mid', (toMidY - startY) + 'px');
+        particle.style.setProperty('--tx-out', (toOutX - startX) + 'px');
+        particle.style.setProperty('--ty-out', (toOutY - startY) + 'px');
+        
+        stage.appendChild(particle);
+        
+        // 第一段：Bob 到 Charlie
+        requestAnimationFrame(() => { particle.style.animation = 'shoot-to-charlie 1.2s forwards cubic-bezier(0.4, 0, 0.2, 1)'; });
+        
+        // 抵達 Charlie 後變化內容並前往 Outcome
+        setTimeout(() => {
+            document.getElementById("arrow-out").classList.add("active");
+            particle.innerText = finalStateStr.replace('⟩', '').replace('|', ''); 
+            particle.style.animation = 'shoot-charlie-to-outcome 0.8s forwards ease-out';
+            
+            setTimeout(() => { 
+                displayFinalResult(); 
+                particle.remove(); 
+            }, 800);
+        }, 1300);
+    }
+
+    // 顯示解說面板與運算過程框
+    function displayFinalResult() {
+        const resultsArea = document.getElementById("results-area");
+        const explainBox = document.getElementById("explain-box");
+        const calcContainer = document.getElementById("calc-process-container");
+        
+        // 組合運算過程的 HTML：[矩陣] × [輸入向量] = [輸出向量] = 最終狀態
+        let calcHTML = `
+            ${matrixHTML[selectedGate]}
+            <span class="math-operator">×</span>
+            ${vectorHTML[bobStateStr]}
+            <span class="math-operator">=</span>
+            ${vectorHTML[finalStateStr]}
+            <span class="math-operator" style="color:var(--primary-blue); margin-left: 10px;">= ${finalStateStr}</span>
+        `;
+        calcContainer.innerHTML = calcHTML;
+
+        // 將這回合的資料儲存至 LocalStorage
+        const qssData = {
+            bobState: bobStateStr,
+            charlieGate: selectedGate,
+            finalState: finalStateStr
+        };
+        localStorage.setItem('qssStepData', JSON.stringify(qssData));
+
+        resultsArea.classList.add("show-result");
+        explainBox.classList.add("show");
+    }
+
+    function resetCharlie() {
+        document.getElementById("explain-box").classList.remove("show");
+        document.getElementById("results-area").classList.remove("show-result");
+        document.getElementById("arrow-out").classList.remove("active");
+        
+        const oldPhoton = document.querySelector('.photon-particle');
+        if(oldPhoton) oldPhoton.remove();
+        
+        localStorage.removeItem('qssStepData'); 
+        
+        setTimeout(() => {
+            document.getElementById("charlie-active-gate").style.display = "none";
+            document.getElementById("charlie-interactive").style.display = "flex";
+            document.getElementById("hint-text").style.display = "block";
+        }, 300);
+    }
+
+    function prevStep() { window.location.href = 'QSSstep1.html'; }
+    function nextStep() { 
+        if (localStorage.getItem('qssStepData')) {
+            window.location.href = 'QSSstep3.html';
+        } else {
+            alert("Complete Charlie's operation first!");
+        }
+    }
+</script>
+</body>
+</html>
