@@ -9,36 +9,10 @@
     <style>
         .page-view { display: none; }
         .page-view.active-view { display: flex; }
-
-        /* ▼▼▼ 修改角色框框樣式 ▼▼▼ */
-        .avatar-alice {
-            border: 4px solid #0047AB; /* Alice 改為指定的藍色外框 */
-            background-color: transparent; /* 去除背景顏色 */
-            border-radius: 15px;
-            padding: 10px;
-        }
-        .avatar-bob {
-            border: 4px solid #4C80C5; /* Bob 藍色外框 */
-            background-color: transparent; /* 去除背景顏色 */
-            border-radius: 15px;
-            padding: 10px;
-        }
-        .avatar-eve {
-            border: 4px solid #D32F2F; /* Eve 紅色外框 */
-            background-color: transparent; /* 去除背景顏色 */
-            border-radius: 15px;
-            padding: 10px;
-        }
-        /* 確保加上框框後圖片可以置中，並固定在最上方 */
-        .character-avatar {
-            position: absolute;
-            top: 20px; /* 固定與頂部的距離 */
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 10; /* 確保在樹狀圖上方 */
-        }
-        /* ▲▲▲ 修改角色框框樣式 ▲▲▲ */
+        .avatar-alice { border: 4px solid #0047AB; background-color: transparent; border-radius: 15px; padding: 10px; }
+        .avatar-bob { border: 4px solid #4C80C5; background-color: transparent; border-radius: 15px; padding: 10px;}
+        .avatar-eve { border: 4px solid #D32F2F;  background-color: transparent;  border-radius: 15px; padding: 10px; }
+        .character-avatar { position: absolute; top: 20px; display: flex; justify-content: center; align-items: center; z-index: 10; }
     </style>
 </head>
 <body>
@@ -68,19 +42,13 @@
                 <div class="result-header" style="position: absolute; top: 20px; left: 90%; z-index: 10; height: 80px; display: flex; align-items: center; justify-content: center; text-align: center; font-size: 1.2rem; font-weight: bold; margin: 0;">Result</div>
                 <div style="position: absolute; top: 120px; left: 0; width: 100%; height: calc(100% - 120px);">
                     <svg class="arrows">
-                        <defs>
-                            <marker id="arrow-bb84" viewBox="0 0 10 10" refX="9" refY="5"
-                                markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-                                <path d="M 0 0 L 10 5 L 0 10 z" fill="#333" />
-                            </marker>
-                        </defs>
+                        <defs><marker id="arrow-bb84" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#333" /></marker></defs>
                         <line class="bb84-line TrueRoute" data-prob="50%" x1="17%" y1="50%" x2="35%" y2="25%" stroke="#333" stroke-width="3" marker-end="url(#arrow-bb84)" />
                         <line class="bb84-line FalseRoute" data-prob="50%" x1="17%" y1="50%" x2="35%" y2="75%" stroke="#333" stroke-width="3" marker-end="url(#arrow-bb84)" />
                         <line class="bb84-line TrueRoute" data-prob="50%" x1="47%" y1="25%" x2="67%" y2="25%" stroke="#333" stroke-width="3" marker-end="url(#arrow-bb84)" />
                         <line class="bb84-line FalseRoute" data-prob="25%" x1="47%" y1="75%" x2="67%" y2="55%" stroke="#333" stroke-width="3" marker-end="url(#arrow-bb84)" />
                         <line class="bb84-line FalseRoute" data-prob="25%" x1="47%" y1="75%" x2="67%" y2="95%" stroke="#333" stroke-width="3" marker-end="url(#arrow-bb84)" />
                     </svg>
-                    
                     <div class="node" style="left: 10%; top: 50%;">
                         <img id="bb84-initial-key-img" src="pictures/vertical.svg" class="polarizer-img">
                         <div class="state-circle" id="bb84-initial-state-text">|→⟩</div>
@@ -107,12 +75,7 @@
                     <div class="result-circle" style="left: 90%; top: 25%; width: 50px; height: 50px;">✔</div>
                     <div class="result-circle inactive" style="left: 90%; top: 56%; width: 50px; height: 50px;">✖</div>
                     <div class="result-circle inactive" style="left: 90%; top: 96%; width: 50px; height: 50px;">✖</div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
+</div></div></div></div></div>
 <div id="view-bb84-eve-resend" class="page-view">
     <div class="container">
         <div class="top-bar" style="display: flex; align-items: center; justify-content: flex-start; gap: 20px; margin-bottom: 20px;">            
@@ -174,12 +137,10 @@
                         <line class="eve-bob-line same-path" data-prob="6.25%" x1="76%" y1="82%" x2="84%" y2="86%" stroke="#333" stroke-width="3" marker-end="url(#arrow-bb84-resend)" />
                         <line class="eve-bob-line diff-path" data-prob="12.5%" x1="76%" y1="98%" x2="84%" y2="98%" stroke="#333" stroke-width="3" marker-end="url(#arrow-bb84-resend)" />
                     </svg>
-                    
                     <div class="node" style="left: 8%; top: 50%;">
                         <img id="eve-alice-key" src="pictures/vertical.svg" class="polarizer-img">
                         <div class="state-circle" id="eve-alice-state">|→⟩</div>
                     </div>
-                    
                     <div class="node" style="left: 32%; top: 25%;"><img id="eve-pol-same" src="pictures/red_vertical.svg" class="polarizer-img"></div>
                     <div class="node" style="left: 32%; top: 75%;"><img id="eve-pol-diff" src="pictures/red_diagonal.svg" class="polarizer-img"></div>
                     <div class="node" style="left: 50%; top: 25%;"><div class="eve-state-circle" id="eve-state-same">|→⟩</div></div>
@@ -189,7 +150,6 @@
                     <div class="node" style="left: 50%; top: 90%;">
                         <div class="eve-state-circle" style="transform: rotate(45deg);"><span id="eve-state-diff2" style="transform: rotate(-45deg); display:block;">|↗⟩</span></div>
                     </div>
-                    
                     <div class="node bob-same-node" style="left: 72%; top: 15%;"><img id="bob-pol-1" src="pictures/vertical.svg" class="polarizer-img"></div>
                     <div class="node bob-diff-node" style="left: 72%; top: 35%;"><img id="bob-pol-2" src="pictures/gray_diagonal.svg" class="polarizer-img inactive"></div>
                     <div class="node bob-same-node" style="left: 72%; top: 52%;"><img id="bob-pol-3" src="pictures/vertical.svg" class="polarizer-img"></div>
@@ -205,18 +165,11 @@
                     <div class="node bob-same-node" style="left: 88%; top: 78%;"><div class="state-circle" id="bob-final-7">|→⟩</div></div>
                     <div class="node bob-same-node" style="left: 88%; top: 86%;"><div class="state-circle eve-error" id="bob-final-8">|↑⟩</div></div>
                     <div class="node bob-diff-node" style="left: 88%; top: 98%;"><div class="state-circle inactive" id="bob-final-9" style="transform: rotate(45deg);"><span style="transform: rotate(-45deg); display:block;">|↗⟩</span></div></div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
+</div></div></div></div></div>
 <script>
-    // 下方的 JavaScript 完全不需要變動
     let globalBobBasis = 'X';
     let isEveInterceptResend = false; 
     const symbols = { Stype: ['| ↑ ⟩', '|→⟩'],  Dtype: ['|↗⟩', '|↖⟩']};
-    
     document.addEventListener('DOMContentLoaded', () => {
         const tooltip = document.createElement('div');
         tooltip.className = 'line-tooltip';
@@ -233,9 +186,7 @@
                 tooltip.style.left = (e.pageX + 15) + 'px';
                 tooltip.style.top = (e.pageY + 15) + 'px';
             });
-            line.addEventListener('mouseleave', () => {
-                tooltip.style.opacity = '0';
-            });
+            line.addEventListener('mouseleave', () => { tooltip.style.opacity = '0';});
         });
         const savedData = localStorage.getItem('qkdSettings');
         const contentAreas = document.querySelectorAll('.settings-content');
@@ -252,8 +203,6 @@
                     isEveInterceptResend = true;
                 }
             }
-            
-            // BB84 初始化顯示判定
             if (isEveInterceptResend) {
                 document.getElementById('view-bb84').classList.remove('active-view');
                 document.getElementById('view-bb84-eve-resend').classList.add('active-view');
@@ -261,7 +210,6 @@
                 document.getElementById('view-bb84').classList.add('active-view');
                 document.getElementById('view-bb84-eve-resend').classList.remove('active-view');
             }
-
             const showZ = aliceBasis.includes('Z') || aliceBasis.toLowerCase().includes('rectilinear') || !aliceBasis.includes('X');
             const showX = aliceBasis.includes('X') || aliceBasis.toLowerCase().includes('diagonal') || !aliceBasis.includes('Z');
             const allOptionRows = document.querySelectorAll('#bb84-options .option-row, #bb84-eve-options .option-row');            
@@ -320,8 +268,6 @@
                     </div>`;
             });
         }
-        
-        // BB84 預設選項觸發
         if (isEveInterceptResend) {
             const defaultEve = Array.from(document.querySelectorAll('#bb84-eve-options .option-row')).find(row => row.style.display !== 'none');
             if(defaultEve) {
@@ -338,7 +284,6 @@
             }
         }
     });
-
     function selectStateBB84(element, stateSymbol, basisType) {
         const rows = document.querySelectorAll('#bb84-options .option-row');
         rows.forEach(row => row.classList.remove('active'));
@@ -366,7 +311,6 @@
         const aliceBasis = (basisType === 'rectilinear') ? 'Z' : 'X';
         updateLines(aliceBasis, globalBobBasis, 'bb84');
     }
-
     function updateLines(aliceBasis, bobBasis, protocol) {
         const containerSelector = '#view-bb84';
         const allLines = document.querySelectorAll(`${containerSelector} line`);
@@ -382,7 +326,6 @@
             line.setAttribute('stroke-width', '4'); 
         });
     }
-
     function selectStateBB84Eve(element, stateSymbol, basisType) {
         const rows = document.querySelectorAll('#bb84-eve-options .option-row');
         rows.forEach(row => row.classList.remove('active'));
@@ -419,23 +362,11 @@
             document.getElementById('bob-pol-5'), document.getElementById('bob-pol-6')
         ];
         if (isAliceZ) {
-            if(isBobZ){
-                bobPols[0].src = bobPols[2].src = bobPols[4].src = "pictures/b_vertical.svg";
-                bobPols[1].src = bobPols[3].src = bobPols[5].src = "pictures/gray_diagonal.svg";
-            }
-            else{
-                bobPols[0].src = bobPols[2].src = bobPols[4].src = "pictures/gray_vertical.svg";
-                bobPols[1].src = bobPols[3].src = bobPols[5].src = "pictures/b_diagonal.svg";
-            }
+            if(isBobZ){ bobPols[0].src = bobPols[2].src = bobPols[4].src = "pictures/b_vertical.svg"; bobPols[1].src = bobPols[3].src = bobPols[5].src = "pictures/gray_diagonal.svg";}
+            else{ bobPols[0].src = bobPols[2].src = bobPols[4].src = "pictures/gray_vertical.svg"; bobPols[1].src = bobPols[3].src = bobPols[5].src = "pictures/b_diagonal.svg"; }
         } else {
-            if(isBobZ){
-                bobPols[0].src = bobPols[2].src = bobPols[4].src = "pictures/gray_diagonal.svg";
-                bobPols[1].src = bobPols[3].src = bobPols[5].src = "pictures/b_vertical.svg";
-            }
-             else{
-                bobPols[0].src = bobPols[2].src = bobPols[4].src = "pictures/b_diagonal.svg";
-                bobPols[1].src = bobPols[3].src = bobPols[5].src = "pictures/gray_vertical.svg";
-            }
+            if(isBobZ){ bobPols[0].src = bobPols[2].src = bobPols[4].src = "pictures/gray_diagonal.svg"; bobPols[1].src = bobPols[3].src = bobPols[5].src = "pictures/b_vertical.svg"; }
+             else{ bobPols[0].src = bobPols[2].src = bobPols[4].src = "pictures/b_diagonal.svg"; bobPols[1].src = bobPols[3].src = bobPols[5].src = "pictures/gray_vertical.svg"; }
         }
         const sameNodes = document.querySelectorAll('#view-bb84-eve-resend .bob-same-node .polarizer-img, #view-bb84-eve-resend .bob-same-node .state-circle');
         const diffNodes = document.querySelectorAll('#view-bb84-eve-resend .bob-diff-node .polarizer-img, #view-bb84-eve-resend .bob-diff-node .state-circle');
@@ -445,19 +376,12 @@
             const alwaysActive = ['bob-final-1', 'bob-final-4', 'bob-final-7'];
             const alwaysInactive = ['bob-final-2', 'bob-final-3', 'bob-final-6', 'bob-final-9'];
             const errorNodes = ['bob-final-5', 'bob-final-8'];
-
             nodes.forEach(el => {
                 if (el.classList.contains('state-circle')) {
-                    if (alwaysActive.includes(el.id)) {
-                        el.classList.remove('inactive'); 
-                    } else if (alwaysInactive.includes(el.id)) {
-                        el.classList.add('inactive');    
-                    } else if (errorNodes.includes(el.id)) {
-                        isChosenPath ? el.classList.remove('inactive') : el.classList.add('inactive');
-                    }
-                } else if (el.classList.contains('polarizer-img')) {
-                    isChosenPath ? el.classList.remove('inactive') : el.classList.add('inactive');
-                }
+                    if (alwaysActive.includes(el.id))  el.classList.remove('inactive'); 
+                    else if (alwaysInactive.includes(el.id)) el.classList.add('inactive');    
+                    else if (errorNodes.includes(el.id))  isChosenPath ? el.classList.remove('inactive') : el.classList.add('inactive');
+                } else if (el.classList.contains('polarizer-img'))  isChosenPath ? el.classList.remove('inactive') : el.classList.add('inactive');
             });
         }
         if (isBobBasisSameAsAlice) {
