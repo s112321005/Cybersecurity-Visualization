@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <base href="https://s112321005.github.io/Cybersecurity-Visualization/">
-    <title>Quantum Secret Sharing：ZhangLiMan</title>
+    <title>Quantum Secret Sharing：ZhangLiMan - Step 3</title>
     
     <script>
         window.MathJax = {
@@ -15,15 +15,15 @@
     <style>
         :root {
             --primary-blue: #004aad;
-            /* 新增 Bob 與 Charlie 的專屬顏色 */
             --bob-color: #4C80C5;
             --charlie-color: #478CEA;
+            /* 新增 Alice 的專屬顏色 */
+            --alice-color: #0049B0; 
             
             --dark-text: #333333;
             --bg-color: #f8f9fa;
             --photon-yellow: #ffeb3b; 
-            --match-green: #28a745;
-            --mismatch-red: #dc3545;
+            --match-green: #abd5c0;
         }
 
         body {
@@ -36,6 +36,9 @@
             margin: 0;
             overflow-y: scroll; 
         }
+
+        /* 針對 MathJax 的結果修正間距 */
+        .result-capsule .MathJax { font-size: 1.1rem; margin: 0; }
 
         /* 頂部導覽列 */
         .header {
@@ -114,7 +117,6 @@
             top: -90px;
             font-size: 1.1rem;
             font-weight: bold;
-            color: var(--primary-blue);
             margin: 0;
             width: 100%;
             text-align: center;
@@ -127,46 +129,46 @@
             height: 30px; min-width: 100px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);
             z-index: 2;
         }
-        .result-capsule.active { background: var(--primary-blue); color: white; }
 
-        /* Bob 專屬顏色樣式 */
-        .bob-text { color: var(--bob-color) !important; }
-        .bob-bg { 
-            background: var(--bob-color) !important; 
-            border-color: var(--bob-color) !important; 
+        /* 顏色樣式 */
+        .charlie-text { color: var(--charlie-color) !important; }
+        .charlie-bg { 
+            background: var(--charlie-color) !important; 
+            border-color: var(--charlie-color) !important; 
             color: white !important; 
         }
         
-        /* Charlie 專屬顏色樣式 */
-        .charlie-text { color: var(--charlie-color) !important; }
+        .alice-text { color: var(--alice-color) !important; }
 
-        /* Charlie 選擇區域 */
-        .charlie-interactive { 
+        /* Alice 選擇區域 */
+        .alice-interactive { 
             position: absolute; top: 50%; transform: translateY(-50%); 
             display: flex; flex-direction: column; align-items: center; gap: 15px; 
             transition: opacity 0.3s ease; width: 100%;
         }
-        .charlie-choices { display: flex; gap: 15px; }
+        .alice-choices { display: flex; gap: 15px; }
         
         .gate-btn {
             display: flex; flex-direction: column; align-items: center; cursor: pointer;
             padding: 15px; border-radius: 15px; border: 2px solid transparent; transition: all 0.2s; background: white;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.05); min-width: 90px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05); min-width: 120px;
         }
-        .gate-btn:hover { background-color: #f4f9ff; border-color: var(--charlie-color); transform: translateY(-5px); }
-        .gate-title { font-size: 1.5rem; font-weight: bold; color: var(--charlie-color); margin-bottom: 5px; }
+        .gate-btn:hover { background-color: #c4d0ef; border-color: var(--alice-color); transform: translateY(-5px); }
+        .msg-title { font-size: 1.2rem; font-weight: bold; color: var(--dark-text); margin-bottom: 5px; }
+        .gate-subtitle { font-size: 1rem; color: var(--alice-color); font-weight: bold; margin-bottom: 8px;}
         
         .math-display { font-size: 1.05rem; }
 
         .pulse { animation: pulse-anim 2s infinite; }
+        /* 替換為對應 #0049B0 的 RGB 值 (0, 73, 176) */
         @keyframes pulse-anim {
-            0% { box-shadow: 0 0 0 0 rgba(71, 140, 234, 0.4); } /* 使用 #478CEA 的 rgba */
-            70% { box-shadow: 0 0 0 10px rgba(71, 140, 234, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(71, 140, 234, 0); }
+            0% { box-shadow: 0 0 0 0 rgba(0, 73, 176, 0.4); } 
+            70% { box-shadow: 0 0 0 10px rgba(0, 73, 176, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(0, 73, 176, 0); }
         }
 
-        /* Charlie 運算中的顯示 */
-        .charlie-active-gate {
+        /* Alice 運算中的顯示 */
+        .alice-active-gate {
             position: absolute; top: 50%; transform: translateY(-50%);
             display: none; flex-direction: column; align-items: center; width: 100%;
             animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
@@ -195,10 +197,10 @@
         .connector.active { opacity: 1; width: 80px; }
         .arrow-connector.active::after { opacity: 1; }
 
-        /* 替換連線顏色 */
-        #conn-1::before { background-color: var(--bob-color); }
-        #arrow-out::before { background-color: var(--charlie-color); }
-        #arrow-out.arrow-connector::after { border-left-color: var(--charlie-color); }
+        /* 線條顏色設定 */
+        #conn-1::before { background-color: var(--charlie-color); }
+        #arrow-out::before { background-color: var(--alice-color); }
+        #arrow-out.arrow-connector::after { border-left-color: var(--alice-color); }
 
         /* 結果顯示 */
         .output-group { display: flex; align-items: center; opacity: 0; transition: opacity 0.5s ease; }
@@ -206,18 +208,18 @@
 
         /* 解說面板與運算框 */
         .explanation-box {
-            position: absolute; bottom: 25px; width: 85%; background: #f8fbff;
-            border-left: 6px solid var(--charlie-color); padding: 18px 30px; border-radius: 15px; 
+            position: absolute; bottom: 25px; width: 85%; background: #eaf0ff;
+            border-left: 6px solid var(--alice-color); padding: 18px 30px; border-radius: 15px; 
             box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08); display: flex; flex-direction: column; gap: 8px; box-sizing: border-box;
             opacity: 0; transform: translateY(20px); pointer-events: none; transition: all 0.5s ease;
         }
         .explanation-box.show { opacity: 1; transform: translateY(0); pointer-events: auto; }
         .explain-header { display: flex; justify-content: space-between; align-items: center; }
-        .explain-title { font-weight: bold; font-size: 1.25rem; margin: 0; display: flex; align-items: center; gap: 8px; color: var(--charlie-color); }
+        .explain-title { font-weight: bold; font-size: 1.25rem; margin: 0; display: flex; align-items: center; gap: 8px; color: var(--alice-color); }
         .explain-desc { color: #555; font-size: 1.1rem; margin: 0; line-height: 1.4; font-weight: bold; }
         
         .calc-process-container {
-            margin-top: 10px; background: white; border: 1px solid #d0e1f9; border-radius: 10px;
+            margin-top: 10px; background: white; border: 1px solid #c2d5ff; border-radius: 10px;
             padding: 15px; display: flex; align-items: center; justify-content: center; gap: 15px;
             font-size: 1.2rem; color: #333; box-shadow: inset 0 2px 4px rgba(0,0,0,0.02); overflow-x: auto;
         }
@@ -231,12 +233,12 @@
         .bottom-hint { position: absolute; bottom: 30px; color: gray; font-weight: bold; font-size: 1.1rem; transition: opacity 0.3s; z-index: 5;}
 
         /* 光子動畫 */
-        @keyframes shoot-to-charlie {
+        @keyframes shoot-to-alice {
             0% { transform: translate(0, 0) scale(0); opacity: 1; }
             20% { transform: translate(calc(var(--tx-mid) * 0.2), calc(var(--ty-mid) * 0.2)) scale(1.3); }
             100% { transform: translate(var(--tx-mid), var(--ty-mid)) scale(1); opacity: 1; } 
         }
-        @keyframes shoot-charlie-to-outcome {
+        @keyframes shoot-alice-to-outcome {
             0% { transform: translate(var(--tx-mid), var(--ty-mid)) scale(1); opacity: 1; }
             100% { transform: translate(var(--tx-out), var(--ty-out)) scale(1); opacity: 1; } 
         }
@@ -244,7 +246,7 @@
         .photon-particle {
             position: absolute; width: 40px; height: 40px; background: var(--photon-yellow); border-radius: 50%; 
             box-shadow: 0 0 25px var(--photon-yellow); display: flex; justify-content: center; align-items: center;
-            font-weight: bold; font-size: 1.3rem; color: var(--bob-color); pointer-events: none; z-index: 100;
+            font-weight: bold; font-size: 1.3rem; color: var(--charlie-color); pointer-events: none; z-index: 100;
         }
     </style>
 </head>
@@ -255,7 +257,7 @@
         <a href="QuantumCybersecurityEducationPlatform.html" class="btn-back" title="back home">◀</a>
         <div class="title-pill">Quantum Secret Sharing：ZhangLiMan</div>
     </div>
-    <div class="header-center">STEP 2：Charlie's Operation</div>
+    <div class="header-center">STEP 3：Alice's Operation</div>
     <div class="header-right">
         <button class="nav-btn" onclick="prevStep()">Back</button>
         <button class="nav-btn" onclick="nextStep()">Next</button>
@@ -267,44 +269,41 @@
     <div class="decision-grid" id="grid-container">
         
         <div class="col" style="min-width: 150px;">
-            <img src="pictures/cat_bob.svg" alt="Bob" class="character-avatar">
-            <p class="stage-title bob-text">Bob Sent</p>
-            <div class="result-capsule active bob-bg" id="input-state">-</div>
+            <img src="pictures/cat_charlie.svg" alt="Charlie & Bob" class="character-avatar" style="opacity:0.8;">
+            <p class="stage-title charlie-text">Shared State</p>
+            <div class="result-capsule active charlie-bg" id="input-state">-</div>
         </div>
 
         <div class="col" style="width: 80px;">
             <div class="connector active" style="width: 100%;" id="conn-1"></div> 
         </div>
 
-        <div class="col" style="min-width: 320px;" id="charlie-col">
-            <img src="pictures/cat_charlie.svg" alt="Charlie" class="character-avatar">
+        <div class="col" style="min-width: 350px;" id="alice-col">
+            <img src="pictures/cat_alice.svg" alt="Alice" class="character-avatar">
             
-            <p class="stage-title charlie-text" id="charlie-title">Choose an Operation!</p>
+            <p class="stage-title alice-text" id="alice-title">Choose Message to Send</p>
 
-            <div class="charlie-interactive" id="charlie-interactive">
-                <div class="charlie-choices">
+            <div class="alice-interactive" id="alice-interactive">
+                <div class="alice-choices">
                     
-                    <div class="gate-btn pulse" onclick="startOperationProcess('I')">
-                        <div class="gate-title">I</div>
+                    <div class="gate-btn pulse" onclick="startAliceOperation('I', '0')">
+                        <div class="msg-title">Message 0</div>
+                        <div class="gate-subtitle">(Apply I Gate)</div>
                         <div class="math-display">\( \begin{bmatrix} 1 & 0 \\ 0 & 1 \end{bmatrix} \)</div>
                     </div>
 
-                    <div class="gate-btn pulse" onclick="startOperationProcess('Y')">
-                        <div class="gate-title">Y</div>
+                    <div class="gate-btn pulse" onclick="startAliceOperation('Y', '1')">
+                        <div class="msg-title">Message 1</div>
+                        <div class="gate-subtitle">(Apply Y Gate)</div>
                         <div class="math-display">\( \begin{bmatrix} 0 & 1 \\ -1 & 0 \end{bmatrix} \)</div>
-                    </div>
-
-                    <div class="gate-btn pulse" onclick="startOperationProcess('H')">
-                        <div class="gate-title">H</div>
-                        <div class="math-display">\( \frac{1}{\sqrt{2}} \begin{bmatrix} 1 & 1 \\ 1 & -1 \end{bmatrix} \)</div>
                     </div>
 
                 </div>
             </div>
 
-            <div class="charlie-active-gate" id="charlie-active-gate">
-                <div class="gate-btn" id="charlie-gate-display" style="cursor: default; transform: none; border-color: var(--charlie-color); background: #f4f9ff;">
-                    </div>
+            <div class="alice-active-gate" id="alice-active-gate">
+                <div class="gate-btn" id="alice-gate-display" style="cursor: default; transform: none; border-color: var(--alice-color); background: #d8e3ff;">
+                </div>
             </div>
         </div>
 
@@ -322,14 +321,14 @@
 
     </div>
 
-    <p class="bottom-hint" id="hint-text">Help Charlie perform a quantum gate operation</p>
+    <p class="bottom-hint" id="hint-text">Help Alice encode her secret message (0 or 1)</p>
 
     <div class="explanation-box" id="explain-box">
         <div class="explain-header">
-            <p class="explain-title" id="explain-title">Operation Result</p>
-            <button class="retry-btn" onclick="resetCharlie()">↺ Try Another Gate</button>
+            <p class="explain-title" id="explain-title">Encoding Result</p>
+            <button class="retry-btn" onclick="resetAlice()">↺ Change Message</button>
         </div>
-        <p class="explain-desc" id="explain-desc">Charlie applied the gate to Bob's state. Below is the calculation process:</p>
+        <p class="explain-desc" id="explain-desc">Alice encoded her message by applying a quantum gate. Calculation below:</p>
         
         <div class="calc-process-container" id="calc-process-container">
             </div>
@@ -338,95 +337,99 @@
 </div>
 
 <script>
-    let bobStateStr = ""; 
+    let inputStateStr = ""; 
     let finalStateStr = "";
     let selectedGate = "";
+    let selectedMsg = "";
 
     const gateLatex = {
         'I': '\\begin{bmatrix} 1 & 0 \\\\ 0 & 1 \\end{bmatrix}',
-        'Y': '\\begin{bmatrix} 0 & 1 \\\\ -1 & 0 \\end{bmatrix}',
-        'H': '\\frac{1}{\\sqrt{2}}\\begin{bmatrix} 1 & 1 \\\\ 1 & -1 \\end{bmatrix}'
+        'Y': '\\begin{bmatrix} 0 & 1 \\\\ -1 & 0 \\end{bmatrix}'
     };
 
+    // 涵蓋所有第二步與第三步可能出現的態
     const vectorLatex = {
         '|0⟩': '\\begin{bmatrix} 1 \\\\ 0 \\end{bmatrix}',
         '|1⟩': '\\begin{bmatrix} 0 \\\\ 1 \\end{bmatrix}',
         '|+⟩': '\\frac{1}{\\sqrt{2}}\\begin{bmatrix} 1 \\\\ 1 \\end{bmatrix}',
         '|-⟩': '\\frac{1}{\\sqrt{2}}\\begin{bmatrix} 1 \\\\ -1 \\end{bmatrix}',
+        '-|0⟩': '-\\begin{bmatrix} 1 \\\\ 0 \\end{bmatrix}',
         '-|1⟩': '-\\begin{bmatrix} 0 \\\\ 1 \\end{bmatrix}',
-        '-|+⟩': '-\\frac{1}{\\sqrt{2}}\\begin{bmatrix} 1 \\\\ 1 \\end{bmatrix}'
+        '-|+⟩': '-\\frac{1}{\\sqrt{2}}\\begin{bmatrix} 1 \\\\ 1 \\end{bmatrix}',
+        '-|-⟩': '-\\frac{1}{\\sqrt{2}}\\begin{bmatrix} 1 \\\\ -1 \\end{bmatrix}'
     };
 
     const gateDisplayHTML = {
-        'I': `<div class="gate-title">I</div><div class="math-display">\\( ${gateLatex['I']} \\)</div>`,
-        'Y': `<div class="gate-title">Y</div><div class="math-display">\\( ${gateLatex['Y']} \\)</div>`,
-        'H': `<div class="gate-title">H</div><div class="math-display">\\( ${gateLatex['H']} \\)</div>`
+        'I': `<div class="msg-title">Message 0</div><div class="gate-subtitle">I Gate</div><div class="math-display">\\( ${gateLatex['I']} \\)</div>`,
+        'Y': `<div class="msg-title">Message 1</div><div class="gate-subtitle">Y Gate</div><div class="math-display">\\( ${gateLatex['Y']} \\)</div>`
     };
 
+    // Alice 的編碼規則：傳 0 則不變 (I)，傳 1 則套用 Y 閘
     const operationRules = {
-        '|0⟩': { 'I': '|0⟩', 'Y': '-|1⟩', 'H': '|+⟩' },
-        '|1⟩': { 'I': '|1⟩', 'Y': '|0⟩', 'H': '|-⟩' },
-        '|+⟩': { 'I': '|+⟩', 'Y': '|-⟩', 'H': '|0⟩' },
-        '|-⟩': { 'I': '|-⟩', 'Y': '-|+⟩', 'H': '|1⟩' }
+        '|0⟩': { 'I': '|0⟩', 'Y': '-|1⟩' },
+        '|1⟩': { 'I': '|1⟩', 'Y': '|0⟩' },
+        '|+⟩': { 'I': '|+⟩', 'Y': '|-⟩' },
+        '|-⟩': { 'I': '|-⟩', 'Y': '-|+⟩' },
+        '-|1⟩': { 'I': '-|1⟩', 'Y': '-|0⟩' },
+        '-|+⟩': { 'I': '-|+⟩', 'Y': '-|-⟩' }
     };
 
-    document.addEventListener("DOMContentLoaded", () => {
-        const params = new URLSearchParams(window.location.search);
-        let bobBasis = params.get("bobBasis"); 
-        let bobMsg = params.get("bobMsg"); 
-
-        const savedData = localStorage.getItem('qssStepData');
-        let parsedData = savedData ? JSON.parse(savedData) : null;
-        let useSavedData = false;
-
-        if (parsedData) {
-            if (!bobBasis || !bobMsg) {
-                useSavedData = true;
-            } else {
-                let urlState = getBobStateFromParams(bobBasis, bobMsg);
-                if (urlState === parsedData.bobState) {
-                    useSavedData = true;
-                }
-            }
+    // 渲染含有 ⟩ 的量子態為 LaTeX 格式的通用函數
+    function renderKet(elementId, stateStr) {
+        if(stateStr === "Waiting...") {
+            document.getElementById(elementId).innerHTML = stateStr;
+            return;
         }
-
-        if (useSavedData) {
-            bobStateStr = parsedData.bobState;
-            document.getElementById("input-state").textContent = bobStateStr;
-            startOperationProcess(parsedData.charlieGate, true);
-        } else {
-            bobStateStr = getBobStateFromParams(bobBasis || "Z", bobMsg || "0");
-            document.getElementById("input-state").textContent = bobStateStr;
-            localStorage.removeItem('qssStepData');
-        }
-    });
-
-    function getBobStateFromParams(basis, msg) {
-        msg = String(msg);
-        if (basis === "Z") {
-            return (msg === "0") ? "|0⟩" : "|1⟩";
-        } else {
-            return (msg === "0") ? "|+⟩" : "|-⟩";
+        const texStr = '\\( ' + stateStr.replace('⟩', '\\rangle') + ' \\)';
+        const el = document.getElementById(elementId);
+        el.innerHTML = texStr;
+        
+        if (window.MathJax && MathJax.typesetPromise) {
+            MathJax.typesetPromise([el]);
         }
     }
 
-    function startOperationProcess(gate, skipAnimation = false) {
+    document.addEventListener("DOMContentLoaded", () => {
+        // 從前一個步驟取得最終狀態
+        const savedData = localStorage.getItem('qssStepData');
+        
+        if (savedData) {
+            let parsedData = JSON.parse(savedData);
+            inputStateStr = parsedData.finalState || "|0⟩"; // 預防萬一找不到
+        } else {
+            // 如果沒有上一層資料，預設使用 |0⟩
+            inputStateStr = "|0⟩";
+        }
+        
+        // 渲染左側輸入狀態
+        renderKet("input-state", inputStateStr);
+
+        // 如果 Alice 這一步已經選過，可以回復狀態 (選擇性實作)
+        const aliceData = localStorage.getItem('qssStep3Data');
+        if(aliceData) {
+            let pData = JSON.parse(aliceData);
+            startAliceOperation(pData.aliceGate, pData.aliceMsg, true);
+        }
+    });
+
+    function startAliceOperation(gate, msg, skipAnimation = false) {
         selectedGate = gate;
+        selectedMsg = msg;
         
-        document.getElementById("charlie-interactive").style.display = "none";
+        document.getElementById("alice-interactive").style.display = "none";
         document.getElementById("hint-text").style.display = "none"; 
-        document.getElementById("charlie-title").innerText = "Charlie Applied"; 
+        document.getElementById("alice-title").innerText = `Alice Encoded Message: ${msg}`; 
         
-        const activeGateUI = document.getElementById("charlie-active-gate");
+        const activeGateUI = document.getElementById("alice-active-gate");
         activeGateUI.style.display = "flex";
         
-        const gateDisplay = document.getElementById("charlie-gate-display");
+        const gateDisplay = document.getElementById("alice-gate-display");
         gateDisplay.innerHTML = gateDisplayHTML[gate];
 
         if (window.MathJax && MathJax.typesetPromise) {MathJax.typesetPromise([gateDisplay]);}
 
-        finalStateStr = operationRules[bobStateStr][gate];
-        document.getElementById("final-state").textContent = finalStateStr;
+        finalStateStr = operationRules[inputStateStr][gate];
+        renderKet("final-state", finalStateStr);
         document.getElementById("results-area").classList.remove("show-result");
 
         if (skipAnimation) {
@@ -440,15 +443,15 @@
     function animateOperation() {
         const stage = document.getElementById('stage');
         const sourceEl = document.getElementById('input-state');
-        const charlieEl = document.getElementById('charlie-gate-display');
+        const midEl = document.getElementById('alice-gate-display');
         
         const particle = document.createElement('div');
         particle.className = 'photon-particle';
-        particle.innerText = bobStateStr.replace('⟩', '').replace('|', ''); 
+        particle.innerText = inputStateStr.replace('⟩', '').replace('|', ''); 
         
         const stageRect = stage.getBoundingClientRect();
         const srcRect = sourceEl.getBoundingClientRect();
-        const midRect = charlieEl.getBoundingClientRect();
+        const midRect = midEl.getBoundingClientRect();
         const landingSpot = document.getElementById('photon-landing-spot');
         const outRect = landingSpot.getBoundingClientRect();
         
@@ -468,12 +471,12 @@
         
         stage.appendChild(particle);
         
-        requestAnimationFrame(() => { particle.style.animation = 'shoot-to-charlie 1.2s forwards cubic-bezier(0.4, 0, 0.2, 1)'; });
+        requestAnimationFrame(() => { particle.style.animation = 'shoot-to-alice 1.2s forwards cubic-bezier(0.4, 0, 0.2, 1)'; });
         
         setTimeout(() => {
             document.getElementById("arrow-out").classList.add("active");
             particle.innerText = finalStateStr.replace('⟩', '').replace('|', ''); 
-            particle.style.animation = 'shoot-charlie-to-outcome 0.8s forwards ease-out';
+            particle.style.animation = 'shoot-alice-to-outcome 0.8s forwards ease-out';
             
             setTimeout(() => { 
                 displayFinalResult(); 
@@ -487,10 +490,12 @@
         const explainBox = document.getElementById("explain-box");
         const calcContainer = document.getElementById("calc-process-container");
         
-        // 將這裡的顏色設定改為 Charlie 的變數 var(--charlie-color)
+        // 將結尾純文字替換為 LaTeX 格式以供渲染
+        let texFinalState = finalStateStr.replace('⟩', '\\rangle');
+
         let calcHTML = `<div class="math-display" style="display: flex; align-items: center; gap: 10px;">
-            \\( ${gateLatex[selectedGate]} \\times ${vectorLatex[bobStateStr]} = ${vectorLatex[finalStateStr]} \\)
-            <span style="color:var(--charlie-color); font-weight:bold;">= ${finalStateStr}</span>
+            \\( ${gateLatex[selectedGate]} \\times ${vectorLatex[inputStateStr]} = ${vectorLatex[finalStateStr]} \\)
+            <span style="color:var(--alice-color); font-weight:bold;">= \\( ${texFinalState} \\)</span>
         </div>`;
         calcContainer.innerHTML = calcHTML;
 
@@ -498,42 +503,43 @@
             MathJax.typesetPromise([calcContainer]);
         }
 
-        const qssData = {
-            bobState: bobStateStr,
-            charlieGate: selectedGate,
-            finalState: finalStateStr
+        const step3Data = {
+            aliceMsg: selectedMsg,
+            aliceGate: selectedGate,
+            finalEncodedState: finalStateStr
         };
-        localStorage.setItem('qssStepData', JSON.stringify(qssData));
+        localStorage.setItem('qssStep3Data', JSON.stringify(step3Data));
 
         resultsArea.classList.add("show-result");
         explainBox.classList.add("show");
     }
 
-    function resetCharlie() {
+    function resetAlice() {
         document.getElementById("explain-box").classList.remove("show");
         document.getElementById("results-area").classList.remove("show-result");
         document.getElementById("arrow-out").classList.remove("active");
+        renderKet("final-state", "Waiting...");
         
         const oldPhoton = document.querySelector('.photon-particle');
         if(oldPhoton) oldPhoton.remove();
         
-        localStorage.removeItem('qssStepData'); 
+        localStorage.removeItem('qssStep3Data'); 
         
         setTimeout(() => {
-            document.getElementById("charlie-active-gate").style.display = "none";
-            document.getElementById("charlie-interactive").style.display = "flex";
+            document.getElementById("alice-active-gate").style.display = "none";
+            document.getElementById("alice-interactive").style.display = "flex";
             document.getElementById("hint-text").style.display = "block";
-            document.getElementById("charlie-title").innerText = "Choose an Operation!";
+            document.getElementById("alice-title").innerText = "Choose Message to Send";
         }, 300);
     }
 
-    function prevStep() { window.location.href = 'QSSstep1.html'; }
+    function prevStep() { window.location.href = 'QSSstep2.html'; }
     function nextStep() { 
-        if (localStorage.getItem('qssStepData')) {
+        if (localStorage.getItem('qssStep3Data')) {
             localStorage.removeItem('qssStep3Data');
-            window.location.href = 'QSSstep3.html';
+            window.location.href = 'QSSstep4.html';
         } else {
-            alert("Complete Charlie's operation first!");
+            alert("Complete Alice's encoding operation first!");
         }
     }
 </script>
