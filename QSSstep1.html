@@ -5,43 +5,222 @@
     <base href="https://s112321005.github.io/Cybersecurity-Visualization/">
     <title>Quantum Secret Sharing</title>
     <style>
-        :root { --primary-blue: #004aad; --dark-text: #333333; --bg-color: #f8f9fa; --active-blue: #e3f2fd; --bob-blue:#4C80C5;}
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes scaleUp { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
-        @keyframes pulse-anim { 0% { box-shadow: 0 0 0 0 rgba(0, 74, 173, 0.4); } 70% { box-shadow: 0 0 0 15px rgba(0, 74, 173, 0); } 100% { box-shadow: 0 0 0 0 rgba(0, 74, 173, 0); } }
-        @keyframes float-anim { 0% { transform: translateY(0px); } 50% { transform: translateY(-8px); } 100% { transform: translateY(0px); } }
-        body { font-family: 'Segoe UI', sans-serif; display: flex; flex-direction: column; align-items: center; padding: 40px 20px; background-color: var(--bg-color); margin: 0; animation: fadeIn 0.8s ease-out; overflow-x: hidden; }
-        .header { width: min(1000px, 95vw); display: flex; align-items: center; justify-content: space-between; margin-bottom: 25px; height: 60px; }
-        .header-left { display: flex; align-items: center; gap: 15px; }
-        .btn-back { width: 40px; height: 40px; background-color: var(--primary-blue); color: white; border-radius: 50%; display: flex; justify-content: center; align-items: center; text-decoration: none; font-size: 1.1rem; transition: transform 0.2s; cursor: pointer; border: none; box-shadow: 0 2px 6px rgba(0,0,0,0.15); flex-shrink: 0; }
-        .btn-back:hover { transform: scale(1.1); }
-        .title-pill { border: 2px solid var(--primary-blue); height: 48px; padding: 0 25px; border-radius: 30px; font-weight: bold; background: white; display: flex; align-items: center; justify-content: center; white-space: nowrap; font-size: 1.1rem; }
+        :root {
+            --primary-blue: #004aad;
+            --dark-text: #333333;
+            --bg-color: #f8f9fa;
+            --active-blue: #e3f2fd;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes pulse-anim {
+            0% { box-shadow: 0 0 0 0 rgba(0, 74, 173, 0.4); }
+            70% { box-shadow: 0 0 0 15px rgba(0, 74, 173, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(0, 74, 173, 0); }
+        }
+
+        @keyframes float-anim {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-8px); }
+            100% { transform: translateY(0px); }
+        }
+
+        @keyframes gentle-glow {
+            0% { box-shadow: 0 0 5px rgba(0, 74, 173, 0.2); transform: scale(1); }
+            100% { box-shadow: 0 0 15px rgba(0, 74, 173, 0.6); transform: scale(1.05); }
+        }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            display: flex; flex-direction: column; align-items: center;
+            padding: 40px 20px; background-color: var(--bg-color); margin: 0;
+            animation: fadeIn 0.8s ease-out;
+            overflow-x: hidden;
+        }
+
+        /* --- Header 佈局校準 --- */
+        .header {
+            width: min(1000px, 95vw); 
+            display: flex;
+            align-items: center; 
+            justify-content: space-between; 
+            margin-bottom: 25px;
+            height: 60px; /* 增加 Header 高度以容納大按鈕 */
+        }
+
+        .header-left { 
+            display: flex; 
+            align-items: center; 
+            gap: 15px; 
+        }
+
+        /* 放大版返回按鈕 (48px) */
+        .btn-back {
+            width: 40px; 
+            height: 40px; 
+            background-color: var(--primary-blue);
+            color: white; 
+            border-radius: 50%; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            text-decoration: none; 
+            font-size: 1.1rem; /* 稍微放大箭頭 */
+            transition: transform 0.2s;
+            cursor: pointer; 
+            border: none;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+            padding: 0;
+            margin: 0;
+            box-sizing: border-box;
+            flex-shrink: 0;
+        }
+        .btn-back:hover { 
+            transform: scale(1.1); 
+        }
+
+        /* 放大版標題框 (48px) */
+        .title-pill {
+            border: 2px solid var(--primary-blue); 
+            height: 48px;           
+            padding: 0 25px;        
+            border-radius: 30px; 
+            font-weight: bold; 
+            background: white;
+            display: flex;
+            align-items: center;    
+            justify-content: center;
+            box-sizing: border-box;
+            white-space: nowrap;
+            font-size: 1.1rem;
+        }
+
         .step-text { font-weight: bold; font-size: 1.1rem; margin: 0; color: var(--dark-text); }
-        .nav-btn { border: 2px solid var(--primary-blue); background: white; padding: 0 30px; border-radius: 30px; font-weight: bold; cursor: pointer; transition: all 0.3s; opacity: 0.3; pointer-events: none; height: 48px; display: flex; align-items: center; font-size: 1.1rem; }
-        .nav-btn.ready { opacity: 1; pointer-events: auto; background: var(--primary-blue); color: white; box-shadow: 0 4px 15px rgba(0, 74, 173, 0.3); }
-        .main-card { width: min(1000px, 95vw); height: 620px; border: 3px solid var(--primary-blue); border-radius: 35px; position: relative; background: white; display: flex; flex-direction: column; justify-content: flex-start; align-items: center; overflow: hidden; padding-top: 25px; box-sizing: border-box; }
-        .character-bob { margin-bottom: 5px; animation: float-anim 3.5s ease-in-out infinite; }
-        .bob-interactive { display: flex; flex-direction: column; align-items: center; z-index: 5; width: 100%; }
-        .prompt-text { margin: 0 0 10px 0; font-weight: bold; color: var(--primary-blue); font-size: 1.3rem; letter-spacing: 0.5px; }
-        .selector-area { display: flex; align-items: flex-start; gap: 60px; margin-bottom: 20px; }
-        .basis-column { display: flex; flex-direction: column; align-items: center; gap: 15px; width: 220px; }
-        .basis-title { font-weight: bold; color: var(--primary-blue); font-size: 1.2rem; background: #eef4ff; padding: 4px 15px; border-radius: 12px; }
-        /* 矩陣顯示放大版 */
-        .matrix-display { height: 140px; display: flex; align-items: center; justify-content: center; font-family: 'Cambria Math', serif; font-size: 2.2rem; color: var(--primary-blue); margin: 10px 0; animation: scaleUp 0.4s ease-out; }
-        .matrix-bracket { display: inline-flex; align-items: center; border-left: 3px solid var(--primary-blue); border-right: 3px solid var(--primary-blue); padding: 0 15px; margin: 0 10px; border-radius: 15px; }
-        .matrix-content { display: flex; flex-direction: column; align-items: center; gap: 8px; line-height: 1; }
-        .fraction { display: inline-flex; flex-direction: column; align-items: center; font-size: 1.6rem; margin-right: 12px; }
-        .frac-line { border-top: 2px solid var(--primary-blue); width: 110%; margin: 2px 0; }
-        .sqrt { position: relative; display: inline-block; padding-top: 2px; }
-        .sqrt::before { content: ''; position: absolute; top: 0; left: 50%; width: 50%; height: 2px; background: var(--primary-blue); }
-        /* 按鈕樣式 */
+
+        /* 放大版 Next 按鈕 (48px) */
+        .nav-btn {
+            border: 2px solid var(--primary-blue); 
+            background: white;
+            padding: 0 30px; 
+            border-radius: 30px; 
+            font-weight: bold;
+            cursor: pointer; 
+            transition: all 0.3s;
+            opacity: 0.3; 
+            pointer-events: none;
+            height: 48px;           
+            display: flex;
+            align-items: center;
+            box-sizing: border-box;
+            font-size: 1.1rem;
+        }
+
+        .nav-btn.ready {
+            opacity: 1; pointer-events: auto;
+            background: var(--primary-blue); color: white;
+            box-shadow: 0 4px 15px rgba(0, 74, 173, 0.3);
+        }
+                /* --- 主卡片內容 --- */
+        .main-card {
+            width: min(1000px, 95vw); 
+            height: 560px; 
+            border: 3px solid var(--primary-blue); border-radius: 35px;
+            position: relative; background: white; display: flex;
+            flex-direction: column; justify-content: flex-start; align-items: center;
+            overflow: hidden; padding-top: 25px; box-sizing: border-box;
+        }
+
+        .character-bob { 
+            margin-bottom: 5px;
+            animation: float-anim 3.5s ease-in-out infinite;
+        }
+        
+        .bob-interactive {
+            display: flex; flex-direction: column; align-items: center; z-index: 5;
+            width: 100%;
+        }
+        
+        .prompt-text {
+            margin: 0 0 20px 0; 
+            font-weight: bold; 
+            color: var(--primary-blue); 
+            font-size: 1.3rem;
+            letter-spacing: 0.5px;
+        }
+
+        .selector-area { display: flex; align-items: flex-start; gap: 60px; }
+
+        .basis-column { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+        .basis-title { font-weight: bold; color: var(--primary-blue); font-size: 1.2rem; margin-bottom: 5px; }
+
         .options-row { display: flex; gap: 20px; }
-        .state-btn { cursor: pointer; padding: 12px; border: 2px solid #eee; border-radius: 20px; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); display: flex; flex-direction: column; align-items: center; width: 50px; background: white; animation: pulse-anim 2s infinite; }
-        .state-btn:hover { transform: translateY(-5px); border-color: #bbdefb; background: #fafcff; }
-        .state-btn.active { border-color: var(--bob-blue); background: var(--active-blue); transform: scale(1.08); animation: none; box-shadow: 0 0 15px rgba(0, 74, 173, 0.4); }
-        .braket { font-size: 1.4rem; font-weight: bold; color: var(--bob-blue); }
-        .explanation-area { display: flex; justify-content: center; align-items: center; margin-top: 10px; }
-        .explanation-text { color: #888; font-weight: bold; font-size: 1rem; text-align: center; }
+
+        .state-btn {
+            cursor: pointer; padding: 12px; border: 2px solid #eee;
+            border-radius: 20px; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: flex; flex-direction: column; align-items: center; gap: 5px;
+            width: 95px; background: white; position: relative;
+            animation: pulse-anim 2s infinite; 
+        }
+
+        .state-btn:hover { 
+            transform: translateY(-5px); 
+            border-color: #bbdefb; 
+            background: #fafcff;
+        }
+
+        .state-btn.active {
+            border-color: var(--primary-blue);
+            background: var(--active-blue);
+            transform: scale(1.08); 
+            animation: none; 
+            box-shadow: 0 0 15px rgba(0, 74, 173, 0.4); 
+        }
+
+        .braket { font-size: 1.5rem; font-weight: bold; color: var(--primary-blue); margin-bottom: 2px; }
+        .bit-label { font-size: 0.85rem; color: #666; font-weight: bold; }
+
+        .explanation-area {
+            display: flex; justify-content: center; align-items: center;
+            margin-top: 20px; padding: 10px;
+        }
+        .explanation-text {
+            color: #888; font-weight: bold; font-size: 1rem; margin: 0; text-align: center;
+        }
+
+        .logic-footer {
+            position: absolute; bottom: 0; left: 0; width: 100%;
+            background-color: #f8fbff;
+            border-top: 2px dashed #d0e3ff;
+            padding: 18px 0;
+            display: flex; justify-content: center; align-items: center;
+        }
+
+        .logic-container {
+            display: flex; align-items: center; gap: 12px;
+            font-weight: bold; font-size: 1.05rem;
+        }
+
+        .logic-label {
+            color: #888; font-size: 0.9rem; margin-right: 8px; text-transform: uppercase; letter-spacing: 1px;
+        }
+
+        .logic-pill {
+            background: white; border: 2px solid #b3d4ff; padding: 6px 16px;
+            border-radius: 20px; color: var(--primary-blue);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+        }
+
+        .logic-operator { color: #aaa; font-weight: bold; font-size: 1.4rem; }
+
+        .logic-pill.result {
+            background: var(--primary-blue); color: white; border-color: var(--primary-blue);
+            animation: gentle-glow 1.5s infinite alternate; 
+        }
     </style>
 </head>
 <body>
@@ -49,9 +228,9 @@
 <div class="header">
     <div class="header-left">
         <a href="QuantumCybersecurityEducationPlatform.html" class="btn-back" title="back home">◀</a>
-        <div class="title-pill">Quantum Secret Sharing</div>
+        <div class="title-pill">Quantum Secret Sharing：ZhangLiMan</div>
     </div>
-    <div class="header-center"><p class="step-text">STEP 1: Bob prepares the photon</p></div>
+    <div class="header-center"><p class="step-text">STEP 1：Bob prepares a Basis</p></div>
     <div class="header-right">
         <button id="next-btn" class="nav-btn" onclick="nextStep()" disabled>Next</button>
     </div>
@@ -67,36 +246,49 @@
         
         <div class="selector-area">
             <div class="basis-column">
-                <div class="basis-title">X Basis</div>
-                <div class="options-row">
-                    <div class="state-btn" onclick="selectState('Xbasis', '1', this)">
-                        <span class="braket">|＋⟩</span>
+                <div class="basis-title">Z Basis</div>
+                        <div class="options-row">
+                    <div class="state-btn" onclick="selectState('Z', '0', this)">
+                        <span class="braket">|0⟩</span>
+                        <span class="bit-label">Bit 0</span>
                     </div>
-                    <div class="state-btn" onclick="selectState('Xbasis', '0', this)">
-                        <span class="braket">|－⟩</span>
+                    <div class="state-btn" onclick="selectState('Z', '1', this)">
+                        <span class="braket">|1⟩</span>
+                        <span class="bit-label">Bit 1</span>
                     </div>
                 </div>
             </div>
 
-            <div style="width: 2px; height: 120px; background: #eee; align-self: center;"></div>
+            <div style="width: 2px; height: 160px; background: #eee; align-self: center;"></div>
 
             <div class="basis-column">
-                <div class="basis-title">Z Basis</div>
+                <div class="basis-title">X Basis</div>
                 <div class="options-row">
-                    <div class="state-btn" onclick="selectState('Zbasis', '1', this)">
-                        <span class="braket">|０⟩</span>
+                    <div class="state-btn" onclick="selectState('X', '0', this)">
+                        <span class="braket">|+⟩</span>
+                        <span class="bit-label">Bit 0</span>
                     </div>
-                    <div class="state-btn" onclick="selectState('Zbasis', '0', this)">
-                        <span class="braket">|１⟩</span>
+                    <div class="state-btn" onclick="selectState('X', '1', this)">
+                        <span class="braket">|-⟩</span>
+                        <span class="bit-label">Bit 1</span>
                     </div>
                 </div>
             </div>
         </div>
-
-        <div id="matrix" class="matrix-display"></div>
-
+        
         <div class="explanation-area">
-            <p class="explanation-text">Observe the unique state vector in Hilbert space</p>
+            <p class="explanation-text">Click a state to confirm selection</p>
+        </div>
+    </div>
+
+    <div class="logic-footer">
+        <div class="logic-container">
+            <span class="logic-label">Encoding Logic</span>
+            <span class="logic-pill">Preparation Basis</span>
+            <span class="logic-operator">+</span>
+            <span class="logic-pill">Bit Value</span>
+            <span class="logic-operator">=</span>
+            <span class="logic-pill result">Quantum State</span>
         </div>
     </div>
 </div>
@@ -109,40 +301,8 @@
         document.querySelectorAll('.state-btn').forEach(btn => btn.classList.remove('active'));
         el.classList.add('active');
 
-        const displayDiv = document.getElementById(`matrix`);
-        displayDiv.style.animation = 'none'; // 重置動畫
-        displayDiv.offsetHeight; // 觸發 reflow
-        displayDiv.style.animation = 'scaleUp 0.4s ease-out';
-
-        let html = '';
-        if (basis === 'Xbasis') {
-            const label = bit === '1' ? '＋' : '－';
-            const val = bit === '1' ? '1' : '-1';
-            html = `
-                <span style = "margin-right: 25px;"">|${label}⟩  ＝  </span>
-                <div class="fraction">
-                    <span>1</span>
-                    <div class="frac-line"></div>
-                    <span class="sqrt">√2</span>
-                </div>
-                <div class="matrix-bracket">
-                    <div class="matrix-content"><span>1</span><span>${val}</span></div>
-                </div>`;
-        } else {
-            const label = bit === '1' ? '０' : '１';
-            const top = bit === '1' ? '1' : '0';
-            const bot = bit === '1' ? '0' : '1';
-            html = `
-                <span>|${label}⟩  ＝  </span>
-                <div class="matrix-bracket">
-                    <div class="matrix-content"><span>${top}</span><span>${bot}</span></div>
-                </div>`;
-        }
-
-        displayDiv.innerHTML = html;
-
-        document.querySelector('.prompt-text').textContent = "State Prepared!";
-        document.querySelector('.prompt-text').style.color = "#28a745";
+        document.querySelector('.prompt-text').textContent = "State Selected!";
+        document.querySelector('.prompt-text').style.color = "#28a745"; 
         
         selectedBasis = basis;
         selectedMsg = bit;
@@ -152,9 +312,14 @@
         nextBtn.classList.add('ready');
     }
 
+    function prevStep() {
+        window.history.back();
+    }
+
     function nextStep() {
         if (!selectedBasis) return;
-        window.location.href = `QSSstep2.html?aliceBasis=${selectedBasis}&aliceMsg=${selectedMsg}`;
+        // 將跳轉的 URL 改為 QSSstep2，並傳遞 Bob 的參數
+        window.location.href = `QSSstep2.html?bobBasis=${selectedBasis}&bobMsg=${selectedMsg}`;
     }
 </script>
 </body>
