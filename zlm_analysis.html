@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=1900">
     <base href="https://s112321005.github.io/Cybersecurity-Visualization/">
-    <title>Verify: Quantum Secret Sharing (Eve Mode)</title>
+    <title>QSS Visualization：ZhangLiMan Protocol</title>
     <style>
         :root { --primary-blue: #0047AB; --light-blue: #D0E0FF; --inactive-gray: #e0e0e0; --bg-color: #f8f9fa; --eve-red: #D32F2F; --bob-blue: #4C80C5; --charlie-blue: #478CEA; --op-purple: #FFE69A; }
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--bg-color); display: flex; flex-direction: column; align-items: center; margin: 0; padding: 20px 0; color: #333; min-width: 1450px !important; }
@@ -70,10 +70,172 @@
         .eve-nav-left { left: 15px; }
         .eve-nav-right { right: 15px; }
         .eve-nav-disabled { opacity: 0.3; cursor: not-allowed; }
+        .pull-tab { position: absolute; top: 0; left: 50%; transform: translateX(-50%); background-color: var(--primary-blue); color: white; padding: 10px 40px 15px 40px; border-bottom-left-radius: 20px; border-bottom-right-radius: 20px; cursor: pointer; font-size: 16px; font-weight: bold; z-index: 10001; box-shadow: 0 4px 15px rgba(0,0,0,0.3); transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1); display: flex; gap: 10px; align-items: center; }
+        .pull-tab:hover { background-color: #003380; padding-top: 15px; }
+        .settings-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-color: #f8f9fa; z-index: 10000; transform: translateY(-100%); transition: transform 1.2s cubic-bezier(0.22, 1, 0.36, 1); display: flex; flex-direction: column; align-items: center; justify-content: flex-start; overflow-y: auto; box-sizing: border-box; padding-top: 80px; box-shadow: 0 15px 50px rgba(0,0,0,0.2); }
+        .settings-overlay.show { transform: translateY(0); }
+        .overlay-container { width: 1100px; max-width: 95vw; display: flex; flex-direction: column; align-items: center; padding-bottom: 50px; }
+        .main-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; width: 100%; margin-bottom: 30px; }
+        .main-grid-settings { display: flex; flex-direction: row; gap: 20px; width: 100%; margin-bottom: 30px; justify-content: center; align-items: stretch; }
+        .character-col { flex: 1; display: flex; flex-direction: column; align-items: center; z-index: 2; position: relative; }
+        .character-img { height: 80px; object-fit: contain; margin-bottom: 15px; z-index: 2; transition: all 0.3s ease; }
+        .disabled-img { filter: grayscale(100%) opacity(0.5); }
+        .name-tag { background-color: var(--primary-blue); color: white; padding: 6px 30px; border-radius: 20px; font-weight: bold; font-size: 16px; margin-bottom: 15px; z-index: 3; text-align: center; min-width: 140px; box-sizing: border-box; transition: all 0.3s ease; }
+        .name-tag.gray { background-color: #b0b0b0; color: white; }
+        .name-tag.red-text { background-color: var(--eve-red); }
+        .click-toggle { cursor: pointer; margin-bottom: -15px; z-index: 3; display: inline-grid; grid-template-areas: "toggle-area"; border-radius: 20px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.1); transition: transform 0.2s ease, box-shadow 0.2s ease; }
+        .click-toggle:active { transform: scale(0.95); box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .click-toggle input { display: none; }
+        .click-toggle span { grid-area: toggle-area; padding: 6px 30px; font-weight: bold; font-size: 16px; text-align: center; min-width: 140px; box-sizing: border-box; transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
+        .click-toggle .text-off { background-color: #b0b0b0; color: white; }
+        .click-toggle .text-on { background-color: var(--primary-blue); color: white; }
+        .click-toggle input:not(:checked) ~ .text-on { transform: translateY(-100%); opacity: 0; pointer-events: none; }
+        .click-toggle input:not(:checked) ~ .text-off { transform: translateY(0); opacity: 1; }
+        .click-toggle input:checked ~ .text-on { transform: translateY(0); opacity: 1; }
+        .click-toggle input:checked ~ .text-off { transform: translateY(100%); opacity: 0; pointer-events: none; }
+        .status-toggle-static { cursor: default; }
+        .control-panel { border: 2px solid var(--primary-blue); border-radius: 10px; padding: 25px; background-color: white; height: 350px; box-sizing: border-box; width: 100%; transition: all 0.3s ease; display: flex; flex-direction: column; }
+        .control-panel.disabled { border-color: #b0b0b0 !important; color: #777; }
+        .setting-title { display: flex; align-items: center; gap: 5px; font-weight: bold; font-size: 14px; margin-bottom: 10px; }
+        .setting-title::before { content: ''; display: inline-block; width: 10px; height: 10px; border-radius: 50%; background-color: #79a6d2; transition: all 0.3s ease; }
+        .disabled .setting-title::before { background-color: #b0b0b0 !important; }
+        .flex-row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-bottom: 15px; }
+        .pill-radio { display: inline-block; position: relative; }
+        .pill-radio input { display: none; }
+        .pill-radio span { display: inline-flex; padding: 4px 12px; border: 2px solid var(--primary-blue); border-radius: 20px; color: var(--primary-blue); font-weight: bold; font-size: 14px; cursor: pointer; background-color: white; text-align: center; min-width: 6px; justify-content: center; transition: all 0.3s ease; white-space: nowrap; }
+        .pill-radio input:checked + span { background-color: #478CEA; color: white; border-color: #478CEA; }
+        .disabled .pill-radio span { border-color: #b0b0b0 !important; color: #b0b0b0 !important; cursor: not-allowed; background-color: white !important; }
+        #alice-col .name-tag { background-color: #0047AB !important; color: #ffffff !important; }
+        #alice-col .status-toggle-static { background-color: #0047AB !important; color: #ffffff !important; }
+        #alice-col .control-panel:not(.disabled) .pill-radio input[type="radio"]:checked + span { background-color: #0047AB !important; border-color: #0047AB !important; }
+        #alice-col .control-panel:not(.disabled) .setting-title::before { background-color: #0047AB; }        #bob-col .name-tag, #bob-col .status-toggle-static { background-color: var(--bob-blue) !important; }
+        #bob-col .control-panel:not(.disabled) { border-color: var(--bob-blue) !important; }
+        #bob-col .control-panel:not(.disabled) .pill-radio span { border-color: var(--bob-blue) !important; color: var(--bob-blue) !important; }
+        #bob-col .control-panel:not(.disabled) .pill-radio input:checked + span { background-color: var(--bob-blue) !important; color: white !important; }
+        #bob-col .control-panel:not(.disabled) .setting-title::before { background-color: var(--bob-blue); }
+        #charlie-col .name-tag, #charlie-col .status-toggle-static, #charlie-col .click-toggle .text-on { background-color: #478CEA !important; color: #ffffff !important; }
+        #charlie-col .control-panel:not(.disabled) { border-color: #478CEA !important; }
+        #charlie-col .control-panel:not(.disabled) .pill-radio span { border-color: #478CEA !important; color: #478CEA !important; }
+        #charlie-col .control-panel:not(.disabled) .pill-radio input:checked + span { background-color: #478CEA !important; border-color: #478CEA !important; color: #ffffff !important; }
+        #charlie-col .control-panel:not(.disabled) .setting-title::before { background-color: #478CEA !important; }
+        .name-tag.red-text { background-color: #D32F2F; }
+        .theme-red .click-toggle .text-on { background-color: #D32F2F !important; }
+        .theme-red .control-panel:not(.disabled) { border-color: #D32F2F !important; }
+        .theme-red .control-panel:not(.disabled) .pill-radio span { border-color: #D32F2F !important; color: #D32F2F !important; }
+        .theme-red .control-panel:not(.disabled) .pill-radio input:checked + span { background-color: #D32F2F !important; border-color: #D32F2F !important; color: white !important; }
+        .theme-red .control-panel:not(.disabled) .setting-title::before { background-color: #e57373 !important; }
+        .eve-select { width: 100%; padding: 6px 10px; border-radius: 8px; font-weight: bold; outline: none; font-family: inherit; transition: all 0.3s ease; }
+        .theme-red .control-panel:not(.disabled) .eve-select { border: 2px solid #D32F2F !important; color: #D32F2F !important; background: white !important; }
+        .theme-red .control-panel.disabled .eve-select { border: 2px solid #b0b0b0 !important; color: #b0b0b0 !important; background: #f8f9fa !important; cursor: not-allowed; }
+        .apply-btn { background-color: #28a745; color: white; border: none; padding: 12px 50px; border-radius: 25px; font-size: 20px; font-weight: bold; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 10px rgba(219, 165, 225, 0.3); }
+        .apply-btn:hover { background-color: #218838; transform: scale(1.05); }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 </head>
 <body>
+<div class="pull-tab" onclick="toggleSettings()">
+    <span id="tab-icon">▼</span> <span id="tab-text"> Settings ⚙️</span>
+</div> 
+<div id="settings-overlay" class="settings-overlay">
+    <div class="overlay-container">       
+        <div class="main-grid" id="qss-interface">
+            <div class="character-col" id="bob-col">
+                <img src="pictures/cat_bob.svg" class="character-img" alt="Bob">
+                <div class="name-tag">1. Bob</div>
+                <div class="click-toggle"><span class="text-on status-toggle-static">ON</span></div>
+                <div class="control-panel">
+                    <div class="setting-title">Particle Selection</div>
+                    <div class="flex-row" style="margin-bottom: 15px; gap: 4px;">
+                        <label class="pill-radio"><input type="radio" name="qss_b_particle" value="single"checked><span>single</span></label>
+                    </div>
+                    <div class="setting-title">Basis Selection</div>
+                    <div style="display:flex; flex-direction:column; gap:8px; margin-bottom: 15px;">
+                        <div class="flex-row" style="gap: 4px;">
+                            <label class="pill-radio"><input type="radio" name="qss_b_basis" value="X" checked><span>X</span></label>
+                            <label class="pill-radio"><input type="radio" name="qss_b_basis" value="Z"><span>Z</span></label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="character-col" id="charlie-col">
+                <img src="pictures/cat_charlie.svg" class="character-img" alt="Charlie">
+                <div class="name-tag">2. Charlie</div>
+                <div class="click-toggle"><span class="text-on status-toggle-static">ON</span></div>
+                <div class="control-panel">
+                    <div class="setting-title">Particle Selection</div>
+                    <div class="flex-row" style="margin-bottom: 15px; gap: 4px;">
+                        <label class="pill-radio"><input type="radio" name="qss_c_particle" value="single" checked><span>single</span></label>
+                    </div>
+                    <div class="setting-title">Operation Selection</div>
+                    <div style="display:flex; flex-direction:column; gap:8px; margin-bottom: 15px;">
+                        <div class="flex-row" style="gap: 4px;">
+                            <label class="pill-radio"><input type="checkbox" name="qss_c_operator" value="I" checked><span>I</span></label>
+                            <label class="pill-radio"><input type="checkbox" name="qss_c_operator" value="X"><span>X</span></label>
+                            <label class="pill-radio"><input type="checkbox" name="qss_c_operator" value="Y" checked><span>Y</span></label>
+                            <label class="pill-radio"><input type="checkbox" name="qss_c_operator" value="Z"><span>Z</span></label>
+                            <label class="pill-radio"><input type="checkbox" name="qss_c_operator" value="H" checked><span>H</span></label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="character-col" id="alice-col">
+                <img src="pictures/cat_alice.svg" class="character-img" alt="Alice">
+                <div class="name-tag">3. Alice</div>
+                <div class="click-toggle"><span class="text-on status-toggle-static">ON</span></div>
+                <div class="control-panel">
+                    <div class="setting-title">Particle Selection</div>
+                    <div class="flex-row" style="margin-bottom: 15px; gap: 4px;">
+                        <label class="pill-radio"><input type="radio" name="qss_a_particle" value="single" checked><span>single</span></label>
+                    </div>                
+                    <div class="setting-title">Message Selection</div>
+                    <div style="display:flex; flex-direction:column; gap:8px; margin-bottom: 15px;">
+                        <div class="flex-row" style="gap: 4px;">
+                            <label class="pill-radio"><input type="radio" name="qss_a_msg" value="0" checked><span>0</span></label>
+                            <label class="pill-radio"><input type="radio" name="qss_a_msg" value="1"><span>1</span></label>
+                        </div>
+                    </div>
+                    <div class="setting-title">Message:0 Operator</div>
+                    <div class="flex-row" style="margin-bottom: 10px; gap: 4px; flex-wrap: wrap;">
+                        <label class="pill-radio"><input type="radio" name="op_msg_0" value="I" checked><span>I</span></label>
+                        <label class="pill-radio"><input type="radio" name="op_msg_0" value="X"><span>X</span></label>
+                        <label class="pill-radio"><input type="radio" name="op_msg_0" value="Y"><span>Y</span></label>
+                        <label class="pill-radio"><input type="radio" name="op_msg_0" value="Z"><span>Z</span></label>
+                        <label class="pill-radio"><input type="radio" name="op_msg_0" value="H"><span>H</span></label>
+                    </div>
+                    <div class="setting-title">Message:1 Operator</div>
+                    <div class="flex-row" style="margin-bottom: 15px; gap: 4px; flex-wrap: wrap;">
+                        <label class="pill-radio"><input type="radio" name="op_msg_1" value="I"><span>I</span></label>
+                        <label class="pill-radio"><input type="radio" name="op_msg_1" value="X" checked><span>X</span></label>
+                        <label class="pill-radio"><input type="radio" name="op_msg_1" value="Y"><span>Y</span></label>
+                        <label class="pill-radio"><input type="radio" name="op_msg_1" value="Z"><span>Z</span></label>
+                        <label class="pill-radio"><input type="radio" name="op_msg_1" value="H"><span>H</span></label>
+                    </div>
+                </div>
+            </div>
+            <div class="character-col theme-red">
+                <img src="pictures/Eavesdropper.svg" class="character-img" alt="Eavesdropper">
+                <div class="name-tag red-text" data-role="eavesdropper">Eavesdropper</div>
+                <label class="click-toggle"><input type="checkbox" class="status-toggle" id="eve-status-toggle"><span class="text-on">ON</span><span class="text-off">OFF</span></label>
+                <div class="control-panel">
+                    <div class="setting-title">Attack Selection</div>
+                    <div style="display:flex; flex-direction:column; gap:10px; align-items: flex-start; margin-top: 15px;">
+                        <label class="pill-radio"><input type="radio" name="qss_e_attack"><span style="padding: 6px 20px;" value="Intercept-resend">Intercept-resend</span></label>
+                    </div>
+                    <div class="setting-title" style="margin-top: 20px;">Intercept Location</div>
+                    <select name="qss_e_location" class="eve-select">
+                        <option value="1_2">Between 1 & 2</option>                        
+                        <option value="2_3">Between 2 & 3</option>
+                        <option value="3_4">Between 3 & 4</option>
+                        <option value="4_5">Between 4 & 5</option>
+                    </select>
+                </div>
+            </div>   
+    </div>
+    <button class="apply-btn" onclick="applySettings()">Update View State</button>
+
+</div>
+</div>
 <div id="prob-tooltip">Probability: 100%</div>
 <div id="view-qss" class="page-view active-view">
     <div class="container">
@@ -104,8 +266,179 @@
     </div>
 </div>
 <script>
+    let currentSettings = {
+        bob: { particle: 'single', basis: 'X' },
+        charlie: { particle: 'single', operator: ['I', 'Y', 'H'] },
+        alice: { particle: 'single', msg: '0', message0Op: 'I', message1Op: 'X' },
+        eve: { isOn: false, attack: 'Intercept-resend', location: '1_2' },
+        subProtocol: 'zlm'
+    };
     let currentInitialState = '';
     let currentBasis = '';
+    let selections = { 1: null, 2: null, 3: null, 4: null, 5: null };
+    function toggleSettings() {
+        const overlay = document.getElementById('settings-overlay');
+        const icon = document.getElementById('tab-icon');
+        const text = document.getElementById('tab-text');
+        
+        if (overlay.classList.contains('show')) {
+            overlay.classList.remove('show');
+            icon.innerText = '▼';
+            text.innerText = ' Settings⚙️ ';
+        } else {
+            overlay.classList.add('show');
+            icon.innerText = '▲';
+            text.innerText = ' Close Settings';
+        }
+    }
+    function updatePanelState(toggleElement) {
+        const col = toggleElement.closest('.character-col');
+        const img = col.querySelector('img');
+        const nameTag = col.querySelector('.name-tag');
+        const panel = col.querySelector('.control-panel');
+        const inputs = panel.querySelectorAll('input:not(.status-toggle), select');
+        
+        if (toggleElement.checked) {
+            img.classList.remove('disabled-img');
+            panel.classList.remove('disabled');
+            nameTag.classList.remove('gray');
+            if (nameTag.dataset.role === 'eavesdropper') nameTag.classList.add('red-text');
+            inputs.forEach(input => input.disabled = false);
+        } else {
+            img.classList.add('disabled-img');
+            panel.classList.add('disabled');
+            nameTag.classList.add('gray');
+            nameTag.classList.remove('red-text');
+            inputs.forEach(input => input.disabled = true);
+        }
+    }
+    function syncExclusion() {
+        const msg0Radios = document.querySelectorAll('input[name="op_msg_0"]');
+        const msg1Radios = document.querySelectorAll('input[name="op_msg_1"]');
+        const val0 = document.querySelector('input[name="op_msg_0"]:checked')?.value;
+        const val1 = document.querySelector('input[name="op_msg_1"]:checked')?.value;
+        
+        msg1Radios.forEach(r => r.disabled = (r.value === val0));
+        msg0Radios.forEach(r => r.disabled = (r.value === val1));
+    }
+    function applySettings() {
+        const isEveOn = document.getElementById('eve-status-toggle').checked;
+        const eveAttackNode = document.querySelector('input[name="qss_e_attack"]:checked');
+        const eveLocNode = document.querySelector('select[name="qss_e_location"]');
+        
+        const charlieOps = Array.from(document.querySelectorAll('input[name="qss_c_operator"]:checked')).map(cb => cb.value);
+        if(charlieOps.length === 0) {
+            alert("Charlie must select at least one operation!");
+            return;
+        }
+        currentSettings = {
+            bob: { 
+                particle: document.querySelector('input[name="qss_b_particle"]:checked').value, 
+                basis: document.querySelector('input[name="qss_b_basis"]:checked').value 
+            },
+            charlie: { 
+                particle: document.querySelector('input[name="qss_c_particle"]:checked').value, 
+                operator: charlieOps 
+            },
+            alice: { 
+                particle: document.querySelector('input[name="qss_a_particle"]:checked').value, 
+                msg: document.querySelector('input[name="qss_a_msg"]:checked').value, 
+                message0Op: document.querySelector('input[name="op_msg_0"]:checked').value, 
+                message1Op: document.querySelector('input[name="op_msg_1"]:checked').value 
+            },
+            eve: { 
+                isOn: isEveOn, 
+                attack: isEveOn && eveAttackNode ? eveAttackNode.value : "None", 
+                location: isEveOn && eveLocNode ? eveLocNode.value : "none" 
+            },
+            subProtocol: 'zlm'
+        };
+        updatePageState();
+        toggleSettings();
+    }
+    function formatRole(roleName, data) {
+        if (!data) return '';
+        let extraClass = '';
+        let title = `${roleName}`;
+        if (roleName === 'Eavesdropper') {
+            extraClass = data.isOn ? 'eve-on' : 'eve-off';
+            title = `${roleName} ：${data.isOn ? 'ON' : 'OFF'}`;
+        }
+        let details = '';
+        const keyMap = {
+            "particle": "Particle", "basis": "Measurement Basis", "operator": "Operators",
+            "msg": "Secret Message", "message0Op": "Operation (Bit 0)", "message1Op": "Operation (Bit 1)",
+            "attack": "Attack Strategy", "location": "Attack Location"
+        };
+        for (const [key, value] of Object.entries(data)) {
+            if (key !== 'isOn') {
+                let displayValue = Array.isArray(value) ? value.join(', ') : value;
+                let displayKey = keyMap[key] || key;
+                if (key === 'location' && typeof value === 'string' && value.includes('_')) {
+                    const [a, b] = value.split('_');
+                    displayValue = `between ${a} and ${b}`;
+                }
+                details += `<div><b>${displayKey}</b>: ${displayValue}</div>`;
+            }
+        }
+        return `<div class="setting-item ${extraClass}"><strong>${title}</strong><span>${details}</span></div>`;
+    }
+    function updatePageState() {
+        const contentAreas = document.querySelectorAll('.settings-content');
+        const settings = currentSettings;
+
+        const htmlContent = `
+            ${formatRole('1. Bob (Prep)', settings.bob)}
+            ${formatRole('2. Charlie', settings.charlie)}
+            ${formatRole('3. Alice', settings.alice)}
+            ${formatRole('Eavesdropper', settings.eve)}
+        `;
+        contentAreas.forEach(area => { area.innerHTML = htmlContent; });
+        const optionsContainer = document.getElementById('qss-options');
+        if(optionsContainer) {
+            let optionsHtml = `<h4>Bob prepares the particle</h4>`;
+            if (settings.bob.basis === 'X') {
+                optionsHtml += `
+                <div style="display: flex; gap: 10px; justify-content: center;">
+                    <div class="option-row" onclick="selectStateQSS(this, '|+⟩', 'X')"><div class="state-btn">|＋⟩</div></div>
+                    <div class="option-row" onclick="selectStateQSS(this, '|−⟩', 'X')"><div class="state-btn">|－⟩</div></div>
+                </div>`;
+            } else {
+                optionsHtml += `
+                <div style="display: flex; gap: 10px; justify-content: center;">
+                    <div class="option-row" onclick="selectStateQSS(this, '|0⟩', 'Z')"><div class="state-btn">|０⟩</div></div>
+                    <div class="option-row" onclick="selectStateQSS(this, '|1⟩', 'Z')"><div class="state-btn">|１⟩</div></div>
+                </div>`;
+            }
+            optionsContainer.innerHTML = optionsHtml;
+            const defaultOption = document.querySelector('#qss-options .option-row');
+            if (defaultOption) {
+                const defaultState = settings.bob.basis === 'X' ? '|+⟩' : '|0⟩';
+                selectStateQSS(defaultOption, defaultState, settings.bob.basis);
+            }
+        }
+    }
+    function switchEveLocation(newLoc) {
+        currentSettings.eve.location = newLoc;
+        const locSelect = document.querySelector('select[name="qss_e_location"]');
+        if(locSelect) locSelect.value = newLoc;
+        updatePageState();
+    }
+    document.addEventListener('DOMContentLoaded', () => {
+        const eveToggle = document.getElementById('eve-status-toggle');
+        if (eveToggle) {
+            eveToggle.checked = false; // 預設關閉
+            updatePanelState(eveToggle);
+            eveToggle.addEventListener('change', function() {
+                updatePanelState(this);
+            });
+        }
+        document.querySelectorAll('input[name="op_msg_0"], input[name="op_msg_1"]').forEach(r => {
+            r.addEventListener('change', syncExclusion);
+        });
+        syncExclusion();
+        updatePageState();
+    });
     function showTooltip(evt, text) {
         const tooltip = document.getElementById("prob-tooltip");
         tooltip.innerHTML = text;
@@ -216,7 +549,6 @@
             selectStateQSS(defaultOption, defaultState, bobBasis);
         }
     });
-
     function selectStateQSS(element, initialState, basis) {
         currentInitialState = initialState;
         currentBasis = basis;
@@ -228,7 +560,6 @@
         mathDisplay.innerHTML = '';
         renderQSSTree(initialState, basis);
     }
-
     function drawArrowedLine(container, x1, y1, x2, y2, probVal) {
         const probStr = (probVal * 100).toFixed(1).replace('.0', '') + '%';
         const offsetX = 2.6; 
@@ -259,7 +590,6 @@
         g.appendChild(visLine);
         container.appendChild(g);
     }
-
     function createFinalProbCircle(x, y, prob, isError) {
         let frac = toFraction(prob);
         let bg = isError ? '#ffe6e6' : 'var(--light-blue)';
@@ -269,7 +599,6 @@
             ${content}
         </div>`;
     }
-
     function createNodeHtml(x, y, content, type, character, isError = false, inState = null, gate = null) {
         let nodeContent = '';
         let extraClass = '';
@@ -294,9 +623,9 @@
         const avatarsContainer = document.getElementById('avatars-container');
         linesContainer.innerHTML = `<defs><marker id="arrow-qss" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#333" /></marker></defs>`;
         nodesContainer.innerHTML = '';
-        const operators = qssSettings.charlie.operator;
-        const aliceOp = qssSettings.alice.msg === "1" ? qssSettings.alice.message1Op : qssSettings.alice.message0Op;
-        const eveLoc = qssSettings.eve.isOn ? qssSettings.eve.location : "none";
+        const operators = currentSettings.charlie.operator;
+        const aliceOp = currentSettings.alice.msg === "1" ? currentSettings.alice.message1Op : currentSettings.alice.message0Op;
+        const eveLoc = currentSettings.eve.isOn ? currentSettings.eve.location : "none";
         if (eveLoc === "1_2") {
             avatarsContainer.innerHTML = `
                 <div class="character-avatar avatar-bob-1" style="left: 4.3%; width: 88px; top: 1%;"><img src="pictures/cat_bob.svg" alt="Bob"></div>
@@ -391,10 +720,7 @@
                 'charlie_state2': 74, 'bob_basis': 84, 'bob_result': 94
             };
         }
-
         let root = { type: 'bob_prep', val: initialState, state: initialState, prob: 1.0, children: [] };
-        
-        // --- 根據 Eve 位置建構不同的量子狀態樹 ---
         if (eveLoc === "1_2") {
             ['X', 'Z'].forEach(eBasis => {
                 let eBasisNode = { type: 'eve_basis', val: eBasis, prob: 0.5, children: [] };
