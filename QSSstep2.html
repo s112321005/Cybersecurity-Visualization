@@ -15,6 +15,10 @@
     <style>
         :root {
             --primary-blue: #004aad;
+            /* 新增 Bob 與 Charlie 的專屬顏色 */
+            --bob-color: #4C80C5;
+            --charlie-color: #478CEA;
+            
             --dark-text: #333333;
             --bg-color: #f8f9fa;
             --photon-yellow: #ffeb3b; 
@@ -125,6 +129,17 @@
         }
         .result-capsule.active { background: var(--primary-blue); color: white; }
 
+        /* Bob 專屬顏色樣式 */
+        .bob-text { color: var(--bob-color) !important; }
+        .bob-bg { 
+            background: var(--bob-color) !important; 
+            border-color: var(--bob-color) !important; 
+            color: white !important; 
+        }
+        
+        /* Charlie 專屬顏色樣式 */
+        .charlie-text { color: var(--charlie-color) !important; }
+
         /* Charlie 選擇區域 */
         .charlie-interactive { 
             position: absolute; top: 50%; transform: translateY(-50%); 
@@ -138,16 +153,16 @@
             padding: 15px; border-radius: 15px; border: 2px solid transparent; transition: all 0.2s; background: white;
             box-shadow: 0 4px 10px rgba(0,0,0,0.05); min-width: 90px;
         }
-        .gate-btn:hover { background-color: #f4f9ff; border-color: #80d8ff; transform: translateY(-5px); }
-        .gate-title { font-size: 1.5rem; font-weight: bold; color: var(--primary-blue); margin-bottom: 5px; }
+        .gate-btn:hover { background-color: #f4f9ff; border-color: var(--charlie-color); transform: translateY(-5px); }
+        .gate-title { font-size: 1.5rem; font-weight: bold; color: var(--charlie-color); margin-bottom: 5px; }
         
         .math-display { font-size: 1.05rem; }
 
         .pulse { animation: pulse-anim 2s infinite; }
         @keyframes pulse-anim {
-            0% { box-shadow: 0 0 0 0 rgba(0, 74, 173, 0.2); }
-            70% { box-shadow: 0 0 0 10px rgba(0, 74, 173, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(0, 74, 173, 0); }
+            0% { box-shadow: 0 0 0 0 rgba(71, 140, 234, 0.4); } /* 使用 #478CEA 的 rgba */
+            70% { box-shadow: 0 0 0 10px rgba(71, 140, 234, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(71, 140, 234, 0); }
         }
 
         /* Charlie 運算中的顯示 */
@@ -180,6 +195,11 @@
         .connector.active { opacity: 1; width: 80px; }
         .arrow-connector.active::after { opacity: 1; }
 
+        /* 替換連線顏色 */
+        #conn-1::before { background-color: var(--bob-color); }
+        #arrow-out::before { background-color: var(--charlie-color); }
+        #arrow-out.arrow-connector::after { border-left-color: var(--charlie-color); }
+
         /* 結果顯示 */
         .output-group { display: flex; align-items: center; opacity: 0; transition: opacity 0.5s ease; }
         .show-result .output-group { opacity: 1; }
@@ -187,13 +207,13 @@
         /* 解說面板與運算框 */
         .explanation-box {
             position: absolute; bottom: 25px; width: 85%; background: #f8fbff;
-            border-left: 6px solid var(--primary-blue); padding: 18px 30px; border-radius: 15px; 
+            border-left: 6px solid var(--charlie-color); padding: 18px 30px; border-radius: 15px; 
             box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08); display: flex; flex-direction: column; gap: 8px; box-sizing: border-box;
             opacity: 0; transform: translateY(20px); pointer-events: none; transition: all 0.5s ease;
         }
         .explanation-box.show { opacity: 1; transform: translateY(0); pointer-events: auto; }
         .explain-header { display: flex; justify-content: space-between; align-items: center; }
-        .explain-title { font-weight: bold; font-size: 1.25rem; margin: 0; display: flex; align-items: center; gap: 8px; color: var(--primary-blue); }
+        .explain-title { font-weight: bold; font-size: 1.25rem; margin: 0; display: flex; align-items: center; gap: 8px; color: var(--charlie-color); }
         .explain-desc { color: #555; font-size: 1.1rem; margin: 0; line-height: 1.4; font-weight: bold; }
         
         .calc-process-container {
@@ -224,7 +244,7 @@
         .photon-particle {
             position: absolute; width: 40px; height: 40px; background: var(--photon-yellow); border-radius: 50%; 
             box-shadow: 0 0 25px var(--photon-yellow); display: flex; justify-content: center; align-items: center;
-            font-weight: bold; font-size: 1.3rem; color: var(--primary-blue); pointer-events: none; z-index: 100;
+            font-weight: bold; font-size: 1.3rem; color: var(--bob-color); pointer-events: none; z-index: 100;
         }
     </style>
 </head>
@@ -248,8 +268,8 @@
         
         <div class="col" style="min-width: 150px;">
             <img src="pictures/cat_bob.svg" alt="Bob" class="character-avatar">
-            <p class="stage-title">Bob Sent</p>
-            <div class="result-capsule active" id="input-state">-</div>
+            <p class="stage-title bob-text">Bob Sent</p>
+            <div class="result-capsule active bob-bg" id="input-state">-</div>
         </div>
 
         <div class="col" style="width: 80px;">
@@ -259,7 +279,7 @@
         <div class="col" style="min-width: 320px;" id="charlie-col">
             <img src="pictures/cat_charlie.svg" alt="Charlie" class="character-avatar">
             
-            <p class="stage-title" id="charlie-title">Choose an Operation!</p>
+            <p class="stage-title charlie-text" id="charlie-title">Choose an Operation!</p>
 
             <div class="charlie-interactive" id="charlie-interactive">
                 <div class="charlie-choices">
@@ -283,7 +303,7 @@
             </div>
 
             <div class="charlie-active-gate" id="charlie-active-gate">
-                <div class="gate-btn" id="charlie-gate-display" style="cursor: default; transform: none; border-color: var(--primary-blue); background: #f4f9ff;">
+                <div class="gate-btn" id="charlie-gate-display" style="cursor: default; transform: none; border-color: var(--charlie-color); background: #f4f9ff;">
                     </div>
             </div>
         </div>
@@ -467,14 +487,13 @@
         const explainBox = document.getElementById("explain-box");
         const calcContainer = document.getElementById("calc-process-container");
         
-        // 組合純 LaTeX 的運算過程，並確保 "=" 對齊
+        // 將這裡的顏色設定改為 Charlie 的變數 var(--charlie-color)
         let calcHTML = `<div class="math-display" style="display: flex; align-items: center; gap: 10px;">
             \\( ${gateLatex[selectedGate]} \\times ${vectorLatex[bobStateStr]} = ${vectorLatex[finalStateStr]} \\)
-            <span style="color:var(--primary-blue); font-weight:bold;">= ${finalStateStr}</span>
+            <span style="color:var(--charlie-color); font-weight:bold;">= ${finalStateStr}</span>
         </div>`;
         calcContainer.innerHTML = calcHTML;
 
-        // 動態注入公式後，呼叫 MathJax 重新渲染
         if (window.MathJax && MathJax.typesetPromise) {
             MathJax.typesetPromise([calcContainer]);
         }
