@@ -266,13 +266,18 @@
     </div>
 </div>
 <script>
-    let currentSettings = {
-        bob: { particle: 'single', basis: 'X' },
-        charlie: { particle: 'single', operator: ['I', 'Y', 'H'] },
-        alice: { particle: 'single', msg: '0', message0Op: 'I', message1Op: 'X' },
-        eve: { isOn: false, attack: 'Intercept-resend', location: '1_2' },
-        subProtocol: 'zlm'
-    };
+    let qssSettings = JSON.parse(localStorage.getItem('qssSettings'));
+    if (!qssSettings) {
+        console.error("❌ qssSettings is NULL");
+        qssSettings = {
+            bob: { particle: 'single', basis: 'X' },
+            charlie: { particle: 'single', operator: ['I', 'Y', 'H'] },
+            alice: { particle: 'single', msg: '0', message0Op: 'I', message1Op: 'X' },
+            eve: { isOn: false, attack: 'Intercept-resend', location: '1_2' },
+            subProtocol: 'zlm'
+        };
+    }
+    let currentSettings = JSON.parse(JSON.stringify(qssSettings));
     let currentInitialState = '';
     let currentBasis = '';
     let selections = { 1: null, 2: null, 3: null, 4: null, 5: null };
@@ -425,6 +430,11 @@
         updatePageState();
     }
     document.addEventListener('DOMContentLoaded', () => {
+        if (currentSettings.charlie && currentSettings.charlie.operator) {
+            document.querySelectorAll('input[name="qss_c_operator"]').forEach(cb => {
+                cb.checked = currentSettings.charlie.operator.includes(cb.value);
+            });
+        }
         const eveToggle = document.getElementById('eve-status-toggle');
         if (eveToggle) {
             eveToggle.checked = false; // 預設關閉
@@ -483,9 +493,6 @@
         }
         return {num: Math.round(dec*1000), den: 1000};
     }
-    let qssSettings = JSON.parse(localStorage.getItem('qssSettings'));
-    if (!qssSettings) console.error("❌ qssSettings is NULL");
-    console.log(qssSettings);
     function formatRole(roleName, data) {
         if (!data) return '';
         let extraClass = '';
