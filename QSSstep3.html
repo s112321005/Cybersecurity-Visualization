@@ -37,9 +37,6 @@
             overflow-y: scroll; 
         }
 
-        /* 針對 MathJax 的結果修正間距 */
-        .result-capsule .MathJax { font-size: 1.1rem; margin: 0; }
-
         /* 頂部導覽列 */
         .header {
             width: min(1000px, 95vw);
@@ -160,7 +157,6 @@
         .math-display { font-size: 1.05rem; }
 
         .pulse { animation: pulse-anim 2s infinite; }
-        /* 替換為對應 #0049B0 的 RGB 值 (0, 73, 176) */
         @keyframes pulse-anim {
             0% { box-shadow: 0 0 0 0 rgba(0, 73, 176, 0.4); } 
             70% { box-shadow: 0 0 0 10px rgba(0, 73, 176, 0); }
@@ -347,7 +343,6 @@
         'Y': '\\begin{bmatrix} 0 & 1 \\\\ -1 & 0 \\end{bmatrix}'
     };
 
-    // 涵蓋所有第二步與第三步可能出現的態
     const vectorLatex = {
         '|0⟩': '\\begin{bmatrix} 1 \\\\ 0 \\end{bmatrix}',
         '|1⟩': '\\begin{bmatrix} 0 \\\\ 1 \\end{bmatrix}',
@@ -364,7 +359,6 @@
         'Y': `<div class="msg-title">Message 1</div><div class="gate-subtitle">Y Gate</div><div class="math-display">\\( ${gateLatex['Y']} \\)</div>`
     };
 
-    // Alice 的編碼規則：傳 0 則不變 (I)，傳 1 則套用 Y 閘
     const operationRules = {
         '|0⟩': { 'I': '|0⟩', 'Y': '-|1⟩' },
         '|1⟩': { 'I': '|1⟩', 'Y': '|0⟩' },
@@ -374,37 +368,19 @@
         '-|+⟩': { 'I': '-|+⟩', 'Y': '-|-⟩' }
     };
 
-    // 渲染含有 ⟩ 的量子態為 LaTeX 格式的通用函數
-    function renderKet(elementId, stateStr) {
-        if(stateStr === "Waiting...") {
-            document.getElementById(elementId).innerHTML = stateStr;
-            return;
-        }
-        const texStr = '\\( ' + stateStr.replace('⟩', '\\rangle') + ' \\)';
-        const el = document.getElementById(elementId);
-        el.innerHTML = texStr;
-        
-        if (window.MathJax && MathJax.typesetPromise) {
-            MathJax.typesetPromise([el]);
-        }
-    }
-
     document.addEventListener("DOMContentLoaded", () => {
-        // 從前一個步驟取得最終狀態
         const savedData = localStorage.getItem('qssStepData');
         
         if (savedData) {
             let parsedData = JSON.parse(savedData);
-            inputStateStr = parsedData.finalState || "|0⟩"; // 預防萬一找不到
+            inputStateStr = parsedData.finalState || "|0⟩"; 
         } else {
-            // 如果沒有上一層資料，預設使用 |0⟩
             inputStateStr = "|0⟩";
         }
         
-        // 渲染左側輸入狀態
-        renderKet("input-state", inputStateStr);
+        // 改回純文字寫入，不使用 MathJax
+        document.getElementById("input-state").textContent = inputStateStr;
 
-        // 如果 Alice 這一步已經選過，可以回復狀態 (選擇性實作)
         const aliceData = localStorage.getItem('qssStep3Data');
         if(aliceData) {
             let pData = JSON.parse(aliceData);
@@ -429,7 +405,8 @@
         if (window.MathJax && MathJax.typesetPromise) {MathJax.typesetPromise([gateDisplay]);}
 
         finalStateStr = operationRules[inputStateStr][gate];
-        renderKet("final-state", finalStateStr);
+        // 改回純文字寫入，不使用 MathJax
+        document.getElementById("final-state").textContent = finalStateStr;
         document.getElementById("results-area").classList.remove("show-result");
 
         if (skipAnimation) {
@@ -490,7 +467,6 @@
         const explainBox = document.getElementById("explain-box");
         const calcContainer = document.getElementById("calc-process-container");
         
-        // 將結尾純文字替換為 LaTeX 格式以供渲染
         let texFinalState = finalStateStr.replace('⟩', '\\rangle');
 
         let calcHTML = `<div class="math-display" style="display: flex; align-items: center; gap: 10px;">
@@ -518,7 +494,9 @@
         document.getElementById("explain-box").classList.remove("show");
         document.getElementById("results-area").classList.remove("show-result");
         document.getElementById("arrow-out").classList.remove("active");
-        renderKet("final-state", "Waiting...");
+        
+        // 改回純文字寫入，不使用 MathJax
+        document.getElementById("final-state").textContent = "Waiting...";
         
         const oldPhoton = document.querySelector('.photon-particle');
         if(oldPhoton) oldPhoton.remove();
@@ -533,11 +511,21 @@
         }, 300);
     }
 
-    function prevStep() { window.location.href = 'QSSstep2.html'; }
+    function prevStep() { 
+        // 抓回 Bob 一開始的選擇 (防止變成 null)
+        let bobChoice = JSON.parse(localStorage.getItem('bobOriginalChoice')) || { basis: 'Z', msg: '0' };
+        
+        // 清除 Charlie (Step2) 和 Alice (Step3) 的記憶
+        localStorage.removeItem('qssStepData'); 
+        localStorage.removeItem('qssStep3Data'); 
+        
+        // 帶著 Bob 的參數退回 Step 2
+        window.location.href = `file:///C:/Users/sun%20ice/Desktop/大三專題/20260407/QSSstep2.html?bobBasis=${bobChoice.basis}&bobMsg=${bobChoice.msg}`; 
+    }
+    
     function nextStep() { 
         if (localStorage.getItem('qssStep3Data')) {
-            localStorage.removeItem('qssStep3Data');
-            window.location.href = 'QSSstep4.html';
+            window.location.href = 'file:///C:/Users/sun%20ice/Desktop/大三專題/20260407/QSSstep4.html';
         } else {
             alert("Complete Alice's encoding operation first!");
         }

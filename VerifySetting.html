@@ -21,8 +21,6 @@
         .selection-group label { font-size: 18px; font-weight: bold; color: #0047AB; margin-right: 15px; }
         .custom-select { padding: 8px 20px; font-size: 16px; border: 2px solid #0047AB; border-radius: 8px; color: #0047AB; font-weight: bold; outline: none; cursor: pointer; background-color: white; transition: all 0.3s ease; }
         .custom-select:hover { box-shadow: 0 4px 12px rgba(0,71,171,0.15); }
-        .custom-select { padding: 8px 20px; font-size: 16px; border: 2px solid #0047AB; border-radius: 8px; color: #0047AB; font-weight: bold; outline: none; cursor: pointer; background-color: white; transition: all 0.3s ease; }
-        .custom-select:hover { box-shadow: 0 4px 12px rgba(0,71,171,0.15); }
         .main-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; position: relative; }
         .connection-line { position: absolute; top: 150px; left: 11.5%; width: 26%; height: 2px; background-color: #b0b0b0; z-index: 1; display: flex; justify-content: center; align-items: center; }
         .connection-line::before, .connection-line::after { content: ''; position: absolute; width: 15px; height: 15px; background-color: #b0b0b0; border-radius: 50%; top: 50%; transform: translateY(-50%); }
@@ -95,13 +93,14 @@
                 <div class="page-title">Verify Setting</div>
             </div>
         </div>
-         <div class="top-selection-area">
+        <div class="top-selection-area">
             <div class="selection-group">
                 <label for="protocol-select">Protocol:</label>
                 <select id="protocol-select" class="custom-select">
                     <option value="none" disabled selected>-- select protocol --</option>
                     <option value="qkd">QKD</option>
                     <option value="qss">QSS</option>
+                    <option value="qsdc">QSDC</option>
                     <option value="entanglement">Entanglement</option>
                 </select>
             </div>
@@ -113,8 +112,13 @@
                 <select id="qss-sub-select" class="custom-select sub-select" style="display: none;">
                     <option value="zlm" selected>ZhangLiMan</option>
                 </select>
+                <select id="qsdc-sub-select" class="custom-select sub-select" style="display: none;">
+                    <option value="dl04" selected>DL04</option>
+                    <option value="pingpong">Ping-Pong</option>
+                </select>
             </div>
         </div>
+
         <div id="qkd-interface" class="protocol-interface" style="display: none;">
             <div class="main-grid">
                 <div class="character-col" id="alice-col">
@@ -175,7 +179,6 @@
         </div>
 
         <div id="qss-interface" class="protocol-interface" style="display: none;">
-
             <div class="main-grid">
                 <div class="character-col" id="bob-col">
                     <img src="pictures/cat_bob.svg" class="character-img" alt="Bob">
@@ -276,6 +279,65 @@
             </div>
         </div>
 
+        <div id="qsdc-interface" class="protocol-interface" style="display: none;">
+            <div class="main-grid">
+                <div class="character-col" id="alice-col">
+                    <img src="pictures/cat_alice.svg" class="character-img" alt="Alice">
+                    <div class="name-tag">Alice</div>
+                    <div class="click-toggle"><span class="text-on status-toggle-static">ON</span></div>
+                    <div class="control-panel">
+                        <div class="setting-title">Particle Selection</div>
+                        <div class="flex-row" style="margin-bottom: 15px; gap: 8px;">
+                            <label class="pill-radio"><input type="radio" name="qsdc_a_particle" checked><span>single</span></label>
+                            <label class="pill-radio"><input type="radio" name="qsdc_a_particle"><span>Bell</span></label>
+                        </div>
+                        <div class="setting-title">Operation Selection</div>
+                        <div class="flex-row" style="gap: 8px; margin-bottom: 15px; flex-wrap: wrap;">
+                            <label class="pill-radio"><input type="radio" name="qsdc_a_op" value="I" checked><span>I</span></label>
+                            <label class="pill-radio"><input type="radio" name="qsdc_a_op" value="X"><span>X</span></label>
+                            <label class="pill-radio"><input type="radio" name="qsdc_a_op" value="Y"><span>Y</span></label>
+                            <label class="pill-radio"><input type="radio" name="qsdc_a_op" value="Z"><span>Z</span></label>
+                        </div>
+                    </div>
+                </div>
+                <div class="character-col" id="bob-col">
+                    <img src="pictures/cat_bob.svg" class="character-img" alt="Bob">
+                    <div class="name-tag">Bob</div>
+                    <div class="click-toggle"><span class="text-on status-toggle-static">ON</span></div>
+                    <div class="control-panel">
+                        <div class="setting-title">Particle Selection</div>
+                        <div class="flex-row" style="margin-bottom: 15px; gap: 8px;">
+                            <label class="pill-radio"><input type="radio" name="qsdc_b_particle" checked><span>single</span></label>
+                            <label class="pill-radio"><input type="radio" name="qsdc_b_particle"><span>Bell</span></label>
+                        </div>
+                        <div class="setting-title">Basis Selection</div>
+                        <div class="flex-row" style="gap: 8px; margin-bottom: 15px;">
+                            <label class="pill-radio"><input type="radio" name="qsdc_b_basis" checked><span>X</span></label>
+                            <label class="pill-radio"><input type="radio" name="qsdc_b_basis"><span>Z</span></label>
+                        </div>
+                    </div>
+                </div>
+                <div class="character-col theme-red">
+                    <img src="pictures/Eavesdropper.svg" class="character-img" alt="Eavesdropper">
+                    <div class="name-tag" data-role="eavesdropper">Eavesdropper</div>
+                    <label class="click-toggle">
+                        <input type="checkbox" class="status-toggle">
+                        <span class="text-on">ON</span><span class="text-off">OFF</span>
+                    </label>
+                    <div class="control-panel">
+                        <div class="setting-title">Attack Selection</div>
+                        <div style="display:flex; flex-direction:column; gap:10px; align-items: flex-start; margin-top: 15px;">
+                            <label class="pill-radio"><input type="radio" name="qsdc_e_attack"><span style="padding: 6px 20px;">CNOT</span></label>
+                            <label class="pill-radio"><input type="radio" name="qsdc_e_attack"><span style="padding: 6px 20px;">Intercept-resend</span></label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div style="text-align: center; margin-top: 30px;">
+                <button id="qsdc-start-btn" class="name-tag start" style="cursor: pointer; font-size: 18px; padding: 10px 40px; border: none;">Start QSDC Analysis</button>
+            </div>
+        </div>
+
         <div id="entanglement-interface" class="protocol-interface" style="display: none;">
             <div class="main-grid">
                 <div class="connection-line">
@@ -349,12 +411,14 @@
             <div style="text-align: center; margin-top: 30px;"><button id="ent-start-btn" class="name-tag start" style="cursor: pointer; font-size: 18px; padding: 10px 40px; border: none;">Start Entanglement</button></div>
         </div>
     </div>
+
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const protocolSelect = document.getElementById('protocol-select');
             const interfaces = document.querySelectorAll('.protocol-interface');
             const algoGroup = document.getElementById('algo-group');
             const algoSelects = document.querySelectorAll('.sub-select');
+            
             protocolSelect.addEventListener('change', function() {
                 interfaces.forEach(iface => iface.style.display = 'none');
                 algoSelects.forEach(select => select.style.display = 'none');
@@ -363,11 +427,14 @@
                     document.getElementById(`${selectedValue}-interface`).style.display = 'block';
                     const correspondingAlgoSelect = document.getElementById(`${selectedValue}-sub-select`);
                     if (correspondingAlgoSelect) {
-                        algoGroup.style.display = 'flex'; // 顯示整個 Algorithm 區塊
-                        correspondingAlgoSelect.style.display = 'block'; // 顯示該 protocol 的 specific select
-                    } else algoGroup.style.display = 'none'; // Entanglement 時隱藏
+                        algoGroup.style.display = 'flex'; 
+                        correspondingAlgoSelect.style.display = 'block'; 
+                    } else {
+                        algoGroup.style.display = 'none'; 
+                    }
+                }
+            });
 
-                }});
             const toggles = document.querySelectorAll('.status-toggle');
             function updatePanelState(toggleElement) {
                 const col = toggleElement.closest('.character-col');
@@ -393,6 +460,7 @@
                 updatePanelState(toggle);
                 toggle.addEventListener('change', function() { updatePanelState(this); });
             });
+
             function validateSettings(interfaceId, rules) {
                 const container = document.getElementById(interfaceId);
                 for (const rule of rules) {
@@ -404,6 +472,7 @@
                 }
                 return true;
             }
+
             const msg0Radios = document.querySelectorAll('input[name="op_msg_0"]');
             const msg1Radios = document.querySelectorAll('input[name="op_msg_1"]');
             function syncExclusion() {
@@ -416,6 +485,7 @@
                 r.addEventListener('change', syncExclusion);
             });
             syncExclusion();
+
             document.getElementById('qkd-start-btn').addEventListener('click', () => {
                 const interfaceDiv = document.getElementById('qkd-interface');
                 const isEveOn = interfaceDiv.querySelector('.status-toggle').checked;
@@ -431,7 +501,7 @@
                     eve: {isOn: isEveOn, attack: isEveOn ? interfaceDiv.querySelector('input[name="e_attack"]:checked').nextElementSibling.innerText : "None"}
                 };
                 const subProtocol = document.getElementById('qkd-sub-select').value;
-                qkdSettings.subProtocol = subProtocol; // 儲存起來備用 (可選)
+                qkdSettings.subProtocol = subProtocol; 
                 localStorage.setItem('qkdSettings', JSON.stringify(qkdSettings));
                 if(subProtocol === 'bb84'){
                     window.location.href = 'bb84_analysis.html';
@@ -439,6 +509,7 @@
                     window.location.href = 'b92_analysis.html';
                 }
             });
+
             document.getElementById('qss-start-btn').addEventListener('click', () => {
                 const interfaceDiv = document.getElementById('qss-interface');
                 const isEveOn = interfaceDiv.querySelector('.theme-red .status-toggle').checked;
@@ -470,6 +541,45 @@
                 localStorage.setItem('qssSettings', JSON.stringify(qssSettings));
                 if(subProtocol === 'zlm'){
                     window.location.href = 'zlm_analysis.html';
+                }
+            });
+
+            document.getElementById('qsdc-start-btn').addEventListener('click', () => {
+                const interfaceDiv = document.getElementById('qsdc-interface');
+                const isEveOn = interfaceDiv.querySelector('.theme-red .status-toggle').checked;
+                const rules = [
+                    {name: 'qsdc_a_particle', label: 'Alice Particle'}, 
+                    {name: 'qsdc_a_op', label: 'Alice Operation'},
+                    {name: 'qsdc_b_particle', label: 'Bob Particle'}, 
+                    {name: 'qsdc_b_basis', label: 'Bob Basis'}
+                ];
+                if (isEveOn) {
+                    rules.push({name: 'qsdc_e_attack', label: 'Eve Attack Selection'});
+                }
+                if (!validateSettings('qsdc-interface', rules)) return;
+                const qsdcSettings = {
+                    alice: {
+                        isOn: true, 
+                        particle: interfaceDiv.querySelector('input[name="qsdc_a_particle"]:checked').nextElementSibling.innerText, 
+                        operation: interfaceDiv.querySelector('input[name="qsdc_a_op"]:checked').value
+                    },
+                    bob: {
+                        isOn: true, 
+                        particle: interfaceDiv.querySelector('input[name="qsdc_b_particle"]:checked').nextElementSibling.innerText, 
+                        basis: interfaceDiv.querySelector('input[name="qsdc_b_basis"]:checked').nextElementSibling.innerText
+                    },
+                    eve: {
+                        isOn: isEveOn, 
+                        attack: isEveOn ? interfaceDiv.querySelector('input[name="qsdc_e_attack"]:checked').nextElementSibling.innerText : "None"
+                    }
+                };
+                const subProtocol = document.getElementById('qsdc-sub-select').value;
+                qsdcSettings.subProtocol = subProtocol;
+                localStorage.setItem('qsdcSettings', JSON.stringify(qsdcSettings));
+                if(subProtocol === 'dl04'){
+                    window.location.href = 'dl04_analysis.html';
+                } else if (subProtocol === 'pingpong'){
+                    window.location.href = 'pingpong_analysis.html';
                 }
             });
         });
