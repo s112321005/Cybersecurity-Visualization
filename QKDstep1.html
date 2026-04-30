@@ -317,9 +317,10 @@
     function prevStep() {
         window.history.back();
     }
-
     function nextStep() {
         if (!selectedBasis) return;
+        localStorage.removeItem('qssStepData'); 
+        localStorage.removeItem('qssStep3Data'); // 順便預防性清除 Step 3 的暫存
         window.location.href = `QKDstep2.html?aliceBasis=${selectedBasis}&aliceMsg=${selectedMsg}`;
     }
 </script>
