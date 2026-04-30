@@ -520,12 +520,12 @@
         localStorage.removeItem('qssStep3Data'); 
         
         // 帶著 Bob 的參數退回 Step 2
-        window.location.href = `file:///C:/Users/sun%20ice/Desktop/大三專題/20260407/QSSstep2.html?bobBasis=${bobChoice.basis}&bobMsg=${bobChoice.msg}`; 
+        window.location.href = `fQSSstep2.html?bobBasis=${bobChoice.basis}&bobMsg=${bobChoice.msg}`; 
     }
     
     function nextStep() { 
         if (localStorage.getItem('qssStep3Data')) {
-            window.location.href = 'file:///C:/Users/sun%20ice/Desktop/大三專題/20260407/QSSstep4.html';
+            window.location.href = 'QSSstep4.html';
         } else {
             alert("Complete Alice's encoding operation first!");
         }
