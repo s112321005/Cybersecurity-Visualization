@@ -318,7 +318,8 @@
 
     function nextStep() {
         if (!selectedBasis) return;
-        // 將跳轉的 URL 改為 QSSstep2，並傳遞 Bob 的參數
+        localStorage.removeItem('qssStepData'); 
+        localStorage.removeItem('qssStep3Data');      
         window.location.href = `QSSstep2.html?bobBasis=${selectedBasis}&bobMsg=${selectedMsg}`;
     }
 </script>

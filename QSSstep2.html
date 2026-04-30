@@ -528,11 +528,13 @@
     }
 
     function prevStep() { window.location.href = 'QSSstep1.html'; }
-    function nextStep() {
-        if (!selectedBasis) return;
-        localStorage.removeItem('qssStepData'); 
-        localStorage.removeItem('qssStep3Data');
-        window.location.href = `QSSstep2.html?bobBasis=${selectedBasis}&bobMsg=${selectedMsg}`;
+    function nextStep() { 
+        if (localStorage.getItem('qssStepData')) {
+            localStorage.removeItem('qssStep3Data');
+            window.location.href = 'QSSstep3.html';
+        } else {
+            alert("Complete Charlie's operation first!");
+        }
     }
 </script>
 </body>
