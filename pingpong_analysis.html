@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=1900">
+    <base href="https://s112321005.github.io/Cybersecurity-Visualization/">
+    <title>QSDC Visualization: Ping-Pong Protocol</title>
+    <style>
+        :root { --primary-blue: #0047AB; --light-blue: #D0E0FF; --inactive-gray: #e0e0e0; --bg-color: #f8f9fa; --eve-red: #D32F2F; --bob-blue: #4C80C5; --alice-blue: #0047AB; --op-purple: #FFE69A; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--bg-color); display: flex; flex-direction: column; align-items: center; margin: 0; padding: 20px 0; color: #333; min-width: 1450px !important; }
+        .container { background: white; padding: 20px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); width: 1450px !important; max-width: 1850px !important; flex-shrink: 0 !important; margin: 0 auto; margin-top: 40px;}
+        .top-bar { margin-bottom: 30px; display: flex; align-items: center; justify-content: flex-start; gap: 20px; }
+        .page-title { border: 2px solid var(--primary-blue); color: #000; padding: 10px 40px; border-radius: 10px; font-size: 20px; font-weight: bold; }
+        .btn-back { background-color: var(--primary-blue); color: white; text-decoration: none; width: 40px; height: 40px; border-radius: 50%; font-size: 18px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(0,0,0,0.15); font-weight: bold; transition: all 0.3s ease; flex-shrink: 0;}
+        .btn-back:hover { transform: scale(1.1); background-color: #003380; color: white; }
+        .main-content { display: flex; flex-direction: row !important; gap: 30px; align-items: flex-start; width: 100%; }
+        .sidebar { width: 220px; display: flex; flex-direction: column; align-items: center; z-index: 10; gap: 20px; flex-shrink: 0; }
+        .selection-box { background: var(--light-blue); border-radius: 15px; padding: 20px 15px; width: 100%; box-sizing: border-box; }
+        .selection-box h4 { margin: 0 0 15px 0; text-align: center; color: #333; }
+        .option-row { gap: 12px; cursor: pointer; padding: 10px; border-radius: 8px; margin-bottom: 10px; display: flex; justify-content: center; transition: all 0.3s ease; }
+        .option-row:hover { background-color: #f0f4f8; }
+        .option-row.active .state-btn { background-color: var(--primary-blue); color: white; border-color: var(--primary-blue); }
+        .state-btn { background: white; border: 2px solid var(--primary-blue); color: var(--primary-blue); padding: 8px 16px; border-radius: 8px; font-size: 16px; font-weight: bold; pointer-events: none; width: 100%; text-align: center; transition: all 0.3s ease; }
+        .settings-panel { width: 100%; box-sizing: border-box; background: var(--light-blue); border-radius: 15px; padding: 20px 15px; display: flex; flex-direction: column; gap: 10px; }
+        .settings-panel h4 { margin: 0 0 10px 0; text-align: center; color: #333; border-bottom: 2px solid var(--primary-blue); padding-bottom: 8px; }
+        .setting-item { background: #fff; padding: 12px; margin-bottom: 12px; border-radius: 8px; border-left: 4px solid var(--primary-blue); box-shadow: 0 2px 5px rgba(0,0,0,0.05); font-size: 14px; }
+        .setting-item strong { display: block; color: var(--primary-blue); margin-bottom: 6px; border-bottom: 1px solid #eee; padding-bottom: 4px; font-size: 15px; }
+        .setting-item.eve-on { border-left-color: var(--eve-red); color: var(--eve-red); }
+        .setting-item.eve-on strong { color: var(--eve-red); border-bottom-color: #ffcccc; }
+        .setting-item.eve-off { border-left-color: #999; color: #999; }
+        .setting-item.eve-off strong { color: #999; border-bottom-color: #eee; }
+        .diagram-area { position: relative; flex-grow: 1; min-height: 550px; background: #fafafa; border-radius: 12px; border: 1px solid #eaeaea; overflow: hidden; }
+        .character-avatar { position: absolute; top: 2%; transform: translateX(-50%); z-index: 10; display: flex; flex-direction: column; align-items: center; padding: 8px 12px; border-radius: 16px; box-shadow: 0 4px 8px rgba(0,0,0,0.15); background-color: #ffffff; }
+        .character-avatar img { width: 75px; object-fit: contain; }
+        .avatar-bob-1 { border: 3px solid var(--bob-blue); width: 180px; left: 12%; }
+        .avatar-alice { border: 3px solid var(--alice-blue); width: 250px; left: 50%; }
+        .avatar-bob-2 { border: 3px solid var(--bob-blue); width: 180px; left: 88%; }
+        .avatar-eve { border: 3px solid var(--eve-red); width: 180px; }
+        .node { position: absolute; display: flex; flex-direction: column; align-items: center; z-index: 2; transform: translate(-50%, -50%); }
+        .math-box { background: var(--bob-blue); color: white; padding: 10px 20px; border-radius: 20px; font-size: 1.1rem; box-shadow: 0 4px 8px rgba(0,0,0,0.2); }
+        .math-box-alice { background: var(--alice-blue); color: white; padding: 10px 20px; border-radius: 20px; font-size: 1.1rem; box-shadow: 0 4px 8px rgba(0,0,0,0.2); transition: all 0.3s; }
+        .qss-shape { width: 55px; height: 55px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1.4rem; color: #ffffff; box-shadow: 2px 3px 6px rgba(0,0,0,0.2); transition: all 0.3s;}
+        .color-op { background-color: var(--op-purple); color: #af7754; }
+        .circle-node { width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; font-weight: bold; color: white; box-shadow: 0 4px 8px rgba(0,0,0,0.2); }
+        .eve-state-circle { width: 45px; height: 45px; border-radius: 50%; font-size: 18px; margin-top: 5px; display: flex; align-items: center; justify-content: center; font-weight: bold; background: var(--eve-red); color: white; box-shadow: 0 4px 8px rgba(0,0,0,0.2); }
+        .bg-alice { background-color: var(--alice-blue); }
+        .bg-bob { background-color: var(--bob-blue); }
+        .bg-eve { background-color: var(--eve-red); }
+        .particle-indicator { width: 35px; height: 35px; border-radius: 50%; background: #ffffff; border: 4px solid; display: flex; align-items: center; justify-content: center; font-weight: bold; margin-bottom: 5px; color: #333; }
+        .state-circle-bob { background-color: var(--bob-blue); color: white; border: none; }
+        .classical-label { position: absolute; background: white; border: 1px solid #333; padding: 4px 8px; font-size: 0.8rem; font-weight: bold; transform: translate(-50%, -50%); z-index: 5; border-radius: 4px; white-space: nowrap; }
+        #prob-tooltip { position: absolute; background: rgba(33, 37, 41, 0.9); color: #f8f9fa; padding: 6px 12px; border-radius: 6px; font-size: 0.9rem; font-weight: bold; pointer-events: none; z-index: 1000; opacity: 0; transition: opacity 0.2s ease-in-out; }
+        .clickable-node { cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; pointer-events: auto; }
+        .clickable-node:hover { transform: scale(1.15) translate(-43%, -43%); z-index: 100; }
+        .clickable-node:hover .qss-shape, .clickable-node:hover .math-box-alice { box-shadow: 0 0 15px var(--primary-blue); }
+        .pull-tab { position: absolute; top: 0; left: 50%; transform: translateX(-50%); background-color: var(--primary-blue); color: white; padding: 10px 40px 15px 40px; border-bottom-left-radius: 20px; border-bottom-right-radius: 20px; cursor: pointer; font-size: 16px; font-weight: bold; z-index: 10001; box-shadow: 0 4px 15px rgba(0,0,0,0.3); transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1); display: flex; gap: 10px; align-items: center; }
+        .pull-tab:hover { background-color: #003380; padding-top: 15px; }
+        .settings-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-color: #f8f9fa; z-index: 10000; transform: translateY(-100%); transition: transform 0.8s cubic-bezier(0.22, 1, 0.36, 1); display: flex; flex-direction: column; align-items: center; justify-content: flex-start; overflow-y: auto; box-sizing: border-box; padding-top: 80px; box-shadow: 0 15px 50px rgba(0,0,0,0.2); }
+        .settings-overlay.show { transform: translateY(0); }
+        .overlay-container { width: 1200px; max-width: 95vw; display: flex; flex-direction: column; align-items: center; padding-bottom: 50px; }
+        .main-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; width: 100%; margin-bottom: 30px; }
+        .character-col { flex: 1; display: flex; flex-direction: column; align-items: center; z-index: 2; position: relative; }
+        .character-img { height: 80px; object-fit: contain; margin-bottom: 15px; z-index: 2; transition: all 0.3s ease; }
+        .disabled-img { filter: grayscale(100%) opacity(0.5); }
+        .name-tag { background-color: var(--primary-blue); color: white; padding: 6px 30px; border-radius: 20px; font-weight: bold; font-size: 16px; margin-bottom: 15px; z-index: 3; text-align: center; min-width: 140px; box-sizing: border-box; transition: all 0.3s ease; }
+        .name-tag.gray { background-color: #b0b0b0; color: white; }
+        .name-tag.red-text { background-color: var(--eve-red); }
+        .click-toggle { cursor: pointer; margin-bottom: -15px; z-index: 3; display: inline-grid; grid-template-areas: "toggle-area"; border-radius: 20px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.1); transition: transform 0.2s ease, box-shadow 0.2s ease; }
+        .click-toggle:active { transform: scale(0.95); box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .click-toggle input { display: none; }
+        .click-toggle span { grid-area: toggle-area; padding: 6px 30px; font-weight: bold; font-size: 16px; text-align: center; min-width: 140px; box-sizing: border-box; transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
+        .click-toggle .text-off { background-color: #b0b0b0; color: white; }
+        .click-toggle .text-on { background-color: var(--primary-blue); color: white; }
+        .click-toggle input:not(:checked) ~ .text-on { transform: translateY(-100%); opacity: 0; pointer-events: none; }
+        .click-toggle input:not(:checked) ~ .text-off { transform: translateY(0); opacity: 1; }
+        .click-toggle input:checked ~ .text-on { transform: translateY(0); opacity: 1; }
+        .click-toggle input:checked ~ .text-off { transform: translateY(100%); opacity: 0; pointer-events: none; }
+        .status-toggle-static { cursor: default; }
+        .control-panel { border: 2px solid var(--primary-blue); border-radius: 10px; padding: 30px 25px 25px 25px; background-color: white; min-height: 350px; box-sizing: border-box; width: 100%; transition: all 0.3s ease; display: flex; flex-direction: column; }
+        .control-panel.disabled { border-color: #b0b0b0 !important; color: #777; }
+        .setting-title { display: flex; align-items: center; gap: 5px; font-weight: bold; font-size: 14px; margin-bottom: 10px; }
+        .setting-title::before { content: ''; display: inline-block; width: 10px; height: 10px; border-radius: 50%; background-color: #79a6d2; transition: all 0.3s ease; }
+        .disabled .setting-title::before { background-color: #b0b0b0 !important; }
+        .flex-row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-bottom: 15px; }
+        .pill-radio { display: inline-block; position: relative; }
+        .pill-radio input { display: none; }
+        .pill-radio span { display: inline-flex; padding: 4px 12px; border: 2px solid var(--primary-blue); border-radius: 20px; color: var(--primary-blue); font-weight: bold; font-size: 14px; cursor: pointer; background-color: white; text-align: center; min-width: 12px; justify-content: center; transition: all 0.3s ease; white-space: nowrap; }
+        .pill-radio input:checked + span { background-color: #478CEA; color: white; border-color: #478CEA; }
+        .disabled .pill-radio span { border-color: #b0b0b0 !important; color: #b0b0b0 !important; cursor: not-allowed; background-color: white !important; }
+        .state-type { padding: 4px 8px; border-radius: 12px; border: 2px solid var(--primary-blue); font-weight: bold; font-size: 14px; color: var(--primary-blue); outline: none; }
+        #alice-col .name-tag { background-color: #0047AB !important; color: #ffffff !important; }
+        #alice-col .status-toggle-static { background-color: #0047AB !important; color: #ffffff !important; }
+        #alice-col .control-panel:not(.disabled) .pill-radio input[type="radio"]:checked + span { background-color: #0047AB !important; border-color: #0047AB !important; }
+        #alice-col .control-panel:not(.disabled) .setting-title::before { background-color: #0047AB; }        
+        #bob-col .name-tag, #bob-col .status-toggle-static { background-color: var(--bob-blue) !important; }
+        #bob-col .control-panel:not(.disabled) { border-color: var(--bob-blue) !important; }
+        #bob-col .control-panel:not(.disabled) .pill-radio span { border-color: var(--bob-blue) !important; color: var(--bob-blue) !important; }
+        #bob-col .control-panel:not(.disabled) .pill-radio input:checked + span { background-color: var(--bob-blue) !important; color: white !important; }
+        #bob-col .control-panel:not(.disabled) .setting-title::before { background-color: var(--bob-blue); }
+        #bob-col .state-type { border-color: var(--bob-blue); color: var(--bob-blue); }
+        .theme-red .click-toggle .text-on { background-color: #D32F2F !important; }
+        .theme-red .control-panel:not(.disabled) { border-color: #D32F2F !important; }
+        .theme-red .control-panel:not(.disabled) .pill-radio span { border-color: #D32F2F !important; color: #D32F2F !important; }
+        .theme-red .control-panel:not(.disabled) .pill-radio input:checked + span { background-color: #D32F2F !important; border-color: #D32F2F !important; color: white !important; }
+        .theme-red .control-panel:not(.disabled) .setting-title::before { background-color: #e57373 !important; }
+        .apply-btn { background-color: #28a745; color: white; border: none; padding: 12px 50px; border-radius: 25px; font-size: 20px; font-weight: bold; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 10px rgba(40, 167, 69, 0.3); }
+        .apply-btn:hover { background-color: #218838; transform: scale(1.05); }
+    </style>
+    <script> MathJax = { options: { enableMenu: false } };</script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+<div id="prob-tooltip">Probability: 100%</div>
+<div class="pull-tab" onclick="toggleSettings()">
+    <span id="tab-icon">▼</span> <span id="tab-text"> Settings ⚙️</span>
+</div> 
+<div id="settings-overlay" class="settings-overlay">
+    <div class="overlay-container">       
+        <div class="main-grid" id="qsdc-interface">
+            <div class="character-col" id="bob-col">
+                <img src="pictures/cat_bob.svg" class="character-img" alt="Bob">
+                <div class="name-tag">Bob</div>
+                <div class="click-toggle"><span class="text-on status-toggle-static">ON</span></div>
+                <div class="control-panel">
+                    <div class="setting-title">Particle Selection</div>
+                    <div class="flex-row" style="margin-bottom: 15px; gap: 8px;">
+                        <label class="pill-radio"><input type="radio" name="ent_b_particle" value="Bell" checked><span>Bell</span></label>
+                        <select class="state-type" id="bob-state-select">
+                            <option value="psi_plus" selected>&#x23D0;&#x03C8;&#xFE0E;&#x207A;&#x232A;</option>
+                            <option value="psi_minus">&#x23D0;&#x03C8;&#xFE0E;&#x207B;&#x27E9;</option>
+                        </select>
+                    </div>
+                    <div class="setting-title">Basis Selection</div>
+                    <div class="flex-row" style="gap: 8px;">
+                        <label class="pill-radio"><input type="radio" name="ent_b_basis" value="Z" checked><span>Z</span></label>
+                    </div>
+                </div>
+            </div>
+            <div class="character-col" id="alice-col">
+                <img src="pictures/cat_alice.svg" class="character-img" alt="Alice">
+                <div class="name-tag">Alice</div>
+                <div class="click-toggle"><span class="text-on status-toggle-static">ON</span></div>
+                <div class="control-panel">
+                    <div class="setting-title">Particle Selection</div>
+                    <div class="flex-row" style="margin-bottom: 15px; gap: 8px;">
+                        <label class="pill-radio"><input type="radio" name="ent_a_particle" value="single" checked><span>single</span></label>
+                    </div>
+                    <div class="setting-title">Basis Selection</div>
+                    <div class="flex-row" style="gap: 8px; margin-bottom: 15px;">
+                        <label class="pill-radio"><input type="radio" name="ent_a_basis" value="Z" checked><span>Z</span></label>
+                    </div>
+                    <div class="setting-title">Message:0 Operator</div>
+                    <div class="flex-row" style="margin-bottom: 10px; gap: 4px; flex-wrap: wrap;">
+                        <label class="pill-radio"><input type="radio" name="op_msg_0" value="I" checked><span>I</span></label>
+                        <label class="pill-radio"><input type="radio" name="op_msg_0" value="X"><span>X</span></label>
+                        <label class="pill-radio"><input type="radio" name="op_msg_0" value="Y"><span>Y</span></label>
+                        <label class="pill-radio"><input type="radio" name="op_msg_0" value="Z"><span>Z</span></label>
+                        <label class="pill-radio"><input type="radio" name="op_msg_0" value="H"><span>H</span></label>
+                    </div>
+                    <div class="setting-title">Message:1 Operator</div>
+                    <div class="flex-row" style="gap: 4px; flex-wrap: wrap;">
+                        <label class="pill-radio"><input type="radio" name="op_msg_1" value="I"><span>I</span></label>
+                        <label class="pill-radio"><input type="radio" name="op_msg_1" value="X" checked><span>X</span></label>
+                        <label class="pill-radio"><input type="radio" name="op_msg_1" value="Y"><span>Y</span></label>
+                        <label class="pill-radio"><input type="radio" name="op_msg_1" value="Z"><span>Z</span></label>
+                        <label class="pill-radio"><input type="radio" name="op_msg_1" value="H"><span>H</span></label>
+                    </div>
+                </div>
+            </div>
+            <div class="character-col theme-red">
+                <img src="pictures/Eavesdropper.svg" class="character-img disabled-img" id="eve-img" alt="Eavesdropper">
+                <div class="name-tag gray" id="eve-tag" data-role="eavesdropper">Eavesdropper</div>
+                <label class="click-toggle">
+                    <input type="checkbox" class="status-toggle" id="eve-status-toggle">
+                    <span class="text-on">ON</span><span class="text-off">OFF</span>
+                </label>
+                <div class="control-panel disabled" id="eve-panel">
+                    <div class="setting-title">Attack Selection</div>
+                    <div style="display:flex; flex-direction:column; gap:10px; align-items: flex-start; margin-top: 15px;">
+                        <label class="pill-radio"><input type="radio" name="ent_e_attack" value="CNOT" disabled><span style="padding: 6px 20px;">CNOT</span></label>
+                        <label class="pill-radio"><input type="radio" name="ent_e_attack" value="Intercept-resend" checked disabled><span style="padding: 6px 20px;">Intercept-resend</span></label>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <button class="apply-btn" onclick="applySettings()">Update View State</button>
+    </div>
+</div>
+<div class="container">
+    <div class="top-bar">            
+        <a href="javascript:history.back()" class="btn-back">◀</a>
+        <div class="page-title">QSDC Ping-Pong Protocol Analysis</div>
+        <div id="eve-detected-indicator" class="page-title" style="display: none; margin-left: 39%; border-color: #D32F2F; color: #D32F2F;">Eve detected probability： 0%</div>
+    </div>
+    <div class="main-content">
+        <div class="sidebar">
+            <div class="selection-box" id="mode-options"></div>
+            <div class="settings-panel">
+                <h4>Current Settings</h4>
+                <div id="settings-display"></div>
+            </div>
+        </div>
+        <div style="display: flex; flex-direction: column; flex-grow: 1; gap: 20px; width: 100%;">
+            <div class="diagram-area">
+                <div id="avatars-container"></div>
+                <svg id="svg-lines" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1;"></svg>
+                <div id="diagram-nodes" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 2; pointer-events: none;"></div>
+            </div>
+            <div id="calculation-panel" style="background: white; border-radius: 12px; padding: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.08); display: none;">
+                <h4 style="margin-top: 0; margin-bottom: 15px; color: var(--primary-blue); border-bottom: 2px solid var(--light-blue); padding-bottom: 10px;">Quantum State Transformation</h4>
+                <div id="math-display" style="font-size: 18px; text-align: center; overflow-x: auto; padding: 10px;"></div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    let ppSettings = JSON.parse(localStorage.getItem('qsdcSettings')) || {
+        "bob": { "particle": "Bell", "state": "psi_plus", "basis": "Z" },
+        "alice": { "particle": "single", "basis": "Z", "msg0Op": "I", "msg1Op": "X" },
+        "eve": { "isOn": false, "attack": "Intercept-resend" }
+    };
+    let currentMode = 'control';
+    function showTooltip(evt, text) {
+        const tooltip = document.getElementById("prob-tooltip");
+        tooltip.innerHTML = text;
+        tooltip.style.opacity = '1';
+        tooltip.style.left = (evt.pageX + 15) + 'px';
+        tooltip.style.top = (evt.pageY + 15) + 'px';
+    }
+    function hideTooltip() { document.getElementById("prob-tooltip").style.opacity = '0'; }
+    document.getElementById('eve-status-toggle').addEventListener('change', function() {
+        const panel = document.getElementById('eve-panel');
+        const img = document.getElementById('eve-img');
+        const tag = document.getElementById('eve-tag');
+        if (this.checked) {
+            panel.classList.remove('disabled');
+            img.classList.remove('disabled-img');
+            tag.classList.add('red-text');
+            tag.classList.remove('gray');
+            panel.querySelectorAll('input').forEach(el => el.disabled = false);
+        } else {
+            panel.classList.add('disabled');
+            img.classList.add('disabled-img');
+            tag.classList.remove('red-text');
+            tag.classList.add('gray');
+            panel.querySelectorAll('input').forEach(el => el.disabled = true);
+        }
+    });
+    function init() {
+        syncUIToSettings();
+        if (ppSettings.eve.isOn) { currentMode = 'control'; }
+        updateSettingsDisplay();
+        renderSidebar();
+        renderTree();
+    }
+    function syncUIToSettings() {
+        document.querySelector(`input[name="ent_b_particle"][value="${ppSettings.bob.particle}"]`).checked = true;
+        document.getElementById('bob-state-select').value = ppSettings.bob.state;
+        document.querySelector(`input[name="ent_b_basis"][value="${ppSettings.bob.basis}"]`).checked = true;
+        document.querySelector(`input[name="ent_a_particle"][value="${ppSettings.alice.particle}"]`).checked = true;
+        document.querySelector(`input[name="ent_a_basis"][value="${ppSettings.alice.basis}"]`).checked = true;
+        document.querySelector(`input[name="op_msg_0"][value="${ppSettings.alice.msg0Op}"]`).checked = true;
+        document.querySelector(`input[name="op_msg_1"][value="${ppSettings.alice.msg1Op}"]`).checked = true;
+        const eveToggle = document.getElementById('eve-status-toggle');
+        eveToggle.checked = ppSettings.eve.isOn;
+        eveToggle.dispatchEvent(new Event('change')); 
+        if (ppSettings.eve.attack) {
+            let atkNode = document.querySelector(`input[name="ent_e_attack"][value="${ppSettings.eve.attack}"]`);
+            if(atkNode) atkNode.checked = true;
+        }
+    }
+    function toggleSettings() {
+        const overlay = document.getElementById('settings-overlay');
+        const icon = document.getElementById('tab-icon');
+        const text = document.getElementById('tab-text');
+        
+        if (overlay.classList.contains('show')) {
+            overlay.classList.remove('show');
+            icon.innerText = '▼';
+            text.innerText = ' Settings ⚙️';
+        } else {
+            overlay.classList.add('show');
+            icon.innerText = '▲';
+            text.innerText = ' Close Settings';
+        }
+    }
+
+    function applySettings() {
+        const isEveOn = document.getElementById('eve-status-toggle').checked;
+        const eveAttackNode = document.querySelector('input[name="ent_e_attack"]:checked');
+        
+        ppSettings = {
+            bob: {
+                particle: document.querySelector('input[name="ent_b_particle"]:checked').value,
+                state: document.getElementById('bob-state-select').value,
+                basis: document.querySelector('input[name="ent_b_basis"]:checked').value
+            },
+            alice: {
+                particle: document.querySelector('input[name="ent_a_particle"]:checked').value,
+                basis: document.querySelector('input[name="ent_a_basis"]:checked').value,
+                msg0Op: document.querySelector('input[name="op_msg_0"]:checked').value,
+                msg1Op: document.querySelector('input[name="op_msg_1"]:checked').value
+            },
+            eve: {
+                isOn: isEveOn,
+                attack: isEveOn && eveAttackNode ? eveAttackNode.value : "None"
+            }
+        };
+
+        localStorage.setItem('qsdcSettings', JSON.stringify(ppSettings));
+
+        if (ppSettings.eve.isOn) {
+            currentMode = 'control';
+        }
+
+        updateSettingsDisplay();
+        renderSidebar();
+        renderTree();
+        toggleSettings();
+    }
+
+    function renderSidebar() {
+        const container = document.getElementById('mode-options');
+        let html = `<h4>Select Mode</h4>`;
+        html += `<div class="option-row ${currentMode === 'control' ? 'active' : ''}" onclick="selectMode('control')">
+                    <div class="state-btn">Control Mode</div>
+                 </div>`;
+        if (!ppSettings.eve.isOn) {
+            html += `<div class="option-row ${currentMode === 'message' ? 'active' : ''}" onclick="selectMode('message')">
+                        <div class="state-btn">Message Mode</div>
+                     </div>`;
+        }
+        container.innerHTML = html;
+    }
+
+    function selectMode(mode) {
+        if (ppSettings.eve.isOn && mode === 'message') return; 
+        currentMode = mode;
+        document.getElementById('calculation-panel').style.display = 'none';
+        renderSidebar();
+        renderTree();
+    }
+
+    function formatSetting(title, data, isEve = false) {
+        let extraClass = isEve ? (data.isOn ? 'eve-on' : 'eve-off') : '';
+        let displayTitle = isEve ? `${title}: ${data.isOn ? 'ON' : 'OFF'}` : title;
+        let details = '';
+        
+        const keyMap = { "state": "Initial State", "basis": "Measurement Basis", "msg0Op": "Msg:0 Operator", "msg1Op": "Msg:1 Operator", "attack": "Attack Type" };
+        
+        for (const [key, value] of Object.entries(data)) {
+            if (key !== 'isOn' && key !== 'particle') {
+                let displayVal = value;
+                if (value === 'psi_plus') displayVal = '|ψ⁺⟩';
+                if (value === 'psi_minus') displayVal = '|ψ⁻⟩';
+                details += `<div><b>${keyMap[key] || key}</b>: ${displayVal}</div>`;
+            }
+        }
+        return `<div class="setting-item ${extraClass}"><strong>${displayTitle}</strong><span>${details}</span></div>`;
+    }
+
+    function updateSettingsDisplay() {
+        document.getElementById('settings-display').innerHTML = `
+            ${formatSetting('Bob (Prepare & Measure)', ppSettings.bob)}
+            ${formatSetting('Alice (Encode & Measure)', ppSettings.alice)}
+            ${formatSetting('Eavesdropper', ppSettings.eve, true)}
+        `;
+        const eveIndicator = document.getElementById('eve-detected-indicator');
+            if (eveIndicator) {
+                if (ppSettings.eve.isOn) {
+                    eveIndicator.style.display = 'block'; // Eve 模式啟動時顯示
+                } else {
+                    eveIndicator.style.display = 'none';  // 關閉時隱藏
+                }
+            }
+    }
+
+    function drawArrowedLine(container, x1, y1, x2, y2, probVal, isClassical = false) {
+        const probStr = (probVal * 100).toFixed(1).replace('.0', '') + '%';
+        const svgElement = document.getElementById('svg-lines');
+        const canvasWidth = svgElement.clientWidth || 1400; 
+        const startRadius = 35;
+        const endRadius = 45; // larger offset for arrow
+        
+        const px1 = (x1 / 100) * canvasWidth;
+        const px2 = (x2 / 100) * canvasWidth;
+        const dx = px2 - px1;
+        const dy = y2 - y1;
+        const dist = Math.sqrt(dx*dx + dy*dy);
+        
+        const shiftStartX = (dx / dist) * startRadius;
+        const shiftStartY = (dy / dist) * startRadius;
+        const shiftEndX = (dx / dist) * endRadius;
+        const shiftEndY = (dy / dist) * endRadius;
+        
+        const startX = x1 + ((shiftStartX / canvasWidth) * 100);
+        const endX = x2 - ((shiftEndX / canvasWidth) * 100);
+        const startY = y1 + shiftStartY;
+        const endY = y2 - shiftEndY;
+
+        const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
+        const channelText = isClassical ? "Classical channel" : "Quantum channel";
+        g.setAttribute("style", "cursor: pointer;");
+        g.onmousemove = (e) => showTooltip(e, `Probability : ${probStr}<br><span style="font-size: 0.85em; color: #ccc;">${channelText}</span>`);        g.onmouseenter = () => { visLine.setAttribute("stroke-width", "4"); }; 
+        g.onmouseleave = () => { visLine.setAttribute("stroke-width", "3"); hideTooltip(); };
+        const visLine = document.createElementNS("http://www.w3.org/2000/svg", "line");
+        visLine.setAttribute("x1", startX + "%");
+        visLine.setAttribute("y1", startY + "px");
+        visLine.setAttribute("x2", endX + "%");
+        visLine.setAttribute("y2", endY + "px");
+        visLine.setAttribute("stroke", isClassical ? "#000" : "#333");
+        visLine.setAttribute("stroke-width", "3");
+        visLine.style.transition = "stroke-width 0.2s ease";
+        
+        if (isClassical) {
+            visLine.setAttribute("stroke-dasharray", "8,4");
+            visLine.setAttribute("marker-end", "url(#arrow-classical)");
+        } else {
+            visLine.setAttribute("marker-end", "url(#arrow-quantum)"); 
+        }
+        visLine.setAttribute("pointer-events", "none"); 
+        
+        const sensorLine = document.createElementNS("http://www.w3.org/2000/svg", "line");
+        sensorLine.setAttribute("x1", startX + "%");
+        sensorLine.setAttribute("y1", startY + "px");
+        sensorLine.setAttribute("x2", endX + "%");
+        sensorLine.setAttribute("y2", endY + "px");
+        sensorLine.setAttribute("stroke", "transparent");
+        sensorLine.setAttribute("stroke-width", "15");
+        sensorLine.setAttribute("pointer-events", "stroke");
+        
+        g.appendChild(sensorLine);
+        g.appendChild(visLine);
+        container.appendChild(g);
+    }
+    function renderTree() {
+        const svg = document.getElementById('svg-lines');
+        const nodes = document.getElementById('diagram-nodes');
+        const avatars = document.getElementById('avatars-container');
+        svg.innerHTML = `
+            <defs>
+                <marker id="arrow-quantum" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#333" /></marker>
+                
+                <marker id="arrow-classical" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                    <path d="M 0 0 L 10 5 L 0 10 z" fill="#000" stroke="#000" stroke-width="1" />
+                </marker>
+            </defs>
+        `;
+        nodes.innerHTML = '';
+
+        const stateStr = ppSettings.bob.state === 'psi_plus' ? '\\frac{1}{\\sqrt{2}}(|01\\rangle+|10\\rangle)_{12}' : '\\frac{1}{\\sqrt{2}}(|01\\rangle-|10\\rangle)_{12}';
+        const latexState = `\\(|\\psi^{${ppSettings.bob.state === 'psi_plus' ? '+' : '-'}}\\rangle = ${stateStr}\\)`;
+        
+        let html = '';
+
+        if (currentMode === 'control' && ppSettings.eve.isOn) {
+            avatars.innerHTML = `
+                <div class="character-avatar avatar-bob-1" style="left: 12%;"><img src="pictures/cat_bob.svg" alt="Bob"></div>
+                <div class="character-avatar avatar-alice" style="left: 35%; width: 180px;"><img src="pictures/cat_alice.svg" alt="Alice"></div>
+                <div class="character-avatar avatar-eve" style="left: 62.5%; width: 160px;"><img src="pictures/Eavesdropper.svg" alt="Eve" style="width: 55px;"></div>
+                <div class="character-avatar avatar-bob-2" style="left: 84%;"><img src="pictures/cat_bob.svg" alt="Bob"></div>
+            `;
+            const yStart = 350, yOffset = 130;
+            // 完美水平對齊座標
+            const xBob1 = 12, xAliceMeas = 30, xAliceOut = 40, xEveMeas = 53, xEveOut = 65, xBobMeas = 76, xBobOut = 88, xEnd = 95;
+            html += `<div class="classical-label" style="left: ${xAliceMeas+5}%; top: ${yStart -230}px; border-color:var(--primary-blue); color:var(--primary-blue);">Entanglement Broken</div>`;
+
+            html += `<div class="node" style="left: ${xBob1}%; top: ${yStart}px;">
+                        <div style="position: absolute; top: -50px; display:flex; gap: 5px; white-space: nowrap;">
+                            <div class="particle-indicator" style="border-color:var(--bob-blue);">1</div><div style="margin-top: 3px;margin-left: -5px; line-height:35px; color:var(--bob-blue); font-weight:bold; transform: scaleY(2);">—</div><div class="particle-indicator" style="margin-left: -5px; border-color:var(--bob-blue);">2</div>
+                        </div>
+                        <div class="math-box">${latexState}</div>
+                     </div>`;
+            drawArrowedLine(svg, xBob1, yStart, xAliceMeas, yStart, 1.0); //上支線：bob傳送粒子給alice
+            html += `<div class="node" style="left: ${xAliceMeas}%; top: ${yStart-30}px;">
+                        <div class="particle-indicator" style="border-color:var(--primary-blue);">1</div>
+                        <img src="pictures/a_eyez.svg" style="width: 70px; height: 70px; object-fit: contain;">
+                     </div>`;
+            drawArrowedLine(svg, xAliceMeas, yStart, xAliceOut, yStart - yOffset, 0.5);
+            html += `<div class="node" style="left: ${xAliceOut}%; top: ${yStart - yOffset}px;">
+                        <div class="circle-node bg-alice">|0⟩</div>
+                     </div>`;
+            drawArrowedLine(svg, xAliceOut, yStart - yOffset, xEveMeas, yStart - yOffset, 0.5, true);
+            html += `<div class="node" style="left: ${xEveMeas}%; top: ${yStart - yOffset - 30}px;">
+                        <div class="particle-indicator" style="border-color:var(--eve-red);">1</div>
+                        <img src="pictures/e_eyez.svg" style="width: 60px; height: 60px; object-fit: contain;">
+                     </div>`;
+            drawArrowedLine(svg, xEveMeas, yStart - yOffset, xEveOut, yStart - yOffset, 0.5, true);
+            html += `<div class="node" style="left: ${xEveOut}%; top: ${yStart - yOffset}px;">
+                        <div class="eve-state-circle">|0⟩</div>
+                     </div>`;
+            drawArrowedLine(svg, xEveOut, yStart - yOffset, xBobMeas, yStart - yOffset, 0.5, true);
+            html += `<div class="node" style="left: ${xBobMeas}%; top: ${yStart - yOffset - 30}px;">
+                        <div class="particle-indicator" style="border-color:var(--bob-blue);">2</div>
+                        <img src="pictures/b_eyez.svg" style="width: 60px; height: 60px; object-fit: contain;">
+                     </div>`;
+            drawArrowedLine(svg, xBobMeas, yStart - yOffset, xBobOut, yStart - yOffset, 0.5); //bob測量結果(上)
+            let bobBit0 = (ppSettings.bob.state === 'psi_plus' || ppSettings.bob.state === 'psi_minus') ? '|1⟩' : '|0⟩';
+            html += `<div class="node" style="left: ${xBobOut}%; top: ${yStart - yOffset}px;">
+                        <div class="circle-node bg-bob">${bobBit0}</div>
+                     </div>`;
+            html += `<div class="node" style="left: ${xEnd}%; top: ${yStart - yOffset}px;"> 
+            <div class="circle-node" style="background-color: #D0E0FF; color: #333; font-size: 26px;">✖</div></div>`;
+
+
+            drawArrowedLine(svg, xAliceMeas, yStart, xAliceOut, yStart + yOffset, 0.5);//下支線
+            html += `<div class="node" style="left: ${xAliceOut}%; top: ${yStart + yOffset}px;">
+                        <div class="circle-node bg-alice">|1⟩</div>
+                     </div>`;
+            drawArrowedLine(svg, xAliceOut, yStart + yOffset, xEveMeas, yStart + yOffset, 0.5, true);
+            html += `<div class="node" style="left: ${xEveMeas}%; top: ${yStart + yOffset  - 30}px;">
+                        <div class="particle-indicator" style="border-color:var(--eve-red);">1</div>
+                        <img src="pictures/e_eyez.svg" style="width: 60px; height: 60px; object-fit: contain;">
+                     </div>`;
+            drawArrowedLine(svg, xEveMeas, yStart + yOffset, xEveOut, yStart + yOffset, 0.5, true);
+            html += `<div class="node" style="left: ${xEveOut}%; top: ${yStart + yOffset}px;">
+                        <div class="eve-state-circle">|1⟩</div>
+                     </div>`;
+            drawArrowedLine(svg, xEveOut, yStart + yOffset, xBobMeas, yStart + yOffset, 0.5, true);
+            html += `<div class="node" style="left: ${xBobMeas}%; top: ${yStart + yOffset  - 30}px;">
+                        <div class="particle-indicator" style="border-color:var(--bob-blue);">2</div>
+                        <img src="pictures/b_eyez.svg" style="width: 60px; height: 60px; object-fit: contain;">
+                     </div>`;
+            drawArrowedLine(svg, xBobMeas, yStart + yOffset, xBobOut, yStart + yOffset, 0.5);//bob測量結果(下)
+            let bobBit1 = (ppSettings.bob.state === 'psi_plus' || ppSettings.bob.state === 'psi_minus') ? '|0⟩' : '|1⟩';
+            html += `<div class="node" style="left: ${xBobOut}%; top: ${yStart + yOffset}px;">
+                        <div class="circle-node bg-bob">${bobBit1}</div>
+                     </div>`;
+            html += `<div class="node" style="left: ${xEnd}%; top: ${yStart + yOffset}px;">
+                        <div class="circle-node" style="background-color: #D0E0FF; color: #333; font-size: 26px;">✖</div></div>`;
+
+        } else if (currentMode === 'control' && !ppSettings.eve.isOn) {
+            avatars.innerHTML = `
+                <div class="character-avatar avatar-bob-1" style="left: 12%;"><img src="pictures/cat_bob.svg" alt="Bob"></div>
+                <div class="character-avatar avatar-alice" style="left: 42.5%; width: 220px;"><img src="pictures/cat_alice.svg" alt="Alice"></div>
+                <div class="character-avatar avatar-bob-2" style="left: 80%; width: 200px;"><img src="pictures/cat_bob.svg" alt="Bob"></div>
+            `;
+            
+            const yStart = 350, yOffset = 130;
+            const xBob1 = 12, xAliceMeas = 35, xAliceOut = 50, xBobMeas = 72, xBobOut = 88;
+            
+            html += `<div class="node" style="left: ${xBob1}%; top: ${yStart}px;">
+                        <div style="position: absolute; top: -50px; display:flex; gap: 5px; white-space: nowrap;">
+                            <div class="particle-indicator" style="border-color:var(--bob-blue);">1</div><div style="margin-top: 3px;margin-left: -5px; line-height:35px; color:var(--bob-blue); font-weight:bold; transform: scaleY(2);">—</div><div class="particle-indicator" style="margin-left: -5px; border-color:var(--bob-blue);">2</div>
+                        </div>
+                        <div class="math-box">${latexState}</div>
+                     </div>`;
+
+            drawArrowedLine(svg, xBob1+9, yStart, xAliceMeas, yStart, 1.0);
+            html += `<div class="node" style="left: ${xAliceMeas}%; top: ${yStart - 30}px;">
+                        <div class="particle-indicator" style="border-color:var(--primary-blue);">1</div>
+                        <img src="pictures/a_eyez.svg" style="width: 70px; height: 70px; object-fit: contain;">
+                     </div>`;
+
+            // Branch 0
+            drawArrowedLine(svg, xAliceMeas, yStart, xAliceOut, yStart - yOffset, 0.5);
+            html += `<div class="node" style="left: ${xAliceOut}%; top: ${yStart - yOffset}px;">
+                        <div class="circle-node bg-alice">|0⟩</div>
+                     </div>`;
+            drawArrowedLine(svg, xAliceOut, yStart - yOffset, xBobMeas, yStart - yOffset, 0.5, true);
+            html += `<div class="node" style="left: ${xBobMeas}%; top: ${yStart - yOffset - 30}px;">
+                        <div class="particle-indicator" style="border-color:var(--bob-blue);">2</div>
+                        <img src="pictures/b_eyez.svg" style="width: 70px; height: 70px; object-fit: contain;">
+                     </div>`;
+            drawArrowedLine(svg, xBobMeas, yStart - yOffset, xBobOut, yStart - yOffset, 0.5);
+            let bobBit0 = (ppSettings.bob.state === 'psi_plus' || ppSettings.bob.state === 'psi_minus') ? '|1⟩' : '|0⟩';
+            html += `<div class="node" style="left: ${xBobOut}%; top: ${yStart - yOffset}px;">
+                        <div class="circle-node bg-bob">${bobBit0}</div>
+                     </div>`;
+
+            // Branch 1
+            drawArrowedLine(svg, xAliceMeas, yStart, xAliceOut, yStart + yOffset, 0.5);
+            html += `<div class="node" style="left: ${xAliceOut}%; top: ${yStart + yOffset}px;">
+                        <div class="circle-node bg-alice">|1⟩</div>
+                     </div>`;
+            drawArrowedLine(svg, xAliceOut, yStart + yOffset, xBobMeas, yStart + yOffset, 0.5, true);
+            html += `<div class="node" style="left: ${xBobMeas}%; top: ${yStart + yOffset - 30}px;">
+                        <div class="particle-indicator" style="border-color:var(--bob-blue);">2</div>
+                        <img src="pictures/b_eyez.svg" style="width: 70px; height: 70px; object-fit: contain;">
+                     </div>`;
+            drawArrowedLine(svg, xBobMeas, yStart + yOffset, xBobOut, yStart + yOffset, 0.5);
+            let bobBit1 = (ppSettings.bob.state === 'psi_plus' || ppSettings.bob.state === 'psi_minus') ? '|0⟩' : '|1⟩';
+            html += `<div class="node" style="left: ${xBobOut}%; top: ${yStart + yOffset}px;">
+                        <div class="circle-node bg-bob">${bobBit1}</div>
+                     </div>`;
+                     
+        } else if (currentMode === 'message') {
+            avatars.innerHTML = `
+                <div class="character-avatar avatar-bob-1" style="left: 15%;"><img src="pictures/cat_bob.svg" alt="Bob"></div>
+                <div class="character-avatar avatar-alice" style="left: 45%; width: 220px;"><img src="pictures/cat_alice.svg" alt="Alice"></div>
+                <div class="character-avatar avatar-bob-2" style="left: 77.5%; width: 220px;"><img src="pictures/cat_bob.svg" alt="Bob"></div>
+            `;
+            
+            const yStart = 350, yOffset = 130;
+            const xBob1 = 15, xAliceOp = 35, xAliceOut = 55, xBobMeas = 70, xBobOut = 85; //bob開始節點
+            
+            html += `<div class="node" style="left: ${xBob1}%; top: ${yStart}px;"> 
+                        <div style="position: absolute; top: -50px; display:flex; gap: 5px; white-space: nowrap;">
+                            <div class="particle-indicator" style="border-color:var(--bob-blue);">1</div><div style="margin-top: 3px;margin-left: -5px; line-height:35px; color:var(--bob-blue); font-weight:bold; transform: scaleY(2);">—</div><div class="particle-indicator" style="margin-left: -5px; border-color:var(--bob-blue);">2</div>
+                        </div>
+                        <div class="math-box">${latexState}</div>
+                     </div>`;
+            
+            // Msg 0 Branch
+            drawArrowedLine(svg, xBob1+9, yStart, xAliceOp - 2, yStart - yOffset, 1.0);//Bob傳給Alice運算(上)
+            html += `<div class="node" style="left: ${xAliceOp}%; top: ${yStart - yOffset}px;">
+                        <div class="qss-shape color-op">${ppSettings.alice.msg0Op}</div>
+                     </div>`;
+            drawArrowedLine(svg, xAliceOp, yStart - yOffset, xAliceOut - 10, yStart - yOffset, 1.0); //Alice運算線+節點(上)
+            let state0 = getResultState(ppSettings.bob.state, ppSettings.alice.msg0Op);
+            html += `<div class="node clickable-node" style="left: ${xAliceOut-5}%; top: ${yStart - yOffset}px;" onclick="showCalc('${ppSettings.alice.msg0Op}')" title="點擊查看詳細運算">
+                        <div class="math-box-alice">\\(${state0.latex}\\)</div>
+                     </div>`;
+            drawArrowedLine(svg, xAliceOut+1, yStart - yOffset, xBobMeas -3, yStart - yOffset, 1.0); //Alice傳送線+Bob測量(上)
+            html += `<div class="node" style="left: ${xBobMeas-3}%; top: ${yStart - yOffset}px;">
+                    <div style="position: absolute; top: -45px; display: flex; align-items: center; justify-content: center; white-space: nowrap;">
+                        <div class="particle-indicator" style="border-color:var(--bob-blue); margin:0;">1</div>
+                        <div style="color:var(--bob-blue); font-weight:bold; transform:scaleY(2); margin:0 -2px;">—</div>
+                        <div class="particle-indicator" style="border-color:var(--bob-blue); margin:0;">2</div>
+                    </div>
+                    <img src="pictures/b_eyeb.svg" style="width: 70px; height: 70px; object-fit: contain;">
+                </div>`;
+            drawArrowedLine(svg, xBobMeas -2, yStart - yOffset, xBobOut-6, yStart - yOffset, 1.0); //Bob測量線+節點(上)
+            html += `<div class="node" style="left: ${xBobOut +2}%; top: ${yStart - yOffset}px;">
+                        <div class="math-box">\\(${state0.bell} = ${state0.latex}\\)</div></div>`;
+
+            // Msg 1 Branch
+            drawArrowedLine(svg, xBob1+9, yStart, xAliceOp - 2, yStart + yOffset, 1.0);//Bob傳給Alice運算(下)
+            html += `<div class="node" style="left: ${xAliceOp}%; top: ${yStart + yOffset}px;">
+                        <div class="qss-shape color-op">${ppSettings.alice.msg1Op}</div>
+                     </div>`;
+            drawArrowedLine(svg, xAliceOp, yStart + yOffset, xAliceOut -10, yStart + yOffset, 1.0); //Alice運算線+節點(下)
+            let state1 = getResultState(ppSettings.bob.state, ppSettings.alice.msg1Op);
+            html += `<div class="node clickable-node" style="left: ${xAliceOut-5}%; top: ${yStart + yOffset}px;" onclick="showCalc('${ppSettings.alice.msg1Op}')" title="點擊查看詳細運算">
+                        <div class="math-box-alice">\\(${state1.latex}\\)</div>
+                     </div>`;
+            drawArrowedLine(svg, xAliceOut + 1, yStart + yOffset, xBobMeas -3, yStart + yOffset, 1.0);//Alice傳送線+Bob測量(下)
+            html += `<div class="node" style="left: ${xBobMeas -3}%; top: ${yStart + yOffset}px;">
+                    <div style="position: absolute; top: -45px; display: flex; align-items: center; justify-content: center; white-space: nowrap;">
+                        <div class="particle-indicator" style="border-color:var(--bob-blue); margin:0;">1</div>
+                        <div style="color:var(--bob-blue); font-weight:bold; transform:scaleY(2); margin:0 -2px;">—</div>
+                        <div class="particle-indicator" style="border-color:var(--bob-blue); margin:0;">2</div>
+                    </div>
+                    <img src="pictures/b_eyeb.svg" style="width: 70px; height: 70px; object-fit: contain;">
+                </div>`;
+            drawArrowedLine(svg, xBobMeas-2, yStart + yOffset, xBobOut-6, yStart + yOffset, 1.0); //Bob測量線+節點(下)
+            html += `<div class="node" style="left: ${xBobOut +2}%; top: ${yStart + yOffset}px;">
+                        <div class="math-box">\\(${state1.bell} = ${state0.latex}\\)</div>
+                     </div>`;
+        }
+
+        nodes.innerHTML = html;
+        if (window.MathJax) {
+            MathJax.typesetClear([nodes]);
+            MathJax.typesetPromise([nodes]);
+        }
+    }
+
+    function getResultState(initialState, gate) {
+        if (initialState === 'psi_plus') {
+            if (gate === 'I') return { latex: '\\frac{1}{\\sqrt{2}}(|01\\rangle+|10\\rangle)_{12}', bell: '|\\psi^+\\rangle' };
+            if (gate === 'Z') return { latex: '\\frac{1}{\\sqrt{2}}(|01\\rangle-|10\\rangle)_{12}', bell: '|\\psi^-\\rangle' };
+            if (gate === 'X') return { latex: '\\frac{1}{\\sqrt{2}}(|11\\rangle+|00\\rangle)_{12}', bell: '|\\phi^+\\rangle' };
+            if (gate === 'Y') return { latex: '\\frac{-1}{\\sqrt{2}}(|00\\rangle-|11\\rangle)_{12}', bell: '-|\\phi^-\\rangle' };
+            if (gate === 'H') return { latex: '\\frac{1}{2}(|01\\rangle+|11\\rangle+|00\\rangle-|10\\rangle)_{12}', bell: '\\text{Mixed}' };
+        } else { 
+            if (gate === 'I') return { latex: '\\frac{1}{\\sqrt{2}}(|01\\rangle-|10\\rangle)_{12}', bell: '|\\psi^-\\rangle' };
+            if (gate === 'Z') return { latex: '\\frac{1}{\\sqrt{2}}(|01\\rangle+|10\\rangle)_{12}', bell: '|\\psi^+\\rangle' };
+            if (gate === 'X') return { latex: '\\frac{1}{\\sqrt{2}}(|11\\rangle-|00\\rangle)_{12}', bell: '-|\\phi^-\\rangle' };
+            if (gate === 'Y') return { latex: '\\frac{-1}{\\sqrt{2}}(|00\\rangle+|11\\rangle)_{12}', bell: '-|\\phi^+\\rangle' };
+            if (gate === 'H') return { latex: '\\frac{1}{2}(|01\\rangle+|11\\rangle-|00\\rangle+|10\\rangle)_{12}', bell: '\\text{Mixed}' };
+        }
+        return { latex: '?', bell: '?' };
+    }
+
+    function showCalc(gate) {
+        const panel = document.getElementById('calculation-panel');
+        const display = document.getElementById('math-display');
+        panel.style.display = 'block';
+        
+        let bellInitial = ppSettings.bob.state === 'psi_plus' ? '|\\psi^+\\rangle' : '|\\psi^-\\rangle';
+        let stateStr = ppSettings.bob.state === 'psi_plus' ? '|01\\rangle + |10\\rangle' : '|01\\rangle - |10\\rangle';
+        let sign = ppSettings.bob.state === 'psi_plus' ? '+' : '-';
+        let result = getResultState(ppSettings.bob.state, gate);
+        
+        let mathString = `\\[
+            \\begin{aligned}
+            (${gate}_1 \\otimes I_2) ${bellInitial} &= (${gate}_1 \\otimes I_2) \\frac{1}{\\sqrt{2}}(${stateStr}) \\\\
+            &= \\frac{1}{\\sqrt{2}} \\Big( (${gate}|0\\rangle_1)|1\\rangle_2 ${sign} (${gate}|1\\rangle_1)|0\\rangle_2 \\Big) \\\\
+            &= ${result.latex} \\\\
+            &\\equiv ${result.bell}
+            \\end{aligned}
+        \\]`;
+        
+        display.innerHTML = mathString;
+        if (window.MathJax) {
+            MathJax.typesetClear([display]);
+            MathJax.typesetPromise([display]);
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>
