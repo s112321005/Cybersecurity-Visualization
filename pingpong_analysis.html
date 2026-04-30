@@ -214,7 +214,7 @@
     </div>
 </div>
 <script>
-    let ppSettings = JSON.parse(localStorage.getItem('qsdcSettings')) || {
+    let ppSettings = {
         "bob": { "particle": "Bell", "state": "psi_plus", "basis": "Z" },
         "alice": { "particle": "single", "basis": "Z", "msg0Op": "I", "msg1Op": "X" },
         "eve": { "isOn": false, "attack": "Intercept-resend" }
