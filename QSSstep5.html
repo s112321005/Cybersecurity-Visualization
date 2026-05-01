@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=1200">
+    <base href="https://s112321005.github.io/Cybersecurity-Visualization/">
+    <title>Quantum Secret Sharing：Zhang-Li-Man Final Result</title>
+    <style>
+        :root { 
+            --primary-blue: #0047AB; --dark-text: #333333; --eve-red: #D32F2F; 
+            --light-blue: #4C9EEA; --dark-blue: #004BA0; --gate-yellow: #FDE49B; --gate-text: #B26A00;
+            --bob-blue: #4C80C5; --charlie-blue: #478CEA;
+        }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f8f9fa; margin: 0; padding: 20px; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        
+        .top-bar { display: flex; align-items: center; justify-content: space-between; margin: 0 auto 20px auto; }
+        .title-pill { border: 2px solid var(--primary-blue); padding: 8px 20px; border-radius: 30px; font-weight: bold; background: white; color: var(--dark-text); }
+        .header-center { flex-grow: 1; margin-left: 20px; font-weight: bold; font-size: 1.2rem; color: var(--dark-text); text-align: center; }
+        .nav-btn { border: 2px solid var(--primary-blue); background: white; color: var(--dark-text); padding: 10px 25px; border-radius: 30px; font-weight: bold; font-size: 1rem; cursor: pointer; transition: all 0.2s; }
+        .nav-btn:hover { background: var(--primary-blue); color: white; transform: scale(1.05); }
+        .btn-back { width: 40px; height: 40px; background-color: var(--primary-blue); color: white; border-radius: 50%; display: flex; justify-content: center; align-items: center; text-decoration: none; font-weight: bold; cursor: pointer; border: none; font-size: 1.2rem; transition: all 0.2s; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+        
+        .eve-switch-card { display: inline-flex; align-items: center; gap: 10px; background: #fff; padding: 8px 20px; border-radius: 30px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); border: 2px solid #D32F2F; }
+        .switch { position: relative; display: inline-block; width: 50px; height: 26px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 34px; }
+        .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 4px; bottom: 4px; background-color: white; transition: .4s; border-radius: 50%; }
+        input:checked + .slider { background-color: #D32F2F; }
+        input:checked + .slider:before { transform: translateX(24px); }
+
+        .diagram-area { width: 100%; min-height: 500px; height: auto; position: relative; background: #ffffff; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); box-sizing: border-box; margin-top: 20px; padding-bottom: 20px; border: 1px solid #e0e0e0; transition: height 0.3s; }
+        
+        /* 🎯 最外層容器，控制位置與整體寬度 */
+        .avatar-col { position: absolute; top: 0px; transform: translateX(-50%); z-index: 10; }
+        
+        /* 🎯 實體框框，負責畫邊框與陰影，並確保內容物置中 */
+        .avatar-box {
+            position: relative; width: 100%; height: 45px;
+            display: flex; justify-content: center; align-items: center;
+            border: 3px solid #ccc; border-radius: 12px;
+            background-color: white; box-sizing: border-box;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.15);
+        }
+
+        /* 貓咪頭像大小固定，不隨框框拉長而變形 */
+        .avatar-box img { height: 32px; width: auto; object-fit: contain; }
+        
+        /* 各角色專屬邊框顏色 */
+        .avatar-bob .avatar-box { border-color: var(--bob-blue); }
+        .avatar-charlie .avatar-box { border-color: var(--charlie-blue); }
+        .avatar-alice .avatar-box { border-color: var(--primary-blue); }
+        .avatar-eve .avatar-box { border-color: var(--eve-red); }
+        
+        /* 🎯 Eve 左右切換按鈕，使用 position: absolute 將其固定在 avatar-box 內部兩側 */
+        .eve-nav-btn {
+            position: absolute; top: 50%; transform: translateY(-50%);
+            background-color: var(--eve-red); color: white; border: none; border-radius: 50%;
+            width: 22px; height: 22px; cursor: pointer; font-size: 11px;
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3); transition: 0.2s; z-index: 20;
+        }
+        .eve-nav-btn:hover { background-color: #b71c1c; transform: translateY(-50%) scale(1.15); }
+        .eve-nav-btn:disabled { background-color: #999; cursor: not-allowed; transform: translateY(-50%); box-shadow: none; }
+        .eve-nav-left { left: 4px; }  /* 靠左內側 */
+        .eve-nav-right { right: 4px; } /* 靠右內側 */
+
+        /* 統一標題的高度與位置對齊頭像框 */
+        .col-title { position: absolute; top: 0px; transform: translateX(-50%); font-weight: bold; font-size: 14px; text-align: center; z-index: 10; line-height: 1.2; }
+        .title-box {
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            height: 45px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); box-sizing: border-box;
+        }
+        .title-result { background-color: #D6E4FF; color: var(--primary-blue); width: 70px; }
+        .title-detected { background-color: #FFEBEE; color: var(--eve-red); width: 85px; } 
+
+        .node { position: absolute; transform: translate(-50%, -50%); z-index: 3; display: flex; flex-direction: column; align-items: center; gap: 5px;}
+        .state-circle { width: 45px; height: 45px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 16px; font-weight: bold; color: white; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+        .gate-circle { width: 40px; height: 40px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 18px; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        
+        .bg-light-blue { background-color: var(--light-blue); }
+        .bg-dark-blue { background-color: var(--dark-blue); }
+        .bg-yellow { background-color: var(--gate-yellow); color: var(--gate-text); }
+        .bg-red { background-color: var(--eve-red); }
+
+        .status-mark {
+            width: 40px; height: 40px; border-radius: 50%; display: flex; 
+            justify-content: center; align-items: center; font-size: 18px; 
+            font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.15); box-sizing: border-box;
+        }
+        .mark-detected { background-color: #FFEBEE; color: #D32F2F; border: none; }
+        .mark-undetected { background-color: #e0e0e0; color: #666; border: none; }
+
+        .result-badge-wrap {
+            width: 40px; height: 40px; border-radius: 50%; display: flex; 
+            justify-content: center; align-items: center; font-size: 18px; 
+            font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.15); box-sizing: border-box;
+        }
+        .result-normal { background-color: #D6E4FF; color: var(--primary-blue); border: none; }
+        .result-error { background-color: #FFEBEE; color: var(--eve-red); border: none; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="top-bar">
+        <div style="display: flex; align-items: center; gap: 20px;">
+            <button class="btn-back" onclick="window.location.href='QuantumCybersecurityEducationPlatform.html'">◀</button>
+            <div class="title-pill">Quantum Secret Sharing：Zhang-Li-Man</div>
+        </div>
+        <div class="header-center">STEP 5：Final Result & Tree</div>
+        <div style="display: flex; gap: 15px;">
+            <button class="nav-btn" onclick="window.location.href='QSSstep4.html'">Back</button>
+            <button class="nav-btn" onclick="window.location.href='QuantumCybersecurityEducationPlatform.html'">Finish</button>
+        </div>
+    </div>
+
+    <div class="diagram-area" id="main-diagram-area">
+        <div style="display: flex; justify-content: flex-end; padding: 15px 20px 0 0; position: relative; z-index: 20;">
+            <div class="eve-switch-card">
+                <img src="pictures/Eavesdropper.svg" style="width: 28px; height: 28px; border:none; box-shadow:none; padding:0; background:transparent;" alt="Eve Icon" onerror="this.src='pictures/cat_eve.svg'">
+                <span style="font-weight: bold; color: var(--eve-red); font-size: 1.1rem; margin-right: 5px;">Eavesdropper</span>
+                <label class="switch">
+                    <input type="checkbox" id="eve-toggle" onchange="renderDynamicTree()">
+                    <span class="slider"></span>
+                </label>
+            </div>
+        </div>
+
+        <div id="qss-svg-area" style="position: relative; width: 100%; min-height: 400px; margin-top: 10px;">
+            <div id="avatars-container"></div>
+            <svg id="qss-lines" style="width: 100%; height: 100%; position: absolute; top: 0; left: 0; z-index: 1;"></svg>
+            <div id="qss-nodes" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 2; pointer-events: none;"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const quantumMath = {
+        '|0⟩': {'I': '|0⟩', 'X': '|1⟩', 'Y': '-|1⟩', 'Z': '|0⟩', 'H': '|+⟩'},
+        '|1⟩': {'I': '|1⟩', 'X': '|0⟩', 'Y': '|0⟩', 'Z': '-|1⟩', 'H': '|−⟩'},
+        '|+⟩': {'I': '|+⟩', 'X': '|+⟩', 'Y': '|−⟩', 'Z': '|−⟩', 'H': '|0⟩'},
+        '|−⟩': {'I': '|−⟩', 'X': '-|−⟩', 'Y': '-|+⟩', 'Z': '|+⟩', 'H': '|1⟩'},
+        '|-⟩': {'I': '|−⟩', 'X': '-|−⟩', 'Y': '-|+⟩', 'Z': '|+⟩', 'H': '|1⟩'} 
+    };
+
+    function applyGate(stateStr, gate) {
+        if (!stateStr || !gate || gate === 'I') return stateStr;
+        let isNegative = stateStr.startsWith('-') || stateStr.startsWith('−');
+        let baseState = isNegative ? stateStr.substring(1) : stateStr;
+        if (baseState === '|-⟩') baseState = '|−⟩';
+        
+        let result = quantumMath[baseState][gate];
+        if (!result) return baseState;
+        if (isNegative) {
+            if (result.startsWith('-') || result.startsWith('−')) result = result.substring(1);
+            else result = '-' + result;
+        }
+        return result;
+    }
+
+    function measureState(stateStr, basis) {
+        let isNeg = stateStr.startsWith('-') || stateStr.startsWith('−');
+        let s = isNeg ? stateStr.substring(1) : stateStr;
+        if (basis === 'Z') {
+            if (s === '|0⟩') return [{state: '|0⟩', probSplit: 1.0}];
+            if (s === '|1⟩') return [{state: '|1⟩', probSplit: 1.0}];
+            return [{state: '|0⟩', probSplit: 0.5}, {state: '|1⟩', probSplit: 0.5}];
+        } else if (basis === 'X') {
+            if (s === '|+⟩') return [{state: '|+⟩', probSplit: 1.0}];
+            if (s === '|−⟩' || s === '|-⟩') return [{state: '|−⟩', probSplit: 1.0}];
+            return [{state: '|+⟩', probSplit: 0.5}, {state: '|−⟩', probSplit: 0.5}];
+        }
+        return [{state: stateStr, probSplit: 1.0}];
+    }
+
+    function getStoredData() {
+        const b = JSON.parse(localStorage.getItem('bobOriginalChoice')) || { basis: 'X', msg: '0' }; 
+        const c = JSON.parse(localStorage.getItem('qssStepData')) || { charlieGate: 'H' };
+        const a = JSON.parse(localStorage.getItem('qssStep3Data')) || { aliceGate: 'Y', aliceMsg: '1' };
+        
+        let initialSt = '';
+        if(b.basis === 'Z') initialSt = b.msg === '0' ? '|0⟩' : '|1⟩';
+        else initialSt = b.msg === '0' ? '|+⟩' : '|−⟩';
+
+        return { 
+            initialState: initialSt, bobBasis: b.basis, bobMsg: b.msg,
+            charlieGate: c.charlieGate, aliceGate: a.aliceGate, aliceMsg: a.aliceMsg
+        };
+    }
+
+    let currentEveLoc = 1;
+
+    function moveEve(direction) {
+        if (direction === 'left' && currentEveLoc > 1) currentEveLoc--;
+        if (direction === 'right' && currentEveLoc < 4) currentEveLoc++;
+        renderDynamicTree();
+    }
+
+    function getColumnSchema(eveLoc, isEveOn) {
+        let data = getStoredData();
+        let schema = [];
+        schema.push({ type: 'state', actor: 'bob' });
+        
+        let addEve = () => {
+            schema.push({ type: 'eve_eye', actor: 'eve' });
+            schema.push({ type: 'state_red', actor: 'eve' });
+        };
+
+        if (isEveOn && eveLoc === 1) addEve();
+        schema.push({ type: 'gate', actor: 'charlie1', content: data.charlieGate });
+        schema.push({ type: 'state', actor: 'charlie1' });
+
+        if (isEveOn && eveLoc === 2) addEve();
+        schema.push({ type: 'gate', actor: 'alice', content: data.aliceGate });
+        schema.push({ type: 'state_dark', actor: 'alice' }); 
+
+        if (isEveOn && eveLoc === 3) addEve();
+        schema.push({ type: 'gate', actor: 'charlie2', content: data.charlieGate });
+        schema.push({ type: 'state', actor: 'charlie2' });
+
+        if (isEveOn && eveLoc === 4) addEve();
+        
+        schema.push({ type: 'bob_eye', actor: 'bob', content: data.bobBasis });
+        schema.push({ type: 'bob_result', actor: 'bob' });
+        schema.push({ type: 'result', actor: 'result' });
+        schema.push({ type: 'detected', actor: 'detected' });
+        
+        return schema;
+    }
+
+    function renderDynamicTree() {
+        const data = getStoredData();
+        const isEveOn = document.getElementById('eve-toggle').checked;
+        const avatarsContainer = document.getElementById('avatars-container');
+        const linesContainer = document.getElementById('qss-lines');
+        const nodesContainer = document.getElementById('qss-nodes');
+        
+        linesContainer.innerHTML = `<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#000000"/></marker></defs>`;
+        nodesContainer.innerHTML = '';
+
+        let nodesHtml = '';
+        let linesHtml = linesContainer.innerHTML;
+
+        function drawArrow(x1, y1, x2, y2, offsetRight = 27, offsetLeft = 23) {
+            linesHtml += `<line x1="calc(${x1}% + ${offsetLeft}px)" y1="${y1}px" x2="calc(${x2}% - ${offsetRight}px)" y2="${y2}px" stroke="#000000" stroke-width="2" marker-end="url(#arrow)" />`;
+        }
+        
+        function makeNode(x, y, content, type) {
+            if(type === 'state') return `<div class="node" style="left: ${x}%; top: ${y}px;"><div class="state-circle bg-light-blue">${content}</div></div>`;
+            if(type === 'state_dark') return `<div class="node" style="left: ${x}%; top: ${y}px;"><div class="state-circle bg-dark-blue">${content}</div></div>`;
+            if(type === 'state_red') return `<div class="node" style="left: ${x}%; top: ${y}px;"><div class="state-circle bg-red">${content}</div></div>`;
+            if(type === 'gate') return `<div class="node" style="left: ${x}%; top: ${y}px;"><div class="gate-circle bg-yellow">${content}</div></div>`;
+            if(type === 'bob_eye') {
+                let img = content === 'X' ? 'pictures/b_eyex.svg' : 'pictures/b_eyez.svg';
+                return `<div class="node" style="left: ${x}%; top: ${y}px;"><img src="${img}" style="width: 45px; border:none; box-shadow:none; padding:0; background:transparent;"></div>`;
+            }
+            if(type === 'eve_eye') {
+                let img = content === 'X' ? 'pictures/e_eyex.svg' : 'pictures/e_eyez.svg';
+                return `<div class="node" style="left: ${x}%; top: ${y}px;"><img src="${img}" style="width: 45px; border:none; box-shadow:none; padding:0; background:transparent;"></div>`;
+            }
+            if(type === 'mark_detected') return `<div class="node" style="left: ${x}%; top: ${y}px;"><div class="status-mark mark-detected">✔</div></div>`;
+            if(type === 'mark_undetected') return `<div class="node" style="left: ${x}%; top: ${y}px;"><div class="status-mark mark-undetected">✖</div></div>`;
+            if(type === 'result') return `<div class="node" style="left: ${x}%; top: ${y}px;"><div class="result-badge-wrap result-normal">${content}</div></div>`;
+            if(type === 'result_red') return `<div class="node" style="left: ${x}%; top: ${y}px;"><div class="result-badge-wrap result-error">${content}</div></div>`;
+            return '';
+        }
+
+        let ideal1 = applyGate(data.initialState, data.charlieGate);
+        let ideal2 = applyGate(ideal1, data.aliceGate);
+        let ideal3 = applyGate(ideal2, data.charlieGate);
+        let correctOutcome = measureState(ideal3, data.bobBasis)[0].state;
+        let correctBase = correctOutcome.replace(/[-−]/g, '');
+
+        let schema = getColumnSchema(currentEveLoc, isEveOn);
+        let xsArr = isEveOn ? [4, 11, 19, 26, 34, 41, 49, 56, 64, 71, 79, 87, 95] : [5, 14, 23, 32, 41, 50, 59, 68, 77, 86, 95];
+
+        let avatarsHtml = "";
+        
+        if (!isEveOn) {
+            avatarsHtml = `
+                <div class="avatar-col avatar-bob" style="left: 5%; width: 70px;"><div class="avatar-box"><img src="pictures/cat_bob.svg"></div></div>
+                <div class="avatar-col avatar-charlie" style="left: 18%; width: 180px;"><div class="avatar-box"><img src="pictures/cat_charlie.svg"></div></div>
+                <div class="avatar-col avatar-alice" style="left: 36%; width: 180px;"><div class="avatar-box"><img src="pictures/cat_alice.svg"></div></div>
+                <div class="avatar-col avatar-charlie" style="left: 54%; width: 180px;"><div class="avatar-box"><img src="pictures/cat_charlie.svg"></div></div>
+                <div class="avatar-col avatar-bob" style="left: 72%; width: 180px;"><div class="avatar-box"><img src="pictures/cat_bob.svg"></div></div>
+                <div class="col-title title-box title-result" style="left: ${xsArr[9]}%;">Result<br>Msg</div>
+                <div class="col-title title-box title-detected" style="left: ${xsArr[10]}%;">Detected</div>
+            `;
+        } else if (currentEveLoc === 1) {
+            avatarsHtml = `
+                <div class="avatar-col avatar-bob" style="left: 4.5%; width: 70px;"><div class="avatar-box"><img src="pictures/cat_bob.svg"></div></div>
+                <div class="avatar-col avatar-eve" style="left: 15.5%; width: 145px;">
+                    <div class="avatar-box">
+                        <button class="eve-nav-btn eve-nav-left" disabled>◀</button>
+                        <img src="pictures/Eavesdropper.svg" onerror="this.src='pictures/cat_eve.svg'">
+                        <button class="eve-nav-btn eve-nav-right" onclick="moveEve('right')">▶</button>
+                    </div>
+                </div>
+                <div class="avatar-col avatar-charlie" style="left: 30%; width: 147px;"><div class="avatar-box"><img src="pictures/cat_charlie.svg"></div></div>
+                <div class="avatar-col avatar-alice" style="left: 45%; width: 147px;"><div class="avatar-box"><img src="pictures/cat_alice.svg"></div></div>
+                <div class="avatar-col avatar-charlie" style="left: 60%; width: 147px;"><div class="avatar-box"><img src="pictures/cat_charlie.svg"></div></div>
+                <div class="avatar-col avatar-bob" style="left: 75%; width: 147px;"><div class="avatar-box"><img src="pictures/cat_bob.svg"></div></div>
+                <div class="col-title title-box title-result" style="left: ${xsArr[11]}%;">Result<br>Msg</div>
+                <div class="col-title title-box title-detected" style="left: ${xsArr[12]}%;">Detected</div>
+            `;
+        } else if (currentEveLoc === 2) {
+            avatarsHtml = `
+                <div class="avatar-col avatar-bob" style="left: 4.5%; width: 70px;"><div class="avatar-box"><img src="pictures/cat_bob.svg"></div></div>
+                <div class="avatar-col avatar-charlie" style="left: 15.5%; width: 144px;"><div class="avatar-box"><img src="pictures/cat_charlie.svg"></div></div>
+                <div class="avatar-col avatar-eve" style="left: 30%; width: 150px;">
+                    <div class="avatar-box">
+                        <button class="eve-nav-btn eve-nav-left" onclick="moveEve('left')">◀</button>
+                        <img src="pictures/Eavesdropper.svg" onerror="this.src='pictures/cat_eve.svg'">
+                        <button class="eve-nav-btn eve-nav-right" onclick="moveEve('right')">▶</button>
+                    </div>
+                </div>
+                <div class="avatar-col avatar-alice" style="left: 45%; width: 147px;"><div class="avatar-box"><img src="pictures/cat_alice.svg"></div></div>
+                <div class="avatar-col avatar-charlie" style="left: 60%; width: 147px;"><div class="avatar-box"><img src="pictures/cat_charlie.svg"></div></div>
+                <div class="avatar-col avatar-bob" style="left: 75%; width: 147px;"><div class="avatar-box"><img src="pictures/cat_bob.svg"></div></div>
+                <div class="col-title title-box title-result" style="left: ${xsArr[11]}%;">Result<br>Msg</div>
+                <div class="col-title title-box title-detected" style="left: ${xsArr[12]}%;">Detected</div>
+            `;
+        } else if (currentEveLoc === 3) {
+            avatarsHtml = `
+                <div class="avatar-col avatar-bob" style="left: 3.7%; width: 70px;"><div class="avatar-box"><img src="pictures/cat_bob.svg"></div></div>
+                <div class="avatar-col avatar-charlie" style="left: 14%; width: 146px;"><div class="avatar-box"><img src="pictures/cat_charlie.svg"></div></div>
+                <div class="avatar-col avatar-alice" style="left: 29%; width: 150px;"><div class="avatar-box"><img src="pictures/cat_alice.svg"></div></div>
+                <div class="avatar-col avatar-eve" style="left: 44%; width: 152px;">
+                    <div class="avatar-box">
+                        <button class="eve-nav-btn eve-nav-left" onclick="moveEve('left')">◀</button>
+                        <img src="pictures/Eavesdropper.svg" onerror="this.src='pictures/cat_eve.svg'">
+                        <button class="eve-nav-btn eve-nav-right" onclick="moveEve('right')">▶</button>
+                    </div>
+                </div>
+                <div class="avatar-col avatar-charlie" style="left: 60%; width: 147px;"><div class="avatar-box"><img src="pictures/cat_charlie.svg"></div></div>
+                <div class="avatar-col avatar-bob" style="left: 75%; width: 147px;"><div class="avatar-box"><img src="pictures/cat_bob.svg"></div></div>
+                <div class="col-title title-box title-result" style="left: ${xsArr[11]}%;">Result<br>Msg</div>
+                <div class="col-title title-box title-detected" style="left: ${xsArr[12]}%;">Detected</div>
+            `;
+        } else if (currentEveLoc === 4) {
+            avatarsHtml = `
+                <div class="avatar-col avatar-bob" style="left: 3.7%; width: 70px;"><div class="avatar-box"><img src="pictures/cat_bob.svg"></div></div>
+                <div class="avatar-col avatar-charlie" style="left: 14.5%; width: 146px;"><div class="avatar-box"><img src="pictures/cat_charlie.svg"></div></div>
+                <div class="avatar-col avatar-alice" style="left: 29.5%; width: 150px;"><div class="avatar-box"><img src="pictures/cat_alice.svg"></div></div>
+                <div class="avatar-col avatar-charlie" style="left: 44.5%; width: 150px;"><div class="avatar-box"><img src="pictures/cat_charlie.svg"></div></div>
+                <div class="avatar-col avatar-eve" style="left: 60%; width: 150px;">
+                    <div class="avatar-box">
+                        <button class="eve-nav-btn eve-nav-left" onclick="moveEve('left')">◀</button>
+                        <img src="pictures/Eavesdropper.svg" onerror="this.src='pictures/cat_eve.svg'">
+                        <button class="eve-nav-btn eve-nav-right" disabled>▶</button>
+                    </div>
+                </div>
+                <div class="avatar-col avatar-bob" style="left: 75%; width: 147px;"><div class="avatar-box"><img src="pictures/cat_bob.svg"></div></div>
+                <div class="col-title title-box title-result" style="left: ${xsArr[11]}%;">Result<br>Msg</div>
+                <div class="col-title title-box title-detected" style="left: ${xsArr[12]}%;">Detected</div>
+            `;
+        }
+
+        avatarsContainer.innerHTML = avatarsHtml;
+
+        if(!isEveOn) {
+            let y = 140; 
+            document.getElementById('qss-svg-area').style.height = '280px'; 
+            let s = data.initialState;
+            nodesHtml += makeNode(xsArr[0], y, s, 'state');
+
+            for (let i = 1; i <= 10; i++) {
+                drawArrow(xsArr[i-1], y, xsArr[i], y);
+                let col = schema[i];
+                
+                if (col.type === 'gate') {
+                    nodesHtml += makeNode(xsArr[i], y, col.content, 'gate');
+                } else if (col.type === 'state' || col.type === 'state_dark') {
+                    s = applyGate(s, schema[i-1].content);
+                    nodesHtml += makeNode(xsArr[i], y, s, col.type);
+                } else if (col.type === 'bob_eye') {
+                    nodesHtml += makeNode(xsArr[i], y, col.content, 'bob_eye');
+                } else if (col.type === 'bob_result') {
+                    let bRes = measureState(s, data.bobBasis)[0];
+                    let isCorrect = bRes.state.replace(/[-−]/g, '') === correctBase;
+                    nodesHtml += makeNode(xsArr[i], y, bRes.state, isCorrect ? 'state_dark' : 'state_red');
+                } else if (col.type === 'result') {
+                    let bRes = measureState(s, data.bobBasis)[0];
+                    let isCorrect = bRes.state.replace(/[-−]/g, '') === correctBase;
+                    let decodedMsg = isCorrect ? data.aliceMsg : (data.aliceMsg === '0' ? '1' : '0');
+                    nodesHtml += makeNode(xsArr[i], y, decodedMsg, isCorrect ? 'result' : 'result_red');
+                } else if (col.type === 'detected') {
+                    nodesHtml += makeNode(xsArr[i], y, '', 'mark_undetected');
+                }
+            }
+        } else {
+            let eveEyeIdx = schema.findIndex(c => c.type === 'eve_eye');
+            let preEveState = data.initialState;
+            
+            for (let i = 0; i < eveEyeIdx; i++) {
+                let col = schema[i];
+                if (col.actor === 'charlie1' && col.type === 'state') preEveState = applyGate(preEveState, data.charlieGate);
+                if (col.actor === 'alice' && col.type === 'state_dark') preEveState = applyGate(preEveState, data.aliceGate);
+                if (col.actor === 'charlie2' && col.type === 'state') preEveState = applyGate(preEveState, data.charlieGate);
+            }
+
+            let currentY = 140;
+            let ySpacing = 85; 
+            let eveBases = ['X', 'Z'];
+            let eveNodes = [];
+
+            eveBases.forEach(eBasis => {
+                let eResults = measureState(preEveState, eBasis);
+                let tracks = [];
+                eResults.forEach(eRes => {
+                    let trackStates = [];
+                    let ts = eRes.state;
+                    for (let i = eveEyeIdx + 2; i <= 9; i++) { 
+                        let col = schema[i];
+                        if (col.type === 'gate') trackStates.push(col.content);
+                        else if (col.type === 'state' || col.type === 'state_dark') {
+                            ts = applyGate(ts, schema[i-1].content);
+                            trackStates.push(ts);
+                        } else if (col.type === 'bob_eye') trackStates.push(col.content);
+                    }
+                    let bobOutcomes = measureState(ts, data.bobBasis);
+                    
+                    let track = { eRes, intermediateContents: trackStates, bobOutcomes, yMain: 0, leafYs: [] };
+                    if (bobOutcomes.length === 1) {
+                        track.yMain = currentY;
+                        track.leafYs.push(currentY);
+                        currentY += ySpacing;
+                    } else {
+                        track.yMain = currentY + ySpacing / 2;
+                        track.leafYs.push(currentY);
+                        track.leafYs.push(currentY + ySpacing);
+                        currentY += ySpacing * 2;
+                    }
+                    tracks.push(track);
+                });
+                let eyeY = tracks.reduce((sum, t) => sum + t.yMain, 0) / tracks.length;
+                eveNodes.push({ basis: eBasis, eyeY, tracks });
+            });
+
+            let initialY = eveNodes.reduce((sum, n) => sum + n.eyeY, 0) / eveNodes.length;
+            document.getElementById('qss-svg-area').style.height = (currentY + 90) + 'px';
+
+            let drawState = data.initialState;
+            nodesHtml += makeNode(xsArr[0], initialY, drawState, 'state');
+            for (let i = 1; i < eveEyeIdx; i++) {
+                drawArrow(xsArr[i-1], initialY, xsArr[i], initialY);
+                let col = schema[i];
+                if (col.type === 'gate') {
+                    nodesHtml += makeNode(xsArr[i], initialY, col.content, 'gate');
+                } else if (col.type === 'state' || col.type === 'state_dark') {
+                    drawState = applyGate(drawState, schema[i-1].content);
+                    nodesHtml += makeNode(xsArr[i], initialY, drawState, col.type);
+                }
+            }
+
+            eveNodes.forEach(eNode => {
+                drawArrow(xsArr[eveEyeIdx-1], initialY, xsArr[eveEyeIdx], eNode.eyeY);
+                nodesHtml += makeNode(xsArr[eveEyeIdx], eNode.eyeY, eNode.basis, 'eve_eye');
+
+                eNode.tracks.forEach(track => {
+                    drawArrow(xsArr[eveEyeIdx], eNode.eyeY, xsArr[eveEyeIdx+1], track.yMain);
+                    nodesHtml += makeNode(xsArr[eveEyeIdx+1], track.yMain, track.eRes.state, 'state_red');
+                    
+                    for (let i = eveEyeIdx + 2; i <= 9; i++) {
+                        drawArrow(xsArr[i-1], track.yMain, xsArr[i], track.yMain);
+                        let col = schema[i];
+                        let content = track.intermediateContents[i - (eveEyeIdx + 2)];
+                        nodesHtml += makeNode(xsArr[i], track.yMain, content, col.type);
+                    }
+                    
+                    track.bobOutcomes.forEach((bRes, i) => {
+                        let leafY = track.leafYs[i];
+                        drawArrow(xsArr[9], track.yMain, xsArr[10], leafY);
+                        
+                        let isCorrect = bRes.state.replace(/[-−]/g, '') === correctBase;
+                        let nodeType = isCorrect ? 'state_dark' : 'state_red';
+                        nodesHtml += makeNode(xsArr[10], leafY, bRes.state, nodeType);
+
+                        let statusType = isCorrect ? 'mark_undetected' : 'mark_detected';
+                        let decodedMsg = isCorrect ? data.aliceMsg : (data.aliceMsg === '0' ? '1' : '0');
+                        let resultType = isCorrect ? 'result' : 'result_red';
+
+                        drawArrow(xsArr[10], leafY, xsArr[11], leafY); 
+                        nodesHtml += makeNode(xsArr[11], leafY, decodedMsg, resultType);
+
+                        drawArrow(xsArr[11], leafY, xsArr[12], leafY); 
+                        nodesHtml += makeNode(xsArr[12], leafY, '', statusType);
+                    });
+                });
+            });
+        }
+        
+        linesContainer.innerHTML = linesHtml;
+        nodesContainer.innerHTML = nodesHtml;
+    }
+
+    document.addEventListener("DOMContentLoaded", renderDynamicTree);
+</script>
+
+</body>
+</html>
