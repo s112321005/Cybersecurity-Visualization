@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Quantum Entanglement - Bell State</title>
+    <base href="https://s112321005.github.io/Cybersecurity-Visualization/">
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        :root { --primary-blue: #004aad; --bob-blue: #4c80c5; --dark-text: #333333; --bg-color: #f8f9fa; --photon-yellow: #ffeb3b; --match-green: #28a745; --mismatch-red: #dc3545; }
+        body { font-family: 'Segoe UI', system-ui, sans-serif; display: flex; flex-direction: column; align-items: center; padding: 40px 20px; background-color: var(--bg-color); margin: 0; }
+        .header { width: min(1000px, 95vw); display: flex; align-items: center; justify-content: space-between; margin-bottom: 25px; animation: fadeIn 0.8s ease-out forwards; }
+        .header-left { display: flex; align-items: center; gap: 15px; }
+        .btn-back { width: 40px; height: 40px; background-color: var(--primary-blue); color: white; border-radius: 50%; display: flex; justify-content: center; align-items: center; text-decoration: none; font-size: 1rem; transition: transform 0.2s; cursor: pointer; border: none; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .btn-back:hover { transform: scale(1.1); }
+        .page-title { border: 2px solid var(--primary-blue); color: var(--dark-text); padding: 10px 40px; border-radius: 10px; font-size: 20px; font-weight: bold; background: white; }
+        .header-center { flex-grow: 1; margin-left: 20px; font-weight: bold; font-size: 1.2rem; color: var(--dark-text); text-align: center; }
+        .header-right { display: flex; gap: 15px; }
+        .nav-btn { border: 2px solid var(--primary-blue); background: white; color: var(--dark-text); padding: 10px 25px; border-radius: 30px; font-weight: bold; font-size: 1rem; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        .nav-btn:hover { background: var(--primary-blue); color: white; transform: translateY(-2px); }
+        .main-card { width: min(1000px, 95vw); min-height: 650px; border: 3px solid var(--primary-blue); border-radius: 35px; background: white; box-sizing: border-box; display: flex; flex-direction: column; align-items: center; padding: 25px 20px; position: relative; }
+        .interaction-area { display: flex; width: 100%; align-items: center; justify-content: center; margin-top: 10px; margin-bottom: 30px; box-sizing: border-box; transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1); }
+        .entanglement-zone { display: flex; align-items: flex-end; gap: 120px; position: relative; flex-shrink: 0; }
+        .formula-wrapper { width: 0; opacity: 0; overflow: hidden; display: flex; justify-content: center; align-items: center; transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.8s ease, margin-left 0.8s cubic-bezier(0.4, 0, 0.2, 1); pointer-events: none; }
+        .interaction-area.reveal .formula-wrapper { width: 360px; opacity: 1; margin-left: 60px; pointer-events: auto; }
+        .bell-label { font-size: 1.7rem; color: var(--primary-blue); background: #f0f7ff; padding: 20px 30px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); border-left: 6px solid var(--primary-blue); display: flex; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.8s, transform 0.5s; transform: translateY(10px); z-index: 5; margin-bottom: -10px; pointer-events: none; }
+        .bell-label.show { opacity: 1; transform: translateY(0); pointer-events: auto; }
+        .interaction-area.reveal .bell-label { transform: translateX(0); }
+        .particle-group { display: flex; flex-direction: column; align-items: center; z-index: 10; gap: 15px; width: 110px; }
+        .avatar { width: 90px; height: auto; pointer-events: none; }
+        .svg-btn { background: #f0f7ff; border: 2px solid #cce0ff; border-radius: 50%; width: 65px; height: 65px; cursor: pointer; transition: all 0.2s; padding: 5px; outline: none; display: flex; justify-content: center; align-items: center; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        .svg-btn:hover:not(:disabled) { transform: scale(1.15); border-color: var(--primary-blue); background: white; }
+        .svg-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .eye-icon { width: 100%; height: auto; }
+        .photon-particle { width: 65px; height: 65px; background: var(--photon-yellow); border-radius: 50%; box-shadow: 0 0 35px rgba(255, 235, 59, 0.8), inset -5px -5px 15px rgba(0,0,0,0.1); display: flex; justify-content: center; align-items: center; font-weight: bold; font-size: 2.2rem; color: var(--dark-text); transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 15; position: relative; }
+        .photon-particle.measured-a { background: var(--primary-blue); color: white; box-shadow: 0 0 30px var(--primary-blue); font-size: 1.8rem; }
+        .photon-particle.measured-b { background: var(--bob-blue); color: white; box-shadow: 0 0 30px var(--bob-blue); font-size: 1.8rem; }
+        .entangle-link { position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); width: 230px; height: 6px; background: var(--photon-yellow); box-shadow: 0 0 18px 6px rgba(255, 235, 59, 0.6); z-index: 1; border-radius: 5px; overflow: hidden; transition: opacity 0.3s; }
+        .entangle-link::after { content: ""; position: absolute; width: 100%; height: 100%; background: linear-gradient(90deg, rgba(255,255,255,0), rgba(255,255,255,0.9), rgba(255,255,255,0)); animation: wave 1.2s infinite linear; }
+        @keyframes wave { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
+        .controls { display: flex; gap: 15px; z-index: 20; margin-bottom: 20px; height: 45px; align-items: center; }
+        .hint-box { width: 95%; padding: 12px 20px; background: #f0f7ff; border-left: 5px solid var(--primary-blue); border-radius: 10px; text-align: center; font-size: 1.15rem; color: #444; line-height: 1.4; box-sizing: border-box; margin-bottom: 15px; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .history-panel { width: 90%; background: #ffffff; border: 2px solid #e0e0e0; border-radius: 15px; padding: 15px 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); display: flex; flex-direction: column; gap: 15px; margin-bottom: 20px; }
+        .history-title { font-weight: bold; color: var(--dark-text); font-size: 1.1rem; border-bottom: 2px dashed #ddd; padding-bottom: 8px; margin: 0; text-align: left; }
+        .log-row { display: flex; align-items: center; gap: 15px; width: 100%; }
+        .log-avatar { width: 45px; height: auto; }
+        .log-circle { width: 24px; height: 24px; border-radius: 50%; flex-shrink: 0; display: flex; justify-content: center; align-items: center; color: white; font-weight: bold; font-size: 0.9rem; }
+        .circle-a { background-color: var(--primary-blue); box-shadow: 0 0 8px var(--primary-blue); }
+        .circle-b { background-color: var(--bob-blue); box-shadow: 0 0 8px var(--bob-blue); }
+        .log-bits { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 8px; flex-grow: 1; scroll-behavior: smooth; align-items: flex-end; min-height: 50px; }
+        .log-bits::-webkit-scrollbar { height: 6px; }
+        .log-bits::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 10px; }
+        .log-bits::-webkit-scrollbar-thumb { background: #c1c1c1; border-radius: 10px; }
+        .log-item { display: flex; flex-direction: column; align-items: center; gap: 4px; animation: popIn 0.3s ease-out; }
+        .log-index { font-size: 0.8rem; color: #777; font-weight: bold; font-family: 'Segoe UI', sans-serif; }
+        .bit-box { min-width: 40px; height: 32px; display: flex; justify-content: center; align-items: center; font-weight: bold; font-family: 'Courier New', monospace; font-size: 1.2rem; border-radius: 6px; background: #f4f7f6; border: 1px solid #ddd; color: #000; }
+        .bit-a { border-color: #b3d4ff; background: #e6f0ff; }
+        .bit-b { border-color: #cce0ff; background: #f0f6ff; }
+        @keyframes popIn { 0% { transform: scale(0); } 80% { transform: scale(1.1); } 100% { transform: scale(1); } }
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(4px); display: flex; justify-content: center; align-items: center; z-index: 9999; opacity: 0; visibility: hidden; transition: opacity 0.3s, visibility 0.3s; }
+        .modal-overlay.show { opacity: 1; visibility: visible; }
+        .modal-content { background: white; border-radius: 25px; padding: 40px; width: min(450px, 85vw); text-align: center; box-shadow: 0 15px 40px rgba(0,0,0,0.25); transform: scale(0.8) translateY(20px); transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); border: 4px solid #ddd; display: flex; flex-direction: column; align-items: center; }
+        .modal-overlay.show .modal-content { transform: scale(1) translateY(0); }
+        .modal-content.success { border-color: var(--match-green); }
+        .modal-content.error { border-color: var(--mismatch-red); }
+        .modal-icon { width: 80px; height: 80px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 3rem; font-weight: bold; color: white; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        .modal-content.success .modal-icon { background: var(--match-green); box-shadow: 0 0 20px rgba(40,167,69,0.4); }
+        .modal-content.error .modal-icon { background: var(--mismatch-red); box-shadow: 0 0 20px rgba(220,53,69,0.4); }
+        .modal-title { font-size: 2rem; margin: 0 0 15px; font-weight: bold; }
+        .modal-content.success .modal-title { color: var(--match-green); }
+        .modal-content.error .modal-title { color: var(--mismatch-red); }
+        .modal-text { font-size: 1.2rem; color: #555; margin-bottom: 30px; line-height: 1.5; }
+        .modal-btn { background: var(--dark-text); color: white; border: none; padding: 12px 35px; font-size: 1.1rem; font-weight: bold; border-radius: 30px; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 10px rgba(0,0,0,0.15); }
+        .modal-content.success .modal-btn { background: var(--match-green); }
+        .modal-content.error .modal-btn { background: var(--mismatch-red); }
+        .modal-btn:hover { transform: translateY(-3px); box-shadow: 0 6px 15px rgba(0,0,0,0.2); }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-left">
+            <a href="QuantumCybersecurityEducationPlatform.html" class="btn-back" title="Back to Home">◀</a>
+            <div class="page-title">Quantum Security Direct Communication：ping ping</div>
+        </div>
+        <div class="header-center"></div>
+        <div class="header-right">
+            <button class="nav-btn" onclick="nextStep()">Next</button>
+        </div>
+    </div>
+
+    <div class="main-card">
+        
+        <div class="interaction-area" id="main-interaction">
+            <div class="entanglement-zone">
+                <div class="particle-group">
+                    <img src="pictures/cat_alice.svg" class="avatar" alt="Alice Cat">
+                    <button class="svg-btn" id="btn-measure-a" onclick="measureA()" title="Observe Alice's Particle">
+                        <img src="pictures/a_eyez.svg" class="eye-icon" alt="Eye Icon">
+                    </button>
+                    <div id="alice-ball" class="photon-particle">?</div>
+                </div>
+
+                <div class="entangle-link" id="entangle-line"></div>
+
+                <div class="particle-group" id="bob-group">
+                    <img src="pictures/cat_bob.svg" class="avatar" alt="Bob Cat">
+                    <button class="svg-btn" id="btn-measure-b" onclick="measureB()" title="Observe Bob's Particle">
+                        <img src="pictures/b_eyez.svg" class="eye-icon" alt="Eye Icon">
+                    </button>
+                    <div id="bob-ball" class="photon-particle">?</div>
+                </div>
+            </div>
+
+            <div class="formula-wrapper">
+                <div id="bell-display" class="bell-label">
+                    <span>\( |\Psi^+\rangle_{12} = \frac{1}{\sqrt{2}}(|01\rangle + |10\rangle) \)</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="controls" id="guess-controls" style="display: none;">
+            <button class="nav-btn" onclick="submitGuess(0)">Guess Result is |0⟩</button>
+            <button class="nav-btn" onclick="submitGuess(1)">Guess Result is |1⟩</button>
+        </div>
+
+        <div class="hint-box" id="hint">
+            A pair is ready! Measure <b>Alice</b> and <b>Bob</b> to observe their particles.
+        </div>
+
+        <div class="history-panel">
+            <div class="history-title">Observation Log</div>
+            <div class="log-row">
+                <img src="pictures/cat_alice.svg" class="log-avatar" alt="Alice">
+                <div class="log-circle circle-a">1</div>
+                <div class="log-bits" id="log-bits-a"></div>
+            </div>
+            <div class="log-row">
+                <img src="pictures/cat_bob.svg" class="log-avatar" alt="Bob">
+                <div class="log-circle circle-b">2</div>
+                <div class="log-bits" id="log-bits-b"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="result-modal">
+        <div class="modal-content" id="modal-card">
+            <div class="modal-icon" id="modal-icon">✓</div>
+            <h2 class="modal-title" id="modal-title">Title</h2>
+            <p class="modal-text" id="modal-text">Message</p>
+            <button class="modal-btn" onclick="closeModal()">Continue</button>
+        </div>
+    </div>
+
+    <script>
+        let pairsMeasured = 0;
+        let currentPairNumber = 0; 
+        let phase = 1; 
+        let aMeasured = false;
+        let bMeasured = false;
+        let currentA = 0;
+        let currentB = 1;
+        
+        let targetToGuess = null; 
+        let correctlyGuessed10 = false;
+        let correctlyGuessed01 = false;
+        let isCurrentGuessCorrect = false;
+
+        function generatePair() {
+            currentPairNumber++; 
+
+            if (phase === 1) {
+                currentA = Math.floor(Math.random() * 2);
+                currentB = 1 - currentA;
+            } else if (phase === 2) {
+                if (!correctlyGuessed10) {
+                    currentA = 1;
+                    currentB = 0;
+                } else if (!correctlyGuessed01) {
+                    currentA = 0;
+                    currentB = 1;
+                }
+            }
+
+            aMeasured = false;
+            bMeasured = false;
+            targetToGuess = null;
+            
+            const aBall = document.getElementById('alice-ball');
+            const bBall = document.getElementById('bob-ball');
+            
+            aBall.innerText = "?";
+            aBall.className = "photon-particle"; 
+            bBall.innerText = "?";
+            bBall.className = "photon-particle"; 
+            document.getElementById('entangle-line').style.opacity = '1';
+            
+            document.getElementById('btn-measure-a').disabled = false;
+            document.getElementById('btn-measure-b').disabled = false;
+            document.getElementById('guess-controls').style.display = 'none';
+
+            if (phase === 1) {
+                document.getElementById('hint').innerHTML = `Pair ${currentPairNumber} generated! Click the Eye icons to measure both.`;
+            } else if (phase === 2) {
+                document.getElementById('hint').innerHTML = `<b>Guessing Mode (Pair ${currentPairNumber}):</b> Measure ONE particle, then guess the other's result!`;
+            }
+        }
+
+        function measureA() {
+            if (aMeasured) return;
+            aMeasured = true;
+            document.getElementById('btn-measure-a').disabled = true;
+            
+            const aBall = document.getElementById('alice-ball');
+            aBall.style.transform = 'scale(1.2)';
+            setTimeout(() => aBall.style.transform = 'scale(1)', 150);
+            
+            // 加上 | ⟩ 符號
+            aBall.innerText = `|${currentA}⟩`;
+            aBall.classList.add('measured-a');
+            
+            if (phase === 1) {
+                if (!bMeasured) {
+                    document.getElementById('hint').innerText = "Alice measured! Now check Bob's result.";
+                }
+                checkCompletionPhase1();
+            } else if (phase === 2 && !bMeasured) {
+                targetToGuess = 'B';
+                document.getElementById('btn-measure-b').disabled = true;
+                document.getElementById('guess-controls').style.display = 'flex';
+                document.getElementById('hint').innerHTML = "You observed Alice! Since they are entangled, what do you think <b>Bob</b> has?";
+            }
+        }
+
+        function measureB() {
+            if (bMeasured) return;
+            bMeasured = true;
+            document.getElementById('btn-measure-b').disabled = true;
+            
+            const bBall = document.getElementById('bob-ball');
+            bBall.style.transform = 'scale(1.2)';
+            setTimeout(() => bBall.style.transform = 'scale(1)', 150);
+            
+            // 加上 | ⟩ 符號
+            bBall.innerText = `|${currentB}⟩`;
+            bBall.classList.add('measured-b');
+            
+            if (phase === 1) {
+                if (!aMeasured) {
+                    document.getElementById('hint').innerText = "Bob measured! Now check Alice's result.";
+                }
+                checkCompletionPhase1();
+            } else if (phase === 2 && !aMeasured) {
+                targetToGuess = 'A';
+                document.getElementById('btn-measure-a').disabled = true;
+                document.getElementById('guess-controls').style.display = 'flex';
+                document.getElementById('hint').innerHTML = "You observed Bob! Since they are entangled, what do you think <b>Alice</b> has?";
+            }
+        }
+
+        function checkCompletionPhase1() {
+            if (aMeasured && bMeasured) {
+                recordLog();
+                document.getElementById('entangle-line').style.opacity = '0.3'; 
+                pairsMeasured++;
+                
+                if (pairsMeasured >= 3) {
+                    phase = 2;
+                    document.getElementById('hint').innerHTML = "<b>Pattern detected!</b> Getting ready for Guessing Mode...";
+                    setTimeout(generatePair, 2500);
+                } else {
+                    document.getElementById('hint').innerHTML = "Measurement complete. Generating next pair...";
+                    setTimeout(generatePair, 1500);
+                }
+            }
+        }
+
+        function submitGuess(guessedValue) {
+            let correctValue = (targetToGuess === 'A') ? currentA : currentB;
+            
+            if (targetToGuess === 'A') {
+                aMeasured = true;
+                document.getElementById('alice-ball').innerText = `|${currentA}⟩`;
+                document.getElementById('alice-ball').classList.add('measured-a');
+            } else {
+                bMeasured = true;
+                document.getElementById('bob-ball').innerText = `|${currentB}⟩`;
+                document.getElementById('bob-ball').classList.add('measured-b');
+            }
+            
+            document.getElementById('guess-controls').style.display = 'none';
+            document.getElementById('entangle-line').style.opacity = '0.3';
+            recordLog();
+
+            if (guessedValue === correctValue) {
+                isCurrentGuessCorrect = true;
+                showModal("success", "Correct!", "Entangled particles in this state always show opposite results.");
+            } else {
+                isCurrentGuessCorrect = false;
+                showModal("error", "Incorrect!", "Remember, whatever one particle shows, the other will be its EXACT OPPOSITE. Try again!");
+            }
+        }
+
+        function showModal(type, title, text) {
+            const overlay = document.getElementById('result-modal');
+            const card = document.getElementById('modal-card');
+            const icon = document.getElementById('modal-icon');
+            
+            card.className = `modal-content ${type}`;
+            icon.innerText = (type === 'success') ? '✓' : '✗';
+            document.getElementById('modal-title').innerText = title;
+            document.getElementById('modal-text').innerText = text;
+            
+            overlay.classList.add('show');
+        }
+
+        function closeModal() {
+            document.getElementById('result-modal').classList.remove('show');
+            
+            if (isCurrentGuessCorrect) {
+                if (currentA === 1 && currentB === 0) correctlyGuessed10 = true;
+                if (currentA === 0 && currentB === 1) correctlyGuessed01 = true;
+
+                if (correctlyGuessed10 && correctlyGuessed01) {
+                    phase = 3;
+                    document.getElementById('hint').innerHTML = "<b>Excellent!</b> Your observations perfectly match the definition of the <b>|Ψ⁺⟩₁₂</b> state (where particle 1 belongs to Alice and particle 2 to Bob): a <span style='display:inline-block;vertical-align:middle;text-align:center;font-size:0.85em;line-height:1.1;margin:0 4px;'><span style='border-bottom:1px solid currentColor;display:block;'>1</span><span style='display:block;'>2</span></span> probability of measuring |10⟩ and a <span style='display:inline-block;vertical-align:middle;text-align:center;font-size:0.85em;line-height:1.1;margin:0 4px;'><span style='border-bottom:1px solid currentColor;display:block;'>1</span><span style='display:block;'>2</span></span> probability of measuring |01⟩.";
+                    document.getElementById('bell-display').classList.add('show');
+                    document.getElementById('main-interaction').classList.add('reveal');
+                } else {
+                    document.getElementById('hint').innerHTML = `Correct! Now, let's try the other scenario to confirm your understanding...`;
+                    setTimeout(generatePair, 600);
+                }
+            } else {
+                document.getElementById('hint').innerHTML = `Let's retry that scenario to make sure you got the pattern.`;
+                setTimeout(generatePair, 600);
+            }
+        }
+
+        function recordLog() {
+            // 加上 | ⟩ 符號
+            const logA = document.getElementById('log-bits-a');
+            const itemA = document.createElement('div');
+            itemA.className = "log-item";
+            itemA.innerHTML = `
+                <div class="log-index">${currentPairNumber}</div>
+                <div class="bit-box bit-a">|${currentA}⟩</div>
+            `;
+            logA.appendChild(itemA);
+            logA.scrollLeft = logA.scrollWidth;
+            
+            // 加上 | ⟩ 符號
+            const logB = document.getElementById('log-bits-b');
+            const itemB = document.createElement('div');
+            itemB.className = "log-item";
+            itemB.innerHTML = `
+                <div class="bit-box bit-b">|${currentB}⟩</div>
+            `;
+            logB.appendChild(itemB);
+            logB.scrollLeft = logB.scrollWidth;
+        }
+
+        window.onload = generatePair;
+        
+        function nextStep() { window.location.href = 'PINGPONGstep1.html';}
+    </script>
+</body>
+</html>
