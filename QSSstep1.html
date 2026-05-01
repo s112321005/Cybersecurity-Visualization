@@ -319,7 +319,8 @@
     function nextStep() {
         if (!selectedBasis) return;
         localStorage.removeItem('qssStepData'); 
-        localStorage.removeItem('qssStep3Data');      
+        localStorage.removeItem('qssStep3Data'); 
+        localStorage.setItem('bobOriginalChoice', JSON.stringify({ basis: selectedBasis, msg: selectedMsg }));
         window.location.href = `QSSstep2.html?bobBasis=${selectedBasis}&bobMsg=${selectedMsg}`;
     }
 </script>

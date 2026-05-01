@@ -95,7 +95,6 @@
         .node-capsule:hover { transform: scale(1.05); border-color: var(--primary-blue); }
         .node-capsule.active { border-color: var(--primary-blue); background: #f0f5ff; box-shadow: 0 0 15px rgba(0,74,173,0.2); }
         
-        /* 特定角色顏色 */
         .node-alice { border-color: var(--alice-color); color: var(--alice-color); }
         .node-charlie { border-color: var(--charlie-color); color: var(--charlie-color); }
         .node-bob { border-color: var(--bob-color); color: var(--bob-color); }
@@ -111,7 +110,6 @@
             color: #aaa; font-weight: bold; font-style: italic; margin-top: 25px; font-size: 1rem; text-align: center;
         }
 
-        /* 點擊後產生的運算過程框 */
         .calc-panel {
             width: 100%; max-width: 850px; background: #f8faff; border-radius: 20px;
             border: 1px solid #d0daff; padding: 25px; margin-top: 20px;
@@ -126,7 +124,6 @@
 
         .calc-desc { font-size: 1rem; color: #555; line-height: 1.5; margin-top: 15px; background: white; padding: 15px; border-radius: 10px; }
 
-        /* 最終揭曉特效 (加上游標與 hover 動畫讓它像個按鈕) */
         .final-reveal {
             margin-top: 40px; padding: 20px 50px; border-radius: 40px;
             background: linear-gradient(135deg, #fffdf0 0%, #fff5cc 100%);
@@ -151,12 +148,13 @@
 
 <div class="header">
     <div class="header-left">
-        <button class="btn-back" onclick="prevStep()">◀</button>
+        <button class="btn-back" onclick="goHome()">◀</button>
         <div class="title-pill">Quantum Secret Sharing : ZhangLiMan</div>
     </div>
     <div class="header-center">STEP 4 : Decryption Process</div>
-    <div class="header-right">
-        <button class="nav-btn" onclick="goToStart()">Restart</button>
+    <div class="header-right" style="display: flex; gap: 10px;">
+        <button class="nav-btn" onclick="prevStep()">Back</button>
+        <button class="nav-btn" onclick="nextStep()">Next</button>
     </div>
 </div>
 
@@ -186,8 +184,7 @@
 
     <div class="calc-panel" id="calc-panel">
         <div class="calc-header" id="calc-header">Restoration Note</div>
-        <div class="calc-body" id="calc-body">
-            </div>
+        <div class="calc-body" id="calc-body"></div>
         <div class="calc-desc" id="calc-desc">
             Restoring Alice's secret message involves combining Bob's and Charlie's knowledge. Click above to begin.
         </div>
@@ -220,20 +217,42 @@
     };
 
     let data = {
-        bob: { basis: 'Z', msg: '0', state: '|0⟩' },
+        bob: { basis: 'Z', state: '|0⟩' },
         charlie: { gate: 'I' },
         alice: { state: '|0⟩', msg: '0' },
         undoState: '|0⟩'
     };
 
     document.addEventListener("DOMContentLoaded", () => {
-        const b = JSON.parse(localStorage.getItem('bobOriginalChoice')) || { basis: 'Z', msg: '0' };
-        const c = JSON.parse(localStorage.getItem('qssStepData')) || { charlieGate: 'I' };
+        const b = JSON.parse(localStorage.getItem('bobOriginalChoice')) || {};
+        const c = JSON.parse(localStorage.getItem('qssStepData')) || {};
         const a = JSON.parse(localStorage.getItem('qssStep3Data')) || { finalEncodedState: '|0⟩', aliceMsg: '0' };
 
-        data.bob = { basis: b.basis, msg: b.msg, state: (b.basis === 'Z' ? `|${b.msg}⟩` : (b.msg === '0' ? '|+⟩' : '|-⟩')) };
-        data.charlie = { gate: c.charlieGate };
-        data.alice = { state: a.finalEncodedState, msg: a.aliceMsg };
+        let initialBobState = c.bobState;
+        let bBasis = 'Z';
+
+        if (initialBobState) {
+            bBasis = (initialBobState.includes('+') || initialBobState.includes('-')) ? 'X' : 'Z';
+        } else {
+            let bMsg = b.msg !== undefined ? String(b.msg) : '0';
+            bBasis = b.basis || 'Z'; 
+
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.has('bobBasis')) bBasis = urlParams.get('bobBasis');
+            if (urlParams.has('bobMsg')) bMsg = urlParams.get('bobMsg');
+
+            bBasis = (bBasis === 'X' || bBasis === '+') ? 'X' : 'Z';
+            
+            if (bBasis === 'Z') {
+                initialBobState = (bMsg === '1') ? '|1⟩' : '|0⟩';
+            } else { 
+                initialBobState = (bMsg === '1' || bMsg === '-') ? '|-⟩' : '|+⟩';
+            }
+        }
+
+        data.bob = { basis: bBasis, state: initialBobState };
+        data.charlie = { gate: c.charlieGate || 'I' };
+        data.alice = { state: a.finalEncodedState || '|0⟩', msg: a.aliceMsg || '0' };
 
         const undoRules = {
             '|0⟩':  { 'I': '|0⟩',  'H': '|+⟩', 'X': '|1⟩',  'Y': '|1⟩',  'Z': '|0⟩' },
@@ -248,83 +267,69 @@
         
         data.undoState = undoRules[data.alice.state]?.[data.charlie.gate] || '|0⟩';
 
-        // 1. Bob 的膠囊顯示為 |0⟩ 或 |1⟩
+        // 過濾負號的乾淨狀態
+        let cleanRecovered = data.undoState.replace(/^-/, '').replace(/^−/, '');
+
+        // 更新膠囊顯示
         document.getElementById('node-1').textContent = data.alice.state;
         document.getElementById('node-2').textContent = data.undoState;
-        document.getElementById('node-3').textContent = `|${data.alice.msg}⟩`;
-        
+        document.getElementById('node-3').textContent = cleanRecovered; 
         document.getElementById('final-secret').textContent = data.alice.msg;
 
         showCalc(1);
     });
-
+    
     function showCalc(step) {
         const panel = document.getElementById('calc-panel');
         const header = document.getElementById('calc-header');
         const body = document.getElementById('calc-body');
         const desc = document.getElementById('calc-desc');
 
-        // 清除所有高亮狀態
         document.querySelectorAll('.node-capsule, .final-reveal').forEach(n => n.classList.remove('active'));
         document.getElementById(`node-${step}`).classList.add('active');
-
         panel.style.display = 'flex';
 
-        let content = "";
-        let description = "";
+        let cleanRecovered = data.undoState.replace(/^-/, '').replace(/^−/, '');
+        let cleanOriginal = data.bob.state.replace(/^-/, '').replace(/^−/, '');
 
         switch(step) {
             case 1:
-                header.innerText = "Step 1: RESTORING The Input State";
-                content = `\\( ${stateTex[data.alice.state]} \\)`;
-                description = `Alice's final encoded state is <b>${data.alice.state}</b>.`;
+                header.innerText = "Step 1: Alice's Received State";
+                body.innerHTML = `\\( ${stateTex[data.alice.state]} \\)`;
+                desc.innerHTML = `This is the final state Alice encoded containing her secret message.`;
                 break;
             case 2:
                 header.innerText = "Step 2: Undoing Charlie's Gate";
-                content = `\\( ${gateTex[data.charlie.gate]} \\times ${stateTex[data.alice.state]} = ${stateTex[data.undoState]} \\)`;
-                description = `Applying Charlie's inverse <b>${data.charlie.gate} Gate</b> mathematically restores the state to <b>${data.undoState}</b>.`;
+                body.innerHTML = `\\( ${gateTex[data.charlie.gate]} \\times ${stateTex[data.alice.state]} = ${stateTex[data.undoState]} \\)`;
+                desc.innerHTML = `By mathematically reversing Charlie's <b>${data.charlie.gate} Gate</b>, Bob begins to restore the original state.`;
                 break;
             case 3:
-                header.innerText = "Step 3: Measuring the State";
-                content = `\\( \\text{Recovered: } ${data.undoState} \\xrightarrow{\\text{Measure}} |${data.alice.msg}\\rangle \\)`;
-                description = `Bob measures the recovered state using his original <b>${data.bob.basis} Basis</b>, yielding <b>|${data.alice.msg}⟩</b>.`;
+                header.innerText = `Step 3: Measuring in the ${data.bob.basis}-Basis`;
+                body.innerHTML = `\\( \\text{Recovered: } ${data.undoState} \\xrightarrow{\\text{Measure in } ${data.bob.basis}\\text{-Basis}} ${cleanRecovered} \\)`;
+                desc.innerHTML = `Since Bob originally prepared his state in the <b>${data.bob.basis}-Basis</b>, he measures the recovered state using this exact same basis.<br>Ignoring global phase, the physical result is <b>${cleanRecovered}</b>.`;
                 break;
             case 4:
-                // 2. 點擊最終答案時的詳細推導邏輯
-                header.innerText = "Final Decision: How did we get the message " + data.alice.msg + "?";
-                content = `\\( \\text{Original: } ${data.bob.state} \\quad \\text{vs} \\quad \\text{Recovered: } ${data.undoState} \\)`;
-                
-                if (data.alice.msg === '0') {
-                    description = `
-                        Original and Recovered states <b>match</b>.<br>
-                        Alice applied the <b>I Gate</b> (no change). The secret message is <b>0</b>.
-                    `;
+                header.innerText = "Final Step: Decoding Alice's Message";
+                body.innerHTML = `\\( \\text{Prepared: } ${cleanOriginal} \\quad \\text{vs} \\quad \\text{Measured: } ${cleanRecovered} \\)`;
+                if (cleanOriginal === cleanRecovered) {
+                    desc.innerHTML = `Initial <b>${cleanOriginal}</b> MATCHES final <b>${cleanRecovered}</b>.<br>Alice applied the <b>I Gate</b> (no change). Secret message: <b>0</b>.`;
                 } else {
-                    description = `
-                        Original and Recovered states <b>differ</b>.<br>
-                        Alice applied the <b>Y Gate</b> (flipped phase). The secret message is <b>1</b>.
-                    `;
+                    desc.innerHTML = `Initial <b>${cleanOriginal}</b> DIFFERS from final <b>${cleanRecovered}</b>.<br>Alice applied the <b>Y Gate</b> (flipped). Secret message: <b>1</b>.`;
                 }
                 break;
         }
-
-        body.innerHTML = content;
-        desc.innerHTML = description;
 
         if (window.MathJax && MathJax.typesetPromise) {
             MathJax.typesetPromise([body]);
         }
     }
 
-    function prevStep() {
-        window.location.href = 'QuantumCybersecurityEducationPlatform.html';
-    }
-
-    function goToStart() {
-        localStorage.removeItem('bobOriginalChoice');
-        localStorage.removeItem('qssStepData');
-        localStorage.removeItem('qssStep3Data');
-        window.location.href = 'QSSstep1.html';
+    function goHome() { window.location.href = 'QuantumCybersecurityEducationPlatform.html'; }
+    function prevStep() { window.location.href = 'QSSstep3.html'; }
+    function nextStep() {
+        const step4Data = { undoState: data.undoState, finalMsg: data.alice.msg };
+        localStorage.setItem('qssStep4Data', JSON.stringify(step4Data));
+        window.location.href = 'QSSstep5.html'; 
     }
 </script>
 </body>
