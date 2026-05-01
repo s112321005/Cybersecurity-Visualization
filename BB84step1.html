@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <base href="https://s112321005.github.io/Cybersecurity-Visualization/">
+    <title>Quantum Key Distribution：BB84</title>
+    <style>
+        :root { --primary-blue: #004aad; --dark-text: #333333; --bg-color: #f8f9fa; --active-blue: #e3f2fd; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes pulse-anim { 0% { box-shadow: 0 0 0 0 rgba(0, 74, 173, 0.4); } 70% { box-shadow: 0 0 0 15px rgba(0, 74, 173, 0); } 100% { box-shadow: 0 0 0 0 rgba(0, 74, 173, 0); } }
+        @keyframes float-anim { 0% { transform: translateY(0px); } 50% { transform: translateY(-8px); } 100% { transform: translateY(0px); } }
+        @keyframes gentle-glow { 0% { box-shadow: 0 0 5px rgba(0, 74, 173, 0.2); transform: scale(1); } 100% { box-shadow: 0 0 15px rgba(0, 74, 173, 0.6); transform: scale(1.05); } }
+        body { font-family: 'Segoe UI', sans-serif; display: flex; flex-direction: column; align-items: center; padding: 40px 20px; background-color: var(--bg-color); margin: 0; animation: fadeIn 0.8s ease-out; overflow-x: hidden; }
+        .header { width: min(1000px, 95vw); display: flex; align-items: center; justify-content: space-between; margin-bottom: 25px; height: 60px; }
+        .header-left { display: flex; align-items: center; gap: 15px; }
+        .btn-back { width: 40px; height: 40px; background-color: var(--primary-blue); color: white; border-radius: 50%; display: flex; justify-content: center; align-items: center; text-decoration: none; font-size: 1.1rem; transition: transform 0.2s; cursor: pointer; border: none; box-shadow: 0 2px 6px rgba(0,0,0,0.15); padding: 0; margin: 0; box-sizing: border-box; flex-shrink: 0; }
+        .btn-back:hover { transform: scale(1.1); }
+        .title-pill { border: 2px solid var(--primary-blue); height: 48px; padding: 0 25px; border-radius: 30px; font-weight: bold; background: white; display: flex; align-items: center; justify-content: center; box-sizing: border-box; white-space: nowrap; font-size: 1.1rem; }
+        .step-text { font-weight: bold; font-size: 1.1rem; margin: 0; color: var(--dark-text); }
+        .nav-btn { border: 2px solid var(--primary-blue); background: white; padding: 0 30px; border-radius: 30px; font-weight: bold; cursor: pointer; transition: all 0.3s; opacity: 0.3; pointer-events: none; height: 48px; display: flex; align-items: center; box-sizing: border-box; font-size: 1.1rem; }
+        .nav-btn.ready { opacity: 1; pointer-events: auto; background: var(--primary-blue); color: white; box-shadow: 0 4px 15px rgba(0, 74, 173, 0.3); }
+        .main-card { width: min(1000px, 95vw); height: 560px; border: 3px solid var(--primary-blue); border-radius: 35px; position: relative; background: white; display: flex; flex-direction: column; justify-content: flex-start; align-items: center; overflow: hidden; padding-top: 25px; box-sizing: border-box; }
+        .character-alice { margin-bottom: 5px; animation: float-anim 3.5s ease-in-out infinite; }
+        .alice-interactive { display: flex; flex-direction: column; align-items: center; z-index: 5; width: 100%; }
+        .prompt-text { margin: 0 0 20px 0; font-weight: bold; color: var(--primary-blue); font-size: 1.3rem; letter-spacing: 0.5px; }
+        .selector-area { display: flex; align-items: flex-start; gap: 60px; }
+        .basis-column { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+        .basis-title { font-weight: bold; color: var(--primary-blue); font-size: 1.2rem; margin-bottom: 5px; }
+        .options-row { display: flex; gap: 20px; }
+        .state-btn { cursor: pointer; padding: 12px; border: 2px solid #eee; border-radius: 20px; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); display: flex; flex-direction: column; align-items: center; gap: 5px; width: 95px; background: white; position: relative; animation: pulse-anim 2s infinite; }
+        .state-btn:hover { transform: translateY(-5px); border-color: #bbdefb; background: #fafcff; }
+        .state-btn.active { border-color: var(--primary-blue); background: var(--active-blue); transform: scale(1.08); animation: none; box-shadow: 0 0 15px rgba(0, 74, 173, 0.4); }
+        .braket { font-size: 1.5rem; font-weight: bold; color: var(--primary-blue); margin-bottom: 2px; }
+        .bit-label { font-size: 0.85rem; color: #666; font-weight: bold; }
+        .explanation-area { display: flex; justify-content: center; align-items: center; margin-top: 20px; padding: 10px; }
+        .explanation-text { color: #888; font-weight: bold; font-size: 1rem; margin: 0; text-align: center; }
+        .logic-footer { position: absolute; bottom: 0; left: 0; width: 100%; background-color: #f8fbff; border-top: 2px dashed #d0e3ff; padding: 18px 0; display: flex; justify-content: center; align-items: center; }
+        .logic-container { display: flex; align-items: center; gap: 12px; font-weight: bold; font-size: 1.05rem; }
+        .logic-label { color: #888; font-size: 0.9rem; margin-right: 8px; text-transform: uppercase; letter-spacing: 1px; }
+        .logic-pill { background: white; border: 2px solid #b3d4ff; padding: 6px 16px; border-radius: 20px; color: var(--primary-blue); box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
+        .logic-operator { color: #aaa; font-weight: bold; font-size: 1.4rem; }
+        .logic-pill.result { background: var(--primary-blue); color: white; border-color: var(--primary-blue); animation: gentle-glow 1.5s infinite alternate; }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <div class="header-left">
+        <a href="QuantumCybersecurityEducationPlatform.html" class="btn-back"  ="back home">◀</a>
+        <div class="title-pill">Quantum Key Distribution：BB84</div>
+    </div>
+    <div class="header-center"><p class="step-text">STEP 1：Alice prepares the photon</p></div>
+    <div class="header-right">
+        <button id="next-btn" class="nav-btn" onclick="nextStep()" disabled>Next</button>
+    </div>
+</div>
+
+<div class="main-card">
+    <div class="alice-interactive">
+        <div class="character-alice">
+            <img src="pictures/cat_alice.svg" alt="Alice" width="120"> 
+        </div>
+
+        <p class="prompt-text">Choose a state!</p>
+        
+        <div class="selector-area">
+            <div class="basis-column">
+                <div class="basis-title">S Basis (Rectilinear)</div>
+                <img src="pictures/vertical.svg" width="70" style="margin-bottom:5px;">
+                <div class="options-row">
+                    <div class="state-btn" onclick="selectState('rectilinear', '1', this)">
+                        <span class="braket">|↑⟩</span>
+                        <span class="bit-label">Bit 1</span>
+                    </div>
+                    <div class="state-btn" onclick="selectState('rectilinear', '0', this)">
+                        <span class="braket">|→⟩</span>
+                        <span class="bit-label">Bit 0</span>
+                    </div>
+                </div>
+            </div>
+
+            <div style="width: 2px; height: 160px; background: #eee; align-self: center;"></div>
+
+            <div class="basis-column">
+                <div class="basis-title">D Basis (Diagonal)</div>
+                <img src="pictures/diagonal.svg" width="70" style="margin-bottom:5px;">
+                <div class="options-row">
+                    <div class="state-btn" onclick="selectState('diagonal', '1', this)">
+                        <span class="braket">|↖⟩</span>
+                        <span class="bit-label">Bit 1</span>
+                    </div>
+                    <div class="state-btn" onclick="selectState('diagonal', '0', this)">
+                        <span class="braket">|↗⟩</span>
+                        <span class="bit-label">Bit 0</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="explanation-area">
+            <p class="explanation-text">Click a state to confirm selection</p>
+        </div>
+    </div>
+
+    <div class="logic-footer">
+        <div class="logic-container">
+            <span class="logic-label">Encoding Logic</span>
+            <span class="logic-pill">Polarization Basis</span>
+            <span class="logic-operator">+</span>
+            <span class="logic-pill">Message Bit</span>
+            <span class="logic-operator">=</span>
+            <span class="logic-pill result">Photon Direction</span>
+        </div>
+    </div>
+</div>
+
+<script>
+    let selectedBasis = null;
+    let selectedMsg = null;
+
+    function selectState(basis, bit, el) {
+        document.querySelectorAll('.state-btn').forEach(btn => btn.classList.remove('active'));
+        el.classList.add('active');
+
+        document.querySelector('.prompt-text').textContent = "State Selected!";
+        document.querySelector('.prompt-text').style.color = "#28a745"; 
+        
+        selectedBasis = basis;
+        selectedMsg = bit;
+
+        const nextBtn = document.getElementById('next-btn');
+        nextBtn.disabled = false;
+        nextBtn.classList.add('ready');
+    }
+
+    function prevStep() {
+        window.history.back();
+    }
+    function nextStep() {
+        if (!selectedBasis) return;
+        localStorage.removeItem('qssStepData'); 
+        localStorage.removeItem('qssStep3Data'); // 順便預防性清除 Step 3 的暫存
+        window.location.href = `QKDstep2.html?aliceBasis=${selectedBasis}&aliceMsg=${selectedMsg}`;
+    }
+</script>
+</body>
+</html>
