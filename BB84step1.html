@@ -46,7 +46,7 @@
 
 <div class="header">
     <div class="header-left">
-        <a href="QuantumCybersecurityEducationPlatform.html" class="btn-back"  ="back home">◀</a>
+        <a href="QuantumCybersecurityEducationPlatform.html" class="btn-back"  title="back home">◀</a>
         <div class="title-pill">Quantum Key Distribution：BB84</div>
     </div>
     <div class="header-center"><p class="step-text">STEP 1：Alice prepares the photon</p></div>
@@ -54,15 +54,10 @@
         <button id="next-btn" class="nav-btn" onclick="nextStep()" disabled>Next</button>
     </div>
 </div>
-
 <div class="main-card">
     <div class="alice-interactive">
-        <div class="character-alice">
-            <img src="pictures/cat_alice.svg" alt="Alice" width="120"> 
-        </div>
-
+        <div class="character-alice"><img src="pictures/cat_alice.svg" alt="Alice" width="120"></div>
         <p class="prompt-text">Choose a state!</p>
-        
         <div class="selector-area">
             <div class="basis-column">
                 <div class="basis-title">S Basis (Rectilinear)</div>
@@ -78,9 +73,7 @@
                     </div>
                 </div>
             </div>
-
             <div style="width: 2px; height: 160px; background: #eee; align-self: center;"></div>
-
             <div class="basis-column">
                 <div class="basis-title">D Basis (Diagonal)</div>
                 <img src="pictures/diagonal.svg" width="70" style="margin-bottom:5px;">
@@ -96,12 +89,8 @@
                 </div>
             </div>
         </div>
-        
-        <div class="explanation-area">
-            <p class="explanation-text">Click a state to confirm selection</p>
-        </div>
+        <div class="explanation-area"><p class="explanation-text">Click a state to confirm selection</p></div>
     </div>
-
     <div class="logic-footer">
         <div class="logic-container">
             <span class="logic-label">Encoding Logic</span>
@@ -113,28 +102,19 @@
         </div>
     </div>
 </div>
-
 <script>
     let selectedBasis = null;
     let selectedMsg = null;
-
     function selectState(basis, bit, el) {
         document.querySelectorAll('.state-btn').forEach(btn => btn.classList.remove('active'));
         el.classList.add('active');
-
         document.querySelector('.prompt-text').textContent = "State Selected!";
         document.querySelector('.prompt-text').style.color = "#28a745"; 
-        
         selectedBasis = basis;
         selectedMsg = bit;
-
         const nextBtn = document.getElementById('next-btn');
         nextBtn.disabled = false;
         nextBtn.classList.add('ready');
-    }
-
-    function prevStep() {
-        window.history.back();
     }
     function nextStep() {
         if (!selectedBasis) return;
