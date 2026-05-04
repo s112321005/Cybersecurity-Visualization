@@ -15,8 +15,11 @@
         }
         .page-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, rgba(0,71,160,0.1) 0%, rgba(255,255,255,1) 100%); z-index: -1; }
         .selection-window { background-color: white; border: var(--border-width) solid var(--primary-blue); border-radius: var(--border-radius); width: 80vw; height: 650px; max-width: 1400px; padding: 30px 60px; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15); display: flex; flex-direction: column; box-sizing: border-box; position: relative; }
+        
+        /* 標題區域：左上角固定分類描述 */
         .header-group { margin-bottom: 15px; }
         .header-title { font-size: 26px; font-weight: 900; color: var(--text-dark); margin: 0; display: flex; align-items: center; gap: 15px; }
+        .category-full-desc { font-size: 24px; font-weight: 800; color: var(--text-dark); margin-left: 10px; }
         
         .scene-image-container { flex-grow: 1; min-height: 0; border-radius: 12px; background-color: #f8fafc; display: flex; flex-direction: column; justify-content: center; align-items: center; margin-bottom: 25px; position: relative; overflow: hidden; cursor: zoom-in; }
         #bg-png { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 1; pointer-events: none; }
@@ -35,7 +38,7 @@
         .pagination-dots { position: absolute; right: 30px; top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; gap: 12px; align-items: center; }
         .dot { width: 10px; height: 10px; border: 2px solid var(--text-dark); border-radius: 50%; transition: all 0.3s ease; cursor: pointer; background-color: transparent; }
         .dot.active { background-color: var(--text-dark); transform: scale(1.4); }
-        .dot.out-of-range { border-color: #ccc; background-color: transparent; cursor: default; } /* 超出範圍的灰色點點 */
+        .dot.out-of-range { border-color: #ccc; background-color: transparent; cursor: default; }
         
         .scroll-hint { position: absolute; right: 65px; top: 50%; transform: translateY(-50%); color: #aaa; font-size: 13px; font-style: italic; writing-mode: vertical-rl; }
         
@@ -44,7 +47,23 @@
         #lightbox-content { position: relative; width: 85vw; height: 85vh; display: flex; justify-content: center; align-items: center; transform-origin: center; transition: transform 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94); }
         #lb-bg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 1; pointer-events: none; }
         #lb-img { max-width: 90%; max-height: 90%; object-fit: contain; position: relative; z-index: 2; pointer-events: none; }
-        #lightbox-close { position: absolute; top: 20px; right: 30px; color: white; font-size: 50px; cursor: pointer; z-index: 1001; font-weight: bold; user-select: none; }
+        
+        /* 帶黑框的關閉按鈕 */
+        #lightbox-close { 
+            position: absolute; top: 30px; right: 40px; 
+            width: 45px; height: 45px;
+            background-color: white; 
+            border: 3px solid black; 
+            color: black; 
+            font-size: 32px; 
+            display: flex; justify-content: center; align-items: center;
+            cursor: pointer; z-index: 1001; font-weight: bold; user-select: none;
+            border-radius: 8px;
+            line-height: 0;
+            transition: transform 0.1s;
+        }
+        #lightbox-close:hover { background-color: #eee; transform: scale(1.05); }
+
         #lightbox-hint { position: absolute; bottom: 20px; color: white; background: rgba(0,0,40,0.6); padding: 8px 20px; border-radius: 20px; font-size: 14px; pointer-events: none; z-index: 1001; text-align: center; }
     </style>
 </head>
@@ -54,7 +73,7 @@
         <div class="header-group">
             <div class="header-title">
                 <a href="QuantumCybersecurityEducationPlatform.html" class="btn-back">◀&#xFE0E;</a>
-                <span><span id="protocol-display-name">BB84</span>: <span id="mode-desc">Jointly Establish a Secure Key</span></span>
+                <span class="category-full-desc" id="mode-desc">Jointly Establish a Secure Key</span>
             </div>
         </div>
         
@@ -77,7 +96,7 @@
     </div>
 
     <div id="lightbox" ondragstart="return false;">
-        <span id="lightbox-close" onclick="closeLightbox()">&times;</span>
+        <div id="lightbox-close" onclick="closeLightbox()">&times;</div>
         <div id="lightbox-content">
             <img id="lb-bg" src="pictures/scene-background.png" alt="Background">
             <img id="lb-img" src="" alt="Zoomed Scene">
@@ -86,11 +105,10 @@
     </div>
 
     <script>
-        // 資料更新：暫時刪除 ZhangMan
         const quantumData = [
-            { mode: "QKD", description: "Jointly Establish a Secure Key", protocols: [{ name: "BB84", link: "bb84_analysis.html" }, { name: "B92", link: "b92_analysis.html" }]},
-            { mode: "QSS", description: "Secret Sharing, Cooperative Recovery", protocols: [ { name: "ZhangLiMan", link: "zlm_analysis.html" }]},
-            { mode: "QSDC", description: "Secure Quantum Message Transmission", protocols: [ { name: "ping-pong", link: "pingpong_analysis.html" }]}
+            { mode: "QKD", description: "QKD：Jointly Establish a Secure Key", protocols: [{ name: "BB84", link: "bb84_analysis.html" }, { name: "B92", link: "b92_analysis.html" }]},
+            { mode: "QSS", description: "QSS：Secret Sharing, Cooperative Recovery", protocols: [ { name: "ZhangLiMan", link: "zlm_analysis.html" }]},
+            { mode: "QSDC", description: "QSDC：Secure Quantum Message Transmission", protocols: [ { name: "ping-pong", link: "ping-pong_analysis.html" }]}
         ];
         
         let modeIdx = 0, protoIdx = 0, isThrottled = false;
@@ -100,18 +118,18 @@
             const currentMode = quantumData[modeIdx];
             const currentProto = currentMode.protocols[protoIdx];
             
-            document.getElementById('mode-name').textContent = currentMode.mode;
+            // 更新左上角大標題與分類方塊
             document.getElementById('mode-desc').textContent = currentMode.description;
-            document.getElementById('protocol-display-name').textContent = currentProto.name;
+            document.getElementById('mode-name').textContent = currentMode.mode;
             document.getElementById('goBtn').onclick = () => { window.location.href = currentProto.link; };
             
+            // 更新圖片：命名規則為 scene-分類-協定.png
             const img = document.getElementById('scene-img');
             img.src = `pictures/scene-${currentMode.mode}-${currentProto.name}.png`;
             
             updateDots();
         }
 
-        // 修改：點點現在代表目前分類下的 Protocol 數量
         function updateDots() {
             const container = document.getElementById('dotContainer');
             container.innerHTML = '';
@@ -120,19 +138,11 @@
 
             protocols.forEach((_, i) => {
                 const dot = document.createElement('div');
-                
-                // 基礎樣式
                 let className = 'dot';
                 if (i === protoIdx) className += ' active';
+                // 超過 5 個時，離目前索引超過 2 的點變灰
+                if (total > 5 && Math.abs(i - protoIdx) > 2) className += ' out-of-range';
                 
-                // 邏輯：如果超過 5 個，且距離目前選中的點太遠，則變灰色 (out-of-range)
-                // 這裡定義展示範圍為當前索引的上下 2 個
-                if (total > 5) {
-                    if (Math.abs(i - protoIdx) > 2) {
-                        className += ' out-of-range';
-                    }
-                }
-
                 dot.className = className;
                 dot.onclick = () => { protoIdx = i; updateDisplay(); };
                 container.appendChild(dot);
@@ -141,7 +151,7 @@
 
         function changeMode(dir) {
             modeIdx = (modeIdx + dir + quantumData.length) % quantumData.length;
-            protoIdx = 0; // 切換分類時重置到第一個 Protocol
+            protoIdx = 0; // 切換分類時重置為該分類第一個協定
             updateDisplay();
         }
 
@@ -151,14 +161,13 @@
             updateDisplay();
         }
 
-        // --- Lightbox 邏輯保持不變 ---
+        // --- Lightbox 邏輯 ---
         const lb = document.getElementById('lightbox');
         const lbContent = document.getElementById('lightbox-content');
 
         function openLightbox() {
             const mainImg = document.getElementById('scene-img');
-            const lbImg = document.getElementById('lb-img');
-            lbImg.src = mainImg.src;
+            document.getElementById('lb-img').src = mainImg.src;
             lb.style.display = "flex";
             resetZoom();
         }
@@ -199,7 +208,7 @@
 
         window.addEventListener('mouseup', () => { isDragging = false; if (scale > 1) lb.style.cursor = 'grab'; });
 
-        // 外部滾輪切換 Protocol 並同步點點
+        // 全局滾輪切換 Protocol
         window.addEventListener('wheel', (e) => {
             if (lb.style.display === "flex") return;
             if (isThrottled) return;
