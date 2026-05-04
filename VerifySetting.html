@@ -1,588 +1,214 @@
 <!DOCTYPE html>
-<html lang="zh-TW">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=1200">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <base href="https://s112321005.github.io/Cybersecurity-Visualization/">
-    <title>Verify Setting</title>
+    <title>Protocol Selection & Verification - Quantum Platform</title>
     <style>
-        :root { --primary-blue: #0047AB; }
-        body { margin: 0; padding: 40px 0; background-color: #f8f9fa; font-family: sans-serif; min-width: 1200px !important; display: flex; justify-content: center; }
-        .container { background: white; padding-top: 20px; padding-left: 20px; padding-right: 20px; padding-bottom: -10px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); width: 1100px !important; max-width: 1100px !important; flex-shrink: 0 !important; box-sizing: border-box; position: relative; }
-        .header-bar { display: flex; align-items: center; margin-bottom: 30px; }
-        .header-left { display: flex; align-items: center; gap: 15px; }
-        .btn-back { width: 40px; height: 40px; background-color: var(--primary-blue); color: white; border-radius: 50%; display: flex; justify-content: center; align-items: center; text-decoration: none; font-size: 1.1rem; transition: transform 0.2s; cursor: pointer; border: none; box-shadow: 0 2px 6px rgba(0,0,0,0.15); padding: 0; margin: 0; box-sizing: border-box; flex-shrink: 0; }
-        .btn-back:hover { transform: scale(1.1); }
-        .page-title { border: 2px solid #0047AB; color: #000; padding: 10px 40px; border-radius: 10px; font-size: 20px; font-weight: bold; }
-        .protocol-selection { text-align: center; margin-bottom: 30px; padding: 20px; background-color: #f0f4f8; border-radius: 10px; border: 1px dashed #0047AB; }
-        .protocol-selection label { font-size: 18px; font-weight: bold; color: #0047AB; margin-right: 15px; }
-        .top-selection-area { display: flex; justify-content: center; align-items: center; gap: 40px; margin-bottom: 30px; padding: 20px; background-color: #f0f4f8; border-radius: 10px; border: 1px dashed #0047AB; }
-        .selection-group { display: flex; align-items: center; }
-        .selection-group label { font-size: 18px; font-weight: bold; color: #0047AB; margin-right: 15px; }
-        .custom-select { padding: 8px 20px; font-size: 16px; border: 2px solid #0047AB; border-radius: 8px; color: #0047AB; font-weight: bold; outline: none; cursor: pointer; background-color: white; transition: all 0.3s ease; }
-        .custom-select:hover { box-shadow: 0 4px 12px rgba(0,71,171,0.15); }
-        .main-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; position: relative; }
-        .connection-line { position: absolute; top: 150px; left: 11.5%; width: 26%; height: 2px; background-color: #b0b0b0; z-index: 1; display: flex; justify-content: center; align-items: center; }
-        .connection-line::before, .connection-line::after { content: ''; position: absolute; width: 15px; height: 15px; background-color: #b0b0b0; border-radius: 50%; top: 50%; transform: translateY(-50%); }
-        .connection-line::before { left: -4px; }
-        .connection-line::after { right: -4px; }
-        .connection-label { background: white; padding: 0; display: flex; align-items: center; border-radius: 8px; }
-        .character-col { display: flex; flex-direction: column; align-items: center; z-index: 2; }
-        .character-img { height: 80px; object-fit: contain; margin-bottom: 15px; z-index: 2; transition: all 0.3s ease; }
-        .disabled-img { filter: grayscale(100%) opacity(0.5); }
-        .name-tag { background-color: #0047AB; color: white; padding: 6px 30px; border-radius: 20px; font-weight: bold; font-size: 16px; margin-bottom: 50px; z-index: 3; text-align: center; min-width: 140px; box-sizing: border-box; transition: all 0.3s ease; }
-        .name-tag.gray { background-color: #b0b0b0; color: white;}
-        .name-tag.red-text { background-color: #D32F2F; }
-        @keyframes pulse-start-btn { 0% { box-shadow: 0 0 0 0 rgba(0, 71, 171, 0.6); } 70% { box-shadow: 0 0 0 20px rgba(0, 71, 171, 0); } 100% { box-shadow: 0 0 0 0 rgba(0, 71, 171, 0); } }
-        .name-tag.start { margin-bottom: 15px; animation: pulse-start-btn 2s infinite; }
-        .name-tag.start:hover { background: #003580; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,71,171,0.4); animation: none; }
-        .click-toggle { cursor: pointer; margin-bottom: -15px; z-index: 3; display: inline-grid; grid-template-areas: "toggle-area"; border-radius: 20px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.1); transition: transform 0.2s ease, box-shadow 0.2s ease; }
-        .click-toggle:active { transform: scale(0.95); box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        .click-toggle input { display: none; }
-        .click-toggle span { grid-area: toggle-area; padding: 6px 30px; font-weight: bold; font-size: 16px; text-align: center; min-width: 140px; box-sizing: border-box; transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
-        .click-toggle .text-off { background-color: #b0b0b0; color: white; }
-        .click-toggle .text-on  { background-color: #0047AB; color: white; }
-        .click-toggle input:not(:checked) ~ .text-on { transform: translateY(-100%); opacity: 0; pointer-events: none; }
-        .click-toggle input:not(:checked) ~ .text-off { transform: translateY(0); opacity: 1; }
-        .click-toggle input:checked ~ .text-on { transform: translateY(0); opacity: 1; }
-        .click-toggle input:checked ~ .text-off { transform: translateY(100%); opacity: 0; pointer-events: none; }
-        .control-panel { border: 2px solid #0047AB; border-radius: 10px; padding: 25px; background-color: white; height: 320px; box-sizing: border-box; width: 100%; transition: all 0.3s ease; }
-        .control-panel.disabled { border-color: #b0b0b0 !important; color: #777; }
-        .setting-title { display: flex; align-items: center; gap: 5px; font-weight: bold; font-size: 14px; margin-bottom: 10px; }
-        .setting-title::before { content: ''; display: inline-block; width: 10px; height: 10px; border-radius: 50%; background-color: #79a6d2; transition: all 0.3s ease; }
-        .disabled .setting-title::before { background-color: #b0b0b0 !important; }
-        .flex-row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
-        .pill-radio input{ display: none; }
-        .pill-radio span { display: inline-flex; padding: 4px 8px; border: 2px solid #0047AB; border-radius: 20px; color: #0047AB; font-weight: bold; font-size: 14px; cursor: pointer; background-color: white; text-align: center; min-width: 16px; justify-content: center; transition: all 0.3s ease; white-space: nowrap; }        
-        .pill-radio input:checked + span {  background-color: #478CEA;  color: white;}
-        .pill-radio input:disabled + span { opacity: 0.4;   cursor: not-allowed;   pointer-events: none;   filter: grayscale(1); }
-        .disabled .pill-radio span { border-color: #b0b0b0 !important; color: #b0b0b0 !important; cursor: not-allowed; background-color: white !important; }
-        .square-check { display: flex; align-items: center; gap: 4px; font-size: 14px; font-weight: bold; color: #0047AB; cursor: pointer; }
-        .square-check span.box { display: inline-block; width: 14px; height: 14px; border: 2px solid #0047AB; border-radius: 4px; transition: all 0.3s ease; }
-        .square-check input:checked + span.box { background-color: #0047AB; position: relative; }
-        .disabled .square-check { color: #b0b0b0; cursor: not-allowed; }
-        .disabled .square-check span.box { border-color: #b0b0b0; background-color: white; }
-        .disabled .square-check input:checked + span.box { background-color: #b0b0b0; }
-        input[type="text"], input[type="number"] { border: 2px solid #0047AB; border-radius: 6px; padding: 4px 8px; outline: none; font-weight: bold; color: #0047AB; font-family: inherit; transition: all 0.3s ease; }
-        .order-input { width: 40px; text-align: center; }
-        .u-input { width: 90%; height: 50px; margin-top: 5px; box-sizing: border-box; }
-        input:disabled, select:disabled { border-color: #b0b0b0 !important; background-color: #f8f9fa !important; color: #b0b0b0 !important; cursor: not-allowed; }
-        #alice-col .name-tag { background-color: #0047AB !important; color: #ffffff !important; }
-        #alice-col .status-toggle-static { background-color: #0047AB !important; color: #ffffff !important; }
-        #alice-col .control-panel:not(.disabled) .pill-radio input[type="radio"]:checked + span { background-color: #0047AB !important; border-color: #0047AB !important; }
-        #alice-col .control-panel:not(.disabled) .setting-title::before { background-color: #0047AB; }
-        #bob-col .name-tag { background-color: #4c80c5 !important; color: #ffffff !important; }
-        #bob-col .control-panel:not(.disabled) { border-color: #4c80c5 !important; }
-        #bob-col .status-toggle-static { background-color: #4c80c5 !important; color: #ffffff !important; }
-        #bob-col .control-panel:not(.disabled) .pill-radio span { border-color: #4c80c5 !important; color: #4c80c5 !important; background-color: #ffffff !important; }
-        #bob-col .control-panel:not(.disabled) .pill-radio input:checked + span { background-color: #4c80c5 !important; border-color: #4c80c5 !important; color: #ffffff !important; }        
-        #bob-col .control-panel:not(.disabled) .setting-title::before { background-color: #4c80c5; }
-        #charlie-col .name-tag, #charlie-col .status-toggle-static, #charlie-col .click-toggle .text-on { background-color: #478CEA !important; color: #ffffff !important; }
-        #charlie-col .control-panel:not(.disabled) { border-color: #478CEA !important; }
-        #charlie-col .control-panel:not(.disabled) .pill-radio span { border-color: #478CEA !important; color: #478CEA !important; }
-        #charlie-col .control-panel:not(.disabled) .pill-radio input:checked + span { background-color: #478CEA !important; border-color: #478CEA !important; color: #ffffff !important; }
-        #charlie-col .control-panel:not(.disabled) .setting-title::before { background-color: #478CEA !important; }
-        html { font-family: "Courier New", Courier, monospace; font-variant-emoji: text; }
+        :root { --primary-blue: #0047A0; --text-dark: #333333; --bg-color: #f0f2f5; --border-width: 4px; --border-radius: 15px; }
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background-color: var(--bg-color); margin: 0; height: 100vh; 
+            display: flex; justify-content: center; align-items: center; 
+            overflow: hidden; user-select: none; 
+        }
+        .page-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, rgba(0,71,160,0.1) 0%, rgba(255,255,255,1) 100%); z-index: -1; }
+        .selection-window { background-color: white; border: var(--border-width) solid var(--primary-blue); border-radius: var(--border-radius); width: 80vw; height: 650px; max-width: 1400px; padding: 30px 60px; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15); display: flex; flex-direction: column; box-sizing: border-box; position: relative; }
+        .header-group { margin-bottom: 15px; }
+        .header-title { font-size: 26px; font-weight: 900; color: var(--text-dark); margin: 0; display: flex; align-items: center; gap: 15px; }
+        
+        .scene-image-container { flex-grow: 1; min-height: 0; border-radius: 12px; background-color: #f8fafc; display: flex; flex-direction: column; justify-content: center; align-items: center; margin-bottom: 25px; position: relative; overflow: hidden; cursor: zoom-in; }
+        #bg-png { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 1; pointer-events: none; }
+        #scene-img { max-width: 95%; max-height: 95%; object-fit: contain; position: relative; z-index: 2; pointer-events: none; }
+        
+        .controls-row { display: flex; align-items: center; justify-content: center; position: relative; width: 100%; height: 60px; margin-bottom: 10px; }
+        .carousel-area { display: flex; align-items: center; gap: 10px; }
+        .nav-arrow { font-size: 22px; cursor: pointer; color: var(--text-dark); user-select: none; padding: 5px 15px; transition: transform 0.1s; }
+        .nav-arrow:active { transform: scale(0.8); }
+        .category-box { width: 180px; height: 45px; border: 3px solid var(--text-dark); border-radius: 10px; display: flex; justify-content: center; align-items: center; font-size: 22px; font-weight: 900; color: var(--text-dark); letter-spacing: 1px; background-color: #fcfcfc; }
+        .action-btn { position: absolute; right: 0; bottom: 5px; background-color: var(--primary-blue); color: white; border: none; border-radius: 30px; padding: 0 35px; height: 45px; font-size: 16px; font-weight: bold; cursor: pointer; transition: all 0.2s; white-space: nowrap; z-index: 10; }
+        .action-btn:hover { background-color: #003377; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,71,160,0.2); }
+        .btn-back { width: 40px; height: 40px; background-color: var(--primary-blue); color: white; border-radius: 50%; display: flex; justify-content: center; align-items: center; text-decoration: none; font-size: 1.1rem; transition: transform 0.2s; cursor: pointer; border: none; box-shadow: 0 2px 6px rgba(0,0,0,0.15); flex-shrink: 0; }
+        
+        /* Pagination Dots */
+        .pagination-dots { position: absolute; right: 30px; top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; gap: 12px; align-items: center; }
+        .dot { width: 10px; height: 10px; border: 2px solid var(--text-dark); border-radius: 50%; transition: all 0.3s ease; cursor: pointer; background-color: transparent; }
+        .dot.active { background-color: var(--text-dark); transform: scale(1.4); }
+        .dot.out-of-range { border-color: #ccc; background-color: transparent; cursor: default; } /* 超出範圍的灰色點點 */
+        
+        .scroll-hint { position: absolute; right: 65px; top: 50%; transform: translateY(-50%); color: #aaa; font-size: 13px; font-style: italic; writing-mode: vertical-rl; }
+        
+        /* Lightbox */
+        #lightbox { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 1000; display: none; justify-content: center; align-items: center; overflow: hidden; }
+        #lightbox-content { position: relative; width: 85vw; height: 85vh; display: flex; justify-content: center; align-items: center; transform-origin: center; transition: transform 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94); }
+        #lb-bg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 1; pointer-events: none; }
+        #lb-img { max-width: 90%; max-height: 90%; object-fit: contain; position: relative; z-index: 2; pointer-events: none; }
+        #lightbox-close { position: absolute; top: 20px; right: 30px; color: white; font-size: 50px; cursor: pointer; z-index: 1001; font-weight: bold; user-select: none; }
+        #lightbox-hint { position: absolute; bottom: 20px; color: white; background: rgba(0,0,40,0.6); padding: 8px 20px; border-radius: 20px; font-size: 14px; pointer-events: none; z-index: 1001; text-align: center; }
     </style>
 </head>
-<body>
-    <div class="container">
-        <div class="header-bar">
-            <div class="header-left">
-                <a href="QuantumCybersecurityEducationPlatform.html" class="btn-back text-only">◀&#xFE0E;</a>
-                <div class="page-title">Verify Setting</div>
+<body oncontextmenu="return false;">
+    <div class="page-overlay"></div>
+    <div class="selection-window" id="mainWindow">
+        <div class="header-group">
+            <div class="header-title">
+                <a href="QuantumCybersecurityEducationPlatform.html" class="btn-back">◀&#xFE0E;</a>
+                <span><span id="protocol-display-name">BB84</span>: <span id="mode-desc">Jointly Establish a Secure Key</span></span>
             </div>
         </div>
-        <div class="top-selection-area">
-            <div class="selection-group">
-                <label for="protocol-select">Protocol:</label>
-                <select id="protocol-select" class="custom-select">
-                    <option value="none" disabled selected>-- select protocol --</option>
-                    <option value="qkd">QKD</option>
-                    <option value="qss">QSS</option>
-                    <option value="qsdc">QSDC</option>
-                    <option value="entanglement">Entanglement</option>
-                </select>
-            </div>
-            <div class="selection-group" id="algo-group" style="display: none;">
-                <select id="qkd-sub-select" class="custom-select sub-select" style="display: none;">
-                    <option value="bb84" selected>BB84</option>
-                    <option value="b92">B92</option>
-                </select>
-                <select id="qss-sub-select" class="custom-select sub-select" style="display: none;">
-                    <option value="zlm" selected>ZhangLiMan</option>
-                </select>
-                <select id="qsdc-sub-select" class="custom-select sub-select" style="display: none;">
-                    <option value="dl04" selected>DL04</option>
-                    <option value="pingpong">Ping-Pong</option>
-                </select>
-            </div>
+        
+        <div class="scene-image-container" onclick="openLightbox()" ondragstart="return false;">
+            <img id="bg-png" src="pictures/scene-background.png" alt="Background">
+            <img id="scene-img" src="" alt="Protocol Scene">
         </div>
 
-        <div id="qkd-interface" class="protocol-interface" style="display: none;">
-            <div class="main-grid">
-                <div class="character-col" id="alice-col">
-                    <img src="pictures/cat_alice.svg" class="character-img" alt="Alice">
-                    <div class="name-tag">Alice</div>
-                    <div class="click-toggle"><span class="text-on">ON</span></div>
-                    <div class="control-panel">
-                        <div class="setting-title">Particle Selection</div>
-                        <div class="flex-row" style="margin-bottom: 15px; gap: 8px;">
-                            <label class="pill-radio"><input type="radio" name="a_particle" checked><span>single</span></label>
-                        </div>
-                        <div class="setting-title">Basis Selection</div>
-                        <div style="display:flex; flex-direction:column; gap:8px; margin-bottom: 15px;">
-                            <div class="flex-row" style="gap: 8px;">
-                                <label class="pill-radio"><input type="radio" name="a_basis" checked><span>X</span></label>
-                                <label class="pill-radio"><input type="radio" name="a_basis"><span>Z</span></label>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="character-col" id="bob-col">
-                    <img src="pictures/cat_bob.svg" class="character-img" alt="Bob">
-                    <div class="name-tag">Bob</div>
-                    <div class="click-toggle"><span class="text-on status-toggle-static">ON</span></div>
-                    <div class="control-panel">
-                        <div class="setting-title">Particle Selection</div>
-                        <div class="flex-row" style="margin-bottom: 15px; gap: 8px;">
-                            <label class="pill-radio"><input type="radio" name="b_particle" checked><span>single</span></label>
-                        </div>
-                        <div class="setting-title">Basis Selection</div>
-                        <div style="display:flex; flex-direction:column; gap:8px; margin-bottom: 15px;">
-                            <div class="flex-row" style="gap: 8px;">
-                                <label class="pill-radio"><input type="radio" name="b_basis" checked><span>X</span></label>
-                                <label class="pill-radio"><input type="radio" name="b_basis"><span>Z</span></label>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="character-col theme-red">
-                    <img src="pictures/Eavesdropper.svg" class="character-img" alt="Eavesdropper">
-                    <div class="name-tag" data-role="eavesdropper">Eavesdropper</div>
-                    <label class="click-toggle">
-                        <input type="checkbox" class="status-toggle">
-                        <span class="text-on">ON</span><span class="text-off">OFF</span>
-                    </label>
-                    <div class="control-panel">
-                        <div class="setting-title">Attack Selection</div>
-                        <div style="display:flex; flex-direction:column; gap:10px; align-items: flex-start; margin-top: 15px;">
-                            <label class="pill-radio"><input type="radio" name="e_attack"><span style="padding: 6px 20px;">CNOT</span></label>
-                            <label class="pill-radio"><input type="radio" name="e_attack"><span style="padding: 6px 20px;">Intercept-resend</span></label>
-                        </div>
-                    </div>
-                </div>
+        <div class="controls-row">
+            <div class="carousel-area">
+                <div class="nav-arrow" onclick="changeMode(-1)">&#9664;</div>
+                <div class="category-box"><span id="mode-name">QKD</span></div>
+                <div class="nav-arrow" onclick="changeMode(1)">&#9654;</div>
             </div>
-            <div style="text-align: center; margin-top: 30px;">
-                <button id="qkd-start-btn" class="name-tag start" style="cursor: pointer; font-size: 18px; padding: 10px 40px; border: none;">Start QKD Analysis</button>
-            </div>
+            <button class="action-btn" id="goBtn">Analyze NOW!</button>
         </div>
 
-        <div id="qss-interface" class="protocol-interface" style="display: none;">
-            <div class="main-grid">
-                <div class="character-col" id="bob-col">
-                    <img src="pictures/cat_bob.svg" class="character-img" alt="Bob">
-                    <div class="name-tag">1. Bob</div>
-                    <div class="click-toggle"><span class="text-on status-toggle-static">ON</span></div>
-                    <div class="control-panel">
-                        <div class="setting-title">Particle Selection</div>
-                        <div class="flex-row" style="margin-bottom: 15px; gap: 4px;">
-                            <label class="pill-radio"><input type="radio" name="qss_b_particle" checked><span>single</span></label>
-                        </div>
-                        <div class="setting-title">Basis Selection</div>
-                        <div style="display:flex; flex-direction:column; gap:8px; margin-bottom: 15px;">
-                            <div class="flex-row" style="gap: 4px;">
-                                <label class="pill-radio"><input type="radio" name="qss_b_basis" checked><span>X</span></label>
-                                <label class="pill-radio"><input type="radio" name="qss_b_basis"><span>Z</span></label>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+        <div class="scroll-hint">Scroll to Switch Protocols</div>
+        <div class="pagination-dots" id="dotContainer"></div>
+    </div>
 
-                <div class="character-col" id="charlie-col">
-                    <img src="pictures/cat_charlie.svg" class="character-img" alt="Charlie">
-                    <div class="name-tag">2. Charlie</div>
-                    <div class="click-toggle"><span class="text-on status-toggle-static">ON</span></div>
-                    <div class="control-panel">
-                        <div class="setting-title">Particle Selection</div>
-                        <div class="flex-row" style="margin-bottom: 15px; gap: 4px;">
-                            <label class="pill-radio"><input type="radio" name="qss_c_particle" checked><span>single</span></label>
-                        </div>
-                        <div class="setting-title">Operation Selection</div>
-                        <div style="display:flex; flex-direction:column; gap:8px; margin-bottom: 15px;">
-                            <div class="flex-row" style="gap: 4px;">
-                                <label class="pill-radio"><input type="checkbox" name="qss_c_operator" value="I" checked><span>I</span></label>
-                                <label class="pill-radio"><input type="checkbox" name="qss_c_operator" value="X"><span>X</span></label>
-                                <label class="pill-radio"><input type="checkbox" name="qss_c_operator" value="Y" checked><span>Y</span></label>
-                                <label class="pill-radio"><input type="checkbox" name="qss_c_operator" value="Z"><span>Z</span></label>
-                                <label class="pill-radio"><input type="checkbox" name="qss_c_operator" value="H" checked><span>H</span></label>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="character-col" id="alice-col">
-                    <img src="pictures/cat_alice.svg" class="character-img" alt="Alice">
-                    <div class="name-tag">3. Alice</div>
-                    <div class="click-toggle"><span class="text-on status-toggle-static">ON</span></div>
-                    <div class="control-panel">
-                        <div class="setting-title">Particle Selection</div>
-                        <div class="flex-row" style="margin-bottom: 15px; gap: 4px;">
-                            <label class="pill-radio"><input type="radio" name="qss_a_particle" checked><span>single</span></label>
-                        </div>                
-                        <div class="setting-title">Message Selection</div>
-                        <div style="display:flex; flex-direction:column; gap:8px; margin-bottom: 15px;">
-                            <div class="flex-row" style="gap: 4px;">
-                                <label class="pill-radio"><input type="radio" name="qss_a_msg" checked><span>0</span></label>
-                                <label class="pill-radio"><input type="radio" name="qss_a_msg"><span>1</span></label>
-                            </div>
-                        </div>
-                        <div class="setting-title">Message:0 Operator</div>
-                        <div class="flex-row" style="margin-bottom: 10px; gap: 4px; flex-wrap: wrap;">
-                            <label class="pill-radio"><input type="radio" name="op_msg_0" value="I" checked><span>I</span></label>
-                            <label class="pill-radio"><input type="radio" name="op_msg_0" value="X"><span>X</span></label>
-                            <label class="pill-radio"><input type="radio" name="op_msg_0" value="Y"><span>Y</span></label>
-                            <label class="pill-radio"><input type="radio" name="op_msg_0" value="Z"><span>Z</span></label>
-                            <label class="pill-radio"><input type="radio" name="op_msg_0" value="H"><span>H</span></label>
-                        </div>
-                        <div class="setting-title">Message:1 Operator</div>
-                        <div class="flex-row" style="margin-bottom: 15px; gap: 4px; flex-wrap: wrap;">
-                            <label class="pill-radio"><input type="radio" name="op_msg_1" value="I"><span>I</span></label>
-                            <label class="pill-radio"><input type="radio" name="op_msg_1" value="X" checked><span>X</span></label>
-                            <label class="pill-radio"><input type="radio" name="op_msg_1" value="Y"><span>Y</span></label>
-                            <label class="pill-radio"><input type="radio" name="op_msg_1" value="Z"><span>Z</span></label>
-                            <label class="pill-radio"><input type="radio" name="op_msg_1" value="H"><span>H</span></label>
-                        </div>
-                    </div>
-                </div>
-                <div class="character-col theme-red">
-                    <img src="pictures/Eavesdropper.svg" class="character-img" alt="Eavesdropper">
-                    <div class="name-tag" data-role="eavesdropper">Eavesdropper</div>
-                    <label class="click-toggle"><input type="checkbox" class="status-toggle"><span class="text-on">ON</span><span class="text-off">OFF</span></label>
-                    <div class="control-panel">
-                        <div class="setting-title">Attack Selection</div>
-                        <div style="display:flex; flex-direction:column; gap:10px; align-items: flex-start; margin-top: 15px;">
-                            <label class="pill-radio"><input type="radio" name="qss_e_attack"><span style="padding: 6px 20px;">CNOT</span></label>
-                            <label class="pill-radio"><input type="radio" name="qss_e_attack"><span style="padding: 6px 20px;">Intercept-resend</span></label>
-                        </div>
-                        <div class="setting-title" style="margin-top: 20px;">Intercept Location</div>
-                        <select name="qss_e_location" style="width: 100%; padding: 6px 10px; border: 2px solid #D32F2F; border-radius: 8px; color: #D32F2F; font-weight: bold; outline: none; background: white; font-family: inherit;">
-                            <option value="1_2">Between 1 & 2</option>
-                            <option value="2_3">Between 2 & 3</option>
-                            <option value="3_4">Between 3 & 4</option>
-                            <option value="4_5">Between 4 & 5</option>
-                        </select>
-                    </div>
-                </div>
-            </div>
-            <div style="text-align: center; margin-top: 30px;">
-                <button id="qss-start-btn" class="name-tag start" style="cursor: pointer; font-size: 18px; padding: 10px 40px; border: none;">Start QSS Analysis</button>
-            </div>
+    <div id="lightbox" ondragstart="return false;">
+        <span id="lightbox-close" onclick="closeLightbox()">&times;</span>
+        <div id="lightbox-content">
+            <img id="lb-bg" src="pictures/scene-background.png" alt="Background">
+            <img id="lb-img" src="" alt="Zoomed Scene">
         </div>
-
-        <div id="qsdc-interface" class="protocol-interface" style="display: none;">
-            <div class="main-grid">
-                <div class="character-col" id="alice-col">
-                    <img src="pictures/cat_alice.svg" class="character-img" alt="Alice">
-                    <div class="name-tag">Alice</div>
-                    <div class="click-toggle"><span class="text-on status-toggle-static">ON</span></div>
-                    <div class="control-panel">
-                        <div class="setting-title">Particle Selection</div>
-                        <div class="flex-row" style="margin-bottom: 15px; gap: 8px;">
-                            <label class="pill-radio"><input type="radio" name="qsdc_a_particle" checked><span>single</span></label>
-                            <label class="pill-radio"><input type="radio" name="qsdc_a_particle"><span>Bell</span></label>
-                        </div>
-                        <div class="setting-title">Operation Selection</div>
-                        <div class="flex-row" style="gap: 8px; margin-bottom: 15px; flex-wrap: wrap;">
-                            <label class="pill-radio"><input type="radio" name="qsdc_a_op" value="I" checked><span>I</span></label>
-                            <label class="pill-radio"><input type="radio" name="qsdc_a_op" value="X"><span>X</span></label>
-                            <label class="pill-radio"><input type="radio" name="qsdc_a_op" value="Y"><span>Y</span></label>
-                            <label class="pill-radio"><input type="radio" name="qsdc_a_op" value="Z"><span>Z</span></label>
-                        </div>
-                    </div>
-                </div>
-                <div class="character-col" id="bob-col">
-                    <img src="pictures/cat_bob.svg" class="character-img" alt="Bob">
-                    <div class="name-tag">Bob</div>
-                    <div class="click-toggle"><span class="text-on status-toggle-static">ON</span></div>
-                    <div class="control-panel">
-                        <div class="setting-title">Particle Selection</div>
-                        <div class="flex-row" style="margin-bottom: 15px; gap: 8px;">
-                            <label class="pill-radio"><input type="radio" name="qsdc_b_particle" checked><span>single</span></label>
-                            <label class="pill-radio"><input type="radio" name="qsdc_b_particle"><span>Bell</span></label>
-                        </div>
-                        <div class="setting-title">Basis Selection</div>
-                        <div class="flex-row" style="gap: 8px; margin-bottom: 15px;">
-                            <label class="pill-radio"><input type="radio" name="qsdc_b_basis" checked><span>X</span></label>
-                            <label class="pill-radio"><input type="radio" name="qsdc_b_basis"><span>Z</span></label>
-                        </div>
-                    </div>
-                </div>
-                <div class="character-col theme-red">
-                    <img src="pictures/Eavesdropper.svg" class="character-img" alt="Eavesdropper">
-                    <div class="name-tag" data-role="eavesdropper">Eavesdropper</div>
-                    <label class="click-toggle">
-                        <input type="checkbox" class="status-toggle">
-                        <span class="text-on">ON</span><span class="text-off">OFF</span>
-                    </label>
-                    <div class="control-panel">
-                        <div class="setting-title">Attack Selection</div>
-                        <div style="display:flex; flex-direction:column; gap:10px; align-items: flex-start; margin-top: 15px;">
-                            <label class="pill-radio"><input type="radio" name="qsdc_e_attack"><span style="padding: 6px 20px;">CNOT</span></label>
-                            <label class="pill-radio"><input type="radio" name="qsdc_e_attack"><span style="padding: 6px 20px;">Intercept-resend</span></label>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div style="text-align: center; margin-top: 30px;">
-                <button id="qsdc-start-btn" class="name-tag start" style="cursor: pointer; font-size: 18px; padding: 10px 40px; border: none;">Start QSDC Analysis</button>
-            </div>
-        </div>
-
-        <div id="entanglement-interface" class="protocol-interface" style="display: none;">
-            <div class="main-grid">
-                <div class="connection-line">
-                    <div class="connection-label">
-                        <label class="square-check" for="ent-entangle" style="color: #333; font-size: 14px; cursor: pointer; padding: -5px 20px; margin: 0;">
-                            <input type="checkbox" id="ent-entangle"><span class="box"></span><span>Entanglement Required?</span>
-                        </label>
-                    </div>
-                </div>
-                <div class="character-col">
-                    <img src="pictures/cat_alice.svg" class="character-img" alt="Alice">
-                    <div class="name-tag">Alice</div>
-                    <div class="click-toggle"><span class="text-on">ON</span></div>
-                    <div class="control-panel">
-                        <div class="setting-title">Particle Selection</div>
-                        <div class="flex-row" style="margin-bottom: 15px; gap: 8px;">
-                            <label class="pill-radio"><input type="radio" name="ent_a_particle"><span>single</span></label>
-                            <label class="pill-radio"><input type="radio" name="ent_a_particle"><span>Bell</span></label>
-                        </div>
-                        <div class="setting-title">Basis Selection</div>
-                        <div class="flex-row" style="gap: 8px;">
-                            <label class="pill-radio"><input type="radio" name="ent_a_basis"><span>X</span></label>
-                            <label class="pill-radio"><input type="radio" name="ent_a_basis"><span>Z</span></label>
-                        </div>
-                    </div>
-                </div>
-                <div class="character-col" id="bob-col">
-                    <img src="pictures/cat_bob.svg" class="character-img" alt="Bob">
-                    <div class="name-tag">Bob</div>
-                    <div class="click-toggle"><span class="text-on status-toggle-static">ON</span></div>
-                    <div class="control-panel">
-                        <div class="setting-title">Particle Selection</div>
-                        <div class="flex-row" style="margin-bottom: 15px; gap: 8px;">
-                            <label class="pill-radio"><input type="radio" name="ent_b_particle"><span>single</span></label>
-                            <label class="pill-radio"><input type="radio" name="ent_b_particle"><span>Bell</span></label>
-                        </div>
-                        <div class="setting-title">Basis Selection</div>
-                        <div class="flex-row" style="gap: 8px;">
-                            <label class="pill-radio"><input type="radio" name="ent_b_basis"><span>X</span></label>
-                            <label class="pill-radio"><input type="radio" name="ent_b_basis"><span>Z</span></label>
-                        </div>
-                    </div>
-                </div>
-                <div class="character-col">
-                    <img src="pictures/cat_charlie.svg" class="character-img" alt="Charlie">
-                    <div class="name-tag">Charlie</div>
-                    <label class="click-toggle"><input type="checkbox" class="status-toggle"><span class="text-on">ON</span><span class="text-off">OFF</span></label>
-                    <div class="control-panel">
-                        <div class="setting-title">Particle Selection</div>
-                        <div class="flex-row" style="margin-bottom: 15px; gap: 8px;">
-                            <label class="pill-radio"><input type="radio" name="ent_c_particle"><span>single</span></label>
-                        </div>
-                        <div class="setting-title">Basis Selection</div>
-                        <div class="flex-row" style="gap: 8px;">
-                            <label class="pill-radio"><input type="radio" name="ent_c_basis"><span>X</span></label>
-                        </div>
-                    </div>
-                </div>
-                <div class="character-col theme-red">
-                    <img src="pictures/Eavesdropper.svg" class="character-img" alt="Eavesdropper">
-                    <div class="name-tag" data-role="eavesdropper">Eavesdropper</div>
-                    <label class="click-toggle"><input type="checkbox" class="status-toggle"><span class="text-on">ON</span><span class="text-off">OFF</span></label>
-                    <div class="control-panel">
-                        <div class="setting-title">Attack Selection</div>
-                        <div style="display:flex; flex-direction:column; gap:10px; align-items: flex-start; margin-top: 15px;">
-                            <label class="pill-radio"><input type="radio" name="ent_e_attack"><span style="padding: 6px 20px;">CNOT</span></label>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div style="text-align: center; margin-top: 30px;"><button id="ent-start-btn" class="name-tag start" style="cursor: pointer; font-size: 18px; padding: 10px 40px; border: none;">Start Entanglement</button></div>
-        </div>
+        <div id="lightbox-hint">Scroll: Zoom In/Out | Drag: Move (When Zoomed) | Click ×: Close</div>
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const protocolSelect = document.getElementById('protocol-select');
-            const interfaces = document.querySelectorAll('.protocol-interface');
-            const algoGroup = document.getElementById('algo-group');
-            const algoSelects = document.querySelectorAll('.sub-select');
+        // 資料更新：暫時刪除 ZhangMan
+        const quantumData = [
+            { mode: "QKD", description: "Jointly Establish a Secure Key", protocols: [{ name: "BB84", link: "bb84_analysis.html" }, { name: "B92", link: "b92_analysis.html" }]},
+            { mode: "QSS", description: "Secret Sharing, Cooperative Recovery", protocols: [ { name: "ZhangLiMan", link: "zlm_analysis.html" }]},
+            { mode: "QSDC", description: "Secure Quantum Message Transmission", protocols: [ { name: "ping-pong", link: "ping-pong_analysis.html" }]}
+        ];
+        
+        let modeIdx = 0, protoIdx = 0, isThrottled = false;
+        let scale = 1, posX = 0, posY = 0, isDragging = false, startX, startY;
+
+        function updateDisplay() {
+            const currentMode = quantumData[modeIdx];
+            const currentProto = currentMode.protocols[protoIdx];
             
-            protocolSelect.addEventListener('change', function() {
-                interfaces.forEach(iface => iface.style.display = 'none');
-                algoSelects.forEach(select => select.style.display = 'none');
-                const selectedValue = this.value;
-                if (selectedValue !== 'none') {
-                    document.getElementById(`${selectedValue}-interface`).style.display = 'block';
-                    const correspondingAlgoSelect = document.getElementById(`${selectedValue}-sub-select`);
-                    if (correspondingAlgoSelect) {
-                        algoGroup.style.display = 'flex'; 
-                        correspondingAlgoSelect.style.display = 'block'; 
-                    } else {
-                        algoGroup.style.display = 'none'; 
+            document.getElementById('mode-name').textContent = currentMode.mode;
+            document.getElementById('mode-desc').textContent = currentMode.description;
+            document.getElementById('protocol-display-name').textContent = currentProto.name;
+            document.getElementById('goBtn').onclick = () => { window.location.href = currentProto.link; };
+            
+            const img = document.getElementById('scene-img');
+            img.src = `pictures/scene-${currentMode.mode}-${currentProto.name}.png`;
+            
+            updateDots();
+        }
+
+        // 修改：點點現在代表目前分類下的 Protocol 數量
+        function updateDots() {
+            const container = document.getElementById('dotContainer');
+            container.innerHTML = '';
+            const protocols = quantumData[modeIdx].protocols;
+            const total = protocols.length;
+
+            protocols.forEach((_, i) => {
+                const dot = document.createElement('div');
+                
+                // 基礎樣式
+                let className = 'dot';
+                if (i === protoIdx) className += ' active';
+                
+                // 邏輯：如果超過 5 個，且距離目前選中的點太遠，則變灰色 (out-of-range)
+                // 這裡定義展示範圍為當前索引的上下 2 個
+                if (total > 5) {
+                    if (Math.abs(i - protoIdx) > 2) {
+                        className += ' out-of-range';
                     }
                 }
-            });
 
-            const toggles = document.querySelectorAll('.status-toggle');
-            function updatePanelState(toggleElement) {
-                const col = toggleElement.closest('.character-col');
-                const img = col.querySelector('.character-img');
-                const nameTag = col.querySelector('.name-tag');
-                const panel = col.querySelector('.control-panel');
-                const inputs = panel.querySelectorAll('input:not(.status-toggle),select');
-                if (toggleElement.checked) {
-                    img.classList.remove('disabled-img');
-                    panel.classList.remove('disabled');
-                    nameTag.classList.remove('gray');
-                    if (nameTag.dataset.role === 'eavesdropper') nameTag.classList.add('red-text');
-                    inputs.forEach(input => input.disabled = false);
-                } else {
-                    img.classList.add('disabled-img');
-                    panel.classList.add('disabled');
-                    nameTag.classList.add('gray');
-                    nameTag.classList.remove('red-text');
-                    inputs.forEach(input => input.disabled = true);
-                }
-            }
-            toggles.forEach(toggle => {
-                updatePanelState(toggle);
-                toggle.addEventListener('change', function() { updatePanelState(this); });
+                dot.className = className;
+                dot.onclick = () => { protoIdx = i; updateDisplay(); };
+                container.appendChild(dot);
             });
+        }
 
-            function validateSettings(interfaceId, rules) {
-                const container = document.getElementById(interfaceId);
-                for (const rule of rules) {
-                    const isSelected = container.querySelector(`input[name="${rule.name}"]:checked`);
-                    if (!isSelected) {
-                        alert(`Configuration incomplete: ${rule.label} is required!`);
-                        return false;
-                    }
-                }
-                return true;
-            }
+        function changeMode(dir) {
+            modeIdx = (modeIdx + dir + quantumData.length) % quantumData.length;
+            protoIdx = 0; // 切換分類時重置到第一個 Protocol
+            updateDisplay();
+        }
 
-            const msg0Radios = document.querySelectorAll('input[name="op_msg_0"]');
-            const msg1Radios = document.querySelectorAll('input[name="op_msg_1"]');
-            function syncExclusion() {
-                const val0 = document.querySelector('input[name="op_msg_0"]:checked')?.value;
-                const val1 = document.querySelector('input[name="op_msg_1"]:checked')?.value;
-                msg1Radios.forEach(r => r.disabled = (r.value === val0));
-                msg0Radios.forEach(r => r.disabled = (r.value === val1));
-            }
-            [...msg0Radios, ...msg1Radios].forEach(r => {
-                r.addEventListener('change', syncExclusion);
-            });
-            syncExclusion();
+        function changeProtocol(dir) {
+            const currentMode = quantumData[modeIdx];
+            protoIdx = (protoIdx + dir + currentMode.protocols.length) % currentMode.protocols.length;
+            updateDisplay();
+        }
 
-            document.getElementById('qkd-start-btn').addEventListener('click', () => {
-                const interfaceDiv = document.getElementById('qkd-interface');
-                const isEveOn = interfaceDiv.querySelector('.status-toggle').checked;
-                const rules = [
-                    {name: 'a_particle', label: 'Alice Particle'}, {name: 'a_basis', label: 'Alice Basis'},
-                    {name: 'b_particle', label: 'Bob Particle'}, {name: 'b_basis', label: 'Bob Basis'}
-                ];
-                if (isEveOn) rules.push({name: 'e_attack', label: 'Eve Attack Selection'});
-                if (!validateSettings('qkd-interface', rules)) return;
-                const qkdSettings = {
-                    alice: {isOn: true, particle: interfaceDiv.querySelector('input[name="a_particle"]:checked').nextElementSibling.innerText, basis: interfaceDiv.querySelector('input[name="a_basis"]:checked').nextElementSibling.innerText},
-                    bob: {isOn: true, particle: interfaceDiv.querySelector('input[name="b_particle"]:checked').nextElementSibling.innerText, basis: interfaceDiv.querySelector('input[name="b_basis"]:checked').nextElementSibling.innerText},
-                    eve: {isOn: isEveOn, attack: isEveOn ? interfaceDiv.querySelector('input[name="e_attack"]:checked').nextElementSibling.innerText : "None"}
-                };
-                const subProtocol = document.getElementById('qkd-sub-select').value;
-                qkdSettings.subProtocol = subProtocol; 
-                localStorage.setItem('qkdSettings', JSON.stringify(qkdSettings));
-                if(subProtocol === 'bb84'){
-                    window.location.href = 'bb84_analysis.html';
-                } else if (subProtocol === 'b92'){
-                    window.location.href = 'b92_analysis.html';
-                }
-            });
+        // --- Lightbox 邏輯保持不變 ---
+        const lb = document.getElementById('lightbox');
+        const lbContent = document.getElementById('lightbox-content');
 
-            document.getElementById('qss-start-btn').addEventListener('click', () => {
-                const interfaceDiv = document.getElementById('qss-interface');
-                const isEveOn = interfaceDiv.querySelector('.theme-red .status-toggle').checked;
-                const charlieOpe = Array.from(interfaceDiv.querySelectorAll('input[name="qss_c_operator"]:checked')).map(cb => cb.value);
-                const rules = [
-                    {name: 'qss_b_particle', label: '1. Bob Particle'}, 
-                    {name: 'qss_b_basis', label: '1. Bob Basis'},
-                    {name: 'qss_c_particle', label: '2. Charlie Particle'},
-                    {name: 'qss_a_particle', label: '3. Alice Message Selection'}, 
-                    {name: 'qss_a_msg', label: '3. Alice Basis'},
-                    {name: 'op_msg_0', label: '3. Alice Message 0 Operator'}, 
-                    {name: 'op_msg_1', label: '3. Alice Message 1 Operator'}
-                ];
-                if (isEveOn) 
-                    rules.push({name: 'qss_e_attack', label: 'Eve Attack Selection'});
-                if (!validateSettings('qss-interface', rules)) return;
-                if (charlieOpe.length === 0) {
-                    alert("Configuration incomplete: 2. Charlie Basis is required!");
-                    return;
-                }
-                const qssSettings = {
-                    bob: {particle: interfaceDiv.querySelector('input[name="qss_b_particle"]:checked').nextElementSibling.innerText, basis: interfaceDiv.querySelector('input[name="qss_b_basis"]:checked').nextElementSibling.innerText},
-                    charlie: { particle: interfaceDiv.querySelector('input[name="qss_c_particle"]:checked').nextElementSibling.innerText, operator: charlieOpe},
-                    alice: { particle: interfaceDiv.querySelector('input[name="qss_a_particle"]:checked').nextElementSibling.innerText, msg: interfaceDiv.querySelector('input[name="qss_a_msg"]:checked').nextElementSibling.innerText, message0Op: interfaceDiv.querySelector('input[name="op_msg_0"]:checked').value, message1Op: interfaceDiv.querySelector('input[name="op_msg_1"]:checked').value },
-                    eve: {isOn: isEveOn, attack: isEveOn ? interfaceDiv.querySelector('input[name="qss_e_attack"]:checked').nextElementSibling.innerText : "None", location: isEveOn ? interfaceDiv.querySelector('select[name="qss_e_location"]').value : "None"}
-                };
-                const subProtocol = document.getElementById('qss-sub-select').value;
-                qssSettings.subProtocol = subProtocol;
-                localStorage.setItem('qssSettings', JSON.stringify(qssSettings));
-                if(subProtocol === 'zlm'){
-                    window.location.href = 'zlm_analysis.html';
-                }
-            });
+        function openLightbox() {
+            const mainImg = document.getElementById('scene-img');
+            const lbImg = document.getElementById('lb-img');
+            lbImg.src = mainImg.src;
+            lb.style.display = "flex";
+            resetZoom();
+        }
 
-            document.getElementById('qsdc-start-btn').addEventListener('click', () => {
-                const interfaceDiv = document.getElementById('qsdc-interface');
-                const isEveOn = interfaceDiv.querySelector('.theme-red .status-toggle').checked;
-                const rules = [
-                    {name: 'qsdc_a_particle', label: 'Alice Particle'}, 
-                    {name: 'qsdc_a_op', label: 'Alice Operation'},
-                    {name: 'qsdc_b_particle', label: 'Bob Particle'}, 
-                    {name: 'qsdc_b_basis', label: 'Bob Basis'}
-                ];
-                if (isEveOn) {
-                    rules.push({name: 'qsdc_e_attack', label: 'Eve Attack Selection'});
-                }
-                if (!validateSettings('qsdc-interface', rules)) return;
-                const qsdcSettings = {
-                    alice: {
-                        isOn: true, 
-                        particle: interfaceDiv.querySelector('input[name="qsdc_a_particle"]:checked').nextElementSibling.innerText, 
-                        operation: interfaceDiv.querySelector('input[name="qsdc_a_op"]:checked').value
-                    },
-                    bob: {
-                        isOn: true, 
-                        particle: interfaceDiv.querySelector('input[name="qsdc_b_particle"]:checked').nextElementSibling.innerText, 
-                        basis: interfaceDiv.querySelector('input[name="qsdc_b_basis"]:checked').nextElementSibling.innerText
-                    },
-                    eve: {
-                        isOn: isEveOn, 
-                        attack: isEveOn ? interfaceDiv.querySelector('input[name="qsdc_e_attack"]:checked').nextElementSibling.innerText : "None"
-                    }
-                };
-                const subProtocol = document.getElementById('qsdc-sub-select').value;
-                qsdcSettings.subProtocol = subProtocol;
-                localStorage.setItem('qsdcSettings', JSON.stringify(qsdcSettings));
-                if(subProtocol === 'dl04'){
-                    window.location.href = 'dl04_analysis.html';
-                } else if (subProtocol === 'pingpong'){
-                    window.location.href = 'pingpong_analysis.html';
-                }
-            });
+        function closeLightbox() { lb.style.display = "none"; }
+        function resetZoom() { scale = 1; posX = 0; posY = 0; updateImgTransform(true); }
+
+        function updateImgTransform(withTransition = false) {
+            if (scale <= 1) { posX = 0; posY = 0; lb.style.cursor = 'default'; } 
+            else { lb.style.cursor = 'grab'; }
+            lbContent.style.transition = withTransition ? "transform 0.3s ease" : "none";
+            lbContent.style.transform = `translate(${posX}px, ${posY}px) scale(${scale})`;
+        }
+
+        lb.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            const delta = e.deltaY > 0 ? -0.15 : 0.15;
+            const oldScale = scale;
+            scale = Math.min(Math.max(1, scale + delta), 3);
+            updateImgTransform(scale < oldScale && scale === 1);
         });
+
+        lb.addEventListener('mousedown', (e) => {
+            if (e.target.id === 'lightbox-close' || scale <= 1) return;
+            isDragging = true;
+            lb.style.cursor = 'grabbing';
+            startX = e.clientX - posX;
+            startY = e.clientY - posY;
+            lbContent.style.transition = "none";
+        });
+
+        window.addEventListener('mousemove', (e) => {
+            if (!isDragging || lb.style.display !== "flex") return;
+            posX = e.clientX - startX;
+            posY = e.clientY - startY;
+            updateImgTransform();
+        });
+
+        window.addEventListener('mouseup', () => { isDragging = false; if (scale > 1) lb.style.cursor = 'grab'; });
+
+        // 外部滾輪切換 Protocol 並同步點點
+        window.addEventListener('wheel', (e) => {
+            if (lb.style.display === "flex") return;
+            if (isThrottled) return;
+            isThrottled = true;
+            changeProtocol(e.deltaY > 0 ? 1 : -1);
+            setTimeout(() => { isThrottled = false; }, 300);
+        });
+
+        updateDisplay();
     </script>
 </body>
 </html>
