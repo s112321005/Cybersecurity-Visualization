@@ -21,7 +21,29 @@
         .header-title { font-size: 26px; font-weight: 900; color: var(--text-dark); margin: 0; display: flex; align-items: center; gap: 15px; }
         .category-full-desc { font-size: 40px; font-weight: 800; color: var(--text-dark); margin-left: 10px; }
         
-        .scene-image-container { flex-grow: 1; min-height: 0; border-radius: 12px; background-color: #f8fafc; display: flex; flex-direction: column; justify-content: center; align-items: center; margin-bottom: 25px; position: relative; overflow: hidden; cursor: zoom-in; }
+        /* 右上角 General Scene 按鈕 */
+        .btn-general {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            background-color: white;
+            border: 2px solid var(--primary-blue);
+            color: var(--primary-blue);
+            font-weight: bold;
+            font-size: 20px;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.2s;
+            z-index: 50;
+        }
+        .btn-general:hover { background-color: var(--primary-blue); color: white; }
+
+        .scene-image-container { flex-grow: 1; min-height: 0; border-radius: 12px; background-color: white; display: flex; flex-direction: column; justify-content: center; align-items: center; margin-bottom: 25px; position: relative; overflow: hidden; cursor: zoom-in; }
         #bg-png { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 1; pointer-events: none; }
         #scene-img { max-width: 95%; max-height: 95%; object-fit: contain; position: relative; z-index: 2; pointer-events: none; }
         
@@ -42,34 +64,52 @@
         
         .scroll-hint { position: absolute; right: 65px; top: 50%; transform: translateY(-50%); color: #aaa; font-size: 13px; font-style: italic; writing-mode: vertical-rl; }
         
-        /* Lightbox */
+        /* --- General 場景彈出視窗 (限制在 main window 內部) --- */
+        .general-popup {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: var(--border-radius);
+            z-index: 500; display: none; justify-content: center; align-items: center;
+        }
+        .general-popup-content {
+            position: relative; width: 90%; height: 85%;
+            background: white; border: 3px solid var(--primary-blue);
+            border-radius: 12px; display: flex; justify-content: center; align-items: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2); overflow: hidden;
+        }
+        #general-scene-img { max-width: 95%; max-height: 95%; object-fit: contain; pointer-events: none; }
+        .general-popup-close {
+            position: absolute; top: 15px; right: 20px; width: 40px; height: 40px;
+            background-color: white; border: 3px solid black; color: black;
+            font-size: 28px; display: flex; justify-content: center; align-items: center;
+            cursor: pointer; font-weight: bold; border-radius: 8px; line-height: 0; transition: transform 0.1s;
+        }
+        .general-popup-close:hover { background-color: #eee; transform: scale(1.05); }
+
+        /* Lightbox (全螢幕) */
         #lightbox { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 1000; display: none; justify-content: center; align-items: center; overflow: hidden; }
         #lightbox-content { position: relative; width: 85vw; height: 85vh; display: flex; justify-content: center; align-items: center; transform-origin: center; transition: transform 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94); }
         #lb-bg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 1; pointer-events: none; }
         #lb-img { max-width: 90%; max-height: 90%; object-fit: contain; position: relative; z-index: 2; pointer-events: none; }
         
-        /* 帶黑框的關閉按鈕 */
         #lightbox-close { 
             position: absolute; top: 30px; right: 40px; 
-            width: 45px; height: 45px;
-            background-color: white; 
-            border: 3px solid black; 
-            color: black; 
-            font-size: 32px; 
+            width: 45px; height: 45px; background-color: white; 
+            border: 3px solid black; color: black; font-size: 32px; 
             display: flex; justify-content: center; align-items: center;
             cursor: pointer; z-index: 1001; font-weight: bold; user-select: none;
-            border-radius: 8px;
-            line-height: 0;
-            transition: transform 0.1s;
+            border-radius: 8px; line-height: 0; transition: transform 0.1s;
         }
         #lightbox-close:hover { background-color: #eee; transform: scale(1.05); }
-
         #lightbox-hint { position: absolute; bottom: 20px; color: white; background: rgba(0,0,40,0.6); padding: 8px 20px; border-radius: 20px; font-size: 14px; pointer-events: none; z-index: 1001; text-align: center; }
     </style>
 </head>
 <body oncontextmenu="return false;">
     <div class="page-overlay"></div>
     <div class="selection-window" id="mainWindow">
+        
+        <button class="btn-general" onclick="showGeneralScene()">？</button>
+
         <div class="header-group">
             <div class="header-title">
                 <a href="QuantumCybersecurityEducationPlatform.html" class="btn-back">◀&#xFE0E;</a>
@@ -93,6 +133,13 @@
 
         <div class="scroll-hint">Scroll to Switch Protocols</div>
         <div class="pagination-dots" id="dotContainer"></div>
+
+        <div id="general-popup" class="general-popup">
+            <div class="general-popup-content">
+                <div class="general-popup-close" onclick="closeGeneralScene()">&times;</div>
+                <img id="general-scene-img" src="" alt="General Scene">
+            </div>
+        </div>
     </div>
 
     <div id="lightbox" ondragstart="return false;">
@@ -113,6 +160,9 @@
         
         let modeIdx = 0, protoIdx = 0, isThrottled = false;
         let scale = 1, posX = 0, posY = 0, isDragging = false, startX, startY;
+        
+        // 紀錄已瀏覽過的分類，供 General Scene 判斷是否為第一次切換
+        const visitedModes = new Set();
 
         function updateDisplay() {
             const currentMode = quantumData[modeIdx];
@@ -128,6 +178,12 @@
             img.src = `pictures/scene-${currentMode.mode}-${currentProto.name}.png`;
             
             updateDots();
+
+            // 判斷是否為第一次切換到此分類
+            if (!visitedModes.has(currentMode.mode)) {
+                visitedModes.add(currentMode.mode);
+                showGeneralScene();
+            }
         }
 
         function updateDots() {
@@ -140,7 +196,6 @@
                 const dot = document.createElement('div');
                 let className = 'dot';
                 if (i === protoIdx) className += ' active';
-                // 超過 5 個時，離目前索引超過 2 的點變灰
                 if (total > 5 && Math.abs(i - protoIdx) > 2) className += ' out-of-range';
                 
                 dot.className = className;
@@ -159,6 +214,18 @@
             const currentMode = quantumData[modeIdx];
             protoIdx = (protoIdx + dir + currentMode.protocols.length) % currentMode.protocols.length;
             updateDisplay();
+        }
+
+        // --- General Scene 彈出邏輯 ---
+        function showGeneralScene() {
+            const currentModeName = quantumData[modeIdx].mode; // QKD, QSS, or QSDC
+            // 設定對應的 General 圖片名稱
+            document.getElementById('general-scene-img').src = `pictures/${currentModeName}general.png`;
+            document.getElementById('general-popup').style.display = 'flex';
+        }
+
+        function closeGeneralScene() {
+            document.getElementById('general-popup').style.display = 'none';
         }
 
         // --- Lightbox 邏輯 ---
@@ -210,7 +277,8 @@
 
         // 全局滾輪切換 Protocol
         window.addEventListener('wheel', (e) => {
-            if (lb.style.display === "flex") return;
+            // 如果 Lightbox 或 General 視窗開著，暫停滾輪切換 Protocol
+            if (lb.style.display === "flex" || document.getElementById('general-popup').style.display === "flex") return;
             if (isThrottled) return;
             isThrottled = true;
             changeProtocol(e.deltaY > 0 ? 1 : -1);
