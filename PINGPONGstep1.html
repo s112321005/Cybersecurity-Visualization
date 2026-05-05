@@ -21,7 +21,6 @@
             --bg-color: #f8f9fa;
             --photon-yellow: #ffeb3b; 
             --match-green: #28a745;
-            --control-color: #28a745;
         }
 
         body {
@@ -61,7 +60,7 @@
         .nav-btn:hover:not(:disabled) { background: var(--primary-blue); color: white; }
         .nav-btn:disabled { border-color: #ccc; color: #ccc; cursor: not-allowed; }
 
-        /* 主卡片 - 增加高度到 750px */
+        /* 主卡片 */
         .main-card {
             width: min(1000px, 95vw); height: 750px; border: 3px solid var(--primary-blue); border-radius: 35px;
             position: relative; background: white; box-sizing: border-box; overflow: hidden;
@@ -122,10 +121,10 @@
             white-space: nowrap;
         }
 
-        /* Alice 選擇區域 */
+        /* Alice 選擇區域 (調整 top: 155px 稍微往上移一點) */
         .alice-interactive { 
-            position: absolute; top: 50%; transform: translateY(-50%); 
-            display: flex; flex-direction: column; align-items: center; gap: 15px; 
+            position: absolute; top: 100px; transform: translateY(-50%); 
+            display: flex; flex-direction: column; align-items: center; gap: 20px; 
             transition: opacity 0.3s ease; width: 100%; opacity: 0; pointer-events: none; 
         }
         .alice-interactive.show { opacity: 1; pointer-events: auto; }
@@ -133,30 +132,69 @@
         .alice-choices { display: flex; gap: 20px; }
         
         .mode-btn {
-            display: flex; flex-direction: column; align-items: center; cursor: pointer;
-            padding: 15px 20px; border-radius: 15px; border: 2px solid transparent; transition: all 0.2s; background: white;
+            display: flex; flex-direction: column; align-items: center;
+            padding: 15px 20px; border-radius: 15px; border: 2px solid #ddd; background: white;
             box-shadow: 0 4px 10px rgba(0,0,0,0.05); 
-            min-width: 150px; 
+            min-width: 150px; transition: all 0.2s ease-in-out;
+            opacity: 0.7; /* 預設較暗 */
         }
-        .mode-btn:hover { background-color: #f4f9ff; border-color: var(--alice-color); transform: translateY(-5px); }
+        
         .mode-title { 
             font-size: 1.2rem; 
             font-weight: bold; 
             margin-bottom: 5px; 
             white-space: nowrap; 
+            color: #777;
+            transition: color 0.2s;
         }
-        .mode-sub { font-size: 0.95rem; color: #666; white-space: nowrap; }
+        .mode-sub { font-size: 0.95rem; color: #888; white-space: nowrap; }
+
+        /* 亮燈狀態：統一使用 #0049B0 */
+        .mode-btn.lit {
+            border-color: var(--alice-color);
+            background-color: #f4f9ff;
+            opacity: 1;
+            transform: scale(1.05);
+            box-shadow: 0 8px 20px rgba(0, 73, 176, 0.2);
+        }
+        .mode-btn.lit .mode-title {
+            color: var(--alice-color);
+        }
+
+        /* 骰子樣式 */
+        .dice-wrapper {
+            display: flex; flex-direction: column; align-items: center; gap: 8px; cursor: pointer;
+        }
+        .dice {
+            width: 75px; height: 75px; background: white;
+            border: 3px solid var(--primary-blue); border-radius: 18px;
+            display: flex; justify-content: center; align-items: center;
+            font-size: 3rem; box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: all 0.1s; user-select: none;
+        }
+        .dice-hint { font-weight: bold; color: var(--primary-blue); font-size: 1rem; transition: opacity 0.2s;}
 
         .pulse { animation: pulse-anim 2s infinite; }
         @keyframes pulse-anim {
             0% { box-shadow: 0 0 0 0 rgba(0, 73, 176, 0.4); } 
-            70% { box-shadow: 0 0 0 10px rgba(0, 73, 176, 0); }
+            70% { box-shadow: 0 0 0 12px rgba(0, 73, 176, 0); }
             100% { box-shadow: 0 0 0 0 rgba(0, 73, 176, 0); }
         }
 
-        /* 選擇後的顯示 */
+        .rolling-animation {
+            animation: roll-dice-anim 0.4s infinite linear;
+        }
+        @keyframes roll-dice-anim {
+            0% { transform: rotate(0deg) scale(1); }
+            25% { transform: rotate(15deg) scale(1.1); }
+            50% { transform: rotate(0deg) scale(1); }
+            75% { transform: rotate(-15deg) scale(0.9); }
+            100% { transform: rotate(0deg) scale(1); }
+        }
+
+        /* 選擇後的顯示 (維持 top: 140px 不動) */
         .alice-active-mode {
-            position: absolute; top: 50%; transform: translateY(-50%);
+            position: absolute; top: 40px; transform: translateY(-50%);
             display: none; flex-direction: column; align-items: center; width: 100%;
             animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; z-index: 2; 
         }
@@ -263,20 +301,25 @@
 
             <div class="alice-interactive" id="alice-interactive">
                 <div class="alice-choices">
-                    <div class="mode-btn pulse" onclick="selectMode('control')">
-                        <div class="mode-title" style="color: var(--control-color);">Control Mode</div>
+                    <div class="mode-btn" id="box-control">
+                        <div class="mode-title">Control Mode</div>
                         <div class="mode-sub">Security Check</div>
                     </div>
-                    <div class="mode-btn pulse" onclick="selectMode('message')">
-                        <div class="mode-title" style="color: var(--alice-color);">Message Mode</div>
+                    <div class="mode-btn" id="box-message">
+                        <div class="mode-title">Message Mode</div>
                         <div class="mode-sub">Data Encoding</div>
                     </div>
+                </div>
+                
+                <div class="dice-wrapper pulse" id="dice-container" onclick="rollDice()">
+                    <div class="dice" id="the-dice">🎲</div>
+                    <div class="dice-hint" id="dice-hint">Click to Roll!</div>
                 </div>
             </div>
 
             <div class="alice-active-mode" id="alice-active-mode">
-                <div class="mode-btn" id="alice-mode-display" style="cursor: default; transform: none; background: #f4f9ff;">
-                    </div>
+                <div class="mode-btn lit" id="alice-mode-display" style="cursor: default; transform: none; min-width: 180px;">
+                </div>
             </div>
         </div>
 
@@ -287,20 +330,20 @@
     <div class="explanation-box" id="explain-box">
         <div class="explain-header">
             <p class="explain-title" id="explain-title">Mode Selected</p>
-            <button class="retry-btn" onclick="resetSelection()">↺ Change Mode</button>
+            <button class="retry-btn" onclick="resetSelection()">↺ Roll Again</button>
         </div>
         <p class="explain-desc" id="explain-desc">Alice has received P1.</p>
         
         <div class="calc-process-container" id="calc-process-container">
-            </div>
+        </div>
     </div>
 
 </div>
 
 <script>
     let selectedMode = "";
+    let flashInterval;
 
-    // 畫面載入時，發射光子動畫
     document.addEventListener("DOMContentLoaded", () => {
         setTimeout(animatePhotonTransfer, 800);
     });
@@ -311,7 +354,6 @@
         const landingSpot = document.getElementById('photon-landing-spot');
         const conn1 = document.getElementById('conn-1');
         
-        // 顯示連線
         conn1.classList.add("active");
 
         const particle = document.createElement('div');
@@ -332,24 +374,72 @@
         
         stage.appendChild(particle);
         
-        // 播放動畫
         requestAnimationFrame(() => { 
             particle.style.animation = 'shoot-to-alice 2.5s forwards ease-in-out'; 
         });
         
-        // 動畫結束後，顯示 Alice 的選項
         setTimeout(() => {
             particle.remove();
-            document.getElementById("alice-title").innerText = "Alice Receives P1! Choose Mode:";
+            document.getElementById("alice-title").innerText = "Alice Receives P1!";
             document.getElementById("alice-interactive").classList.add("show");
-            document.getElementById("hint-text").innerText = "Help Alice choose her next action.";
+            document.getElementById("hint-text").innerText = "Roll the dice to randomly select a mode.";
         }, 2500);
+    }
+
+    function rollDice() {
+        const diceWrapper = document.getElementById('dice-container');
+        const dice = document.getElementById('the-dice');
+        const diceHint = document.getElementById('dice-hint');
+        const boxControl = document.getElementById('box-control');
+        const boxMessage = document.getElementById('box-message');
+        const hintText = document.getElementById('hint-text');
+
+        diceWrapper.onclick = null;
+        diceWrapper.classList.remove('pulse');
+        dice.classList.add('rolling-animation');
+        diceHint.innerText = "Deciding...";
+        hintText.innerText = "Quantum State Collapsing...";
+
+        let isControlLight = true;
+        flashInterval = setInterval(() => {
+            if (isControlLight) {
+                boxControl.classList.add('lit');
+                boxMessage.classList.remove('lit');
+            } else {
+                boxControl.classList.remove('lit');
+                boxMessage.classList.add('lit');
+            }
+            isControlLight = !isControlLight;
+        }, 150);
+
+        setTimeout(() => {
+            clearInterval(flashInterval);
+            dice.classList.remove('rolling-animation');
+            
+            const isControl = Math.random() < 0.5;
+            const chosenMode = isControl ? 'control' : 'message';
+            
+            if (isControl) {
+                boxControl.classList.add('lit');
+                boxMessage.classList.remove('lit');
+            } else {
+                boxControl.classList.remove('lit');
+                boxMessage.classList.add('lit');
+            }
+            
+            diceHint.innerText = "Selected!";
+            diceHint.style.color = "var(--alice-color)";
+
+            setTimeout(() => {
+                selectMode(chosenMode);
+            }, 1200);
+
+        }, 1500);
     }
 
     function selectMode(mode) {
         selectedMode = mode;
         
-        // 隱藏互動區
         document.getElementById("alice-interactive").classList.remove("show");
         document.getElementById("hint-text").style.display = "none"; 
         document.getElementById("alice-title").innerText = "Active Mode"; 
@@ -362,35 +452,35 @@
         const explainTitle = document.getElementById("explain-title");
         const explainBox = document.getElementById("explain-box");
 
+        explainTitle.style.color = "var(--alice-color)";
+        explainBox.style.borderLeftColor = "var(--alice-color)";
+        modeDisplay.style.borderColor = "var(--alice-color)";
+
         if(mode === 'control') {
-            modeDisplay.innerHTML = `<div class="mode-title" style="color: var(--control-color);">Control Mode</div>`;
-            modeDisplay.style.borderColor = "var(--control-color)";
-            explainTitle.style.color = "var(--control-color)";
-            explainBox.style.borderLeftColor = "var(--control-color)";
+            modeDisplay.innerHTML = `
+                <div class="mode-title" style="color: var(--alice-color);">Control Mode</div>
+                <div class="mode-sub">Security Check</div>
+            `;
             
-            // 簡化後的 Control Mode 文字
             calcContainer.innerHTML = `
                 <div><b>Action:</b> Alice measures Particle 1 to detect eavesdropping.</div>
                 <div><b>Result:</b> Alice and Bob publicly compare results to check for interference.</div>
             `;
         } else {
-            modeDisplay.innerHTML = `<div class="mode-title" style="color: var(--alice-color);">Message Mode</div>`;
-            modeDisplay.style.borderColor = "var(--alice-color)";
-            explainTitle.style.color = "var(--alice-color)";
-            explainBox.style.borderLeftColor = "var(--alice-color)";
+            modeDisplay.innerHTML = `
+                <div class="mode-title" style="color: var(--alice-color);">Message Mode</div>
+                <div class="mode-sub">Data Encoding</div>
+            `;
             
-            // 簡化後的 Message Mode 文字
             calcContainer.innerHTML = `
                 <div><b>Action:</b> Alice selects a message (0 or 1) and applies the corresponding operation to Particle 1.</div>
                 <div><b>Result:</b> She sends the modified Particle 1 back to Bob via the quantum channel.</div>
             `;
         }
 
-        // 解鎖 Next 按鈕並顯示解說面板
         document.getElementById('next-btn').disabled = false;
         explainBox.classList.add("show");
         
-        // 儲存至 LocalStorage
         localStorage.setItem('pingpongMode', selectedMode);
     }
 
@@ -400,15 +490,28 @@
         document.getElementById('next-btn').disabled = true;
         
         setTimeout(() => {
+            if(flashInterval) clearInterval(flashInterval);
+            document.getElementById('box-control').classList.remove('lit');
+            document.getElementById('box-message').classList.remove('lit');
+            
+            const diceWrapper = document.getElementById('dice-container');
+            diceWrapper.onclick = rollDice;
+            diceWrapper.classList.add('pulse');
+            
+            const diceHint = document.getElementById('dice-hint');
+            diceHint.innerText = "Click to Roll!";
+            diceHint.style.color = "var(--primary-blue)";
+
             document.getElementById("alice-interactive").classList.add("show");
             document.getElementById("hint-text").style.display = "block";
-            document.getElementById("alice-title").innerText = "Alice Receives P1! Choose Mode:";
+            document.getElementById("hint-text").innerText = "Roll the dice to randomly select a mode.";
+            document.getElementById("alice-title").innerText = "Alice Receives P1!";
         }, 300);
     }
 
     function nextStep() {
         if (!selectedMode) return;
-        window.location.href = 'PINGPONGstep2.html';
+        window.location.href = 'PINGPONG2.html';
     }
 </script>
 </body>
