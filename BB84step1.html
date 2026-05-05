@@ -117,9 +117,10 @@
         nextBtn.classList.add('ready');
     }
     function nextStep() {
-        if (!selectedBasis) return;
+        if (!selectedBasis) return;        
         localStorage.removeItem('qssStepData'); 
-        localStorage.removeItem('qssStep3Data'); // 順便預防性清除 Step 3 的暫存
+        localStorage.removeItem('qssStep3Data'); 
+        localStorage.removeItem('qkdStepData'); 
         window.location.href = `BB84step2.html?aliceBasis=${selectedBasis}&aliceMsg=${selectedMsg}`;
     }
 </script>
