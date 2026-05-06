@@ -5,613 +5,238 @@
     <base href="https://s112321005.github.io/Cybersecurity-Visualization/">
     <title>Quantum Key Distribution : BB84 - Step 4</title>
     <style>
-        :root {
-            --primary-blue: #549FD0;
-            --dark-text: #333333;
-            --bg-color: #f8f9fa;
-            --alice-blue: #004ba0;
-            --bob-blue: #4c80c5;
-            --match-green: #28a745;
-            --mismatch-red: #dc3545;
-            --soft-blue: #eef5ff;
-        }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes drawLine { from { transform: scaleX(0); } to { transform: scaleX(1); } }
-        @keyframes pulseMatch { 0%, 100% { box-shadow: 0 0 0 0 rgba(40,167,69,.24); } 50% { box-shadow: 0 0 0 12px rgba(40,167,69,0); } }
-        @keyframes keyGlow { 0%, 100% { transform: translateY(0); box-shadow: 0 8px 20px rgba(0,74,173,.18); } 50% { transform: translateY(-4px); box-shadow: 0 14px 28px rgba(0,74,173,.28); } }
-        body {
-            font-family: 'Segoe UI', sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 40px 20px;
-            background-color: var(--bg-color);
-            margin: 0;
-            overflow-y: scroll;
-            color: var(--dark-text);
-        }
-        .header {
-            width: min(1000px, 95vw);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 25px;
-            animation: fadeIn .8s ease-out forwards;
-        }
-        .header-left { display: flex; align-items: center; gap: 15px; }
-        .btn-back {
-            width: 40px;
-            height: 40px;
-            background-color: var(--primary-blue);
-            color: white;
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            text-decoration: none;
-            font-size: 1rem;
-            transition: transform .2s;
-            cursor: pointer;
-            border: none;
-            box-shadow: 0 2px 5px rgba(0,0,0,.1);
-        }
-        .btn-back:hover { transform: scale(1.1); }
-        .title-pill {
-            border: 2px solid var(--primary-blue);
-            padding: 8px 20px;
-            border-radius: 30px;
-            font-weight: bold;
-            background: white;
-            color: var(--dark-text);
-        }
-        .header-center {
-            flex-grow: 1;
-            margin-left: 20px;
-            font-weight: bold;
-            font-size: 1.2rem;
-            color: var(--dark-text);
-            text-align: center;
-        }
-        .header-right { display: flex; gap: 15px; }
-        .nav-btn {
-            border: 2px solid var(--primary-blue);
-            background: white;
-            color: var(--dark-text);
-            padding: 10px 25px;
-            border-radius: 30px;
-            font-weight: bold;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: all .2s;
-        }
-        .nav-btn:hover { background: var(--primary-blue); color: white; }
-        .main-card {
-            width: min(1000px, 95vw);
-            min-height: 650px;
-            border: 3px solid var(--primary-blue);
-            border-radius: 35px;
-            position: relative;
-            background: white;
-            box-sizing: border-box;
-            overflow: hidden;
-            padding: 28px 36px 34px;
-            animation: fadeIn .8s ease-out forwards;
-        }
-        .stage-title {
-            margin: 0;
-            color: var(--primary-blue);
-            font-size: 1.45rem;
-            text-align: center;
-            font-weight: 900;
-        }
-        .stage-subtitle {
-            margin: 7px 0 22px;
-            color: #666;
-            text-align: center;
-            font-weight: 700;
-        }
-        .compare-scene {
-            display: grid;
-            grid-template-columns: 165px 1fr 165px;
-            align-items: center;
-            gap: 24px;
-            min-height: 145px;
-        }
-        .party {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 8px;
-            font-weight: 900;
-        }
-        .party img {
-            width: 120px;
-            height: auto;
-            filter: drop-shadow(0 5px 8px rgba(0,0,0,.12));
-        }
-        .party.alice { color: var(--alice-blue); }
-        .party.bob { color: var(--bob-blue); }
-        .public-channel {
-            position: relative;
-            height: 84px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .public-channel::before {
-            content: "";
-            position: absolute;
-            left: 0;
-            right: 0;
-            top: 50%;
-            height: 4px;
-            background: var(--primary-blue);
-            transform-origin: left center;
-            transform: scaleX(0);
-            animation: drawLine 1s ease-out .6s forwards;
-        }
-        .basis-bubble {
-            position: relative;
-            z-index: 2;
-            background: white;
-            border: 3px solid var(--primary-blue);
-            border-radius: 24px;
-            padding: 12px 22px;
-            color: var(--primary-blue);
-            font-weight: 900;
-            box-shadow: 0 8px 20px rgba(0,74,173,.15);
-            opacity: 0;
-            animation: slideUp .6s ease-out 1.1s forwards;
-        }
-        .sift-table {
-            display: grid;
-            grid-template-columns: repeat(6, 1fr);
-            gap: 12px;
-            margin-top: 18px;
-        }
-        .bit-card {
-            position: relative;
-            min-height: 176px;
-            border: 2px solid #d7e5ff;
-            border-radius: 18px;
-            background: #fbfdff;
-            padding: 12px 10px;
-            box-sizing: border-box;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 8px;
-            opacity: 0;
-            transform: translateY(18px);
-            animation: slideUp .5s ease-out forwards;
-        }
-        .bit-card:nth-child(1) { animation-delay: 1.7s; }
-        .bit-card:nth-child(2) { animation-delay: 1.9s; }
-        .bit-card:nth-child(3) { animation-delay: 2.1s; }
-        .bit-card:nth-child(4) { animation-delay: 2.3s; }
-        .bit-card:nth-child(5) { animation-delay: 2.5s; }
-        .bit-card:nth-child(6) { animation-delay: 2.7s; }
-        .bit-index {
-            width: 28px;
-            height: 28px;
-            border-radius: 50%;
-            background: var(--soft-blue);
-            color: var(--primary-blue);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 900;
-        }
-        .basis-row {
-            width: 100%;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: .9rem;
-            font-weight: 800;
-        }
-        .basis {
-            min-width: 34px;
-            padding: 4px 8px;
-            border-radius: 14px;
-            text-align: center;
-            color: white;
-            background: var(--primary-blue);
-        }
-        .bit-value {
-            font-size: 2rem;
-            font-weight: 900;
-            color: var(--primary-blue);
-            line-height: 1;
-        }
-        .status {
-            margin-top: auto;
-            padding: 6px 11px;
-            border-radius: 16px;
-            font-weight: 900;
-            font-size: .85rem;
-            opacity: 0;
-            animation: slideUp .5s ease-out 3.4s forwards;
-        }
-        .bit-card.keep {
-            animation-name: slideUp, pulseMatch;
-            animation-duration: .5s, 1.8s;
-            animation-delay: var(--delay), 3.4s;
-            animation-fill-mode: forwards, none;
-            animation-iteration-count: 1, 2;
-        }
-        .bit-card.keep .status { background: #e9f8ee; color: var(--match-green); border: 2px solid #bfe8ca; }
-        .bit-card.drop {
-            animation-name: slideUp, fadeDiscard;
-            animation-duration: .5s, .6s;
-            animation-delay: var(--delay), 3.4s;
-            animation-fill-mode: forwards, forwards;
-        }
-        .bit-card.drop .status { background: #fff1f1; color: var(--mismatch-red); border: 2px solid #f5c2c7; }
-        @keyframes fadeDiscard {
-            to {
-                background: #f2f2f2;
-                border-color: #d8d8d8;
-                color: #9a9a9a;
-                filter: grayscale(1);
-                opacity: .48;
-            }
-        }
-        .key-scene {
-            margin-top: 26px;
-            display: block;
-        }
-        .shared-key-box {
-            border-radius: 24px;
-            background: linear-gradient(180deg, #f7fbff 0%, #edf6ff 100%);
-            border: 2px solid #c6ddff;
-            padding: 20px;
-            box-sizing: border-box;
-            opacity: 0;
-            transform: translateY(18px);
-            animation: slideUp .65s ease-out 4.5s forwards;
-        }
-        .key-label {
-            margin: 0 0 12px;
-            color: var(--primary-blue);
-            font-weight: 900;
-            font-size: 1.05rem;
-        }
-        .key-bits {
-            display: flex;
-            gap: 12px;
-            flex-wrap: wrap;
-        }
-        .key-bit {
-            width: 58px;
-            height: 58px;
-            border-radius: 18px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: white;
-            border: 3px solid var(--primary-blue);
-            color: var(--primary-blue);
-            font-size: 1.7rem;
-            font-weight: 900;
-            animation: keyGlow 1.8s ease-in-out 5.2s infinite;
-        }
-        .final-message {
-            margin: 16px 0 0;
-            font-weight: 900;
-            color: var(--match-green);
-            font-size: 1.2rem;
-        }
-        .bb84-image-dock {
-            position: fixed;
-            right: 18px;
-            top: 0;
-            width: 330px;
-            height: 100vh;
-            z-index: 900;
-            pointer-events: none;
-            display: flex;
-            justify-content: center;
-            overflow: visible;
-            isolation: isolate;
-        }
-        .bb84-image-viewport {
-            position: relative;
-            width: 285px;
-            height: 100vh;
-            background: #ffffff;
-            box-sizing: border-box;
-            box-shadow: 0 12px 26px rgba(0,0,0,.12);
-            overflow: visible;
-            z-index: 1;
-        }
-        .bb84-image-viewport::before,
-        .bb84-image-viewport::after {
-            content: "";
-            position: absolute;
-            top: 0;
-            width: 14px;
-            height: 100vh;
-            background: #d9d9d9;
-            z-index: 1;
-            pointer-events: none;
-        }
-        .bb84-image-viewport::before { left: 0; }
-        .bb84-image-viewport::after { right: 0; }
-        .bb84-image-window {
-            position: relative;
-            width: 393px;
-            height: 100vh;
-            margin-left: -54px;
-            overflow: hidden;
-            z-index: 10;
-        }
-        .bb84-image-list {
-            position: relative;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 34px;
-            padding: 24px 0 34px;
-            box-sizing: border-box;
-            width: 393px;
-            transform: translateY(0);
-            transition: transform .45s ease;
-            z-index: 20;
-        }
-        .bb84-image-card {
-            position: relative;
-            width: 232px;
-            min-height: 245px;
-            padding: 12px;
-            box-sizing: border-box;
-            background: #ffffff;
-            border: 0 solid transparent;
-            border-radius: 30px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex: 0 0 auto;
-            transition: filter .25s ease, opacity .25s ease, transform .25s ease, width .25s ease, min-height .25s ease, box-shadow .25s ease;
-            z-index: 20;
-        }
-        .bb84-image-card:not(.is-current) {
-            filter: grayscale(1) saturate(0);
-            opacity: .42;
-            transform: scale(.9);
-        }
-        .bb84-image-card.is-current {
-            width: 340px;
-            min-height: 390px;
-            padding: 16px;
-            border: 11px solid #549FD0;
-            border-radius: 36px;
-            box-shadow: 0 12px 28px rgba(0,84,189,.28);
-            filter: none;
-            opacity: 1;
-            transform: scale(1);
-            margin: 8px 0;
-            z-index: 100;
-        }
-        .bb84-image-card img {
-            position: relative;
-            z-index: 101;
-            width: 100%;
-            height: 100%;
-            max-width: 208px;
-            max-height: 276px;
-            object-fit: contain;
-            display: block;
-        }
-        .bb84-image-card.is-current img {
-            max-width: 305px;
-            max-height: 350px;
-        }
-        @media (min-width: 1180px) {
-            body { padding-right: 350px !important; }
-        }
-        @media (max-width: 1179px) {
-            .bb84-image-dock {
-                position: relative;
-                right: auto;
-                top: auto;
-                width: min(94vw, 760px);
-                height: 285px;
-                margin: 18px auto 10px;
-                overflow: visible;
-            }
-            .bb84-image-viewport {
-                width: 100%;
-                height: 285px;
-            }
-            .bb84-image-viewport::before,
-            .bb84-image-viewport::after {
-                width: 10px;
-                height: 285px;
-            }
-            .bb84-image-window {
-                width: 100%;
-                height: 285px;
-                margin-left: 0;
-                overflow: hidden;
-            }
-            .bb84-image-list {
-                flex-direction: row;
-                align-items: center;
-                gap: 22px;
-                width: max-content;
-                height: 285px;
-                padding: 0 18px;
-            }
-            .bb84-image-card { width: 220px; min-height: 226px; }
-            .bb84-image-card.is-current {
-                width: 305px;
-                min-height: 258px;
-                margin: 0 10px;
-                z-index: 100;
-            }
-            .bb84-image-card.is-current img { max-width: 270px; max-height: 230px; }
-            .compare-scene { grid-template-columns: 120px 1fr 120px; gap: 10px; }
-            .sift-table { grid-template-columns: repeat(3, 1fr); }
+        :root{--primary-blue:#549FD0;--dark-text:#333333;--bg-color:#f8f9fa;--bg-gradient:linear-gradient(135deg,#E0F2FE 0%,#F5F3FF 50%,#ECFDF5 100%);--alice-blue:#004ba0;--bob-blue:#4c80c5;--match-green:#28a745;--mismatch-red:#dc3545;--soft-blue:#eef5ff;}
+        @keyframes fadeIn{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+        @keyframes slideUp{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
+        @keyframes drawLine{from{transform:scaleX(0);}to{transform:scaleX(1);}}
+        @keyframes pulseMatch{0%,100%{box-shadow:0 0 0 0 rgba(40,167,69,.24);}50%{box-shadow:0 0 0 12px rgba(40,167,69,0);}}
+        @keyframes keyGlow{0%,100%{transform:translateY(0);box-shadow:0 8px 20px rgba(0,74,173,.18);}50%{transform:translateY(-4px);box-shadow:0 14px 28px rgba(0,74,173,.28);}}
+        body{font-family:'Segoe UI',sans-serif;display:flex;flex-direction:column;align-items:center;padding:40px 20px;background:var(--bg-gradient);margin:0;overflow-y:scroll;color:var(--dark-text);}
+        .header{width:min(1000px,95vw);display:flex;align-items:center;justify-content:space-between;margin-bottom:25px;animation:fadeIn .8s ease-out forwards;}
+        .header-left{display:flex;align-items:center;gap:15px;}
+        .btn-back{width:40px;height:40px;background-color:var(--primary-blue);color:white;border-radius:50%;display:flex;justify-content:center;align-items:center;text-decoration:none;font-size:1rem;transition:transform .2s;cursor:pointer;border:none;box-shadow:0 2px 5px rgba(0,0,0,.1);}
+        .btn-back:hover{transform:scale(1.1);}
+        .title-pill{border:2px solid var(--primary-blue);padding:8px 20px;border-radius:30px;font-weight:bold;background:white;color:var(--dark-text);}
+        .header-center{flex-grow:1;margin-left:20px;font-weight:bold;font-size:1.2rem;color:var(--dark-text);text-align:center;}
+        .header-right{display:flex;gap:15px;}
+        .nav-btn{border:2px solid var(--primary-blue);background:white;color:var(--dark-text);padding:10px 25px;border-radius:30px;font-weight:bold;font-size:1rem;cursor:pointer;transition:all .2s;}
+        .nav-btn:hover{background:var(--primary-blue);color:white;}
+        .main-card{width:min(1000px,95vw);min-height:650px;border:3px solid var(--primary-blue);border-radius:35px;position:relative;background:white;box-sizing:border-box;overflow:hidden;padding:28px 36px 34px;animation:fadeIn .8s ease-out forwards;}
+        .stage-title{margin:0;color:var(--primary-blue);font-size:1.45rem;text-align:center;font-weight:900;}
+        .stage-subtitle{margin:7px 0 22px;color:#666;text-align:center;font-weight:700;}
+        .compare-scene{display:grid;grid-template-columns:165px 1fr 165px;align-items:center;gap:24px;min-height:145px;}
+        .party{display:flex;flex-direction:column;align-items:center;gap:8px;font-weight:900;}
+        .party img{width:120px;height:auto;filter:drop-shadow(0 5px 8px rgba(0,0,0,.12));}
+        .party.alice{color:var(--alice-blue);}
+        .party.bob{color:var(--bob-blue);}
+        .public-channel{position:relative;height:84px;display:flex;align-items:center;justify-content:center;}
+        .public-channel::before{content:"";position:absolute;left:0;right:0;top:50%;height:4px;background:var(--primary-blue);transform-origin:left center;transform:scaleX(0);animation:drawLine 1s ease-out .6s forwards;}
+        .basis-bubble{position:relative;z-index:2;background:white;border:3px solid var(--primary-blue);border-radius:24px;padding:12px 22px;color:var(--primary-blue);font-weight:900;box-shadow:0 8px 20px rgba(0,74,173,.15);opacity:0;animation:slideUp .6s ease-out 1.1s forwards;}
+        .sift-table{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;margin-top:18px;}
+        .bit-card{position:relative;min-height:176px;border:2px solid #d7e5ff;border-radius:18px;background:#fbfdff;padding:12px 10px;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;gap:8px;opacity:0;transform:translateY(18px);animation:slideUp .5s ease-out forwards;}
+        .bit-card:nth-child(1){animation-delay:1.7s;}
+        .bit-card:nth-child(2){animation-delay:1.9s;}
+        .bit-card:nth-child(3){animation-delay:2.1s;}
+        .bit-card:nth-child(4){animation-delay:2.3s;}
+        .bit-card:nth-child(5){animation-delay:2.5s;}
+        .bit-card:nth-child(6){animation-delay:2.7s;}
+        .bit-index{width:28px;height:28px;border-radius:50%;background:var(--soft-blue);color:var(--primary-blue);display:flex;align-items:center;justify-content:center;font-weight:900;}
+        .basis-row{width:100%;display:flex;justify-content:space-between;align-items:center;font-size:.9rem;font-weight:800;}
+        .basis{min-width:34px;padding:4px 8px;border-radius:14px;text-align:center;color:white;background:var(--primary-blue);}
+        .bit-value{font-size:2rem;font-weight:900;color:var(--primary-blue);line-height:1;}
+        .status{margin-top:auto;padding:6px 11px;border-radius:16px;font-weight:900;font-size:.85rem;opacity:0;animation:slideUp .5s ease-out 3.4s forwards;}
+        .bit-card.keep{animation-name:slideUp,pulseMatch;animation-duration:.5s,1.8s;animation-delay:var(--delay),3.4s;animation-fill-mode:forwards,none;animation-iteration-count:1,2;}
+        .bit-card.keep .status{background:#e9f8ee;color:var(--match-green);border:2px solid #bfe8ca;}
+        .bit-card.drop{animation-name:slideUp,fadeDiscard;animation-duration:.5s,.6s;animation-delay:var(--delay),3.4s;animation-fill-mode:forwards,forwards;}
+        .bit-card.drop .status{background:#fff1f1;color:var(--mismatch-red);border:2px solid #f5c2c7;}
+        @keyframes fadeDiscard{to{background:#f2f2f2;border-color:#d8d8d8;color:#9a9a9a;filter:grayscale(1);opacity:.48;}}
+        .key-scene{margin-top:26px;display:block;}
+        .shared-key-box{border-radius:24px;background:linear-gradient(180deg,#f7fbff 0%,#edf6ff 100%);border:2px solid #c6ddff;padding:20px;box-sizing:border-box;opacity:0;transform:translateY(18px);animation:slideUp .65s ease-out 4.5s forwards;}
+        .key-label{margin:0 0 12px;color:var(--primary-blue);font-weight:900;font-size:1.05rem;}
+        .key-bits{display:flex;gap:12px;flex-wrap:wrap;}
+        .key-bit{width:58px;height:58px;border-radius:18px;display:flex;align-items:center;justify-content:center;background:white;border:3px solid var(--primary-blue);color:var(--primary-blue);font-size:1.7rem;font-weight:900;animation:keyGlow 1.8s ease-in-out 5.2s infinite;}
+        .final-message{margin:16px 0 0;font-weight:900;color:var(--match-green);font-size:1.2rem;}
+        .bb84-image-dock{position:fixed;right:18px;top:0;width:330px;height:100vh;z-index:900;pointer-events:none;display:flex;justify-content:center;overflow:visible;isolation:isolate;}
+        .bb84-image-viewport{position:relative;width:285px;height:100vh;background:#ffffff;box-sizing:border-box;box-shadow:0 12px 26px rgba(0,0,0,.12);overflow:visible;z-index:1;}
+        .bb84-image-viewport::before,.bb84-image-viewport::after{content:"";position:absolute;top:0;width:14px;height:100vh;background:#d9d9d9;z-index:1;pointer-events:none;}
+        .bb84-image-viewport::before{left:0;}
+        .bb84-image-viewport::after{right:0;}
+        .bb84-image-window{position:relative;width:393px;height:100vh;margin-left:-54px;overflow:hidden;z-index:10;}
+        .bb84-image-list{position:relative;display:flex;flex-direction:column;align-items:center;gap:34px;padding:24px 0 34px;box-sizing:border-box;width:393px;transform:translateY(0);transition:transform .45s ease;z-index:20;}
+        .bb84-image-card{position:relative;width:232px;min-height:245px;padding:12px;box-sizing:border-box;background:#ffffff;border:0 solid transparent;border-radius:30px;display:flex;align-items:center;justify-content:center;flex:0 0 auto;transition:filter .25s ease,opacity .25s ease,transform .25s ease,width .25s ease,min-height .25s ease,box-shadow .25s ease;z-index:20;}
+        .bb84-image-card:not(.is-current){filter:grayscale(1) saturate(0);opacity:.42;transform:scale(.9);}
+        .bb84-image-card.is-current{width:340px;min-height:390px;padding:16px;border:11px solid #549FD0;border-radius:36px;box-shadow:0 12px 28px rgba(0,84,189,.28);filter:none;opacity:1;transform:scale(1);margin:8px 0;z-index:100;}
+        .bb84-image-card img{position:relative;z-index:101;width:100%;height:100%;max-width:208px;max-height:276px;object-fit:contain;display:block;}
+        .bb84-image-card.is-current img{max-width:305px;max-height:350px;}
+        @media (min-width:1180px){body{padding-right:350px !important;}}
+        @media (max-width:1179px){.bb84-image-dock{position:relative;right:auto;top:auto;width:min(94vw,760px);height:285px;margin:18px auto 10px;overflow:visible;}
+        .bb84-image-viewport{width:100%;height:285px;}
+        .bb84-image-viewport::before,.bb84-image-viewport::after{width:10px;height:285px;}
+        .bb84-image-window{width:100%;height:285px;margin-left:0;overflow:hidden;}
+        .bb84-image-list{flex-direction:row;align-items:center;gap:22px;width:max-content;height:285px;padding:0 18px;}
+        .bb84-image-card{width:220px;min-height:226px;}
+        .bb84-image-card.is-current{width:305px;min-height:258px;margin:0 10px;z-index:100;}
+        .bb84-image-card.is-current img{max-width:270px;max-height:230px;}
+        .compare-scene{grid-template-columns:120px 1fr 120px;gap:10px;}
+        .sift-table{grid-template-columns:repeat(3,1fr);}
         }
     </style>
 </head>
 <body>
-<aside class="bb84-image-dock" aria-label="BB84 current-step image preview">
-    <div class="bb84-image-viewport">
-        <div class="bb84-image-window">
-            <div class="bb84-image-list">
-                <div class="bb84-image-card" data-bb84-step="1"><img src="pictures/bb84-1.png" alt="BB84 Step 1"></div>
-                <div class="bb84-image-card" data-bb84-step="2"><img src="pictures/bb84-2.png" alt="BB84 Step 2"></div>
-                <div class="bb84-image-card" data-bb84-step="3"><img src="pictures/bb84-3.png" alt="BB84 Step 3"></div>
-                <div class="bb84-image-card is-current" data-bb84-step="4" aria-current="step"><img src="pictures/bb84-4.png" alt="BB84 Step 4"></div>
-                <div class="bb84-image-card" data-bb84-step="5"><img src="pictures/bb84-5.png" alt="BB84 Step 5"></div>
+    <aside class="bb84-image-dock" aria-label="BB84 current-step image preview">
+        <div class="bb84-image-viewport">
+            <div class="bb84-image-window">
+                <div class="bb84-image-list">
+                    <div class="bb84-image-card" data-bb84-step="1"><img src="pictures/bb84-1.png" alt="BB84 Step 1"></div>
+                    <div class="bb84-image-card" data-bb84-step="2"><img src="pictures/bb84-2.png" alt="BB84 Step 2"></div>
+                    <div class="bb84-image-card" data-bb84-step="3"><img src="pictures/bb84-3.png" alt="BB84 Step 3"></div>
+                    <div class="bb84-image-card is-current" data-bb84-step="4" aria-current="step"><img src="pictures/bb84-4.png" alt="BB84 Step 4"></div>
+                    <div class="bb84-image-card" data-bb84-step="5"><img src="pictures/bb84-5.png" alt="BB84 Step 5"></div>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <div class="header">
+        <div class="header-left">
+            <a href="QuantumCybersecurityEducationPlatform.html" class="btn-back" title="back home">?&#xFE0E;</a>
+            <div class="title-pill">Quantum Key Distribution : BB84</div>
+        </div>
+        <div class="header-center">STEP 4 : Public Comparison</div>
+        <div class="header-right">
+            <button class="nav-btn" onclick="prevStep()">Back</button>
+            <button class="nav-btn" onclick="nextStep()">Next</button>
+        </div>
+    </div>
+
+    <div class="main-card">
+        <h1 class="stage-title">Alice and Bob publicly compare Bases and keep only matches.</h1>
+        <p class="stage-subtitle">They reveal basis choices, not the secret bit values.</p>
+
+        <div class="compare-scene">
+            <div class="party alice">
+                <img src="pictures/cat_alice.svg" alt="Alice">
+                <span>Alice</span>
+            </div>
+            <div class="public-channel">
+                <div class="basis-bubble">Public basis discussion</div>
+            </div>
+            <div class="party bob">
+                <img src="pictures/cat_bob.svg" alt="Bob">
+                <span>Bob</span>
+            </div>
+        </div>
+
+        <div class="sift-table" aria-label="Basis comparison table">
+            <div class="bit-card keep" style="--delay:1.7s">
+                <div class="bit-index">1</div>
+                <div class="basis-row"><span>A</span><span class="basis">S</span></div>
+                <div class="basis-row"><span>B</span><span class="basis">S</span></div>
+                <div class="bit-value">1</div>
+                <div class="status">KEEP</div>
+            </div>
+            <div class="bit-card drop" style="--delay:1.9s">
+                <div class="bit-index">2</div>
+                <div class="basis-row"><span>A</span><span class="basis">D</span></div>
+                <div class="basis-row"><span>B</span><span class="basis">S</span></div>
+                <div class="bit-value">0</div>
+                <div class="status">DISCARD</div>
+            </div>
+            <div class="bit-card keep" style="--delay:2.1s">
+                <div class="bit-index">3</div>
+                <div class="basis-row"><span>A</span><span class="basis">D</span></div>
+                <div class="basis-row"><span>B</span><span class="basis">D</span></div>
+                <div class="bit-value">0</div>
+                <div class="status">KEEP</div>
+            </div>
+            <div class="bit-card drop" style="--delay:2.3s">
+                <div class="bit-index">4</div>
+                <div class="basis-row"><span>A</span><span class="basis">S</span></div>
+                <div class="basis-row"><span>B</span><span class="basis">D</span></div>
+                <div class="bit-value">1</div>
+                <div class="status">DISCARD</div>
+            </div>
+            <div class="bit-card keep" style="--delay:2.5s">
+                <div class="bit-index">5</div>
+                <div class="basis-row"><span>A</span><span class="basis">S</span></div>
+                <div class="basis-row"><span>B</span><span class="basis">S</span></div>
+                <div class="bit-value">0</div>
+                <div class="status">KEEP</div>
+            </div>
+            <div class="bit-card keep" style="--delay:2.7s">
+                <div class="bit-index">6</div>
+                <div class="basis-row"><span>A</span><span class="basis">D</span></div>
+                <div class="basis-row"><span>B</span><span class="basis">D</span></div>
+                <div class="bit-value">1</div>
+                <div class="status">KEEP</div>
+            </div>
+        </div>
+
+        <div class="key-scene">
+            <div class="shared-key-box">
+                <p class="key-label">They now share a secure key!</p>
+                <div class="key-bits" aria-label="Shared secure key">
+                    <div class="key-bit">1</div>
+                    <div class="key-bit">0</div>
+                    <div class="key-bit">0</div>
+                    <div class="key-bit">1</div>
+                </div>
+                <p class="final-message">Only matched-basis bits remain in the final key.</p>
             </div>
         </div>
     </div>
-</aside>
 
-<div class="header">
-    <div class="header-left">
-        <a href="QuantumCybersecurityEducationPlatform.html" class="btn-back" title="back home">◀&#xFE0E;</a>
-        <div class="title-pill">Quantum Key Distribution : BB84</div>
-    </div>
-    <div class="header-center">STEP 4 : Public Comparison</div>
-    <div class="header-right">
-        <button class="nav-btn" onclick="prevStep()">Back</button>
-        <button class="nav-btn" onclick="nextStep()">Next</button>
-    </div>
-</div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const dock = document.querySelector('.bb84-image-dock');
+            const windowBox = document.querySelector('.bb84-image-window');
+            const list = document.querySelector('.bb84-image-list');
 
-<div class="main-card">
-    <h1 class="stage-title">Alice and Bob publicly compare Bases and keep only matches.</h1>
-    <p class="stage-subtitle">They reveal basis choices, not the secret bit values.</p>
+            if (dock) {
+                dock.addEventListener('wheel', function (event) {
+                    event.preventDefault();
+                }, { passive: false });
+            }
 
-    <div class="compare-scene">
-        <div class="party alice">
-            <img src="pictures/cat_alice.svg" alt="Alice">
-            <span>Alice</span>
-        </div>
-        <div class="public-channel">
-            <div class="basis-bubble">Public basis discussion</div>
-        </div>
-        <div class="party bob">
-            <img src="pictures/cat_bob.svg" alt="Bob">
-            <span>Bob</span>
-        </div>
-    </div>
+            window.lockBb84ImageToCurrentStep = function () {
+                const currentCard = document.querySelector('.bb84-image-card.is-current');
+                if (!windowBox || !list || !currentCard) return;
+                const isHorizontal = window.matchMedia('(max-width: 1179px)').matches;
+                if (isHorizontal) {
+                    const offset = (windowBox.clientWidth / 2) - currentCard.offsetLeft - (currentCard.offsetWidth / 2);
+                    list.style.transform = 'translateX(' + offset + 'px)';
+                } else {
+                    const offset = (windowBox.clientHeight / 2) - currentCard.offsetTop - (currentCard.offsetHeight / 2);
+                    list.style.transform = 'translateY(' + offset + 'px)';
+                }
+            };
 
-    <div class="sift-table" aria-label="Basis comparison table">
-        <div class="bit-card keep" style="--delay:1.7s">
-            <div class="bit-index">1</div>
-            <div class="basis-row"><span>A</span><span class="basis">S</span></div>
-            <div class="basis-row"><span>B</span><span class="basis">S</span></div>
-            <div class="bit-value">1</div>
-            <div class="status">KEEP</div>
-        </div>
-        <div class="bit-card drop" style="--delay:1.9s">
-            <div class="bit-index">2</div>
-            <div class="basis-row"><span>A</span><span class="basis">D</span></div>
-            <div class="basis-row"><span>B</span><span class="basis">S</span></div>
-            <div class="bit-value">0</div>
-            <div class="status">DISCARD</div>
-        </div>
-        <div class="bit-card keep" style="--delay:2.1s">
-            <div class="bit-index">3</div>
-            <div class="basis-row"><span>A</span><span class="basis">D</span></div>
-            <div class="basis-row"><span>B</span><span class="basis">D</span></div>
-            <div class="bit-value">0</div>
-            <div class="status">KEEP</div>
-        </div>
-        <div class="bit-card drop" style="--delay:2.3s">
-            <div class="bit-index">4</div>
-            <div class="basis-row"><span>A</span><span class="basis">S</span></div>
-            <div class="basis-row"><span>B</span><span class="basis">D</span></div>
-            <div class="bit-value">1</div>
-            <div class="status">DISCARD</div>
-        </div>
-        <div class="bit-card keep" style="--delay:2.5s">
-            <div class="bit-index">5</div>
-            <div class="basis-row"><span>A</span><span class="basis">S</span></div>
-            <div class="basis-row"><span>B</span><span class="basis">S</span></div>
-            <div class="bit-value">0</div>
-            <div class="status">KEEP</div>
-        </div>
-        <div class="bit-card keep" style="--delay:2.7s">
-            <div class="bit-index">6</div>
-            <div class="basis-row"><span>A</span><span class="basis">D</span></div>
-            <div class="basis-row"><span>B</span><span class="basis">D</span></div>
-            <div class="bit-value">1</div>
-            <div class="status">KEEP</div>
-        </div>
-    </div>
+            window.showBb84ImageStep = function (step) {
+                const nextCard = document.querySelector('.bb84-image-card[data-bb84-step="' + step + '"]');
+                if (!nextCard) return;
+                document.querySelectorAll('.bb84-image-card.is-current').forEach(card => {
+                    card.classList.remove('is-current');
+                    card.removeAttribute('aria-current');
+                });
+                nextCard.classList.add('is-current');
+                nextCard.setAttribute('aria-current', 'step');
+                requestAnimationFrame(window.lockBb84ImageToCurrentStep);
+            };
 
-    <div class="key-scene">
-        <div class="shared-key-box">
-            <p class="key-label">They now share a secure key!</p>
-            <div class="key-bits" aria-label="Shared secure key">
-                <div class="key-bit">1</div>
-                <div class="key-bit">0</div>
-                <div class="key-bit">0</div>
-                <div class="key-bit">1</div>
-            </div>
-            <p class="final-message">Only matched-basis bits remain in the final key.</p>
-        </div>
-    </div>
-</div>
-
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-    const dock = document.querySelector('.bb84-image-dock');
-    const windowBox = document.querySelector('.bb84-image-window');
-    const list = document.querySelector('.bb84-image-list');
-
-    if (dock) {
-        dock.addEventListener('wheel', function (event) {
-            event.preventDefault();
-        }, { passive: false });
-    }
-
-    window.lockBb84ImageToCurrentStep = function () {
-        const currentCard = document.querySelector('.bb84-image-card.is-current');
-        if (!windowBox || !list || !currentCard) return;
-        const isHorizontal = window.matchMedia('(max-width: 1179px)').matches;
-        if (isHorizontal) {
-            const offset = (windowBox.clientWidth / 2) - currentCard.offsetLeft - (currentCard.offsetWidth / 2);
-            list.style.transform = 'translateX(' + offset + 'px)';
-        } else {
-            const offset = (windowBox.clientHeight / 2) - currentCard.offsetTop - (currentCard.offsetHeight / 2);
-            list.style.transform = 'translateY(' + offset + 'px)';
-        }
-    };
-
-    window.showBb84ImageStep = function (step) {
-        const nextCard = document.querySelector('.bb84-image-card[data-bb84-step="' + step + '"]');
-        if (!nextCard) return;
-        document.querySelectorAll('.bb84-image-card.is-current').forEach(card => {
-            card.classList.remove('is-current');
-            card.removeAttribute('aria-current');
+            window.lockBb84ImageToCurrentStep();
+            window.addEventListener('resize', window.lockBb84ImageToCurrentStep);
+            setTimeout(function () {
+                window.showBb84ImageStep(5);
+            }, 5200);
         });
-        nextCard.classList.add('is-current');
-        nextCard.setAttribute('aria-current', 'step');
-        requestAnimationFrame(window.lockBb84ImageToCurrentStep);
-    };
 
-    window.lockBb84ImageToCurrentStep();
-    window.addEventListener('resize', window.lockBb84ImageToCurrentStep);
-    setTimeout(function () {
-        window.showBb84ImageStep(5);
-    }, 5200);
-});
+        function prevStep() {
+            window.location.href = 'BB84step2.html';
+        }
 
-function prevStep() {
-    window.location.href = 'BB84step2.html';
-}
-
-function nextStep() {
-    window.location.href = 'bb84_analysis.html';
-}
-</script>
+        function nextStep() {
+            window.location.href = 'bb84_analysis.html';
+        }
+    </script>
 </body>
 </html>
