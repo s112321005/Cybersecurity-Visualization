@@ -48,7 +48,7 @@
         .result-icon.mismatch { color: var(--mismatch-red); opacity: 0; transition: opacity 0.5s; }
         .output-group { display: flex; align-items: center; }
         #results-area { min-width: 180px; height: 180px; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; }
-        #results-area- { color: gray; font-weight: bold; margin: 0; position: absolute; top: -10px; font-size: 0.9rem; }
+        #results-area-title { color: gray; font-weight: bold; margin: 0; position: absolute; top: -10px; font-size: 0.9rem; }
         .show-result .result-capsule.error { opacity: 1; }
         .show-result .result-icon.mismatch { opacity: 1; }
         .explanation-box { position: absolute; bottom: 25px; width: 85%; background: #f8fbff; border-left: 6px solid var(--primary-blue); padding: 18px 30px; border-radius: 15px; box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08); display: flex; flex-direction: column; gap: 8px; box-sizing: border-box; opacity: 0; transform: translateY(20px); pointer-events: none; transition: all 0.5s ease; }
@@ -65,9 +65,47 @@
         @keyframes shoot-bob-to-outcome { 0% { transform: translate(var(--tx-bob), var(--ty-bob)) scale(1); opacity: 1; } 100% { transform: translate(var(--tx-out), var(--ty-out)) scale(1); opacity: 1; } }
         @keyframes shoot-collapse { 0% { transform: translate(var(--tx-bob), var(--ty-bob)) scale(1); opacity: 1; } 100% { transform: translate(var(--tx-bob), var(--ty-bob)) scale(0); opacity: 0; } }
         .photon-particle { position: absolute; width: 35px; height: 35px; background: var(--photon-yellow); border-radius: 50%; box-shadow: 0 0 25px var(--photon-yellow); display: flex; justify-content: center; align-items: center; font-weight: bold; font-size: 1.3rem; color: var(--primary-blue); pointer-events: none; z-index: 100; }
+        .bb84-image-dock { position: fixed; right: 18px; top: 0; width: 330px; height: 100vh; z-index: 900; pointer-events: none; display: flex; justify-content: center; overflow: visible; isolation: isolate; }
+        .bb84-image-viewport { position: relative; width: 285px; height: 100vh; background: #ffffff; box-sizing: border-box; box-shadow: 0 12px 26px rgba(0, 0, 0, 0.12); overflow: visible; z-index: 1; }
+        .bb84-image-viewport::before, .bb84-image-viewport::after { content: ""; position: absolute; top: 0; width: 14px; height: 100vh; background: #d9d9d9; z-index: 1; pointer-events: none; }
+        .bb84-image-viewport::before { left: 0; }
+        .bb84-image-viewport::after { right: 0; }
+        .bb84-image-window { position: relative; width: 393px; height: 100vh; margin-left: -54px; overflow: hidden; z-index: 10; }
+        .bb84-image-list { position: relative; display: flex; flex-direction: column; align-items: center; gap: 34px; padding: 24px 0 34px; box-sizing: border-box; width: 393px; transform: translateY(0); transition: transform .45s ease; z-index: 20; }
+        .bb84-image-card { position: relative; width: 232px; min-height: 245px; padding: 12px; box-sizing: border-box; background: #ffffff; border: 0 solid transparent; border-radius: 30px; display: flex; align-items: center; justify-content: center; flex: 0 0 auto; transition: filter .25s ease, opacity .25s ease, transform .25s ease, width .25s ease, min-height .25s ease, box-shadow .25s ease; z-index: 20; }
+        .bb84-image-card:not(.is-current) { filter: grayscale(1) saturate(0); opacity: .42; transform: scale(.9); }
+        .bb84-image-card.is-current { width: 340px; min-height: 390px; padding: 16px; border: 11px solid #0054bd; border-radius: 36px; box-shadow: 0 12px 28px rgba(0, 84, 189, .28); filter: none; opacity: 1; transform: scale(1); margin: 8px 0; z-index: 100; }
+        .bb84-image-card img { position: relative; z-index: 101; width: 100%; height: 100%; max-width: 208px; max-height: 276px; object-fit: contain; display: block; }
+        .bb84-image-card.is-current img { max-width: 305px; max-height: 350px; }
+        @media (min-width: 1180px) { body { padding-right: 350px !important; } }
+        @media (max-width: 1179px) { .bb84-image-dock { position: relative; right: auto; top: auto; width: min(94vw, 760px); height: 285px; margin: 18px auto 10px; overflow: visible; } .bb84-image-viewport { width: 100%; height: 285px; } .bb84-image-viewport::before, .bb84-image-viewport::after { width: 10px; height: 285px; } .bb84-image-window { width: 100%; height: 285px; margin-left: 0; overflow: hidden; } .bb84-image-list { flex-direction: row; align-items: center; gap: 22px; width: max-content; height: 285px; padding: 0 18px; } .bb84-image-card { width: 220px; min-height: 226px; } .bb84-image-card.is-current { width: 305px; min-height: 258px; margin: 0 10px; z-index: 100; } .bb84-image-card.is-current img { max-width: 270px; max-height: 230px; } }
     </style>
 </head>
 <body>
+
+<aside class="bb84-image-dock" aria-label="BB84 current-step image preview">
+    <div class="bb84-image-viewport">
+        <div class="bb84-image-window">
+            <div class="bb84-image-list">
+                <div class="bb84-image-card" data-bb84-step="1">
+                    <img src="pictures/bb84-1.png" alt="BB84 Step 1">
+                </div>
+                <div class="bb84-image-card is-current" data-bb84-step="2" aria-current="step">
+                    <img src="pictures/bb84-2.png" alt="BB84 Step 2">
+                </div>
+                <div class="bb84-image-card" data-bb84-step="3">
+                    <img src="pictures/bb84-3.png" alt="BB84 Step 3">
+                </div>
+                <div class="bb84-image-card" data-bb84-step="4">
+                    <img src="pictures/bb84-4.png" alt="BB84 Step 4">
+                </div>
+                <div class="bb84-image-card" data-bb84-step="5">
+                    <img src="pictures/bb84-5.png" alt="BB84 Step 5">
+                </div>
+            </div>
+        </div>
+    </div>
+</aside>
 
 <div class="header">
     <div class="header-left">
@@ -129,15 +167,15 @@
         <div class="col" id="results-area">
             <p id="results-area-title">Outcome</p>
             
-            <div id="match-container" style="display: none; flex-direction: column; align-items: center; width: 100%;">
-                <div id="photon-landing-spot" style="width: 35px; height: 35px; margin-top: 25px;"></div>
-                <div class="output-group" id="output-match" style="margin-top: 15px; opacity: 0; transition: opacity 0.5s ease;">
+            <div id="match-container" style="display: none; flex-direction: column; align-items: center; width: 100%; transform: translateY(-25px);">
+                <div id="photon-landing-spot" style="width: 35px; height: 35px; margin-top: 5px;"></div>
+                <div class="output-group" id="output-match" style="margin-top: 14px; opacity: 0; transition: opacity 0.5s ease; transform: translateX(12px);">
                     <div class="result-capsule active" id="match-state"> Waiting... </div>
                     <div class="result-icon match">✔</div>
                 </div>
             </div>
 
-            <div id="output-mismatch" style="display: none; flex-direction: column; gap: 20px; margin-top: 25px;">
+            <div id="output-mismatch" style="display: none; flex-direction: column; gap: 20px; margin-top: 8px;">
                 <div class="output-group">
                     <div class="result-capsule error" id="mis-state-up"> Waiting... </div>
                     <div class="result-icon mismatch">✖</div>
@@ -232,6 +270,7 @@
 
     // 加入 skipAnimation 參數，如果為 true 就跳過動畫直接顯示
     function startMeasurementProcess(bobChosenBasis, skipAnimation = false) {
+        if (window.showBb84ImageStep) window.showBb84ImageStep(3);
         document.getElementById("bob-interactive").style.display = "none";
         document.getElementById("hint-text").style.opacity = "0"; 
         
@@ -353,6 +392,7 @@
         explainBox.classList.add("show");
     }
     function resetBob() {
+        if (window.showBb84ImageStep) window.showBb84ImageStep(2);
         document.getElementById("explain-box").classList.remove("show");
         document.getElementById("results-area").classList.remove("show-result");
         document.getElementById("arrow-match").classList.remove("active");
@@ -374,6 +414,47 @@
         if (localStorage.getItem('qkdStepData'))   window.location.href = 'BB84step3.html';
         else   alert("Complete Bob's measurement first!");       
     }
+</script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const dock = document.querySelector('.bb84-image-dock');
+    const windowBox = document.querySelector('.bb84-image-window');
+    const list = document.querySelector('.bb84-image-list');
+    if (dock) {
+        dock.addEventListener('wheel', function (event) {
+            event.preventDefault();
+        }, { passive: false });
+    }
+
+    window.lockBb84ImageToCurrentStep = function () {
+        const currentCard = document.querySelector('.bb84-image-card.is-current');
+        if (!windowBox || !list || !currentCard) return;
+        const isHorizontal = window.matchMedia('(max-width: 1179px)').matches;
+        if (isHorizontal) {
+            const offset = (windowBox.clientWidth / 2) - currentCard.offsetLeft - (currentCard.offsetWidth / 2);
+            list.style.transform = 'translateX(' + offset + 'px)';
+        } else {
+            const offset = (windowBox.clientHeight / 2) - currentCard.offsetTop - (currentCard.offsetHeight / 2);
+            list.style.transform = 'translateY(' + offset + 'px)';
+        }
+    };
+
+    window.showBb84ImageStep = function (step) {
+        const nextCard = document.querySelector('.bb84-image-card[data-bb84-step="' + step + '"]');
+        if (!nextCard) return;
+        document.querySelectorAll('.bb84-image-card.is-current').forEach(card => {
+            card.classList.remove('is-current');
+            card.removeAttribute('aria-current');
+        });
+        nextCard.classList.add('is-current');
+        nextCard.setAttribute('aria-current', 'step');
+        requestAnimationFrame(window.lockBb84ImageToCurrentStep);
+    };
+
+    if (localStorage.getItem('qkdStepData')) window.showBb84ImageStep(3);
+    else window.lockBb84ImageToCurrentStep();
+    window.addEventListener('resize', window.lockBb84ImageToCurrentStep);
+});
 </script>
 </body>
 </html>
