@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <base href="https://s112321005.github.io/Cybersecurity-Visualization/">
+    <title>Quantum Secret Sharing：ZhangLiMan - Step 4</title>
+    
+    <script>
+        window.MathJax = {
+            tex: { inlineMath: [['\\(', '\\)']] }
+        };
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <style>
+        :root {
+            --primary-blue: #004aad;
+            --bob-color: #4C80C5;
+            --charlie-color: #478CEA;
+            --alice-color: #0049B0; 
+            --dark-text: #333333;
+            --bg-color: #f8f9fa;
+            --result-gold: #FFD700;
+        }
+
+        body {
+            font-family: 'Segoe UI', sans-serif; 
+            display: flex; flex-direction: column; align-items: center;    
+            padding: 40px 20px; background-color: var(--bg-color); margin: 0;
+            overflow-y: scroll; 
+        }
+
+        .header {
+            width: min(1000px, 95vw); display: flex; align-items: center; justify-content: space-between;
+            margin-bottom: 25px; animation: fadeIn 0.8s ease-out forwards;
+        }
+        
+        .header-left { display: flex; align-items: center; gap: 15px; }
+        
+        .btn-back {
+            width: 40px; height: 40px; background-color: var(--primary-blue);
+            color: white; border-radius: 50%; display: flex; justify-content: center; align-items: center; 
+            text-decoration: none; cursor: pointer; border: none; font-size: 1.2rem;
+            transition: all 0.2s ease; box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        .btn-back:hover { transform: scale(1.1); background-color: #003580; }
+        .btn-back:active { transform: scale(0.9); }
+
+        .title-pill {
+            border: 2px solid var(--primary-blue); padding: 8px 20px;
+            border-radius: 30px; font-weight: bold; background: white; color: var(--dark-text);
+        }
+
+        .header-center { flex-grow: 1; font-weight: bold; font-size: 1.2rem; text-align: center; }
+        
+        .nav-btn {
+            border: 2px solid var(--primary-blue); background: white; color: var(--dark-text);
+            padding: 10px 25px; border-radius: 30px; font-weight: bold; cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .nav-btn:hover { background: var(--primary-blue); color: white; transform: scale(1.05); }
+
+        .main-card {
+            width: min(1000px, 95vw); min-height: 650px; border: 3px solid var(--primary-blue); border-radius: 35px;
+            position: relative; background: white; padding: 25px 40px 40px; box-sizing: border-box;
+            display: flex; flex-direction: column; align-items: center; animation: fadeIn 0.8s ease-out forwards;
+        }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* 流程節點圖 */
+        .flow-visual {
+            display: flex; align-items: flex-end; justify-content: space-between;
+            width: 100%; max-width: 750px; margin: 0 0 20px; position: relative;
+        }
+
+        .node-group {
+            display: flex; flex-direction: column; align-items: center; gap: 10px; z-index: 2;
+        }
+
+        .node-cat-avatar {
+            width: 120px;
+            height: auto;
+            margin-bottom: 5px; 
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));
+        }
+
+        .node-capsule {
+            position: relative;
+            width: 160px; height: 60px; background: white; border: 3px solid #ddd;
+            border-radius: 30px; display: flex; align-items: center; justify-content: center;
+            font-weight: bold; font-size: 1.2rem; cursor: pointer; transition: all 0.3s;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05); box-sizing: border-box;
+        }
+
+        .node-capsule:hover { transform: scale(1.05); border-color: var(--primary-blue); }
+        .node-capsule.active { border-color: var(--primary-blue); background: #f0f5ff; box-shadow: 0 0 15px rgba(0,74,173,0.2); }
+        
+        .node-alice { border-color: var(--alice-color); color: var(--alice-color); }
+        .node-charlie { border-color: var(--charlie-color); color: var(--charlie-color); }
+        .node-bob { border-color: var(--bob-color); color: var(--bob-color); }
+
+        .node-label { font-size: 0.8rem; font-weight: bold; text-transform: uppercase; margin-bottom: -5px; }
+
+        .line-connector {
+            flex-grow: 1; height: 3px; background: black; margin: 0 10px; 
+            margin-bottom: 28px; 
+        }
+
+        .hint-click {
+            color: #aaa; font-weight: bold; font-style: italic; margin-top: 25px; font-size: 1rem; text-align: center;
+        }
+
+        .calc-panel {
+            width: 100%; max-width: 850px; background: #f8faff; border-radius: 20px;
+            border: 1px solid #d0daff; padding: 25px; margin-top: 20px;
+            display: none; flex-direction: column; animation: slideDown 0.4s ease-out;
+        }
+
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .calc-header { font-weight: bold; font-size: 1.1rem; color: var(--primary-blue); margin-bottom: 15px; border-bottom: 2px solid #e0e7ff; padding-bottom: 8px; }
+        
+        .calc-body { display: flex; align-items: center; justify-content: center; gap: 20px; font-size: 1.3rem; min-height: 80px; }
+
+        .calc-desc { font-size: 1rem; color: #555; line-height: 1.5; margin-top: 15px; background: white; padding: 15px; border-radius: 10px; }
+
+        /* 🎯 光暈呼吸燈動畫：膠囊與結果框共用 */
+        @keyframes pulseGlowCapsule {
+            0% { box-shadow: 0 0 0 0 rgba(0, 74, 173, 0.2); }
+            70% { box-shadow: 0 0 0 10px rgba(0, 74, 173, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(0, 74, 173, 0); }
+        }
+        @keyframes pulseGlowFinal {
+            0% { box-shadow: 0 0 0 0 rgba(153, 153, 153, 0.4); }
+            70% { box-shadow: 0 0 0 15px rgba(153, 153, 153, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(153, 153, 153, 0); }
+        }
+
+        .node-capsule:not(.active) { animation: pulseGlowCapsule 2s infinite; }
+        .final-reveal:not(.revealed) { animation: pulseGlowFinal 2s infinite; }
+
+        /* Final Reveal 樣式 */
+        .final-reveal {
+            margin-top: 40px; padding: 20px 50px; border-radius: 40px;
+            text-align: center; cursor: pointer; transition: all 0.4s ease;
+            position: relative; overflow: hidden;
+            
+            /* 預設為灰色未解鎖狀態 */
+            background: linear-gradient(135deg, #f0f0f0 0%, #e0e0e0 100%);
+            border: 3px dashed #999;
+        }
+
+        .final-reveal:hover {
+            transform: scale(1.03);
+            border-style: solid;
+            border-color: #666;
+        }
+        .final-reveal.revealed {
+            background: linear-gradient(135deg, #fffdf0 0%, #fff5cc 100%);
+            border: 3px solid var(--result-gold);
+            box-shadow: 0 10px 30px rgba(255, 215, 0, 0.3);
+            animation: none;
+        }
+        .final-reveal.revealed:hover {
+            box-shadow: 0 12px 35px rgba(255, 215, 0, 0.5);
+        }
+        .final-reveal.active {
+            border-color: var(--primary-blue);
+            box-shadow: 0 0 20px rgba(0,74,173,0.3);
+        }
+        .final-msg { 
+            font-size: 1.2rem; font-weight: bold; margin-bottom: 5px; pointer-events: none; transition: color 0.3s;
+            color: #666; /* 預設文字顏色 */
+        }
+        .final-secret { 
+            font-size: 3.5rem; font-weight: 900; pointer-events: none; transition: color 0.3s;
+            color: #333; /* 預設問號顏色 */
+        }
+        .final-reveal.revealed .final-msg { color: #856404; }
+        .final-reveal.revealed .final-secret { color: var(--primary-blue); }
+
+    
+
+/* ===== ZLM right-side image-only fixed current-step window =====
+   需求：移到主體教學右側；灰色框線延伸至整個視窗高度；禁止使用者滾動此直式視窗；
+   目前步驟藍色框框位於灰色框線上方，且可超出灰色框線。 */
+.zlm-image-dock {
+    position: fixed;
+    right: 18px;
+    top: 0;
+    width: 330px;                 /* 灰色滑動視窗外層寬度固定 */
+    height: 100vh;                /* 灰色框線延伸至網頁可視高度 */
+    z-index: 900;
+    pointer-events: none;         /* 禁止滑鼠滾動/拖曳此區域 */
+    display: flex;
+    justify-content: center;
+    overflow: visible;
+    isolation: isolate;
+}
+.zlm-image-viewport {
+    position: relative;
+    width: 285px;                 /* 灰色框框寬度固定不變 */
+    height: 100vh;
+    background: #ffffff;
+    box-sizing: border-box;
+    box-shadow: 0 12px 26px rgba(0, 0, 0, 0.12);
+    overflow: visible;            /* 允許藍色框框超出灰色框線 */
+    z-index: 1;
+}
+/* 灰色側邊框使用低圖層 pseudo elements，藍色框框會蓋在灰線上方 */
+.zlm-image-viewport::before,
+.zlm-image-viewport::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    width: 14px;
+    height: 100vh;                /* 灰線延伸至整個網頁可視高度 */
+    background: #d9d9d9;
+    z-index: 1;
+    pointer-events: none;
+}
+.zlm-image-viewport::before { left: 0; }
+.zlm-image-viewport::after { right: 0; }
+/* 內容層比灰框寬，但不改灰框本體寬度；用 overflow hidden 禁止直式滑動視窗被滾動 */
+.zlm-image-window {
+    position: relative;
+    width: 393px;                 /* 285 + 54*2；只加寬內容圖層，不加寬灰框 */
+    height: 100vh;
+    margin-left: -54px;
+    overflow: hidden;             /* 禁止直式滑動視窗滾動，只停在目前步驟 */
+    z-index: 10;
+}
+.zlm-image-list {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 34px;
+    padding: 24px 0 34px;
+    box-sizing: border-box;
+    width: 393px;
+    transform: translateY(0);
+    transition: transform .45s ease;
+    z-index: 20;
+}
+.zlm-image-card {
+    position: relative;
+    width: 232px;
+    min-height: 245px;
+    padding: 12px;
+    box-sizing: border-box;
+    background: #ffffff;
+    border: 0 solid transparent;
+    border-radius: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    transition: filter .25s ease, opacity .25s ease, transform .25s ease, width .25s ease, min-height .25s ease, box-shadow .25s ease;
+    z-index: 20;
+}
+.zlm-image-card:not(.is-current) {
+    filter: grayscale(1) saturate(0);
+    opacity: .42;
+    transform: scale(.9);
+}
+.zlm-image-card.is-current {
+    width: 340px;
+    min-height: 390px;
+    padding: 16px;
+    border: 11px solid #0054bd;
+    border-radius: 36px;
+    box-shadow: 0 12px 28px rgba(0, 84, 189, .28);
+    filter: none;
+    opacity: 1;
+    transform: scale(1);
+    margin: 8px 0;
+    z-index: 100;                 /* 藍色框框位於灰色框線上方 */
+}
+.zlm-image-card img {
+    position: relative;
+    z-index: 101;
+    width: 100%;
+    height: 100%;
+    max-width: 208px;
+    max-height: 276px;
+    object-fit: contain;
+    display: block;
+}
+.zlm-image-card.is-current img {
+    max-width: 305px;
+    max-height: 350px;
+}
+@media (min-width: 1180px) {
+    body { padding-right: 350px !important; }
+}
+@media (max-width: 1179px) {
+    .zlm-image-dock {
+        position: relative;
+        right: auto;
+        top: auto;
+        width: min(94vw, 760px);
+        height: 285px;
+        margin: 18px auto 10px;
+        overflow: visible;
+    }
+    .zlm-image-viewport {
+        width: 100%;
+        height: 285px;
+    }
+    .zlm-image-viewport::before,
+    .zlm-image-viewport::after {
+        width: 10px;
+        height: 285px;
+    }
+    .zlm-image-window {
+        width: 100%;
+        height: 285px;
+        margin-left: 0;
+        overflow: hidden;
+    }
+    .zlm-image-list {
+        flex-direction: row;
+        align-items: center;
+        gap: 22px;
+        width: max-content;
+        height: 285px;
+        padding: 0 18px;
+    }
+    .zlm-image-card { width: 220px; min-height: 226px; }
+    .zlm-image-card.is-current {
+        width: 305px;
+        min-height: 258px;
+        margin: 0 10px;
+        z-index: 100;
+    }
+    .zlm-image-card.is-current img { max-width: 270px; max-height: 230px; }
+}
+
+</style>
+</head>
+<body>
+<aside class="zlm-image-dock" aria-label="ZLM current-step image preview">
+    <div class="zlm-image-viewport">
+        <div class="zlm-image-window">
+            <div class="zlm-image-list">
+            <div class="zlm-image-card" data-zlm-step="1">
+                <img src="pictures/zlm-1.png" alt="ZLM Step 1" onerror="this.onerror=null;this.src='pictures/zlm-1.png';">
+            </div>
+            <div class="zlm-image-card" data-zlm-step="2">
+                <img src="pictures/zlm-2.png" alt="ZLM Step 2" onerror="this.onerror=null;this.src='pictures/zlm-2.png';">
+            </div>
+            <div class="zlm-image-card" data-zlm-step="3">
+                <img src="pictures/zlm-3.png" alt="ZLM Step 3" onerror="this.onerror=null;this.src='pictures/zlm-3.png';">
+            </div>
+            <div class="zlm-image-card is-current" data-zlm-step="4" aria-current="step">
+                <img src="pictures/zlm-4.png" alt="ZLM Step 4" onerror="this.onerror=null;this.src='pictures/zlm-4.png';">
+            </div>
+            </div>
+        </div>
+    </div>
+</aside>
+
+<div class="header">
+    <div class="header-left">
+        <button class="btn-back" onclick="goHome()">◀&#xFE0E;</button>
+        <div class="title-pill">Quantum Secret Sharing : ZhangLiMan</div>
+    </div>
+    <div class="header-center">STEP 4 : Decryption Process</div>
+    <div class="header-right" style="display: flex; gap: 10px;">
+        <button class="nav-btn" onclick="prevStep()">Back</button>
+        <button class="nav-btn" onclick="nextStep()">Next</button>
+    </div>
+</div>
+<div class="main-card">
+    <div class="flow-visual">
+        <div class="node-group">
+            <img src="pictures/cat_alice.svg" alt="Alice" class="node-cat-avatar" width="120">
+            <span class="node-label" style="color: var(--alice-color);">RECEIVED STATE</span>
+            <div class="node-capsule node-alice" id="node-1" onclick="showCalc(1)">
+                <span id="val-node-1">|?⟩</span>
+            </div>
+        </div>
+        <div class="line-connector"></div>
+        <div class="node-group">
+            <img src="pictures/cat_charlie.svg" alt="Charlie" class="node-cat-avatar" width="120">
+            <span class="node-label" style="color: var(--charlie-color);">UNDO CHARLIE</span>
+            <div class="node-capsule node-charlie" id="node-2" onclick="showCalc(2)">
+                <span id="val-node-2">?</span>
+            </div>
+        </div>
+        <div class="line-connector"></div>
+        <div class="node-group">
+            <img src="pictures/cat_bob.svg" alt="Bob" class="node-cat-avatar" width="120">
+            <span class="node-label" style="color: var(--bob-color);">MEASURE BASIS</span>
+            <div class="node-capsule node-bob" id="node-3" onclick="showCalc(3)">
+                <span id="val-node-3">?</span>
+            </div>
+        </div>
+    </div>
+    <p class="hint-click">Click the capsules above to understand the logic.</p>
+    <div class="calc-panel" id="calc-panel">
+        <div class="calc-header" id="calc-header">Restoration Note</div>
+        <div class="calc-body" id="calc-body"></div>
+        <div class="calc-desc" id="calc-desc">
+            Restoring Alice's secret message involves combining Bob's and Charlie's knowledge. Click above to begin.
+        </div>
+    </div>
+    <div class="final-reveal" id="node-4" onclick="showCalc(4)">
+        <div class="final-msg">ALICE'S SECRET MESSAGE</div>
+        <div class="final-secret" id="final-secret">?</div>
+    </div>
+</div>
+<script>
+    const gateTex = { 
+        'I': '\\begin{bmatrix} 1 & 0 \\\\ 0 & 1 \\end{bmatrix}', 
+        'H': '\\frac{1}{\\sqrt{2}}\\begin{bmatrix} 1 & 1 \\\\ 1 & -1 \\end{bmatrix}', 
+        'X': '\\begin{bmatrix} 0 & 1 \\\\ 1 & 0 \\end{bmatrix}',
+        'Y': '\\begin{bmatrix} 0 & -1 \\\\ 1 & 0 \\end{bmatrix}', 
+        'Z': '\\begin{bmatrix} 1 & 0 \\\\ 0 & -1 \\end{bmatrix}'
+    };
+    const stateTex = { 
+        '|0⟩': '\\begin{bmatrix} 1 \\\\ 0 \\end{bmatrix}', 
+        '|1⟩': '\\begin{bmatrix} 0 \\\\ 1 \\end{bmatrix}', 
+        '|+⟩': '\\frac{1}{\\sqrt{2}}\\begin{bmatrix} 1 \\\\ 1 \\end{bmatrix}', 
+        '|-⟩': '\\frac{1}{\\sqrt{2}}\\begin{bmatrix} 1 \\\\ -1 \\end{bmatrix}', 
+        '-|0⟩': '-\\begin{bmatrix} 1 \\\\ 0 \\end{bmatrix}', 
+        '-|1⟩': '-\\begin{bmatrix} 0 \\\\ 1 \\end{bmatrix}', 
+        '-|+⟩': '-\\frac{1}{\\sqrt{2}}\\begin{bmatrix} 1 \\\\ 1 \\end{bmatrix}', 
+        '-|-⟩': '-\\frac{1}{\\sqrt{2}}\\begin{bmatrix} 1 \\\\ -1 \\end{bmatrix}' 
+    };
+    let data = {
+        bob: { basis: 'Z', state: '|0⟩' },
+        charlie: { gate: 'I' },
+        alice: { state: '|0⟩', msg: '0' },
+        undoState: '|0⟩'
+    };
+    document.addEventListener("DOMContentLoaded", () => {
+        const b = JSON.parse(localStorage.getItem('bobOriginalChoice')) || {};
+        const c = JSON.parse(localStorage.getItem('qssStepData')) || {};
+        const a = JSON.parse(localStorage.getItem('qssStep3Data')) || { finalEncodedState: '|0⟩', aliceMsg: '0' };
+        let initialBobState = c.bobState;
+        let bBasis = 'Z';
+        if (initialBobState) {
+            bBasis = (initialBobState.includes('+') || initialBobState.includes('-')) ? 'X' : 'Z';
+        } else {
+            let bMsg = b.msg !== undefined ? String(b.msg) : '0';
+            bBasis = b.basis || 'Z'; 
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.has('bobBasis')) bBasis = urlParams.get('bobBasis');
+            if (urlParams.has('bobMsg')) bMsg = urlParams.get('bobMsg');
+            bBasis = (bBasis === 'X' || bBasis === '+') ? 'X' : 'Z';
+            if (bBasis === 'Z') { initialBobState = (bMsg === '1') ? '|1⟩' : '|0⟩'; } 
+            else { initialBobState = (bMsg === '1' || bMsg === '-') ? '|-⟩' : '|+⟩'; }
+        }
+        data.bob = { basis: bBasis, state: initialBobState };
+        data.charlie = { gate: c.charlieGate || 'I' };
+        data.alice = { state: a.finalEncodedState || '|0⟩', msg: a.aliceMsg || '0' };
+        const undoRules = {
+            '|0⟩':  { 'I': '|0⟩',  'H': '|+⟩', 'X': '|1⟩',  'Y': '|1⟩',  'Z': '|0⟩' },
+            '|1⟩':  { 'I': '|1⟩',  'H': '|-⟩', 'X': '|0⟩',  'Y': '-|0⟩', 'Z': '-|1⟩' },
+            '|+⟩':  { 'I': '|+⟩',  'H': '|0⟩', 'X': '|+⟩',  'Y': '|-⟩',  'Z': '|-⟩' },
+            '|-⟩':  { 'I': '|-⟩',  'H': '|1⟩', 'X': '-|-⟩', 'Y': '-|+⟩', 'Z': '|+⟩' },
+            '-|0⟩': { 'I': '-|0⟩', 'H': '-|+⟩','X': '-|1⟩', 'Y': '-|1⟩', 'Z': '-|0⟩' },
+            '-|1⟩': { 'I': '-|1⟩', 'H': '-|-⟩','X': '-|0⟩', 'Y': '|0⟩',  'Z': '|1⟩' },
+            '-|+⟩': { 'I': '-|+⟩', 'H': '-|0⟩','X': '-|+⟩', 'Y': '-|-⟩', 'Z': '-|-⟩' },
+            '-|-⟩': { 'I': '-|-⟩', 'H': '-|1⟩','X': '|-⟩',  'Y': '|+⟩',  'Z': '-|+⟩' }
+        };
+        data.undoState = undoRules[data.alice.state]?.[data.charlie.gate] || '|0⟩';
+        let cleanRecovered = data.undoState.replace(/^-/, '').replace(/^−/, '');
+        document.getElementById('val-node-1').textContent = data.alice.state;
+        document.getElementById('val-node-2').textContent = data.undoState;
+        document.getElementById('val-node-3').textContent = cleanRecovered; 
+    });
+    
+    function showCalc(step) {
+        const panel = document.getElementById('calc-panel');
+        const header = document.getElementById('calc-header');
+        const body = document.getElementById('calc-body');
+        const desc = document.getElementById('calc-desc');
+
+        document.querySelectorAll('.node-capsule, .final-reveal').forEach(n => n.classList.remove('active'));
+        document.getElementById(`node-${step}`).classList.add('active');
+        panel.style.display = 'flex';
+
+        let cleanRecovered = data.undoState.replace(/^-/, '').replace(/^−/, '');
+        let cleanOriginal = data.bob.state.replace(/^-/, '').replace(/^−/, '');
+
+        switch(step) {
+            case 1:
+                header.innerText = "Step 1: Alice's Received State";
+                body.innerHTML = `\\( ${stateTex[data.alice.state]} \\)`;
+                desc.innerHTML = `This is the final state Alice encoded containing her secret message.`;
+                break;
+            case 2:
+                header.innerText = "Step 2: Undoing Charlie's Gate";
+                body.innerHTML = `\\( ${gateTex[data.charlie.gate]} \\times ${stateTex[data.alice.state]} = ${stateTex[data.undoState]} \\)`;
+                desc.innerHTML = `By mathematically reversing Charlie's <b>${data.charlie.gate} Gate</b>, Bob begins to restore the original state.`;
+                break;
+            case 3:
+                header.innerText = `Step 3: Measuring in the ${data.bob.basis}-Basis`;
+                body.innerHTML = `\\( \\text{Recovered: } ${data.undoState} \\xrightarrow{\\text{Measure in } ${data.bob.basis}\\text{-Basis}} ${cleanRecovered} \\)`;
+                desc.innerHTML = `Since Bob originally prepared his state in the <b>${data.bob.basis}-Basis</b>, he measures the recovered state using this exact same basis.<br>Ignoring global phase, the physical result is <b>${cleanRecovered}</b>.`;
+                break;
+            case 4:
+                header.innerText = "Final Step: Decoding Alice's Message";
+                body.innerHTML = `\\( \\text{Prepared: } ${cleanOriginal} \\quad \\text{vs} \\quad \\text{Measured: } ${cleanRecovered} \\)`;
+                const finalRevealNode = document.getElementById('node-4');
+                finalRevealNode.classList.add('revealed');
+                document.getElementById('final-secret').textContent = data.alice.msg;
+
+                if (cleanOriginal === cleanRecovered) {
+                    desc.innerHTML = `Initial <b>${cleanOriginal}</b> MATCHES final <b>${cleanRecovered}</b>.<br>Alice applied the <b>I Gate</b> (no change). Secret message: <b>0</b>.`;
+                } else {
+                    desc.innerHTML = `Initial <b>${cleanOriginal}</b> DIFFERS from final <b>${cleanRecovered}</b>.<br>Alice applied the <b>Y Gate</b> (flipped). Secret message: <b>1</b>.`;
+                }
+                break;
+        }
+
+        if (window.MathJax && MathJax.typesetPromise) {
+            MathJax.typesetPromise([body]);
+        }
+    }
+
+    function goHome() { window.location.href = 'QuantumCybersecurityEducationPlatform.html'; }
+    function prevStep() { window.location.href = 'QSSstep3.html'; }
+    function nextStep() {
+        /* const step4Data = { undoState: data.undoState, finalMsg: data.alice.msg };
+        localStorage.setItem('qssStep4Data', JSON.stringify(step4Data)); */
+        window.location.href = 'zlm_analysis.html'; 
+    }
+</script>
+
+<script>
+/* ZLM 右側目前步驟視窗：禁止使用者滾動此區域，僅用 transform 固定顯示目前 step。 */
+document.addEventListener('DOMContentLoaded', function () {
+    const dock = document.querySelector('.zlm-image-dock');
+    const windowBox = document.querySelector('.zlm-image-window');
+    const list = document.querySelector('.zlm-image-list');
+    const currentCard = document.querySelector('.zlm-image-card.is-current');
+
+    if (dock) {
+        dock.addEventListener('wheel', function (event) {
+            event.preventDefault();
+        }, { passive: false });
+    }
+
+    function lockToCurrentStep() {
+        if (!windowBox || !list || !currentCard) return;
+        const isHorizontal = window.matchMedia('(max-width: 1179px)').matches;
+        if (isHorizontal) {
+            const offset = (windowBox.clientWidth / 2) - currentCard.offsetLeft - (currentCard.offsetWidth / 2);
+            list.style.transform = 'translateX(' + offset + 'px)';
+        } else {
+            const offset = (windowBox.clientHeight / 2) - currentCard.offsetTop - (currentCard.offsetHeight / 2);
+            list.style.transform = 'translateY(' + offset + 'px)';
+        }
+    }
+
+    lockToCurrentStep();
+    window.addEventListener('resize', lockToCurrentStep);
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <base href="https://s112321005.github.io/Cybersecurity-Visualization/">
+    <title>Quantum Secret Sharing：ZhangLiMan - Step 3</title>
+    
+    <script>
+        window.MathJax = {
+            tex: { inlineMath: [['\\(', '\\)']] }
+        };
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <style>
+        :root {
+            --primary-blue: #004aad;
+            --bob-color: #4C80C5;
+            --charlie-color: #478CEA;
+            /* 新增 Alice 的專屬顏色 */
+            --alice-color: #0049B0; 
+            
+            --dark-text: #333333;
+            --bg-color: #f8f9fa;
+            --photon-yellow: #ffeb3b; 
+            --match-green: #abd5c0;
+        }
+
+        body {
+            font-family: 'Segoe UI', sans-serif; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center;    
+            padding: 40px 20px; 
+            background-color: var(--bg-color);
+            margin: 0;
+            overflow-y: scroll; 
+        }
+
+        /* 頂部導覽列 */
+        .header {
+            width: min(1000px, 95vw);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 25px;
+            animation: fadeIn 0.8s ease-out forwards;
+        }
+        
+        .header-left { display: flex; align-items: center; gap: 15px; }
+
+        .btn-back {
+            width: 40px; height: 40px; background-color: var(--primary-blue);
+            color: white; border-radius: 50%; display: flex; justify-content: center; align-items: center; 
+            text-decoration: none; font-size: 1rem; transition: transform 0.2s; cursor: pointer; border: none;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .btn-back:hover { transform: scale(1.1); }
+
+        .title-pill {
+            border: 2px solid var(--primary-blue); padding: 8px 20px;
+            border-radius: 30px; font-weight: bold; background: white; color: var(--dark-text);
+        }
+
+        .header-center { 
+            flex-grow: 1; margin-left: 20px; font-weight: bold; 
+            font-size: 1.2rem; color: var(--dark-text); text-align: center; 
+        }
+        
+        .header-right { display: flex; gap: 15px; }
+        
+        .nav-btn {
+            border: 2px solid var(--primary-blue); background: white; color: var(--dark-text);
+            padding: 10px 25px; border-radius: 30px; font-weight: bold; font-size: 1rem;
+            cursor: pointer; transition: all 0.2s;
+        }
+        .nav-btn:hover { background: var(--primary-blue); color: white; }
+
+        /* 主卡片 */
+        .main-card {
+            width: min(1000px, 95vw); height: 650px; border: 3px solid var(--primary-blue); border-radius: 35px;
+            position: relative; background: white; box-sizing: border-box; overflow: hidden;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            padding-top: 15px; padding-bottom: 80px; animation: fadeIn 0.8s ease-out forwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* 網格排版 */
+        .decision-grid { display: flex; align-items: center; justify-content: center; gap: 20px; width: 100%; }
+        
+        .col { 
+            display: flex; 
+            flex-direction: column; 
+            justify-content: center; 
+            align-items: center; 
+            position: relative; 
+            height: 60px; 
+        }
+
+        .character-avatar { 
+            position: absolute; 
+            top: -220px; 
+            width: 120px;
+            height: auto;
+            z-index: 10; 
+        }
+
+        .stage-title {
+            position: absolute;
+            top: -90px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            margin: 0;
+            width: 100%;
+            text-align: center;
+        }
+
+        .result-capsule {
+            padding: 12px 25px; border-radius: 30px; border: 2px solid var(--primary-blue);
+            color: var(--primary-blue); font-weight: bold; font-size: 1.4rem;
+            background: white; display: flex; align-items: center; justify-content: center;
+            height: 30px; min-width: 100px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            z-index: 2;
+        }
+
+        /* 顏色樣式 */
+        .charlie-text { color: var(--charlie-color) !important; }
+        .charlie-bg { 
+            background: var(--charlie-color) !important; 
+            border-color: var(--charlie-color) !important; 
+            color: white !important; 
+        }
+        
+        .alice-text { color: var(--alice-color) !important; }
+
+        /* Alice 選擇區域 */
+        .alice-interactive { 
+            position: absolute; top: 50%; transform: translateY(-50%); 
+            display: flex; flex-direction: column; align-items: center; gap: 15px; 
+            transition: opacity 0.3s ease; width: 100%;
+        }
+        .alice-choices { display: flex; gap: 15px; }
+        
+        .gate-btn {
+            display: flex; flex-direction: column; align-items: center; cursor: pointer;
+            padding: 15px; border-radius: 15px; border: 2px solid transparent; transition: all 0.2s; background: white;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05); min-width: 120px;
+        }
+        .gate-btn:hover { background-color: #c4d0ef; border-color: var(--alice-color); transform: translateY(-5px); }
+        .msg-title { font-size: 1.2rem; font-weight: bold; color: var(--dark-text); margin-bottom: 5px; }
+        .gate-subtitle { font-size: 1rem; color: var(--alice-color); font-weight: bold; margin-bottom: 8px;}
+        
+        .math-display { font-size: 1.05rem; }
+
+        .pulse { animation: pulse-anim 2s infinite; }
+        @keyframes pulse-anim {
+            0% { box-shadow: 0 0 0 0 rgba(0, 73, 176, 0.4); } 
+            70% { box-shadow: 0 0 0 10px rgba(0, 73, 176, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(0, 73, 176, 0); }
+        }
+
+        /* Alice 運算中的顯示 */
+        .alice-active-gate {
+            position: absolute; top: 50%; transform: translateY(-50%);
+            display: none; flex-direction: column; align-items: center; width: 100%;
+            animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+            z-index: 2; 
+        }
+        @keyframes popIn { 
+            0% { transform: translateY(-50%) scale(0.5); opacity: 0; } 
+            100% { transform: translateY(-50%) scale(1); opacity: 1; } 
+        }
+
+        /* 連接線條與箭頭 */
+        .connector { 
+            position: relative; display: flex; align-items: center; 
+            height: 50px; width: 0; opacity: 0; transition: width 0.5s ease-out, opacity 0.2s ease; 
+        }
+        .connector::before {
+            content: ""; position: absolute; top: 50%; left: 0; width: 100%; height: 3px;
+            background-color: var(--primary-blue); transform: translateY(-50%); 
+        }
+        .arrow-connector::after {
+            content: ""; position: absolute; top: 50%; right: -2px; width: 0; height: 0;
+            border-top: 8px solid transparent; border-bottom: 8px solid transparent;
+            border-left: 14px solid var(--primary-blue); transform: translateY(-50%);
+            opacity: 0; transition: opacity 0.2s ease 0.4s;
+        }
+        .connector.active { opacity: 1; width: 80px; }
+        .arrow-connector.active::after { opacity: 1; }
+
+        /* 線條顏色設定 */
+        #conn-1::before { background-color: var(--charlie-color); }
+        #arrow-out::before { background-color: var(--alice-color); }
+        #arrow-out.arrow-connector::after { border-left-color: var(--alice-color); }
+
+        /* 結果顯示 */
+        .output-group { display: flex; align-items: center; opacity: 0; transition: opacity 0.5s ease; }
+        .show-result .output-group { opacity: 1; }
+
+        /* 解說面板與運算框 */
+        .explanation-box {
+            position: absolute; bottom: 25px; width: 85%; background: #eaf0ff;
+            border-left: 6px solid var(--alice-color); padding: 18px 30px; border-radius: 15px; 
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08); display: flex; flex-direction: column; gap: 8px; box-sizing: border-box;
+            opacity: 0; transform: translateY(20px); pointer-events: none; transition: all 0.5s ease;
+        }
+        .explanation-box.show { opacity: 1; transform: translateY(0); pointer-events: auto; }
+        .explain-header { display: flex; justify-content: space-between; align-items: center; }
+        .explain-title { font-weight: bold; font-size: 1.25rem; margin: 0; display: flex; align-items: center; gap: 8px; color: var(--alice-color); }
+        .explain-desc { color: #555; font-size: 1.1rem; margin: 0; line-height: 1.4; font-weight: bold; }
+        
+        .calc-process-container {
+            margin-top: 10px; background: white; border: 1px solid #c2d5ff; border-radius: 10px;
+            padding: 15px; display: flex; align-items: center; justify-content: center; gap: 15px;
+            font-size: 1.2rem; color: #333; box-shadow: inset 0 2px 4px rgba(0,0,0,0.02); overflow-x: auto;
+        }
+
+        .retry-btn {
+            padding: 8px 20px; border-radius: 20px; border: 2px solid #ccc;
+            background: white; color: #555; cursor: pointer; font-weight: bold; transition: all 0.2s; font-size: 0.95rem;
+        }
+        .retry-btn:hover { background: #f0f0f0; border-color: #999; color: black; transform: scale(1.05); }
+
+        .bottom-hint { position: absolute; bottom: 30px; color: gray; font-weight: bold; font-size: 1.1rem; transition: opacity 0.3s; z-index: 5;}
+
+        /* 光子動畫 */
+        @keyframes shoot-to-alice {
+            0% { transform: translate(0, 0) scale(0); opacity: 1; }
+            20% { transform: translate(calc(var(--tx-mid) * 0.2), calc(var(--ty-mid) * 0.2)) scale(1.3); }
+            100% { transform: translate(var(--tx-mid), var(--ty-mid)) scale(1); opacity: 1; } 
+        }
+        @keyframes shoot-alice-to-outcome {
+            0% { transform: translate(var(--tx-mid), var(--ty-mid)) scale(1); opacity: 1; }
+            100% { transform: translate(var(--tx-out), var(--ty-out)) scale(1); opacity: 1; } 
+        }
+
+        .photon-particle {
+            position: absolute; width: 40px; height: 40px; background: var(--photon-yellow); border-radius: 50%; 
+            box-shadow: 0 0 25px var(--photon-yellow); display: flex; justify-content: center; align-items: center;
+            font-weight: bold; font-size: 1.3rem; color: var(--charlie-color); pointer-events: none; z-index: 100;
+        }
+    
+
+/* ===== ZLM right-side image-only fixed current-step window =====
+   需求：移到主體教學右側；灰色框線延伸至整個視窗高度；禁止使用者滾動此直式視窗；
+   目前步驟藍色框框位於灰色框線上方，且可超出灰色框線。 */
+.zlm-image-dock {
+    position: fixed;
+    right: 18px;
+    top: 0;
+    width: 330px;                 /* 灰色滑動視窗外層寬度固定 */
+    height: 100vh;                /* 灰色框線延伸至網頁可視高度 */
+    z-index: 900;
+    pointer-events: none;         /* 禁止滑鼠滾動/拖曳此區域 */
+    display: flex;
+    justify-content: center;
+    overflow: visible;
+    isolation: isolate;
+}
+.zlm-image-viewport {
+    position: relative;
+    width: 285px;                 /* 灰色框框寬度固定不變 */
+    height: 100vh;
+    background: #ffffff;
+    box-sizing: border-box;
+    box-shadow: 0 12px 26px rgba(0, 0, 0, 0.12);
+    overflow: visible;            /* 允許藍色框框超出灰色框線 */
+    z-index: 1;
+}
+/* 灰色側邊框使用低圖層 pseudo elements，藍色框框會蓋在灰線上方 */
+.zlm-image-viewport::before,
+.zlm-image-viewport::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    width: 14px;
+    height: 100vh;                /* 灰線延伸至整個網頁可視高度 */
+    background: #d9d9d9;
+    z-index: 1;
+    pointer-events: none;
+}
+.zlm-image-viewport::before { left: 0; }
+.zlm-image-viewport::after { right: 0; }
+/* 內容層比灰框寬，但不改灰框本體寬度；用 overflow hidden 禁止直式滑動視窗被滾動 */
+.zlm-image-window {
+    position: relative;
+    width: 393px;                 /* 285 + 54*2；只加寬內容圖層，不加寬灰框 */
+    height: 100vh;
+    margin-left: -54px;
+    overflow: hidden;             /* 禁止直式滑動視窗滾動，只停在目前步驟 */
+    z-index: 10;
+}
+.zlm-image-list {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 34px;
+    padding: 24px 0 34px;
+    box-sizing: border-box;
+    width: 393px;
+    transform: translateY(0);
+    transition: transform .45s ease;
+    z-index: 20;
+}
+.zlm-image-card {
+    position: relative;
+    width: 232px;
+    min-height: 245px;
+    padding: 12px;
+    box-sizing: border-box;
+    background: #ffffff;
+    border: 0 solid transparent;
+    border-radius: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    transition: filter .25s ease, opacity .25s ease, transform .25s ease, width .25s ease, min-height .25s ease, box-shadow .25s ease;
+    z-index: 20;
+}
+.zlm-image-card:not(.is-current) {
+    filter: grayscale(1) saturate(0);
+    opacity: .42;
+    transform: scale(.9);
+}
+.zlm-image-card.is-current {
+    width: 340px;
+    min-height: 390px;
+    padding: 16px;
+    border: 11px solid #0054bd;
+    border-radius: 36px;
+    box-shadow: 0 12px 28px rgba(0, 84, 189, .28);
+    filter: none;
+    opacity: 1;
+    transform: scale(1);
+    margin: 8px 0;
+    z-index: 100;                 /* 藍色框框位於灰色框線上方 */
+}
+.zlm-image-card img {
+    position: relative;
+    z-index: 101;
+    width: 100%;
+    height: 100%;
+    max-width: 208px;
+    max-height: 276px;
+    object-fit: contain;
+    display: block;
+}
+.zlm-image-card.is-current img {
+    max-width: 305px;
+    max-height: 350px;
+}
+@media (min-width: 1180px) {
+    body { padding-right: 350px !important; }
+}
+@media (max-width: 1179px) {
+    .zlm-image-dock {
+        position: relative;
+        right: auto;
+        top: auto;
+        width: min(94vw, 760px);
+        height: 285px;
+        margin: 18px auto 10px;
+        overflow: visible;
+    }
+    .zlm-image-viewport {
+        width: 100%;
+        height: 285px;
+    }
+    .zlm-image-viewport::before,
+    .zlm-image-viewport::after {
+        width: 10px;
+        height: 285px;
+    }
+    .zlm-image-window {
+        width: 100%;
+        height: 285px;
+        margin-left: 0;
+        overflow: hidden;
+    }
+    .zlm-image-list {
+        flex-direction: row;
+        align-items: center;
+        gap: 22px;
+        width: max-content;
+        height: 285px;
+        padding: 0 18px;
+    }
+    .zlm-image-card { width: 220px; min-height: 226px; }
+    .zlm-image-card.is-current {
+        width: 305px;
+        min-height: 258px;
+        margin: 0 10px;
+        z-index: 100;
+    }
+    .zlm-image-card.is-current img { max-width: 270px; max-height: 230px; }
+}
+
+</style>
+</head>
+<body>
+<aside class="zlm-image-dock" aria-label="ZLM current-step image preview">
+    <div class="zlm-image-viewport">
+        <div class="zlm-image-window">
+            <div class="zlm-image-list">
+            <div class="zlm-image-card" data-zlm-step="1">
+                <img src="pictures/zlm-1.png" alt="ZLM Step 1" onerror="this.onerror=null;this.src='pictures/zlm-1.png';">
+            </div>
+            <div class="zlm-image-card" data-zlm-step="2">
+                <img src="pictures/zlm-2.png" alt="ZLM Step 2" onerror="this.onerror=null;this.src='pictures/zlm-2.png';">
+            </div>
+            <div class="zlm-image-card is-current" data-zlm-step="3" aria-current="step">
+                <img src="pictures/zlm-3.png" alt="ZLM Step 3" onerror="this.onerror=null;this.src='pictures/zlm-3.png';">
+            </div>
+            <div class="zlm-image-card" data-zlm-step="4">
+                <img src="pictures/zlm-4.png" alt="ZLM Step 4" onerror="this.onerror=null;this.src='pictures/zlm-4.png';">
+            </div>
+            </div>
+        </div>
+    </div>
+</aside>
+
+
+<div class="header">
+    <div class="header-left">
+        <a href="QuantumCybersecurityEducationPlatform.html" class="btn-back" title="back home">◀&#xFE0E;</a>
+        <div class="title-pill">Quantum Secret Sharing：ZhangLiMan</div>
+    </div>
+    <div class="header-center">STEP 3：Alice's Operation</div>
+    <div class="header-right">
+        <button class="nav-btn" onclick="prevStep()">Back</button>
+        <button class="nav-btn" onclick="nextStep()">Next</button>
+    </div>
+</div>
+
+<div class="main-card" id="stage">
+    
+    <div class="decision-grid" id="grid-container">
+        
+        <div class="col" style="min-width: 150px;">
+            <img src="pictures/cat_charlie.svg" alt="Charlie & Bob" class="character-avatar" width="120" style="opacity:0.8;">
+            <p class="stage-title charlie-text">Shared State</p>
+            <div class="result-capsule active charlie-bg" id="input-state">-</div>
+        </div>
+
+        <div class="col" style="width: 80px;">
+            <div class="connector active" style="width: 100%;" id="conn-1"></div> 
+        </div>
+
+        <div class="col" style="min-width: 350px;" id="alice-col">
+            <img src="pictures/cat_alice.svg" alt="Alice" class="character-avatar" width="120">
+            
+            <p class="stage-title alice-text" id="alice-title">Choose Message to Send</p>
+
+            <div class="alice-interactive" id="alice-interactive">
+                <div class="alice-choices">
+                    
+                    <div class="gate-btn pulse" onclick="startAliceOperation('I', '0')">
+                        <div class="msg-title">Message 0</div>
+                        <div class="gate-subtitle">(Apply I Gate)</div>
+                        <div class="math-display">\( \begin{bmatrix} 1 & 0 \\ 0 & 1 \end{bmatrix} \)</div>
+                    </div>
+
+                    <div class="gate-btn pulse" onclick="startAliceOperation('Y', '1')">
+                        <div class="msg-title">Message 1</div>
+                        <div class="gate-subtitle">(Apply Y Gate)</div>
+                        <div class="math-display">\( \begin{bmatrix} 0 & 1 \\ -1 & 0 \end{bmatrix} \)</div>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="alice-active-gate" id="alice-active-gate">
+                <div class="gate-btn" id="alice-gate-display" style="cursor: default; transform: none; border-color: var(--alice-color); background: #d8e3ff;">
+                </div>
+            </div>
+        </div>
+
+        <div class="col" style="width: 80px; margin-left: -15px;">
+            <div class="connector arrow-connector" id="arrow-out" style="width: 100%;"></div>
+        </div>
+
+        <div class="col" id="results-area" style="min-width: 150px;">
+            <p class="stage-title">Outcome</p>
+            <div id="photon-landing-spot" style="position: absolute; width: 40px; height: 40px; z-index: 5;"></div>
+            <div class="output-group" id="output-result" style="margin: 0; z-index: 2;">
+                <div class="result-capsule active" style="background:var(--match-green); border-color:var(--match-green);" id="final-state"> Waiting... </div>
+            </div>
+        </div>
+
+    </div>
+
+    <p class="bottom-hint" id="hint-text">Help Alice encode her secret message (0 or 1)</p>
+
+    <div class="explanation-box" id="explain-box">
+        <div class="explain-header">
+            <p class="explain-title" id="explain-title">Encoding Result</p>
+            <button class="retry-btn" onclick="resetAlice()">↺&#xFE0E; Change Message</button>
+        </div>
+        <p class="explain-desc" id="explain-desc">Alice encoded her message by applying a quantum gate. Calculation below:</p>
+        
+        <div class="calc-process-container" id="calc-process-container">
+            </div>
+    </div>
+
+</div>
+
+<script>
+    let inputStateStr = ""; 
+    let finalStateStr = "";
+    let selectedGate = "";
+    let selectedMsg = "";
+
+    const gateLatex = {
+        'I': '\\begin{bmatrix} 1 & 0 \\\\ 0 & 1 \\end{bmatrix}',
+        'Y': '\\begin{bmatrix} 0 & 1 \\\\ -1 & 0 \\end{bmatrix}'
+    };
+
+    const vectorLatex = {
+        '|0⟩': '\\begin{bmatrix} 1 \\\\ 0 \\end{bmatrix}',
+        '|1⟩': '\\begin{bmatrix} 0 \\\\ 1 \\end{bmatrix}',
+        '|+⟩': '\\frac{1}{\\sqrt{2}}\\begin{bmatrix} 1 \\\\ 1 \\end{bmatrix}',
+        '|-⟩': '\\frac{1}{\\sqrt{2}}\\begin{bmatrix} 1 \\\\ -1 \\end{bmatrix}',
+        '-|0⟩': '-\\begin{bmatrix} 1 \\\\ 0 \\end{bmatrix}',
+        '-|1⟩': '-\\begin{bmatrix} 0 \\\\ 1 \\end{bmatrix}',
+        '-|+⟩': '-\\frac{1}{\\sqrt{2}}\\begin{bmatrix} 1 \\\\ 1 \\end{bmatrix}',
+        '-|-⟩': '-\\frac{1}{\\sqrt{2}}\\begin{bmatrix} 1 \\\\ -1 \\end{bmatrix}'
+    };
+
+    const gateDisplayHTML = {
+        'I': `<div class="msg-title">Message 0</div><div class="gate-subtitle">I Gate</div><div class="math-display">\\( ${gateLatex['I']} \\)</div>`,
+        'Y': `<div class="msg-title">Message 1</div><div class="gate-subtitle">Y Gate</div><div class="math-display">\\( ${gateLatex['Y']} \\)</div>`
+    };
+
+    const operationRules = {
+        '|0⟩': { 'I': '|0⟩', 'Y': '-|1⟩' },
+        '|1⟩': { 'I': '|1⟩', 'Y': '|0⟩' },
+        '|+⟩': { 'I': '|+⟩', 'Y': '|-⟩' },
+        '|-⟩': { 'I': '|-⟩', 'Y': '-|+⟩' },
+        '-|1⟩': { 'I': '-|1⟩', 'Y': '-|0⟩' },
+        '-|+⟩': { 'I': '-|+⟩', 'Y': '-|-⟩' }
+    };
+
+    document.addEventListener("DOMContentLoaded", () => {
+        const savedData = localStorage.getItem('qssStepData');
+        
+        if (savedData) {
+            let parsedData = JSON.parse(savedData);
+            inputStateStr = parsedData.finalState || "|0⟩"; 
+        } else {
+            inputStateStr = "|0⟩";
+        }
+        
+        // 改回純文字寫入，不使用 MathJax
+        document.getElementById("input-state").textContent = inputStateStr;
+
+        const aliceData = localStorage.getItem('qssStep3Data');
+        if(aliceData) {
+            let pData = JSON.parse(aliceData);
+            startAliceOperation(pData.aliceGate, pData.aliceMsg, true);
+        }
+    });
+
+    function startAliceOperation(gate, msg, skipAnimation = false) {
+        selectedGate = gate;
+        selectedMsg = msg;
+        
+        document.getElementById("alice-interactive").style.display = "none";
+        document.getElementById("hint-text").style.display = "none"; 
+        document.getElementById("alice-title").innerText = `Alice Encoded Message: ${msg}`; 
+        
+        const activeGateUI = document.getElementById("alice-active-gate");
+        activeGateUI.style.display = "flex";
+        
+        const gateDisplay = document.getElementById("alice-gate-display");
+        gateDisplay.innerHTML = gateDisplayHTML[gate];
+
+        if (window.MathJax && MathJax.typesetPromise) {MathJax.typesetPromise([gateDisplay]);}
+
+        finalStateStr = operationRules[inputStateStr][gate];
+        // 改回純文字寫入，不使用 MathJax
+        document.getElementById("final-state").textContent = finalStateStr;
+        document.getElementById("results-area").classList.remove("show-result");
+
+        if (skipAnimation) {
+            document.getElementById("arrow-out").classList.add("active");
+            displayFinalResult();
+        } else {
+            animateOperation();
+        }
+    }
+
+    function animateOperation() {
+        const stage = document.getElementById('stage');
+        const sourceEl = document.getElementById('input-state');
+        const midEl = document.getElementById('alice-gate-display');
+        
+        const particle = document.createElement('div');
+        particle.className = 'photon-particle';
+        particle.innerText = inputStateStr.replace('⟩', '').replace('|', ''); 
+        
+        const stageRect = stage.getBoundingClientRect();
+        const srcRect = sourceEl.getBoundingClientRect();
+        const midRect = midEl.getBoundingClientRect();
+        const landingSpot = document.getElementById('photon-landing-spot');
+        const outRect = landingSpot.getBoundingClientRect();
+        
+        const startX = srcRect.left - stageRect.left + srcRect.width / 2 - 20;
+        const startY = srcRect.top - stageRect.top + srcRect.height / 2 - 20;
+        const toMidX = midRect.left - stageRect.left + midRect.width / 2 - 20;
+        const toMidY = midRect.top - stageRect.top + midRect.height / 2 - 20;
+        const toOutX = outRect.left - stageRect.left + outRect.width / 2 - 20;
+        const toOutY = outRect.top - stageRect.top + outRect.height / 2 - 20;
+        
+        particle.style.left = startX + 'px';
+        particle.style.top = startY + 'px';
+        particle.style.setProperty('--tx-mid', (toMidX - startX) + 'px');
+        particle.style.setProperty('--ty-mid', (toMidY - startY) + 'px');
+        particle.style.setProperty('--tx-out', (toOutX - startX) + 'px');
+        particle.style.setProperty('--ty-out', (toOutY - startY) + 'px');
+        
+        stage.appendChild(particle);
+        
+        requestAnimationFrame(() => { particle.style.animation = 'shoot-to-alice 1.2s forwards cubic-bezier(0.4, 0, 0.2, 1)'; });
+        
+        setTimeout(() => {
+            document.getElementById("arrow-out").classList.add("active");
+            particle.innerText = finalStateStr.replace('⟩', '').replace('|', ''); 
+            particle.style.animation = 'shoot-alice-to-outcome 0.8s forwards ease-out';
+            
+            setTimeout(() => { 
+                displayFinalResult(); 
+                particle.remove(); 
+            }, 800);
+        }, 1300);
+    }
+
+    function displayFinalResult() {
+        const resultsArea = document.getElementById("results-area");
+        const explainBox = document.getElementById("explain-box");
+        const calcContainer = document.getElementById("calc-process-container");
+        
+        let texFinalState = finalStateStr.replace('⟩', '\\rangle');
+
+        let calcHTML = `<div class="math-display" style="display: flex; align-items: center; gap: 10px;">
+            \\( ${gateLatex[selectedGate]} \\times ${vectorLatex[inputStateStr]} = ${vectorLatex[finalStateStr]} \\)
+            <span style="color:var(--alice-color); font-weight:bold;">= \\( ${texFinalState} \\)</span>
+        </div>`;
+        calcContainer.innerHTML = calcHTML;
+
+        if (window.MathJax && MathJax.typesetPromise) {
+            MathJax.typesetPromise([calcContainer]);
+        }
+
+        const step3Data = {
+            aliceMsg: selectedMsg,
+            aliceGate: selectedGate,
+            finalEncodedState: finalStateStr
+        };
+        localStorage.setItem('qssStep3Data', JSON.stringify(step3Data));
+
+        resultsArea.classList.add("show-result");
+        explainBox.classList.add("show");
+    }
+
+    function resetAlice() {
+        document.getElementById("explain-box").classList.remove("show");
+        document.getElementById("results-area").classList.remove("show-result");
+        document.getElementById("arrow-out").classList.remove("active");
+        
+        // 改回純文字寫入，不使用 MathJax
+        document.getElementById("final-state").textContent = "Waiting...";
+        
+        const oldPhoton = document.querySelector('.photon-particle');
+        if(oldPhoton) oldPhoton.remove();
+        
+        localStorage.removeItem('qssStep3Data'); 
+        
+        setTimeout(() => {
+            document.getElementById("alice-active-gate").style.display = "none";
+            document.getElementById("alice-interactive").style.display = "flex";
+            document.getElementById("hint-text").style.display = "block";
+            document.getElementById("alice-title").innerText = "Choose Message to Send";
+        }, 300);
+    }
+
+    function prevStep() { 
+        // 抓回 Bob 一開始的選擇 (防止變成 null)
+        let bobChoice = JSON.parse(localStorage.getItem('bobOriginalChoice')) || { basis: 'Z', msg: '0' };
+        
+        // 清除 Charlie (Step2) 和 Alice (Step3) 的記憶
+        localStorage.removeItem('qssStepData'); 
+        localStorage.removeItem('qssStep3Data'); 
+        
+        // 帶著 Bob 的參數退回 Step 2
+        window.location.href = `QSSstep2.html?bobBasis=${bobChoice.basis}&bobMsg=${bobChoice.msg}`; 
+    }
+    
+    function nextStep() { 
+        if (localStorage.getItem('qssStep3Data')) {
+            window.location.href = 'QSSstep4.html';
+        } else {
+            alert("Complete Alice's encoding operation first!");
+        }
+    }
+</script>
+
+<script>
+/* ZLM 右側目前步驟視窗：禁止使用者滾動此區域，僅用 transform 固定顯示目前 step。 */
+document.addEventListener('DOMContentLoaded', function () {
+    const dock = document.querySelector('.zlm-image-dock');
+    const windowBox = document.querySelector('.zlm-image-window');
+    const list = document.querySelector('.zlm-image-list');
+    const currentCard = document.querySelector('.zlm-image-card.is-current');
+
+    if (dock) {
+        dock.addEventListener('wheel', function (event) {
+            event.preventDefault();
+        }, { passive: false });
+    }
+
+    function lockToCurrentStep() {
+        if (!windowBox || !list || !currentCard) return;
+        const isHorizontal = window.matchMedia('(max-width: 1179px)').matches;
+        if (isHorizontal) {
+            const offset = (windowBox.clientWidth / 2) - currentCard.offsetLeft - (currentCard.offsetWidth / 2);
+            list.style.transform = 'translateX(' + offset + 'px)';
+        } else {
+            const offset = (windowBox.clientHeight / 2) - currentCard.offsetTop - (currentCard.offsetHeight / 2);
+            list.style.transform = 'translateY(' + offset + 'px)';
+        }
+    }
+
+    lockToCurrentStep();
+    window.addEventListener('resize', lockToCurrentStep);
+});
+</script>
+
+</body>
+</html>
