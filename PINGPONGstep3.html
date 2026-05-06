@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <base href="https://s112321005.github.io/Cybersecurity-Visualization/">
+    <title>Quantum Security Direct Communication：Ping-Pong - Step 3</title>
+    
+    <script>
+        window.MathJax = {
+            tex: { inlineMath: [['\\(', '\\)']] }
+        };
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <style>
+        :root {
+            --primary-blue: #004aad;
+            --bob-color: #4C80C5;
+            --alice-color: #0049B0;
+            --dark-text: #333333;
+            --bg-color: #f8f9fa;
+            --photon-yellow: #ffeb3b; 
+            --match-green: #28a745;
+            --alert-red: #dc3545;
+            --classical-gray: #777777;
+        }
+
+        body {
+            font-family: 'Segoe UI', sans-serif; 
+            display: flex; flex-direction: column; align-items: center;    
+            /* 這裡從 40px 改成 30px，讓整體畫面往上 10px */
+            padding: 30px 20px; background-color: var(--bg-color); margin: 0;
+            overflow-y: scroll; 
+        }
+
+        /* 頂部導覽列 */
+        .header {
+            width: min(1000px, 95vw); display: flex; align-items: center; justify-content: space-between;
+            margin-bottom: 25px; animation: fadeIn 0.8s ease-out forwards;
+        }
+        .header-left { display: flex; align-items: center; gap: 15px; }
+        .btn-back {
+            width: 40px; height: 40px; background-color: var(--primary-blue);
+            color: white; border-radius: 50%; display: flex; justify-content: center; align-items: center; 
+            text-decoration: none; font-size: 1rem; transition: transform 0.2s; cursor: pointer; border: none;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .btn-back:hover { transform: scale(1.1); }
+        .title-pill {
+            border: 2px solid var(--primary-blue); padding: 8px 20px;
+            border-radius: 30px; font-weight: bold; background: white; color: var(--dark-text);
+        }
+        .header-center { 
+            flex-grow: 1; margin-left: 20px; font-weight: bold; 
+            font-size: 1.2rem; color: var(--dark-text); text-align: center; 
+        }
+        .header-right { display: flex; gap: 15px; }
+        .nav-btn {
+            border: 2px solid var(--primary-blue); background: white; color: var(--dark-text);
+            padding: 10px 25px; border-radius: 30px; font-weight: bold; font-size: 1rem;
+            cursor: pointer; transition: all 0.2s;
+        }
+        .nav-btn:hover:not(:disabled) { background: var(--primary-blue); color: white; }
+        .nav-btn:disabled { border-color: #ccc; color: #ccc; cursor: not-allowed; }
+
+        /* 主卡片 */
+        .main-card {
+            width: min(1000px, 95vw); height: 700px; border: 3px solid var(--primary-blue); border-radius: 35px;
+            position: relative; background: white; box-sizing: border-box; overflow: hidden;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            padding-top: 15px; padding-bottom: 80px; animation: fadeIn 0.8s ease-out forwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* 網格排版 */
+        .decision-grid { display: flex; align-items: center; justify-content: center; gap: 40px; width: 100%; margin-top: -100px; }
+        
+        .col { 
+            display: flex; flex-direction: column; justify-content: center; align-items: center; 
+            position: relative; height: 60px; 
+        }
+
+        .character-avatar { 
+            position: absolute; top: -190px; height: 110px; width: auto; z-index: 10; 
+        }
+
+        .stage-title {
+            position: absolute; top: -70px; font-size: 1.1rem; font-weight: bold;
+            margin: 0; width: 100%; text-align: center; white-space: nowrap;
+        }
+
+        .result-capsule {
+            padding: 12px 25px; border-radius: 30px; border: 2px solid var(--primary-blue);
+            color: var(--primary-blue); font-weight: bold; font-size: 1.4rem;
+            background: white; display: flex; align-items: center; justify-content: center;
+            height: 30px; min-width: 120px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); z-index: 2;
+            transition: opacity 0.4s ease;
+        }
+
+        /* 角色專屬樣式 */
+        .bob-text { color: var(--bob-color) !important; }
+        .bob-bg { background: var(--bob-color) !important; border-color: var(--bob-color) !important; color: white !important; }
+        .alice-text { color: var(--alice-color) !important; }
+        .alice-bg { background: var(--alice-color) !important; border-color: var(--alice-color) !important; color: white !important; }
+        
+        /* 古典通道與信封樣式 */
+        .classical-bg { background: white !important; border-color: var(--classical-gray) !important; color: var(--classical-gray) !important; }
+        .classical-text { color: var(--classical-gray) !important; }
+
+        /* Bob 互動區域 */
+        .bob-interactive { 
+            position: absolute; top: 110px; transform: translateY(-50%); 
+            display: flex; flex-direction: column; align-items: center; gap: 15px; 
+            transition: opacity 0.3s ease; width: 100%; opacity: 0; pointer-events: none; z-index: 20;
+        }
+        .bob-interactive.show { opacity: 1; pointer-events: auto; }
+
+        .measure-btn {
+            background: white; color: var(--bob-color); border: 3px solid var(--bob-color);
+            padding: 15px 30px; border-radius: 20px; font-size: 1.2rem; font-weight: bold;
+            cursor: pointer; box-shadow: 0 5px 15px rgba(76, 128, 197, 0.2); transition: all 0.2s;
+        }
+        .measure-btn:hover {
+            background: var(--bob-color); color: white; transform: scale(1.05);
+        }
+
+        /* 連接線條與反向箭頭 (Alice -> Bob) */
+        .connector { 
+            position: relative; display: flex; align-items: center; 
+            height: 50px; width: 0; opacity: 0; transition: width 0.5s ease-out, opacity 0.2s ease; 
+        }
+        .connector::before {
+            content: ""; position: absolute; top: 50%; left: 0; width: 100%; height: 3px;
+            background-color: var(--alice-color); transform: translateY(-50%); 
+        }
+        .arrow-connector-left::after {
+            content: ""; position: absolute; top: 50%; left: -2px; width: 0; height: 0;
+            border-top: 8px solid transparent; border-bottom: 8px solid transparent;
+            border-right: 14px solid var(--alice-color); transform: translateY(-50%);
+            opacity: 0; transition: opacity 0.2s ease 0.4s;
+        }
+        .connector.active { opacity: 1; width: 150px; }
+        .arrow-connector-left.active::after { opacity: 1; }
+
+        /* 古典通道 (虛線) */
+        .classical-connector::before {
+            background-color: transparent !important;
+            border-top: 4px dashed var(--classical-gray);
+            height: 0 !important;
+        }
+        .classical-connector.arrow-connector-left::after {
+            border-right: 14px solid var(--classical-gray) !important;
+        }
+
+        .channel-label {
+            position: absolute; top: 45px; width: 100%; text-align: center; 
+            color: var(--classical-gray); font-weight: bold; font-size: 0.95rem; 
+            opacity: 0; transition: opacity 0.3s;
+        }
+
+        /* 解說面板與運算框 */
+        .explanation-box {
+            position: absolute; bottom: 25px; width: 85%; background: #f8fbff;
+            border-left: 6px solid var(--bob-color); padding: 18px 30px; border-radius: 15px; 
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08); display: flex; flex-direction: column; gap: 8px; box-sizing: border-box;
+            opacity: 0; transform: translateY(20px); pointer-events: none; transition: all 0.5s ease;
+        }
+        .explanation-box.show { opacity: 1; transform: translateY(0); pointer-events: auto; }
+        .explain-header { display: flex; justify-content: space-between; align-items: center; }
+        .explain-title { font-weight: bold; font-size: 1.25rem; margin: 0; color: var(--bob-color); }
+        
+        .result-highlight {
+            font-size: 1.5rem; font-weight: bold; color: var(--match-green); text-align: center;
+            padding: 10px; background: #eaffed; border-radius: 10px; border: 2px dashed var(--match-green);
+            margin-top: 5px;
+        }
+
+        .bottom-hint { position: absolute; bottom: 30px; color: gray; font-weight: bold; font-size: 1.1rem; transition: opacity 0.3s; z-index: 5;}
+
+        /* 動畫 (從右到左) */
+        @keyframes shoot-to-bob {
+            0% { transform: translate(0, 0) scale(0); opacity: 1; }
+            30% { transform: translate(calc(var(--tx-mid) * 0.3), 0) scale(1.3); }
+            100% { transform: translate(var(--tx-mid), 0) scale(1); opacity: 1; } 
+        }
+
+        .photon-particle {
+            position: absolute; width: 42px; height: 42px; background: var(--photon-yellow); border-radius: 50%; 
+            box-shadow: 0 0 25px rgba(255, 235, 59, 0.8); display: flex; justify-content: center; align-items: center;
+            font-weight: 900; font-size: 1.2rem; color: var(--alice-color); pointer-events: none; z-index: 100;
+        }
+
+        .envelope-particle {
+            position: absolute; width: 50px; height: 35px; background: transparent; border: none;
+            display: flex; justify-content: center; align-items: center; font-size: 2.5rem; 
+            z-index: 100; pointer-events: none; text-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+
+        /* ================= 新增：車隊容器與粒子樣式 ================= */
+        .convoy-container {
+            position: absolute; 
+            display: flex; 
+            align-items: center; 
+            gap: 5px; 
+            z-index: 100; 
+            pointer-events: none;
+        }
+
+        .truck-icon {
+            font-size: 2.5rem; 
+            text-shadow: 0 4px 8px rgba(0,0,0,0.15);
+            line-height: 1;
+        }
+
+        .classical-bit {
+            width: 32px; 
+            height: 32px; 
+            border: 3px solid var(--classical-gray); 
+            border-radius: 50%; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center;
+            font-weight: 900; 
+            font-size: 1.2rem; 
+            color: var(--classical-gray);
+            background: white;
+            box-shadow: 0 0 10px rgba(119, 119, 119, 0.3);
+        }
+        /* ========================================================= */
+
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <div class="header-left">
+        <a href="Pingpongstep2.html" class="btn-back" title="back to step 2">◀</a>
+        <div class="title-pill">Quantum Security Direct Communication：Ping-Pong</div>
+    </div>
+    <div class="header-center">STEP 3 : Decoding & Verification</div>
+    <div class="header-right">
+        <button class="nav-btn" id="back-btn" onclick="prevStep()">Back</button>
+        <button class="nav-btn" id="next-btn" onclick="nextStep()" disabled>Next</button>
+    </div>
+</div>
+
+<div class="main-card" id="stage">
+    
+    <div class="decision-grid" id="grid-container">
+        
+        <div class="col" style="min-width: 250px;">
+            <img src="pictures/cat_bob.svg" alt="Bob" class="character-avatar">
+            <p class="stage-title bob-text" id="bob-title">Waiting for P1...</p>
+            
+            <div class="result-capsule bob-bg" id="bob-state" style="opacity: 0; position: absolute; top: 0; display: none;">Measured...</div>
+
+            <div id="control-compare-area" style="position: absolute; top: 0; display: flex; gap: 10px; z-index: 5;">
+                <div class="result-capsule classical-bg" id="alice-msg-display" style="opacity: 0; display: none; min-width: 90px;">Alice P1: -</div>
+                <div class="result-capsule bob-bg" id="bob-p2-display" style="opacity: 0; display: none; min-width: 90px;">Bob P2: -</div>
+            </div>
+
+            <div id="photon-landing-spot" style="position: absolute; top: -10px; width: 40px; height: 40px; z-index: 5;"></div>
+
+            <div class="bob-interactive" id="bob-interactive">
+                <button class="measure-btn" id="measure-btn" onclick="performMeasurement()">Bell-State Measurement</button>
+            </div>
+        </div>
+
+        <div class="col" style="width: 150px; position: relative;">
+            <div class="connector arrow-connector-left" id="conn-2" style="width: 100%;"></div> 
+            <div id="classical-label" class="channel-label">(Classical Channel)</div>
+        </div>
+
+        <div class="col" style="min-width: 180px;">
+            <img src="pictures/cat_alice.svg" alt="Alice" class="character-avatar">
+            <p class="stage-title alice-text" id="alice-title">Alice Returns P1</p>
+            <div class="result-capsule alice-bg" id="alice-state">Sent P1</div>
+            <div style="position: absolute; top: 70px; font-weight: bold; color: gray;" id="alice-action-desc">
+                (Encoded/Checked)
+            </div>
+        </div>
+
+    </div>
+
+    <p class="bottom-hint" id="hint-text">Wait for Particle 1 to return from Alice...</p>
+
+    <div class="explanation-box" id="explain-box">
+        <div class="explain-header">
+            <p class="explain-title" id="explain-title">Measurement Result</p>
+        </div>
+        <div id="calc-process-container" style="font-size: 1.1rem; color: #444; margin-top: 10px; line-height: 1.6;">
+            </div>
+    </div>
+
+</div>
+
+<script>
+    let savedMode = localStorage.getItem('pingpongMode') || 'message';
+    let savedMsg = localStorage.getItem('pingpongMessage') || '1'; 
+
+    let aliceMeasuredValue = 0;
+    let bobMeasuredValue = 1;
+
+    document.addEventListener("DOMContentLoaded", () => {
+        const actionDesc = document.getElementById('alice-action-desc');
+        const aliceState = document.getElementById('alice-state');
+        const aliceTitle = document.getElementById('alice-title');
+        const bobTitle = document.getElementById('bob-title');
+        const hintText = document.getElementById('hint-text');
+        const classicalLabel = document.getElementById('classical-label');
+
+        if(savedMode === 'control') {
+            aliceMeasuredValue = Math.random() < 0.5 ? 0 : 1;
+            bobMeasuredValue = aliceMeasuredValue === 0 ? 1 : 0;
+
+            aliceTitle.innerText = "Alice Announces Result";
+            actionDesc.innerText = "(Broadcast Result)"; 
+            aliceState.innerHTML = `Measured P1: ${aliceMeasuredValue}`;
+            
+            aliceState.classList.remove("alice-bg");
+            aliceState.classList.add("classical-bg");
+            aliceTitle.classList.remove("alice-text");
+            aliceTitle.classList.add("classical-text");
+            
+            classicalLabel.style.opacity = "1";
+
+            bobTitle.innerText = "Waiting for Alice's MSG...";
+            hintText.innerText = "Alice is broadcasting her measurement via classical channel...";
+
+            setTimeout(animateClassicalMessage, 800);
+
+        } else {
+            actionDesc.innerText = "(Message Encoded)";
+            if (savedMsg === '0') {
+                aliceState.innerHTML = '\\( |\\Psi^+\\rangle \\)';
+            } else {
+                aliceState.innerHTML = '\\( |\\Psi^-\\rangle \\)';
+            }
+            if (window.MathJax) {
+                MathJax.typesetPromise([aliceState]);
+            }
+
+            setTimeout(animatePhotonTransferBack, 800);
+        }
+    });
+
+    function animatePhotonTransferBack() {
+        const stage = document.getElementById('stage');
+        const sourceEl = document.getElementById('alice-state'); 
+        const landingSpot = document.getElementById('photon-landing-spot'); 
+        const conn2 = document.getElementById('conn-2');
+        
+        conn2.classList.add("active");
+
+        const particle = document.createElement('div');
+        particle.className = 'photon-particle';
+        particle.innerHTML = 'P1'; 
+        
+        runAnimation(particle, stage, sourceEl, landingSpot, () => {
+            document.getElementById("bob-title").innerText = "Bob Receives P1!";
+            document.getElementById("bob-interactive").classList.add("show");
+            document.getElementById("hint-text").innerText = "Click the button to perform Bell-State Measurement.";
+        });
+    }
+
+    function animateClassicalMessage() {
+        const stage = document.getElementById('stage');
+        const sourceEl = document.getElementById('alice-state'); 
+        const landingSpot = document.getElementById('photon-landing-spot'); 
+        const conn2 = document.getElementById('conn-2');
+        
+        conn2.classList.add("classical-connector");
+        conn2.classList.add("active");
+
+        const convoy = document.createElement('div');
+        convoy.className = 'convoy-container';
+
+        const truck = document.createElement('div');
+        truck.className = 'truck-icon';
+        truck.innerHTML = '🚛'; 
+
+        const bit = document.createElement('div');
+        bit.className = 'classical-bit';
+        bit.innerHTML = aliceMeasuredValue; 
+
+        convoy.appendChild(truck);
+        convoy.appendChild(bit);
+        
+        runAnimation(convoy, stage, sourceEl, landingSpot, () => {
+            document.getElementById("bob-title").innerText = "Received Alice's Result!";
+            
+            const aliceMsgDisplay = document.getElementById("alice-msg-display");
+            aliceMsgDisplay.style.display = "flex";
+            aliceMsgDisplay.innerHTML = `Alice P1: ${aliceMeasuredValue}`;
+            setTimeout(() => aliceMsgDisplay.style.opacity = "1", 50);
+
+            document.getElementById("measure-btn").innerText = "Measure P2 & Compare";
+            document.getElementById("bob-interactive").classList.add("show");
+            document.getElementById("hint-text").innerText = "Click the button to measure Bob's Particle 2 and check correlation.";
+        });
+    }
+
+    function runAnimation(element, stage, sourceEl, landingSpot, callback) {
+        const stageRect = stage.getBoundingClientRect();
+        const srcRect = sourceEl.getBoundingClientRect();
+        const outRect = landingSpot.getBoundingClientRect();
+        
+        const startX = srcRect.left - stageRect.left + srcRect.width / 2 - element.offsetWidth/2;
+        const startY = srcRect.top - stageRect.top + srcRect.height / 2 - element.offsetHeight/2;
+        const toOutX = outRect.left - stageRect.left + outRect.width / 2 - element.offsetWidth/2;
+        
+        element.style.left = (startX || 680) + 'px'; 
+        element.style.top = (startY || 220) + 'px';
+        element.style.setProperty('--tx-mid', (toOutX - startX || -350) + 'px');
+        
+        stage.appendChild(element);
+        
+        requestAnimationFrame(() => { 
+            element.style.animation = 'shoot-to-bob 2.5s forwards ease-in-out'; 
+        });
+        
+        setTimeout(() => {
+            element.remove();
+            if(callback) callback();
+        }, 2500);
+    }
+
+    function performMeasurement() {
+        document.getElementById("bob-interactive").classList.remove("show");
+        document.getElementById("hint-text").style.display = "none";
+        
+        const calcContainer = document.getElementById("calc-process-container");
+        const explainBox = document.getElementById("explain-box");
+        let htmlContent = "";
+
+        if (savedMode === 'control') {
+            document.getElementById("bob-title").innerText = "Verification Complete";
+            
+            const bobP2Display = document.getElementById("bob-p2-display");
+            bobP2Display.style.display = "flex";
+            bobP2Display.innerHTML = `Bob P2: ${bobMeasuredValue}`;
+            setTimeout(() => bobP2Display.style.opacity = "1", 50);
+
+            htmlContent = `
+                <div><b>1. Alice's Broadcast:</b> <b style="color:var(--alice-color); font-size:1.2em;">${aliceMeasuredValue}</b></div>
+                <div><b>2. Bob's Measurement:</b> <b style="color:var(--bob-color); font-size:1.2em;">${bobMeasuredValue}</b></div>
+                <div style="margin-top: 5px;"><b>3. Verification:</b> Initial state \\( |\\Psi^+\\rangle = \\frac{1}{\\sqrt{2}}(|01\\rangle + |10\\rangle) \\) requires anti-correlation (0&1 or 1&0). Results match!</div>
+                <div class="result-highlight" style="color: var(--match-green); border-color: var(--match-green); background: #eaffed;">
+                    Channel is Secure! ✅
+                </div>
+            `;
+        } else {
+            document.getElementById("bob-title").innerText = "Decoding Complete";
+            
+            const bobStateBox = document.getElementById("bob-state");
+            bobStateBox.style.display = "flex";
+
+            if (savedMsg === '0') {
+                bobStateBox.innerHTML = '\\( |\\Psi^+\\rangle \\)';
+                htmlContent = `
+                    <div><b>1. Encoding:</b> Alice applied Identity (\\( I \\)) for message <b>'0'</b>.</div>
+                    <div style="margin-top: 5px;"><b>2. State Change:</b> 
+                        <div style="text-align:center; margin-top: 5px;">\\( (I \\otimes I)|\\Psi^+\\rangle = \\frac{1}{\\sqrt{2}}(|01\\rangle + |10\\rangle) = |\\Psi^+\\rangle \\)</div>
+                    </div>
+                    <div style="margin-top: 5px;"><b>3. Bob's Measurement:</b> Detected \\( |\\Psi^+\\rangle \\).</div>
+                    <div class="result-highlight">
+                        Decoded Message: 0
+                    </div>
+                `;
+            } else {
+                bobStateBox.innerHTML = '\\( |\\Psi^-\\rangle \\)';
+                htmlContent = `
+                    <div><b>1. Encoding:</b> Alice applied Pauli-Z (\\( Z \\)) for message <b>'1'</b>.</div>
+                    <div style="margin-top: 5px;"><b>2. State Change:</b> 
+                        <div style="text-align:center; margin-top: 5px;">\\( (Z \\otimes I)|\\Psi^+\\rangle = \\frac{1}{\\sqrt{2}}(|01\\rangle - |10\\rangle) = |\\Psi^-\\rangle \\)</div>
+                    </div>
+                    <div style="margin-top: 5px;"><b>3. Bob's Measurement:</b> Detected \\( |\\Psi^-\\rangle \\).</div>
+                    <div class="result-highlight">
+                        Decoded Message: 1
+                    </div>
+                `;
+            }
+
+            setTimeout(() => bobStateBox.style.opacity = "1", 50);
+        }
+
+        calcContainer.innerHTML = htmlContent;
+        explainBox.classList.add("show");
+        
+        if (window.MathJax) {
+            MathJax.typesetPromise([calcContainer, document.getElementById("bob-state")]);
+        }
+
+        // 修改這裡：解鎖 next-btn
+        document.getElementById("next-btn").disabled = false;
+    }
+
+    function prevStep() {
+        window.location.href = 'Pingpongstep2.html';
+    }
+    function nextStep() {
+        window.location.href = 'Pingpongstep4.html';
+    }
+</script>
+</body>
+</html>
