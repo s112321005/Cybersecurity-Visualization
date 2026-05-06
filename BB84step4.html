@@ -192,6 +192,17 @@
             const windowBox = document.querySelector('.bb84-image-window');
             const list = document.querySelector('.bb84-image-list');
 
+            function randomizeSharedKey() {
+                document.querySelectorAll('.bit-card .bit-value').forEach(bit => {
+                    bit.textContent = Math.random() < 0.5 ? '0' : '1';
+                });
+                const keptBits = Array.from(document.querySelectorAll('.bit-card.keep .bit-value'), bit => bit.textContent);
+                const keyBits = document.querySelector('.key-bits');
+                keyBits.innerHTML = keptBits.map(bit => '<div class="key-bit">' + bit + '</div>').join('');
+            }
+
+            randomizeSharedKey();
+
             if (dock) {
                 dock.addEventListener('wheel', function (event) {
                     event.preventDefault();
