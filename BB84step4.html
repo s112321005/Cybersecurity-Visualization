@@ -102,7 +102,7 @@
             <a href="QuantumCybersecurityEducationPlatform.html" class="btn-back" title="back home">?&#xFE0E;</a>
             <div class="title-pill">Quantum Key Distribution : BB84</div>
         </div>
-        <div class="header-center">STEP 4 : Public Comparison</div>
+        <div class="header-center" id="step-title">STEP 4 : SIFTING</div>
         <div class="header-right">
             <button class="nav-btn" onclick="prevStep()">Back</button>
             <button class="nav-btn" onclick="nextStep()">Start Security Analysis</button>
@@ -231,6 +231,8 @@
                 });
                 nextCard.classList.add('is-current');
                 nextCard.setAttribute('aria-current', 'step');
+                const stepTitle = document.getElementById('step-title');
+                if (stepTitle) stepTitle.textContent = step === 5 ? 'STEP 5 : SHARED KEY!' : 'STEP 4 : SIFTING';
                 requestAnimationFrame(window.lockBb84ImageToCurrentStep);
             };
 

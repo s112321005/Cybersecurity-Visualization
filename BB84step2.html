@@ -5,8 +5,8 @@
     <base href="https://s112321005.github.io/Cybersecurity-Visualization/">
     <title>Quantum Key Distribution：BB84</title>
     <style>
-        :root { --primary-blue: #004aad; --dark-text: #333333; --bg-color: #f8f9fa; --photon-yellow: #ffeb3b; --match-green: #28a745; --mismatch-red: #dc3545; }
-        body { font-family: 'Segoe UI', sans-serif; display: flex; flex-direction: column; align-items: center; padding: 40px 20px; background-color: var(--bg-color); margin: 0; overflow-y: scroll; }
+        :root { --primary-blue: #549FD0; --alice-blue: #004aad; --dark-text: #333333; --bg-color: #f8f9fa; --bg-gradient: linear-gradient(135deg, #E0F2FE 0%, #F5F3FF 50%, #ECFDF5 100%); --photon-yellow: #ffeb3b; --match-green: #28a745; --mismatch-red: #dc3545; }
+        body { font-family: 'Segoe UI', sans-serif; display: flex; flex-direction: column; align-items: center; padding: 40px 20px; background: var(--bg-gradient); margin: 0; overflow-y: scroll; }
         .header { width: min(1000px, 95vw); display: flex; align-items: center; justify-content: space-between; margin-bottom: 25px; animation: fadeIn 0.8s ease-out forwards; }
         .header-left { display: flex; align-items: center; gap: 15px; }
         .btn-back { width: 40px; height: 40px; background-color: var(--primary-blue); color: white; border-radius: 50%; display: flex; justify-content: center; align-items: center; text-decoration: none; font-size: 1rem; transition: transform 0.2s; cursor: pointer; border: none; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
@@ -23,6 +23,7 @@
         .character-avatar { position: absolute; bottom: 100%; margin-bottom: 20px; z-index: 10; }
         .result-capsule { padding: 12px 25px; border-radius: 30px; border: 2px solid var(--primary-blue); color: var(--primary-blue); font-weight: bold; font-size: 1.2rem; background: white; display: flex; align-items: center; justify-content: center; height: 25px; min-width: 100px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
         .result-capsule.active { background: var(--primary-blue); color: white; }
+        #input-state.result-capsule.active { background: var(--alice-blue); border-color: var(--alice-blue); }
         .result-capsule.error { border-color: #999; color: #555; opacity: 0; transition: opacity 0.5s; }
         .basis-circle { width: 45px; height: 45px; border-radius: 50%; background: #4c80c5; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1.5rem; margin-top: 10px; box-shadow: 0 4px 10px rgba(0, 74, 173, 0.3); }
         .bob-interactive { display: flex; flex-direction: column; align-items: center; gap: 10px; transition: opacity 0.3s ease; }
@@ -74,7 +75,7 @@
         .bb84-image-list { position: relative; display: flex; flex-direction: column; align-items: center; gap: 34px; padding: 24px 0 34px; box-sizing: border-box; width: 393px; transform: translateY(0); transition: transform .45s ease; z-index: 20; }
         .bb84-image-card { position: relative; width: 232px; min-height: 245px; padding: 12px; box-sizing: border-box; background: #ffffff; border: 0 solid transparent; border-radius: 30px; display: flex; align-items: center; justify-content: center; flex: 0 0 auto; transition: filter .25s ease, opacity .25s ease, transform .25s ease, width .25s ease, min-height .25s ease, box-shadow .25s ease; z-index: 20; }
         .bb84-image-card:not(.is-current) { filter: grayscale(1) saturate(0); opacity: .42; transform: scale(.9); }
-        .bb84-image-card.is-current { width: 340px; min-height: 390px; padding: 16px; border: 11px solid #0054bd; border-radius: 36px; box-shadow: 0 12px 28px rgba(0, 84, 189, .28); filter: none; opacity: 1; transform: scale(1); margin: 8px 0; z-index: 100; }
+        .bb84-image-card.is-current { width: 340px; min-height: 390px; padding: 16px; border: 11px solid #549FD0; border-radius: 36px; box-shadow: 0 12px 28px rgba(84, 159, 208, .28); filter: none; opacity: 1; transform: scale(1); margin: 8px 0; z-index: 100; }
         .bb84-image-card img { position: relative; z-index: 101; width: 100%; height: 100%; max-width: 208px; max-height: 276px; object-fit: contain; display: block; }
         .bb84-image-card.is-current img { max-width: 305px; max-height: 350px; }
         @media (min-width: 1180px) { body { padding-right: 350px !important; } }
@@ -112,7 +113,7 @@
         <a href="QuantumCybersecurityEducationPlatform.html" class="btn-back" title="back home">◀</a>
         <div class="title-pill">Quantum Key Distribution：BB84</div>
     </div>
-    <div class="header-center">STEP 2：Measurement Result</div>
+    <div class="header-center" id="step-title">STEP 2 : TRANSMIT</div>
     <div class="header-right">
         <button class="nav-btn" onclick="prevStep()">Back</button>
         <button class="nav-btn" onclick="nextStep()">Next</button>
@@ -445,6 +446,8 @@ document.addEventListener('DOMContentLoaded', function () {
         });
         nextCard.classList.add('is-current');
         nextCard.setAttribute('aria-current', 'step');
+        const stepTitle = document.getElementById('step-title');
+        if (stepTitle) stepTitle.textContent = step === 3 ? 'STEP 3 : MEASURE' : 'STEP 2 : TRANSMIT';
         requestAnimationFrame(window.lockBb84ImageToCurrentStep);
     };
 
