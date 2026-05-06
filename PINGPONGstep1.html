@@ -121,7 +121,7 @@
             white-space: nowrap;
         }
 
-        /* Alice 選擇區域 (調整 top: 155px 稍微往上移一點) */
+        /* Alice 選擇區域 */
         .alice-interactive { 
             position: absolute; top: 100px; transform: translateY(-50%); 
             display: flex; flex-direction: column; align-items: center; gap: 20px; 
@@ -149,7 +149,7 @@
         }
         .mode-sub { font-size: 0.95rem; color: #888; white-space: nowrap; }
 
-        /* 亮燈狀態：統一使用 #0049B0 */
+        /* 亮燈狀態 */
         .mode-btn.lit {
             border-color: var(--alice-color);
             background-color: #f4f9ff;
@@ -192,7 +192,7 @@
             100% { transform: rotate(0deg) scale(1); }
         }
 
-        /* 選擇後的顯示 (維持 top: 140px 不動) */
+        /* 選擇後的顯示 */
         .alice-active-mode {
             position: absolute; top: 40px; transform: translateY(-50%);
             display: none; flex-direction: column; align-items: center; width: 100%;
@@ -238,12 +238,6 @@
             padding: 15px; display: flex; flex-direction: column; gap: 5px;
             font-size: 1.1rem; color: #333; box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
         }
-
-        .retry-btn {
-            padding: 8px 20px; border-radius: 20px; border: 2px solid #ccc;
-            background: white; color: #555; cursor: pointer; font-weight: bold; transition: all 0.2s; font-size: 0.95rem;
-        }
-        .retry-btn:hover { background: #f0f0f0; border-color: #999; color: black; transform: scale(1.05); }
 
         .bottom-hint { position: absolute; bottom: 30px; color: gray; font-weight: bold; font-size: 1.1rem; transition: opacity 0.3s; z-index: 5;}
 
@@ -330,7 +324,6 @@
     <div class="explanation-box" id="explain-box">
         <div class="explain-header">
             <p class="explain-title" id="explain-title">Mode Selected</p>
-            <button class="retry-btn" onclick="resetSelection()">↺ Roll Again</button>
         </div>
         <p class="explain-desc" id="explain-desc">Alice has received P1.</p>
         
@@ -482,31 +475,6 @@
         explainBox.classList.add("show");
         
         localStorage.setItem('pingpongMode', selectedMode);
-    }
-
-    function resetSelection() {
-        document.getElementById("explain-box").classList.remove("show");
-        document.getElementById("alice-active-mode").style.display = "none";
-        document.getElementById('next-btn').disabled = true;
-        
-        setTimeout(() => {
-            if(flashInterval) clearInterval(flashInterval);
-            document.getElementById('box-control').classList.remove('lit');
-            document.getElementById('box-message').classList.remove('lit');
-            
-            const diceWrapper = document.getElementById('dice-container');
-            diceWrapper.onclick = rollDice;
-            diceWrapper.classList.add('pulse');
-            
-            const diceHint = document.getElementById('dice-hint');
-            diceHint.innerText = "Click to Roll!";
-            diceHint.style.color = "var(--primary-blue)";
-
-            document.getElementById("alice-interactive").classList.add("show");
-            document.getElementById("hint-text").style.display = "block";
-            document.getElementById("hint-text").innerText = "Roll the dice to randomly select a mode.";
-            document.getElementById("alice-title").innerText = "Alice Receives P1!";
-        }, 300);
     }
 
     function nextStep() {
