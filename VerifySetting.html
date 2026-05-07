@@ -54,6 +54,7 @@
         .category-box { width: 180px; height: 45px; border: 3px solid var(--text-dark); border-radius: 10px; display: flex; justify-content: center; align-items: center; font-size: 22px; font-weight: 900; color: var(--text-dark); letter-spacing: 1px; background-color: #fcfcfc; }
         .action-btn { position: absolute; right: 0; bottom: 5px; background-color: var(--primary-blue); color: white; border: none; border-radius: 30px; padding: 0 35px; height: 45px; font-size: 16px; font-weight: bold; cursor: pointer; transition: all 0.2s; white-space: nowrap; z-index: 10; }
         .action-btn:hover { background-color: #3f8fbd; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(84,159,208,0.2); }
+        .learn-btn { left: 0; right: auto; }
         .btn-back { width: 40px; height: 40px; background-color: var(--primary-blue); color: white; border-radius: 50%; display: flex; justify-content: center; align-items: center; text-decoration: none; font-size: 1.1rem; transition: transform 0.2s; cursor: pointer; border: none; box-shadow: 0 2px 6px rgba(0,0,0,0.15); flex-shrink: 0; }
         
         /* Pagination Dots */
@@ -128,6 +129,7 @@
                 <div class="category-box"><span id="mode-name">QKD</span></div>
                 <div class="nav-arrow" onclick="changeMode(1)">&#9654;</div>
             </div>
+            <button class="action-btn learn-btn" id="learnBtn">Learn This Topic</button>
             <button class="action-btn" id="goBtn">Analyze NOW!</button>
         </div>
 
@@ -160,10 +162,15 @@
         
         let modeIdx = 0, protoIdx = 0, isThrottled = false;
         let scale = 1, posX = 0, posY = 0, isDragging = false, startX, startY;
+        const protocolLearningLinks = {
+            BB84: "BB84step1.html",
+            B92: "B92step1.html",
+            ZhangLiMan: "ZLMstep1.html",
+            pingpong: "PINGPONGstep1.html"
+        };
         
         // 紀錄已瀏覽過的分類，供 General Scene 判斷是否為第一次切換
         const visitedModes = new Set();
-
         function updateDisplay() {
             const currentMode = quantumData[modeIdx];
             const currentProto = currentMode.protocols[protoIdx];
@@ -172,6 +179,7 @@
             document.getElementById('mode-desc').textContent = currentMode.description;
             document.getElementById('mode-name').textContent = currentMode.mode;
             document.getElementById('goBtn').onclick = () => { window.location.href = currentProto.link; };
+            document.getElementById('learnBtn').onclick = () => { window.location.href = protocolLearningLinks[currentProto.name]; };
             
             // 更新圖片：命名規則為 scene-分類-協定.png
             const img = document.getElementById('scene-img');
