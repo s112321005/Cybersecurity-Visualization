@@ -6,21 +6,21 @@
     <base href="https://s112321005.github.io/Cybersecurity-Visualization/">
     <title>QSDC Visualization: Ping-Pong Protocol</title>
     <style>
-        :root { --primary-blue: #0047AB; --light-blue: #D0E0FF; --inactive-gray: #e0e0e0; --bg-color: #f8f9fa; --eve-red: #D32F2F; --bob-blue: #4C80C5; --alice-blue: #0047AB; --op-purple: #FFE69A; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--bg-color); display: flex; flex-direction: column; align-items: center; margin: 0; padding: 20px 0; color: #333; min-width: 1450px !important; }
+        :root { --primary-blue: #549FD0; --alice-blue: #004aad; --bg-gradient: linear-gradient(135deg, #E0F2FE 0%, #F5F3FF 50%, #ECFDF5 100%); --light-blue: #D0E0FF; --inactive-gray: #e0e0e0; --bg-color: #f8f9fa; --eve-red: #D32F2F; --bob-blue: #4C80C5; --op-purple: #FFE69A; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--bg-gradient); display: flex; flex-direction: column; align-items: center; margin: 0; padding: 20px 0; color: #333; min-width: 1450px !important; }
         .container { background: white; padding: 20px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); width: 1450px !important; max-width: 1850px !important; flex-shrink: 0 !important; margin: 0 auto; margin-top: 40px;}
         .top-bar { margin-bottom: 30px; display: flex; align-items: center; justify-content: flex-start; gap: 20px; }
         .page-title { border: 2px solid var(--primary-blue); color: #000; padding: 10px 40px; border-radius: 10px; font-size: 20px; font-weight: bold; }
         .btn-back { background-color: var(--primary-blue); color: white; text-decoration: none; width: 40px; height: 40px; border-radius: 50%; font-size: 18px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(0,0,0,0.15); font-weight: bold; transition: all 0.3s ease; flex-shrink: 0;}
-        .btn-back:hover { transform: scale(1.1); background-color: #003380; color: white; }
+        .btn-back:hover { transform: scale(1.1); background-color: #3f8fbd; color: white; }
         .main-content { display: flex; flex-direction: row !important; gap: 30px; align-items: flex-start; width: 100%; }
         .sidebar { width: 220px; display: flex; flex-direction: column; align-items: center; z-index: 10; gap: 20px; flex-shrink: 0; }
         .selection-box { background: var(--light-blue); border-radius: 15px; padding: 20px 15px; width: 100%; box-sizing: border-box; }
         .selection-box h4 { margin: 0 0 15px 0; text-align: center; color: #333; }
         .option-row { gap: 12px; cursor: pointer; padding: 10px; border-radius: 8px; margin-bottom: 10px; display: flex; justify-content: center; transition: all 0.3s ease; }
         .option-row:hover { background-color: #f0f4f8; }
-        .option-row.active .state-btn { background-color: var(--primary-blue); color: white; border-color: var(--primary-blue); }
-        .state-btn { background: white; border: 2px solid var(--primary-blue); color: var(--primary-blue); padding: 8px 16px; border-radius: 8px; font-size: 16px; font-weight: bold; pointer-events: none; width: 100%; text-align: center; transition: all 0.3s ease; }
+        .option-row.active .state-btn { background-color: var(--alice-blue); color: white; border-color: var(--alice-blue); }
+        .state-btn { background: white; border: 2px solid var(--alice-blue); color: var(--alice-blue); padding: 8px 16px; border-radius: 8px; font-size: 16px; font-weight: bold; pointer-events: none; width: 100%; text-align: center; transition: all 0.3s ease; }
         .settings-panel { width: 100%; box-sizing: border-box; background: var(--light-blue); border-radius: 15px; padding: 20px 15px; display: flex; flex-direction: column; gap: 10px; }
         .settings-panel h4 { margin: 0 0 10px 0; text-align: center; color: #333; border-bottom: 2px solid var(--primary-blue); padding-bottom: 8px; }
         .setting-item { background: #fff; padding: 12px; margin-bottom: 12px; border-radius: 8px; border-left: 4px solid var(--primary-blue); box-shadow: 0 2px 5px rgba(0,0,0,0.05); font-size: 14px; }
@@ -52,10 +52,10 @@
         #prob-tooltip { position: absolute; background: rgba(33, 37, 41, 0.9); color: #f8f9fa; padding: 6px 12px; border-radius: 6px; font-size: 0.9rem; font-weight: bold; pointer-events: none; z-index: 1000; opacity: 0; transition: opacity 0.2s ease-in-out; }
         .clickable-node { cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; pointer-events: auto; }
         .clickable-node:hover { transform: scale(1.15) translate(-43%, -43%); z-index: 100; }
-        .clickable-node:hover .qss-shape, .clickable-node:hover .math-box-alice { box-shadow: 0 0 15px var(--primary-blue); }
+        .clickable-node:hover .qss-shape, .clickable-node:hover .math-box-alice { box-shadow: 0 0 15px var(--alice-blue); }
         .pull-tab { position: absolute; top: 0; left: 50%; transform: translateX(-50%); background-color: var(--primary-blue); color: white; padding: 10px 40px 15px 40px; border-bottom-left-radius: 20px; border-bottom-right-radius: 20px; cursor: pointer; font-size: 16px; font-weight: bold; z-index: 10001; box-shadow: 0 4px 15px rgba(0,0,0,0.3); transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1); display: flex; gap: 10px; align-items: center; }
-        .pull-tab:hover { background-color: #003380; padding-top: 15px; }
-        .settings-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-color: #f8f9fa; z-index: 10000; transform: translateY(-100%); transition: transform 0.8s cubic-bezier(0.22, 1, 0.36, 1); display: flex; flex-direction: column; align-items: center; justify-content: flex-start; overflow-y: auto; box-sizing: border-box; padding-top: 80px; box-shadow: 0 15px 50px rgba(0,0,0,0.2); }
+        .pull-tab:hover { background-color: #3f8fbd; padding-top: 15px; }
+        .settings-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: var(--bg-gradient); z-index: 10000; transform: translateY(-100%); transition: transform 0.8s cubic-bezier(0.22, 1, 0.36, 1); display: flex; flex-direction: column; align-items: center; justify-content: flex-start; overflow-y: auto; box-sizing: border-box; padding-top: 80px; box-shadow: 0 15px 50px rgba(0,0,0,0.2); }
         .settings-overlay.show { transform: translateY(0); }
         .overlay-container { width: 1200px; max-width: 95vw; display: flex; flex-direction: column; align-items: center; padding-bottom: 50px; }
         .main-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; width: 100%; margin-bottom: 30px; }
@@ -85,13 +85,15 @@
         .pill-radio { display: inline-block; position: relative; }
         .pill-radio input { display: none; }
         .pill-radio span { display: inline-flex; padding: 4px 12px; border: 2px solid var(--primary-blue); border-radius: 20px; color: var(--primary-blue); font-weight: bold; font-size: 14px; cursor: pointer; background-color: white; text-align: center; min-width: 12px; justify-content: center; transition: all 0.3s ease; white-space: nowrap; }
-        .pill-radio input:checked + span { background-color: #478CEA; color: white; border-color: #478CEA; }
+        .pill-radio input:checked + span { background-color: var(--primary-blue); color: white; border-color: var(--primary-blue); }
         .disabled .pill-radio span { border-color: #b0b0b0 !important; color: #b0b0b0 !important; cursor: not-allowed; background-color: white !important; }
         .state-type { padding: 4px 8px; border-radius: 12px; border: 2px solid var(--primary-blue); font-weight: bold; font-size: 14px; color: var(--primary-blue); outline: none; }
-        #alice-col .name-tag { background-color: #0047AB !important; color: #ffffff !important; }
-        #alice-col .status-toggle-static { background-color: #0047AB !important; color: #ffffff !important; }
-        #alice-col .control-panel:not(.disabled) .pill-radio input[type="radio"]:checked + span { background-color: #0047AB !important; border-color: #0047AB !important; }
-        #alice-col .control-panel:not(.disabled) .setting-title::before { background-color: #0047AB; }        
+        #alice-col .name-tag { background-color: var(--alice-blue) !important; color: #ffffff !important; }
+        #alice-col .status-toggle-static { background-color: var(--alice-blue) !important; color: #ffffff !important; }
+        #alice-col .control-panel:not(.disabled) { border-color: var(--alice-blue) !important; }
+        #alice-col .control-panel:not(.disabled) .pill-radio span { border-color: var(--alice-blue) !important; color: var(--alice-blue) !important; }
+        #alice-col .control-panel:not(.disabled) .pill-radio input[type="radio"]:checked + span { background-color: var(--alice-blue) !important; border-color: var(--alice-blue) !important; color: #ffffff !important; }
+        #alice-col .control-panel:not(.disabled) .setting-title::before { background-color: var(--alice-blue); }        
         #bob-col .name-tag, #bob-col .status-toggle-static { background-color: var(--bob-blue) !important; }
         #bob-col .control-panel:not(.disabled) { border-color: var(--bob-blue) !important; }
         #bob-col .control-panel:not(.disabled) .pill-radio span { border-color: var(--bob-blue) !important; color: var(--bob-blue) !important; }

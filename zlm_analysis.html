@@ -6,8 +6,8 @@
     <base href="https://s112321005.github.io/Cybersecurity-Visualization/">
     <title>QSS Visualization：ZhangLiMan Protocol</title>
     <style>
-        :root { --primary-blue: #0047AB; --light-blue: #D0E0FF; --inactive-gray: #e0e0e0; --bg-color: #f8f9fa; --eve-red: #D32F2F; --bob-blue: #4C80C5; --charlie-blue: #478CEA; --op-purple: #FFE69A; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--bg-color); display: flex; flex-direction: column; align-items: center; margin: 0; padding: 20px 0; color: #333; min-width: 1450px !important; }
+        :root { --primary-blue: #549FD0; --alice-blue: #004aad; --bg-gradient: linear-gradient(135deg, #E0F2FE 0%, #F5F3FF 50%, #ECFDF5 100%); --light-blue: #D0E0FF; --inactive-gray: #e0e0e0; --bg-color: #f8f9fa; --eve-red: #D32F2F; --bob-blue: #4C80C5; --charlie-blue: #478CEA; --op-purple: #FFE69A; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--bg-gradient); display: flex; flex-direction: column; align-items: center; margin: 0; padding: 20px 0; color: #333; min-width: 1450px !important; }
         .container { background: white; padding: 20px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); width: 1450px !important; max-width: 1850px !important; flex-shrink: 0 !important; margin: 0 auto; }
         .nav-tabs, .tab-btn, .state-btn, .state-circle, .eve-state-circle, .prob-circle, .result-circle, .btn-back, .top-bar, .option-row, .character-avatar, .line-tooltip { display: flex; align-items: center; justify-content: center; font-weight: bold; transition: all 0.3s ease; box-sizing: border-box; }
         .nav-tabs { gap: 20px; margin-bottom: 30px; }
@@ -29,7 +29,7 @@
         .arrows { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; }
         .node { position: absolute; display: flex; flex-direction: column; align-items: center; z-index: 2; transform: translate(-50%, -50%); }
         .qss-shape { width: 55px; height: 55px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1.4rem; color: #ffffff; box-shadow: 2px 3px 6px rgba(0,0,0,0.2); }
-        .color-alice { background-color: var(--primary-blue); }
+        .color-alice { background-color: var(--alice-blue); }
         .color-bob { background-color: var(--bob-blue); }
         .color-charlie { background-color: var(--charlie-blue); }
         .color-op { background-color: var(--op-purple); color: #af7754 !important; width: 42px !important; height: 42px !important; font-size: 1.1rem !important; }
@@ -40,11 +40,11 @@
         #prob-tooltip { position: absolute; background: rgba(33, 37, 41, 0.9); color: #f8f9fa; padding: 6px 12px; border-radius: 6px; font-size: 0.9rem; font-weight: bold; pointer-events: none; display: none; z-index: 1000; }
         .character-avatar { position: absolute; top: 2%; transform: translateX(-50%); z-index: 10; flex-direction: column; padding: 8px 12px; border-radius: 16px; box-shadow: 0 4px 8px rgba(0,0,0,0.15); background-color: #ffffff; }
         .character-avatar img { width: 75px; object-fit: contain; }    
-        .avatar-alice { border: 3px solid var(--primary-blue); width: 350px; left:40%;}
+        .avatar-alice { border: 3px solid var(--alice-blue); width: 350px; left:40%;}
         .avatar-bob-1 { border: 3px solid var(--bob-blue);  width: 132px;}
         .avatar-bob-2 { border: 3px solid var(--bob-blue);  width: 252px;}
         .avatar-charlie { border: 3px solid var(--charlie-blue); width: 225px; }
-        .avatar-alice-eve { border: 3px solid var(--primary-blue); }
+        .avatar-alice-eve { border: 3px solid var(--alice-blue); }
         .avatar-bob-eve { border: 3px solid var(--bob-blue); }
         .avatar-charlie-eve { border: 3px solid var(--charlie-blue); }
         .avatar-eve { border: 3px solid var(--eve-red); width: 350px; }
@@ -61,7 +61,7 @@
         .setting-item.eve-off { border-left-color: #999 !important; color: #999 !important; }
         .setting-item.eve-off strong { color: #999 !important; border-bottom-color: #eee !important; }
         .btn-back { background-color: var(--primary-blue); color: white; text-decoration: none; width: 40px; height: 40px; border-radius: 50%; font-size: 18px; box-shadow: 0 4px 10px rgba(0,0,0,0.15); flex-shrink: 0; }
-        .btn-back:hover { transform: scale(1.1); background-color: #003380; color: white; }
+        .btn-back:hover { transform: scale(1.1); background-color: #3f8fbd; color: white; }
         .clickable-node { cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; pointer-events: auto; }
         .clickable-node:hover { transform: scale(1.15) translate(-43%, -43%); z-index: 100; border-radius: 50%; }
         .clickable-node:hover .qss-shape { box-shadow: 0 0 15px var(--primary-blue); }
@@ -71,8 +71,8 @@
         .eve-nav-right { right: 15px; }
         .eve-nav-disabled { opacity: 0.3; cursor: not-allowed; }
         .pull-tab { position: absolute; top: 0; left: 50%; transform: translateX(-50%); background-color: var(--primary-blue); color: white; padding: 10px 40px 15px 40px; border-bottom-left-radius: 20px; border-bottom-right-radius: 20px; cursor: pointer; font-size: 16px; font-weight: bold; z-index: 10001; box-shadow: 0 4px 15px rgba(0,0,0,0.3); transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1); display: flex; gap: 10px; align-items: center; }
-        .pull-tab:hover { background-color: #003380; padding-top: 15px; }
-        .settings-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-color: #f8f9fa; z-index: 10000; transform: translateY(-100%); transition: transform 1.2s cubic-bezier(0.22, 1, 0.36, 1); display: flex; flex-direction: column; align-items: center; justify-content: flex-start; overflow-y: auto; box-sizing: border-box; padding-top: 80px; box-shadow: 0 15px 50px rgba(0,0,0,0.2); }
+        .pull-tab:hover { background-color: #3f8fbd; padding-top: 15px; }
+        .settings-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: var(--bg-gradient); z-index: 10000; transform: translateY(-100%); transition: transform 1.2s cubic-bezier(0.22, 1, 0.36, 1); display: flex; flex-direction: column; align-items: center; justify-content: flex-start; overflow-y: auto; box-sizing: border-box; padding-top: 80px; box-shadow: 0 15px 50px rgba(0,0,0,0.2); }
         .settings-overlay.show { transform: translateY(0); }
         .overlay-container { width: 1100px; max-width: 95vw; display: flex; flex-direction: column; align-items: center; padding-bottom: 50px; }
         .main-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; width: 100%; margin-bottom: 30px; }
@@ -103,12 +103,14 @@
         .pill-radio { display: inline-block; position: relative; }
         .pill-radio input { display: none; }
         .pill-radio span { display: inline-flex; padding: 4px 12px; border: 2px solid var(--primary-blue); border-radius: 20px; color: var(--primary-blue); font-weight: bold; font-size: 14px; cursor: pointer; background-color: white; text-align: center; min-width: 6px; justify-content: center; transition: all 0.3s ease; white-space: nowrap; }
-        .pill-radio input:checked + span { background-color: #478CEA; color: white; border-color: #478CEA; }
+        .pill-radio input:checked + span { background-color: var(--primary-blue); color: white; border-color: var(--primary-blue); }
         .disabled .pill-radio span { border-color: #b0b0b0 !important; color: #b0b0b0 !important; cursor: not-allowed; background-color: white !important; }
-        #alice-col .name-tag { background-color: #0047AB !important; color: #ffffff !important; }
-        #alice-col .status-toggle-static { background-color: #0047AB !important; color: #ffffff !important; }
-        #alice-col .control-panel:not(.disabled) .pill-radio input[type="radio"]:checked + span { background-color: #0047AB !important; border-color: #0047AB !important; }
-        #alice-col .control-panel:not(.disabled) .setting-title::before { background-color: #0047AB; }        #bob-col .name-tag, #bob-col .status-toggle-static { background-color: var(--bob-blue) !important; }
+        #alice-col .name-tag { background-color: var(--alice-blue) !important; color: #ffffff !important; }
+        #alice-col .status-toggle-static { background-color: var(--alice-blue) !important; color: #ffffff !important; }
+        #alice-col .control-panel:not(.disabled) { border-color: var(--alice-blue) !important; }
+        #alice-col .control-panel:not(.disabled) .pill-radio span { border-color: var(--alice-blue) !important; color: var(--alice-blue) !important; }
+        #alice-col .control-panel:not(.disabled) .pill-radio input[type="radio"]:checked + span { background-color: var(--alice-blue) !important; border-color: var(--alice-blue) !important; color: #ffffff !important; }
+        #alice-col .control-panel:not(.disabled) .setting-title::before { background-color: var(--alice-blue); }        #bob-col .name-tag, #bob-col .status-toggle-static { background-color: var(--bob-blue) !important; }
         #bob-col .control-panel:not(.disabled) { border-color: var(--bob-blue) !important; }
         #bob-col .control-panel:not(.disabled) .pill-radio span { border-color: var(--bob-blue) !important; color: var(--bob-blue) !important; }
         #bob-col .control-panel:not(.disabled) .pill-radio input:checked + span { background-color: var(--bob-blue) !important; color: white !important; }

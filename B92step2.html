@@ -5,12 +5,12 @@
     <base href="https://s112321005.github.io/Cybersecurity-Visualization/">
     <title>Quantum Key Distribution：B92 Step 2</title>
     <style>
-        :root { --primary-blue: #549FD0; --dark-text: #333333; --bg-color: #f8f9fa; --active-blue: #edf6fb; --match-green: #28a745; --mismatch-red: #dc3545; }
+        :root { --primary-blue: #549FD0; --alice-blue: #004aad; --bg-gradient: linear-gradient(135deg, #E0F2FE 0%, #F5F3FF 50%, #ECFDF5 100%); --dark-text: #333333; --bg-color: #f8f9fa; --active-blue: #edf6fb; --match-green: #28a745; --mismatch-red: #dc3545; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes float-anim { 0% { transform: translateY(0px); } 50% { transform: translateY(-8px); } 100% { transform: translateY(0px); } }
         @keyframes pulse-border { 0% { box-shadow: 0 0 0 0 rgba(84, 159, 208, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(84, 159, 208, 0); } 100% { box-shadow: 0 0 0 0 rgba(84, 159, 208, 0); } }
         
-        body { font-family: 'Segoe UI', sans-serif; display: flex; flex-direction: column; align-items: center; padding: 40px 20px; background-color: var(--bg-color); margin: 0; animation: fadeIn 0.8s ease-out; overflow-x: hidden; }
+        body { font-family: 'Segoe UI', sans-serif; display: flex; flex-direction: column; align-items: center; padding: 40px 20px; background: var(--bg-gradient); margin: 0; animation: fadeIn 0.8s ease-out; overflow-x: hidden; }
         
         /* Header 樣式 */
         .header { width: min(1000px, 95vw); display: flex; align-items: center; justify-content: space-between; margin-bottom: 25px; height: 60px; }
@@ -30,9 +30,9 @@
         .side-panel { display: flex; flex-direction: column; align-items: center; width: 40%; }
         
         /* Alice 區域 (唯讀) */
-        .alice-box { background: #f8f9fa; border: 2px dashed #ccc; border-radius: 20px; padding: 20px; text-align: center; width: 100%; box-sizing: border-box; opacity: 0.9; }
-        .alice-title { font-weight: bold; color: #555; margin-bottom: 15px; font-size: 1.1rem; }
-        .photon-display { font-size: 2.5rem; font-weight: bold; color: var(--primary-blue); margin: 10px 0; display: inline-block; padding: 10px 20px; background: #fff; border-radius: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        .alice-box { background: #f8f9fa; border: 2px dashed var(--alice-blue); border-radius: 20px; padding: 20px; text-align: center; width: 100%; box-sizing: border-box; opacity: 0.9; }
+        .alice-title { font-weight: bold; color: var(--alice-blue); margin-bottom: 15px; font-size: 1.1rem; }
+        .photon-display { font-size: 2.5rem; font-weight: bold; color: var(--alice-blue); margin: 10px 0; display: inline-block; padding: 10px 20px; background: #fff; border-radius: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
         
         /* Bob 互動區域 */
         .character-bob { margin-bottom: 10px; animation: float-anim 3.5s ease-in-out infinite reverse; }
@@ -88,7 +88,7 @@
             <div class="alice-box">
                 <div class="alice-title">Alice sent:</div>
                 <div id="alice-photon" class="photon-display">?</div>
-                <div id="alice-bit-label" style="font-weight: bold; color: #888; margin-top: 5px;">Bit: ?</div>
+                <div id="alice-bit-label" style="font-weight: bold; color: var(--alice-blue); margin-top: 5px;">Bit: ?</div>
             </div>
             <p style="text-align: center; color: #999; font-size: 0.9rem; margin-top: 15px;">(In reality, Bob doesn't know this!)</p>
         </div>

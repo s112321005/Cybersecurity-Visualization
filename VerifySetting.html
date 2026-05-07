@@ -6,14 +6,14 @@
     <base href="https://s112321005.github.io/Cybersecurity-Visualization/">
     <title>Protocol Selection & Verification - Quantum Platform</title>
     <style>
-        :root { --primary-blue: #0047A0; --text-dark: #333333; --bg-color: #f0f2f5; --border-width: 4px; --border-radius: 15px; }
+        :root { --primary-blue: #549FD0; --alice-blue: #004aad; --bg-gradient: linear-gradient(135deg, #E0F2FE 0%, #F5F3FF 50%, #ECFDF5 100%); --text-dark: #333333; --bg-color: #f0f2f5; --border-width: 4px; --border-radius: 15px; }
         body { 
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-            background-color: var(--bg-color); margin: 0; height: 100vh; 
+            background: var(--bg-gradient); margin: 0; height: 100vh; 
             display: flex; justify-content: center; align-items: center; 
             overflow: hidden; user-select: none; 
         }
-        .page-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, rgba(0,71,160,0.1) 0%, rgba(255,255,255,1) 100%); z-index: -1; }
+        .page-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-gradient); z-index: -1; }
         .selection-window { background-color: white; border: var(--border-width) solid var(--primary-blue); border-radius: var(--border-radius); width: 80vw; height: 650px; max-width: 1400px; padding: 30px 60px; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15); display: flex; flex-direction: column; box-sizing: border-box; position: relative; }
         
         /* 標題區域：左上角固定分類描述 */
@@ -53,7 +53,7 @@
         .nav-arrow:active { transform: scale(0.8); }
         .category-box { width: 180px; height: 45px; border: 3px solid var(--text-dark); border-radius: 10px; display: flex; justify-content: center; align-items: center; font-size: 22px; font-weight: 900; color: var(--text-dark); letter-spacing: 1px; background-color: #fcfcfc; }
         .action-btn { position: absolute; right: 0; bottom: 5px; background-color: var(--primary-blue); color: white; border: none; border-radius: 30px; padding: 0 35px; height: 45px; font-size: 16px; font-weight: bold; cursor: pointer; transition: all 0.2s; white-space: nowrap; z-index: 10; }
-        .action-btn:hover { background-color: #003377; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,71,160,0.2); }
+        .action-btn:hover { background-color: #3f8fbd; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(84,159,208,0.2); }
         .btn-back { width: 40px; height: 40px; background-color: var(--primary-blue); color: white; border-radius: 50%; display: flex; justify-content: center; align-items: center; text-decoration: none; font-size: 1.1rem; transition: transform 0.2s; cursor: pointer; border: none; box-shadow: 0 2px 6px rgba(0,0,0,0.15); flex-shrink: 0; }
         
         /* Pagination Dots */
