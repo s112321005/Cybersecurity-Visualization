@@ -6,13 +6,13 @@
     <title>QKD Security Evaluator - Pro Final</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        :root { --primary-blue: #0047AB; --bg-gray: #f8f9fa; --yellow: #FFD700; --green: #28a745; --red: #FF0000; }
-        body { margin: 0; padding: 40px 0; background: var(--bg-gray); font-family: 'Segoe UI', sans-serif; display: flex; justify-content: center; }
+        :root { --primary-blue: #549FD0; --alice-blue: #004aad; --bg-gradient: linear-gradient(135deg, #E0F2FE 0%, #F5F3FF 50%, #ECFDF5 100%); --bg-gray: #f8f9fa; --yellow: #FFD700; --green: #28a745; --red: #FF0000; }
+        body { margin: 0; padding: 40px 0; background: var(--bg-gradient); font-family: 'Segoe UI', sans-serif; display: flex; justify-content: center; }
         .container { width: 1200px; background: white; padding: 35px; border-radius: 25px; box-shadow: 0 12px 40px rgba(0,0,0,0.1); }
         .header-bar { display: flex; align-items: center; margin-bottom: 30px; }
         .btn-back { width: 40px; height: 40px; border-radius: 50%; background: var(--primary-blue); color: white; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; text-decoration: none; font-size: 1.2rem; }
         .btn-back:hover { transform: scale(1.1); }
-        .page-title { border: 2px solid #0047AB; color: #000; padding: 10px 40px; border-radius: 10px; font-size: 20px; font-weight: bold; margin-left:15px; }
+        .page-title { border: 2px solid var(--primary-blue); color: #000; padding: 10px 40px; border-radius: 10px; font-size: 20px; font-weight: bold; margin-left:15px; }
         .main-layout { display: flex; gap: 30px; align-items: flex-start; }
         .content-left { flex: 1; display: flex; flex-direction: column; gap: 20px; min-width: 0; }
         .control-panel { background: #f1f5f9; padding: 20px 30px; border-radius: 15px; display: flex; flex-direction: column; gap: 15px; }
@@ -23,7 +23,7 @@
         .reverse-box label { display: block; font-weight: bold; margin-bottom: 8px; font-size: 0.9rem; color: #475569; }
         .reverse-box input { width: 100%; padding: 10px; margin-bottom: 15px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
         .reverse-box button { width: 100%; background: var(--primary-blue); color: white; border: none; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: background 0.3s; }
-        .reverse-box button:hover { background: #003580; }
+        .reverse-box button:hover { background: #3f8fbd; }
         #reverseResult { margin-top: 20px; padding: 15px; border-radius: 10px; background: #f8fafc; border: 1px solid #e2e8f0; min-height: 50px; }
         .chart-box { height: 400px; width: 100%; }
         .value-grid-container { margin-top: 10px; padding: 20px; border: 2px dashed #cbd5e1; border-radius: 15px; background: #fafafa; }
@@ -160,7 +160,7 @@
             const bgColors = [];
             const radii = [];
             for (let i = 1; i <= maxN; i++) {
-                let color = '#0047AB', r = 4;
+                let color = '#549FD0', r = 4;
                 if (i === 65) { color = '#FF0000'; r = 7; } 
                 else if (selectedPoints.get(i) === 'solved') { color = '#28a745'; r = 6; }
                 else if (selectedPoints.get(i) === 'user') { color = '#FFD700'; r = 6; }
@@ -180,8 +180,8 @@
                     datasets: [{ 
                         label: 'Detection Probability', 
                         data: Array.from({length: maxN}, (_, i) => calculateF(i+1)), 
-                        borderColor: '#0047AB', 
-                        backgroundColor: 'rgba(0, 71, 171, 0.1)', 
+                        borderColor: '#549FD0', 
+                        backgroundColor: 'rgba(84, 159, 208, 0.1)', 
                         borderWidth: 2, 
                         fill: true, 
                         tension: 0.2, 
