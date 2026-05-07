@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <base href="https://s112321005.github.io/Cybersecurity-Visualization/">
+    <title>Quantum Key Distribution：B92 Step 2</title>
+    <style>
+        :root { --primary-blue: #549FD0; --dark-text: #333333; --bg-color: #f8f9fa; --active-blue: #edf6fb; --match-green: #28a745; --mismatch-red: #dc3545; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes float-anim { 0% { transform: translateY(0px); } 50% { transform: translateY(-8px); } 100% { transform: translateY(0px); } }
+        @keyframes pulse-border { 0% { box-shadow: 0 0 0 0 rgba(84, 159, 208, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(84, 159, 208, 0); } 100% { box-shadow: 0 0 0 0 rgba(84, 159, 208, 0); } }
+        
+        body { font-family: 'Segoe UI', sans-serif; display: flex; flex-direction: column; align-items: center; padding: 40px 20px; background-color: var(--bg-color); margin: 0; animation: fadeIn 0.8s ease-out; overflow-x: hidden; }
+        
+        /* Header 樣式 */
+        .header { width: min(1000px, 95vw); display: flex; align-items: center; justify-content: space-between; margin-bottom: 25px; height: 60px; }
+        .header-left { display: flex; align-items: center; gap: 15px; }
+        .header-right { display: flex; align-items: center; gap: 12px; }
+        .btn-back { width: 40px; height: 40px; background-color: var(--primary-blue); color: white; border-radius: 50%; display: flex; justify-content: center; align-items: center; text-decoration: none; font-size: 1.1rem; transition: transform 0.2s; cursor: pointer; border: none; box-shadow: 0 2px 6px rgba(0,0,0,0.15); }
+        .btn-back:hover { transform: scale(1.1); }
+        .title-pill { border: 2px solid var(--primary-blue); height: 48px; padding: 0 25px; border-radius: 30px; font-weight: bold; background: white; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; color: var(--dark-text); }
+        .step-text { font-weight: bold; font-size: 1.1rem; margin: 0; color: var(--dark-text); }
+        .nav-btn { border: 2px solid var(--primary-blue); background: white; padding: 0 30px; border-radius: 30px; font-weight: bold; cursor: pointer; transition: all 0.3s; opacity: 0.3; pointer-events: none; height: 48px; display: flex; align-items: center; box-sizing: border-box; font-size: 1.1rem; color: var(--dark-text); }
+        .nav-btn.ready { opacity: 1; pointer-events: auto; background: var(--primary-blue); color: white; box-shadow: 0 4px 15px rgba(84, 159, 208, 0.3); }
+        
+        /* 主要卡片與雙欄佈局 */
+        .main-card { width: min(1000px, 95vw); height: 750px; border: 3px solid var(--primary-blue); border-radius: 35px; position: relative; background: white; display: flex; flex-direction: column; align-items: center; overflow: hidden; padding: 25px 0 80px 0; box-sizing: border-box; }
+        
+        .split-view { display: flex; width: 100%; height: 100%; justify-content: space-evenly; align-items: flex-start; margin-top: 10px; }
+        .side-panel { display: flex; flex-direction: column; align-items: center; width: 40%; }
+        
+        /* Alice 區域 (唯讀) */
+        .alice-box { background: #f8f9fa; border: 2px dashed #ccc; border-radius: 20px; padding: 20px; text-align: center; width: 100%; box-sizing: border-box; opacity: 0.9; }
+        .alice-title { font-weight: bold; color: #555; margin-bottom: 15px; font-size: 1.1rem; }
+        .photon-display { font-size: 2.5rem; font-weight: bold; color: var(--primary-blue); margin: 10px 0; display: inline-block; padding: 10px 20px; background: #fff; border-radius: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        
+        /* Bob 互動區域 */
+        .character-bob { margin-bottom: 10px; animation: float-anim 3.5s ease-in-out infinite reverse; }
+        .prompt-text { margin: 0 0 15px 0; font-weight: bold; color: var(--primary-blue); font-size: 1.2rem; }
+        
+        .filter-options { display: flex; gap: 20px; justify-content: center; width: 100%; }
+        .filter-btn { cursor: pointer; padding: 15px; border: 2px solid #ccc; border-radius: 20px; transition: all 0.3s; display: flex; flex-direction: column; align-items: center; gap: 10px; width: 130px; background: white; animation: pulse-border 2s infinite; }
+        .filter-btn:hover { transform: translateY(-5px); border-color: #c7e2f3; background: #fafcff; }
+        .filter-btn.active { border-color: var(--primary-blue); background: var(--active-blue); transform: scale(1.05); animation: none; box-shadow: 0 0 15px rgba(84, 159, 208, 0.3); }
+        
+        .filter-icon { font-size: 2rem; font-weight: bold; color: #333; }
+        .filter-name { font-size: 0.95rem; font-weight: bold; color: #555; text-align: center; }
+        
+        /* 結果解說區 */
+        .result-area { position: absolute; bottom: 85px; width: 85%; background: #fff; border-left: 6px solid var(--primary-blue); padding: 15px 25px; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); display: none; flex-direction: column; gap: 12px; box-sizing: border-box; }
+        .result-area.show { display: flex; animation: fadeIn 0.5s ease-out; }
+        .result-title { font-weight: bold; font-size: 1.3rem; margin: 0; display: flex; align-items: center; gap: 10px; }
+        .result-desc { color: #555; font-size: 1rem; margin: 0; line-height: 1.5; }
+        .result-steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+        .result-step { background: #f8fbff; border: 1px solid #d9ebf6; border-radius: 12px; padding: 10px 12px; }
+        .result-step-label { display: block; color: #777; font-size: 0.78rem; font-weight: bold; letter-spacing: 0.5px; margin-bottom: 4px; text-transform: uppercase; }
+        .result-step-value { color: var(--dark-text); font-size: 0.98rem; font-weight: bold; }
+        .result-reasoning { background: #f8f9fa; border-radius: 12px; color: #555; padding: 10px 12px; }
+        .badge-success { background: var(--match-green); color: white; padding: 3px 10px; border-radius: 12px; font-size: 0.9rem; }
+        .badge-fail { background: var(--mismatch-red); color: white; padding: 3px 10px; border-radius: 12px; font-size: 0.9rem; }
+        
+        /* 底部邏輯列 */
+        .logic-footer { position: absolute; bottom: 0; left: 0; width: 100%; background-color: #f8fbff; border-top: 2px dashed #c7e2f3; padding: 18px 0; display: flex; justify-content: center; align-items: center; }
+        .logic-container { display: flex; align-items: center; gap: 12px; font-weight: bold; font-size: 1.05rem; }
+        .logic-pill { background: white; border: 2px solid #c7e2f3; padding: 6px 16px; border-radius: 20px; color: var(--primary-blue); box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
+        .logic-operator { color: #aaa; font-weight: bold; font-size: 1.4rem; }
+        .logic-pill.result { background: var(--primary-blue); color: white; border-color: var(--primary-blue); }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <div class="header-left">
+        <a href="QuantumCybersecurityEducationPlatform.html" class="btn-back" title="back home">◀</a>
+        <div class="title-pill">Quantum Key Distribution：B92</div>
+    </div>
+    <div class="header-center"><p class="step-text">STEP 2：Bob measures with a Polarizer</p></div>
+    <div class="header-right">
+        <button class="nav-btn ready" onclick="window.location.href='B92step1.html'">Back</button>
+        <button id="next-btn" class="nav-btn" onclick="nextStep()" disabled>Next</button>
+    </div>
+</div>
+
+<div class="main-card">
+    <div class="split-view">
+        <div class="side-panel">
+            <img src="pictures/cat_alice.svg" alt="Alice" width="110" style="margin-bottom: 10px; opacity: 0.7;">
+            <div class="alice-box">
+                <div class="alice-title">Alice sent:</div>
+                <div id="alice-photon" class="photon-display">?</div>
+                <div id="alice-bit-label" style="font-weight: bold; color: #888; margin-top: 5px;">Bit: ?</div>
+            </div>
+            <p style="text-align: center; color: #999; font-size: 0.9rem; margin-top: 15px;">(In reality, Bob doesn't know this!)</p>
+        </div>
+        
+        <div class="side-panel">
+            <div class="character-bob"><img src="pictures/cat_bob.svg" alt="Bob" width="110" onerror="this.src='pictures/cat_alice.svg'"></div>
+            <p class="prompt-text" id="bob-prompt">Choose a Filter to test the photon!</p>
+            
+            <div class="filter-options">
+                <div class="filter-btn" onclick="measurePhoton('vertical', this)">
+                    <img src="pictures/vertical.svg" width="50" alt="Vertical Filter" onerror="this.style.display='none'">
+                    <div class="filter-icon">|↑⟩</div>
+                    <div class="filter-name">Vertical Filter<br><span style="font-size:0.8em; color:#888;">(Blocks |→⟩)</span></div>
+                </div>
+                
+                <div class="filter-btn" onclick="measurePhoton('anti-diagonal', this)">
+                    <img src="pictures/diagonal.svg" width="50" alt="Anti-Diagonal Filter"  onerror="this.style.display='none'">
+                    <div class="filter-icon">|↖⟩</div>
+                    <div class="filter-name">Anti-Diagonal Filter<br><span style="font-size:0.8em; color:#888;">(Blocks |↗⟩)</span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="result-area" id="result-box">
+        <div class="result-title" id="result-title">
+            </div>
+        <div class="result-desc" id="result-desc">
+            </div>
+    </div>
+
+    <div class="logic-footer">
+        <div class="logic-container">
+            <span class="logic-pill">Alice's Photon</span>
+            <span class="logic-operator">+</span>
+            <span class="logic-pill">Bob's Filter</span>
+            <span class="logic-operator">=</span>
+            <span class="logic-pill result" id="footer-result">Click (1) or No Click (0)</span>
+        </div>
+    </div>
+</div>
+
+<script>
+    // 1. 從 URL 獲取 Alice 在 Step 1 的選擇
+    const urlParams = new URLSearchParams(window.location.search);
+    let aliceMsg = urlParams.get('aliceMsg'); 
+    
+    // 容錯處理：如果沒有 URL 參數，預設給 Bit 0
+    if (aliceMsg === null) {
+        aliceMsg = '0';
+        console.warn("No data from Step 1, defaulting to Bit 0");
+    }
+
+    // 2. 顯示 Alice 傳送的狀態
+    const photonDisplay = document.getElementById('alice-photon');
+    const bitLabel = document.getElementById('alice-bit-label');
+    
+    if (aliceMsg === '0') {
+        photonDisplay.textContent = '|→⟩';
+        bitLabel.textContent = 'Bit 0 (Horizontal)';
+    } else {
+        photonDisplay.textContent = '|↗⟩';
+        bitLabel.textContent = 'Bit 1 (Diagonal)';
+    }
+
+    // 3. 測量邏輯
+    function measurePhoton(bobFilter, el) {
+        // 更新按鈕 UI
+        document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+        el.classList.add('active');
+        document.getElementById('bob-prompt').textContent = "Measurement Complete!";
+        document.getElementById('bob-prompt').style.color = "#555";
+
+        const resultBox = document.getElementById('result-box');
+        const resultTitle = document.getElementById('result-title');
+        const resultDesc = document.getElementById('result-desc');
+        const footerResult = document.getElementById('footer-result');
+        
+        const bobFilterLabel = bobFilter === 'vertical' ? 'Vertical Filter' : 'Anti-Diagonal Filter';
+        let detectorHtml = "";
+        let detectorText = "";
+        let conclusionText = "";
+        let reasoningText = "";
+        let finalBit = "";
+
+        // B92 核心物理邏輯
+        if (aliceMsg === '0') { 
+            // Alice 發送水平 |→⟩
+            if (bobFilter === 'vertical') {
+                // 水平光 遇到 垂直濾波器 -> 100% 擋住
+                detectorHtml = `<span class="badge-fail">NO CLICK</span>`;
+                detectorText = "The photon was blocked.";
+                conclusionText = "Bob cannot infer Alice's bit, so he discards this round.";
+                reasoningText = "The Vertical Filter blocks the horizontal state. In B92, a no-click result is inconclusive because Bob only learns a bit when the photon passes the filter.";
+                finalBit = "Discard";
+            } else if (bobFilter === 'anti-diagonal') {
+                // 水平光 遇到 反對角濾波器 -> 50% 機率通過 (為了教學順暢，這裡演示"通過"的成功案例)
+                // 在真實世界中是 Math.random() > 0.5，但為避免使用者一直點不到成功畫面，我們設定為成功
+                detectorHtml = `<span class="badge-success">CLICK</span>`;
+                detectorText = "The photon passed the filter.";
+                conclusionText = "Bob knows Alice sent the horizontal state, so he records Bit 0.";
+                reasoningText = "The Anti-Diagonal Filter would block Alice's diagonal state. Since the detector clicked, the photon could not have been diagonal, so Bob infers the horizontal state.";
+                finalBit = "Record Bit 0";
+            }
+        } else { 
+            // Alice 發送對角 |↗⟩
+            if (bobFilter === 'anti-diagonal') {
+                // 對角光 遇到 反對角濾波器 -> 100% 擋住
+                detectorHtml = `<span class="badge-fail">NO CLICK</span>`;
+                detectorText = "The photon was blocked.";
+                conclusionText = "Bob cannot infer Alice's bit, so he discards this round.";
+                reasoningText = "The Anti-Diagonal Filter blocks the diagonal state. In B92, a no-click result is inconclusive because Bob only learns a bit when the photon passes the filter.";
+                finalBit = "Discard";
+            } else if (bobFilter === 'vertical') {
+                // 對角光 遇到 垂直濾波器 -> 50% 機率通過 (演示成功案例)
+                detectorHtml = `<span class="badge-success">CLICK</span>`;
+                detectorText = "The photon passed the filter.";
+                conclusionText = "Bob knows Alice sent the diagonal state, so he records Bit 1.";
+                reasoningText = "The Vertical Filter would block Alice's horizontal state. Since the detector clicked, the photon could not have been horizontal, so Bob infers the diagonal state.";
+                finalBit = "Record Bit 1";
+            }
+        }
+
+        // 更新畫面
+        resultTitle.innerHTML = `${detectorHtml} ${finalBit.includes("Discard") ? "Bob discards" : "Bob records a bit"}`;
+        resultDesc.innerHTML = `
+            <div class="result-steps">
+                <div class="result-step">
+                    <span class="result-step-label">Bob chose</span>
+                    <span class="result-step-value">${bobFilterLabel}</span>
+                </div>
+                <div class="result-step">
+                    <span class="result-step-label">Detector result</span>
+                    <span class="result-step-value">${detectorText}</span>
+                </div>
+                <div class="result-step">
+                    <span class="result-step-label">Conclusion</span>
+                    <span class="result-step-value">${conclusionText}</span>
+                </div>
+            </div>
+            <div class="result-reasoning"><strong>Why:</strong> ${reasoningText}</div>
+        `;
+        resultBox.classList.add('show');
+        footerResult.textContent = finalBit;
+
+        const nextBtn = document.getElementById('next-btn');
+        nextBtn.disabled = false;
+        nextBtn.classList.add('ready');
+        
+        if (finalBit.includes("Discard")) {
+            footerResult.style.backgroundColor = "#6c757d";
+            footerResult.style.borderColor = "#6c757d";
+        } else {
+            footerResult.style.backgroundColor = "var(--match-green)";
+            footerResult.style.borderColor = "var(--match-green)";
+        }
+    }
+
+    function nextStep() {
+        const nextBtn = document.getElementById('next-btn');
+        if (nextBtn.disabled) return;
+        window.location.href = "B92step3.html";
+    }
+</script>
+</body>
+</html>
