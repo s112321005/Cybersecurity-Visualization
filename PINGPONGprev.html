@@ -12,8 +12,8 @@
         .header-left { display: flex; align-items: center; gap: 15px; }
         .btn-back { width: 40px; height: 40px; background-color: var(--primary-blue); color: white; border-radius: 50%; display: flex; justify-content: center; align-items: center; text-decoration: none; font-size: 1rem; transition: transform 0.2s; cursor: pointer; border: none; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
         .btn-back:hover { transform: scale(1.1); }
-        .page-title { border: 2px solid var(--primary-blue); color: var(--dark-text); padding: 10px 40px; border-radius: 10px; font-size: 20px; font-weight: bold; background: white; }
-        .header-center { flex-grow: 1; margin-left: 20px; font-weight: bold; font-size: 1.2rem; color: var(--dark-text); text-align: center; }
+        .page-title { border: 2px solid var(--primary-blue); color: var(--dark-text); padding: 10px 40px; border-radius: 10px; font-size: 20px; font-weight: bold; background: white; white-space: nowrap; }
+        .header-center { flex-grow: 1; margin-left: 20px; font-weight: bold; font-size: 1.2rem; color: var(--dark-text); text-align: center; white-space: nowrap; }
         .header-right { display: flex; gap: 15px; }
         .nav-btn { border: 2px solid var(--primary-blue); background: white; color: var(--dark-text); padding: 10px 25px; border-radius: 30px; font-weight: bold; font-size: 1rem; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
         .nav-btn:hover { background: var(--primary-blue); color: white; transform: translateY(-2px); }
@@ -79,7 +79,7 @@
 <body>
     <div class="header">
         <div class="header-left">
-            <a href="QuantumCybersecurityEducationPlatform.html" class="btn-back" title="Back to Home">◀</a>
+            <a href="QuantumCybersecurityEducationPlatform.html" class="btn-back" title="Back to Home">◀&#xFE0E;</a>
             <div class="page-title">Quantum Security Direct Communication：ping pong</div>
         </div>
         <div class="header-center"></div>

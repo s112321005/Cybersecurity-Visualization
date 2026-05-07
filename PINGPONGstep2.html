@@ -48,10 +48,12 @@
         .title-pill {
             border: 2px solid var(--primary-blue); padding: 8px 20px;
             border-radius: 30px; font-weight: bold; background: white; color: var(--dark-text);
+            white-space: nowrap;
         }
         .header-center { 
             flex-grow: 1; margin-left: 20px; font-weight: bold; 
             font-size: 1.2rem; color: var(--dark-text); text-align: center; 
+            white-space: nowrap;
         }
         .header-right { display: flex; gap: 15px; }
         .nav-btn {
@@ -388,7 +390,7 @@
 
 <div class="header">
     <div class="header-left">
-        <a href="QuantumCybersecurityEducationPlatform.html" class="btn-back">◀</a>
+        <a href="QuantumCybersecurityEducationPlatform.html" class="btn-back">◀&#xFE0E;</a>
         <div class="title-pill">Quantum Security Direct Communication：Ping-Pong</div>
     </div>
     <div class="header-center" id="header-subtitle">STEP 2 : Alice's Operation</div>
@@ -438,7 +440,7 @@
     <p class="bottom-hint" id="hint-text">Select an operation to proceed.</p>
 
     <div class="explanation-box" id="explain-box">
-        <button class="retry-btn" onclick="location.reload()">↺ Reset</button>
+        <button class="retry-btn" onclick="location.reload()">↺&#xFE0E; Reset</button>
         <p style="font-weight: bold; font-size: 1.2rem; margin: 0; color: var(--alice-color);" id="exp-title">Result</p>
         <p id="exp-desc" style="margin: 10px 0; font-weight: 500;"></p>
         <div id="exp-math"></div>
