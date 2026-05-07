@@ -6,8 +6,8 @@
     <base href="https://s112321005.github.io/Cybersecurity-Visualization/">
     <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <style>
-        :root { --primary-blue: #004aad; --bob-blue: #4c80c5; --dark-text: #333333; --bg-color: #f8f9fa; --photon-yellow: #ffeb3b; --match-green: #28a745; --mismatch-red: #dc3545; }
-        body { font-family: 'Segoe UI', system-ui, sans-serif; display: flex; flex-direction: column; align-items: center; padding: 40px 20px; background-color: var(--bg-color); margin: 0; }
+        :root { --primary-blue: #549FD0; --alice-color: #004aad; --bob-blue: #4C80C5; --dark-text: #333333; --bg-color: #f8f9fa; --bg-gradient: linear-gradient(135deg, #E0F2FE 0%, #F5F3FF 50%, #ECFDF5 100%); --photon-yellow: #ffeb3b; --match-green: #28a745; --mismatch-red: #dc3545; }
+        body { font-family: 'Segoe UI', system-ui, sans-serif; display: flex; flex-direction: column; align-items: center; padding: 40px 20px; background: var(--bg-gradient); margin: 0; }
         .header { width: min(1000px, 95vw); display: flex; align-items: center; justify-content: space-between; margin-bottom: 25px; animation: fadeIn 0.8s ease-out forwards; }
         .header-left { display: flex; align-items: center; gap: 15px; }
         .btn-back { width: 40px; height: 40px; background-color: var(--primary-blue); color: white; border-radius: 50%; display: flex; justify-content: center; align-items: center; text-decoration: none; font-size: 1rem; transition: transform 0.2s; cursor: pointer; border: none; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
@@ -32,7 +32,7 @@
         .svg-btn:disabled { opacity: 0.5; cursor: not-allowed; }
         .eye-icon { width: 100%; height: auto; }
         .photon-particle { width: 65px; height: 65px; background: var(--photon-yellow); border-radius: 50%; box-shadow: 0 0 35px rgba(255, 235, 59, 0.8), inset -5px -5px 15px rgba(0,0,0,0.1); display: flex; justify-content: center; align-items: center; font-weight: bold; font-size: 2.2rem; color: var(--dark-text); transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 15; position: relative; }
-        .photon-particle.measured-a { background: var(--primary-blue); color: white; box-shadow: 0 0 30px var(--primary-blue); font-size: 1.8rem; }
+        .photon-particle.measured-a { background: var(--alice-color); color: white; box-shadow: 0 0 30px var(--alice-color); font-size: 1.8rem; }
         .photon-particle.measured-b { background: var(--bob-blue); color: white; box-shadow: 0 0 30px var(--bob-blue); font-size: 1.8rem; }
         .entangle-link { position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); width: 230px; height: 6px; background: var(--photon-yellow); box-shadow: 0 0 18px 6px rgba(255, 235, 59, 0.6); z-index: 1; border-radius: 5px; overflow: hidden; transition: opacity 0.3s; }
         .entangle-link::after { content: ""; position: absolute; width: 100%; height: 100%; background: linear-gradient(90deg, rgba(255,255,255,0), rgba(255,255,255,0.9), rgba(255,255,255,0)); animation: wave 1.2s infinite linear; }
@@ -45,7 +45,7 @@
         .log-row { display: flex; align-items: center; gap: 15px; width: 100%; }
         .log-avatar { width: 45px; height: auto; }
         .log-circle { width: 24px; height: 24px; border-radius: 50%; flex-shrink: 0; display: flex; justify-content: center; align-items: center; color: white; font-weight: bold; font-size: 0.9rem; }
-        .circle-a { background-color: var(--primary-blue); box-shadow: 0 0 8px var(--primary-blue); }
+        .circle-a { background-color: var(--alice-color); box-shadow: 0 0 8px var(--alice-color); }
         .circle-b { background-color: var(--bob-blue); box-shadow: 0 0 8px var(--bob-blue); }
         .log-bits { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 8px; flex-grow: 1; scroll-behavior: smooth; align-items: flex-end; min-height: 50px; }
         .log-bits::-webkit-scrollbar { height: 6px; }

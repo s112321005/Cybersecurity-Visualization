@@ -14,11 +14,12 @@
 
     <style>
         :root {
-            --primary-blue: #004aad;
+            --primary-blue: #549FD0;
             --bob-color: #4C80C5;
-            --alice-color: #0049B0;
+            --alice-color: #004aad;
             --dark-text: #333333;
             --bg-color: #f8f9fa;
+            --bg-gradient: linear-gradient(135deg, #E0F2FE 0%, #F5F3FF 50%, #ECFDF5 100%);
             --photon-yellow: #ffeb3b; 
             --match-green: #28a745;
             --alert-red: #dc3545;
@@ -29,7 +30,7 @@
             font-family: 'Segoe UI', sans-serif; 
             display: flex; flex-direction: column; align-items: center;    
             /* 這裡從 40px 改成 30px，讓整體畫面往上 10px */
-            padding: 30px 20px; background-color: var(--bg-color); margin: 0;
+            padding: 30px 20px; background: var(--bg-gradient); margin: 0;
             overflow-y: scroll; 
         }
 
@@ -60,6 +61,7 @@
             padding: 10px 25px; border-radius: 30px; font-weight: bold; font-size: 1rem;
             cursor: pointer; transition: all 0.2s;
         }
+        .nav-btn:not(:disabled) { background: var(--primary-blue); color: white; box-shadow: 0 4px 15px rgba(84, 159, 208, 0.3); }
         .nav-btn:hover:not(:disabled) { background: var(--primary-blue); color: white; }
         .nav-btn:disabled { border-color: #ccc; color: #ccc; cursor: not-allowed; }
 
@@ -299,8 +301,9 @@
 </div>
 
 <script>
-    let savedMode = localStorage.getItem('pingpongMode') || 'message';
-    let savedMsg = localStorage.getItem('pingpongMessage') || '1'; 
+    const step2Data = JSON.parse(localStorage.getItem('pingpongStep2Data') || '{}');
+    let savedMode = step2Data.mode || localStorage.getItem('pingpongMode') || 'message';
+    let savedMsg = step2Data.bit || localStorage.getItem('pingpongMessage') || '1'; 
 
     let aliceMeasuredValue = 0;
     let bobMeasuredValue = 1;
@@ -495,14 +498,15 @@
             MathJax.typesetPromise([calcContainer, document.getElementById("bob-state")]);
         }
 
+        // 修改這裡：解鎖 next-btn
         document.getElementById("next-btn").disabled = false;
     }
 
     function prevStep() {
-        window.location.href = 'PINGPONGstep2.html';
+        window.location.href = 'Pingpongstep2.html';
     }
     function nextStep() {
-        window.location.href = 'PINGPONGstep4.html';
+        window.location.href = 'Pingpongstep4.html';
     }
 </script>
 </body>
