@@ -543,6 +543,33 @@
             line.setAttribute('stroke-width', '4'); 
         });
     }
+    function updateB92Visuals(isSameBasis) {
+        const container = document.querySelector('#view-b92');
+        const lines = container.querySelectorAll('line');
+        const resultCircles = container.querySelectorAll('.result-circle');
+        const bobSameNode = document.getElementById('b92-symbol-bobsame');
+        const bobUnsameNode1 = document.getElementById('b92-symbol-bobunsame-1')?.closest('.state-circle');
+        const bobUnsameNode2 = document.getElementById('b92-symbol-bobunsame-2')?.closest('.state-circle');
+
+        // 線條邏輯：相同基底亮起上路 (FalseRoute 標籤在 HTML 中代表相同基底)
+        lines.forEach(line => {
+            if (isSameBasis) {
+                // 相同基底：上路亮，下路滅
+                line.classList.contains('FalseRoute') ? line.classList.remove('line-inactive') : line.classList.add('line-inactive');
+            } else {
+                // 不同基底：上路滅，下路亮
+                line.classList.contains('TrueRoute') ? line.classList.remove('line-inactive') : line.classList.add('line-inactive');
+            }
+        });
+
+        // Eve OFF 時只有 top:55% 的結果會亮起，top:25% 的 same node 維持 inactive。
+        resultCircles[0].classList.add('inactive');
+        resultCircles[1].classList.remove('inactive');
+        resultCircles[2].classList.add('inactive');
+        if (bobSameNode) bobSameNode.classList.add('inactive');
+        if (bobUnsameNode1) bobUnsameNode1.classList.remove('inactive');
+        if (bobUnsameNode2) bobUnsameNode2.classList.add('inactive');
+}
 
     function selectStateB92(element, stateSymbol, basisType) {
         const rows = document.querySelectorAll('#b92-options .option-row');
@@ -552,8 +579,11 @@
         const stateText = document.getElementById('b92-initial-state-text');
         if (stateText) stateText.innerText = stateSymbol;
         
+        // 修正：Bob same node 顯示與 Alice 相同的符號
         const bobSameText = document.getElementById('b92-symbol-bobsame');
-        if (bobSameText) bobSameText.innerText = stateSymbol;
+        if (bobSameText) {
+            bobSameText.innerText = stateSymbol;
+        }
         
         const oppoSymbol = symbols[(basisType === 'rectilinear') ? 'Dtype' : 'Stype'];
         const unsame1 = document.getElementById('b92-symbol-bobunsame-1');
@@ -565,28 +595,27 @@
         const bobSame = document.getElementById('b92-bob-same');
         const bobUnsame = document.getElementById('b92-bob-unsame');
         
-        // 修正：支援 HTML 傳入的 'rectilinear'，確保判斷正確
         const isAliceZ = (basisType === 'rectilinear' || basisType === 'Z');
         const isBobZ = (globalBobBasis === 'Z');
+        const isSameBasis = (isAliceZ === isBobZ);
         
-        // Alice 的光子影像
         if (keyImg) {
             keyImg.src = isAliceZ ? "pictures/vertical.svg" : "pictures/diagonal.svg"; 
         }
         
-        // ▼▼▼ 核心邏輯修正：上路跟隨 Alice，下路與 Alice 相反 ▼▼▼
         let topDir = isAliceZ ? 'vertical' : 'diagonal';
         let botDir = isAliceZ ? 'diagonal' : 'vertical';
 
-        // ▼▼▼ 顏色判斷：該路徑的偏振方向若與 Bob 選擇的 Basis 吻合則亮藍色 (b_)，否則灰色 (gray_) ▼▼▼
+        // 顏色判斷
         let topColor = ((topDir === 'vertical' && isBobZ) || (topDir === 'diagonal' && !isBobZ)) ? 'b_' : 'gray_';
         let botColor = ((botDir === 'vertical' && isBobZ) || (botDir === 'diagonal' && !isBobZ)) ? 'b_' : 'gray_';
 
         if (bobSame) bobSame.src = `pictures/${topColor}${topDir}.svg`;
         if (bobUnsame) bobUnsame.src = `pictures/${botColor}${botDir}.svg`;
         
+        // 更新線條與結果圓圈亮起狀態
         const aliceBasis = isAliceZ ? 'Z' : 'X';
-        updateLines(aliceBasis, globalBobBasis, 'b92');
+        updateB92Visuals(isSameBasis);
     }
 
     function selectStateB92Eve(element, stateSymbol, basisType) {
@@ -653,6 +682,29 @@
         if (eveDiff1) eveDiff1.innerText = diff1StateSymbol;
         const eveDiff2 = document.querySelector('#view-b92-eve-resend #eve-state-diff2');
         if (eveDiff2) eveDiff2.innerText = diff2StateSymbol;
+
+        function setStateCircleText(selector, symbol) {
+            document.querySelectorAll(selector).forEach(node => {
+                const textNode = node.querySelector('span');
+                if (textNode) textNode.innerText = symbol;
+                else node.innerText = symbol;
+            });
+        }
+
+        setStateCircleText('#view-b92-eve-resend #bob-final-1', stateSymbol);
+        setStateCircleText('#view-b92-eve-resend #bob-final-2, #view-b92-eve-resend #bob-final-6', diff1StateSymbol);
+        setStateCircleText('#view-b92-eve-resend #bob-final-3, #view-b92-eve-resend #bob-final-9', diff2StateSymbol);
+
+        if (isBobBasisSameAsAlice) {
+            const bobBasisStateSymbols = isBobZ ? ['|↑⟩', '|→⟩'] : ['|↖⟩', '|↗⟩'];
+            setStateCircleText('#view-b92-eve-resend #bob-final-4', bobBasisStateSymbols[1]);
+            setStateCircleText('#view-b92-eve-resend #bob-final-5', bobBasisStateSymbols[0]);
+            setStateCircleText('#view-b92-eve-resend #bob-final-7', bobBasisStateSymbols[0]);
+            setStateCircleText('#view-b92-eve-resend #bob-final-8', bobBasisStateSymbols[1]);
+        } else {
+            setStateCircleText('#view-b92-eve-resend #bob-final-4, #view-b92-eve-resend #bob-final-5', diff1StateSymbol);
+            setStateCircleText('#view-b92-eve-resend #bob-final-7, #view-b92-eve-resend #bob-final-8', diff2StateSymbol);
+        }
         
         const sameNodes = document.querySelectorAll('#view-b92-eve-resend .bob-same-node .polarizer-img, #view-b92-eve-resend .bob-same-node .state-circle');
         const diffNodes = document.querySelectorAll('#view-b92-eve-resend .bob-diff-node .polarizer-img, #view-b92-eve-resend .bob-diff-node .state-circle');
