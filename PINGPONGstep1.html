@@ -11,7 +11,6 @@
         };
     </script>
     <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-
     <style>
         :root {
             --primary-blue: #549FD0;
@@ -23,14 +22,12 @@
             --photon-yellow: #ffeb3b; 
             --match-green: #28a745;
         }
-
         body {
             font-family: 'Segoe UI', sans-serif; 
             display: flex; flex-direction: column; align-items: center;    
             padding: 40px 20px; background: var(--bg-gradient); margin: 0;
             overflow-y: scroll; 
         }
-
         /* 頂部導覽列 */
         .header {
             width: min(1000px, 95vw); display: flex; align-items: center; justify-content: space-between;
@@ -71,29 +68,35 @@
             display: flex; flex-direction: column; align-items: center; justify-content: center;
             padding-top: 15px; padding-bottom: 80px; animation: fadeIn 0.8s ease-out forwards;
         }
-
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
         /* 網格排版 */
-        .decision-grid { display: flex; align-items: center; justify-content: center; gap: 40px; width: 100%; }
+        .decision-grid {
+            display: flex; align-items: center; justify-content: center; gap: 40px; width: 100%;
+        }
         
         .col { 
             display: flex; flex-direction: column; justify-content: center; align-items: center; 
             position: relative; height: 60px; 
         }
-
         .character-avatar { 
-            position: absolute; top: -190px; height: 110px; width: auto; z-index: 10; 
+            position: absolute; top: -200px; height: 110px; width: auto; z-index: 10; 
         }
-
         .stage-title {
-            position: absolute; top: -70px; font-size: 1.1rem; font-weight: bold;
+            position: absolute; top: -80px; font-size: 1.1rem; font-weight: bold;
             margin: 0; width: 100%; text-align: center; white-space: nowrap;
         }
-
+        .alice-avatar,
+        .alice-stage-title {
+            transform: translateX(-30px);
+        }
+        .bob-col,
+        .connector-col {
+            transform: translateX(-40px);
+        }
         .result-capsule {
             padding: 12px 25px; border-radius: 30px; border: 2px solid var(--primary-blue);
             color: var(--primary-blue); font-weight: bold; font-size: 1.4rem;
@@ -115,7 +118,6 @@
         .bob-text { color: var(--bob-color) !important; }
         .bob-bg { background: var(--bob-color) !important; border-color: var(--bob-color) !important; color: white !important; }
         .alice-text { color: var(--alice-color) !important; }
-
         .sub-text {
             position: absolute; 
             bottom: -95px; 
@@ -127,12 +129,14 @@
 
         /* Alice 選擇區域 */
         .alice-interactive { 
-            position: absolute; top: 100px; transform: translateY(-50%); 
+            position: absolute; top: -9px; left: calc(50% - 28px);
+            transform: translateX(-50%);
             display: flex; flex-direction: column; align-items: center; gap: 20px; 
-            transition: opacity 0.3s ease; width: 100%; opacity: 0; pointer-events: none; 
+            transition: opacity 0.3s ease; width: max-content; opacity: 0; pointer-events: none; 
         }
         .alice-interactive.show { opacity: 1; pointer-events: auto; }
         
+        .mode-and-dice { position: relative; }
         .alice-choices { display: flex; gap: 20px; }
         
         .mode-btn {
@@ -140,7 +144,7 @@
             padding: 15px 20px; border-radius: 15px; border: 2px solid #ddd; background: white;
             box-shadow: 0 4px 10px rgba(0,0,0,0.05); 
             min-width: 150px; transition: all 0.2s ease-in-out;
-            opacity: 0.7; /* 預設較暗 */
+            opacity: 0.7;
         }
         
         .mode-title { 
@@ -165,9 +169,43 @@
             color: var(--alice-color);
         }
 
+        /* 新增：機率控制區 */
+        .probability-control {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            width: 100%;
+            box-sizing: border-box;
+            white-space: nowrap;
+            background: white;
+            border: 2px solid #dbeafe;
+            border-radius: 16px;
+            padding: 12px 18px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            min-width: 320px;
+        }
+        .probability-label {
+            font-size: 1rem;
+            font-weight: bold;
+            color: var(--alice-color);
+            white-space: nowrap;
+        }
+        .probability-hint {
+            font-size: 0.95rem;
+            color: #666;
+            font-weight: bold;
+        }
+        #message-prob-slider {
+            width: 260px;
+            accent-color: var(--alice-color);
+            cursor: pointer;
+        }
+
         /* 骰子樣式 */
         .dice-wrapper {
             display: flex; flex-direction: column; align-items: center; gap: 8px; cursor: pointer;
+            position: absolute; left: calc(100% + 20px); top: 50%; transform: translateY(-37.5px);
         }
         .dice {
             width: 75px; height: 75px; background: white;
@@ -176,15 +214,13 @@
             font-size: 3rem; box-shadow: 0 5px 15px rgba(0,0,0,0.1);
             transition: all 0.1s; user-select: none;
         }
-        .dice-hint { font-weight: bold; color: var(--primary-blue); font-size: 1rem; transition: opacity 0.2s;}
-
+        .dice-hint { font-weight: bold; color: var(--primary-blue); font-size: 1rem; transition: opacity 0.2s; white-space: nowrap;}
         .pulse { animation: pulse-anim 2s infinite; }
         @keyframes pulse-anim {
             0% { box-shadow: 0 0 0 0 rgba(84, 159, 208, 0.4); } 
             70% { box-shadow: 0 0 0 12px rgba(84, 159, 208, 0); }
             100% { box-shadow: 0 0 0 0 rgba(84, 159, 208, 0); }
         }
-
         .rolling-animation {
             animation: roll-dice-anim 0.4s infinite linear;
         }
@@ -242,7 +278,6 @@
             padding: 15px; display: flex; flex-direction: column; gap: 5px;
             font-size: 1.1rem; color: #333; box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
         }
-
         .bottom-hint { position: absolute; bottom: 30px; color: gray; font-weight: bold; font-size: 1.1rem; transition: opacity 0.3s; z-index: 5;}
 
         /* 光子動畫 */
@@ -251,7 +286,6 @@
             30% { transform: translate(calc(var(--tx-mid) * 0.3), 0) scale(1.3); }
             100% { transform: translate(var(--tx-mid), 0) scale(1); opacity: 1; } 
         }
-
         .photon-particle {
             position: absolute; width: 42px; height: 42px; background: var(--photon-yellow); border-radius: 50%; 
             box-shadow: 0 0 25px rgba(255, 235, 59, 0.8); display: flex; justify-content: center; align-items: center;
@@ -366,6 +400,7 @@
             max-width: 305px;
             max-height: 350px;
         }
+
         @media (min-width: 1180px) {
             body { padding-right: 350px !important; }
         }
@@ -414,7 +449,6 @@
     </style>
 </head>
 <body>
-
 <aside class="pingpong-image-dock" aria-label="Ping-Pong current-step image preview" data-current-step="2">
     <div class="pingpong-image-viewport">
         <div class="pingpong-image-window">
@@ -457,43 +491,59 @@
 </div>
 
 <div class="main-card" id="stage">
-    
     <div class="decision-grid" id="grid-container">
-        
-        <div class="col" style="min-width: 180px;">
+        <div class="col bob-col" style="min-width: 180px;">
             <img src="pictures/cat_bob.svg" alt="Bob" class="character-avatar">
             <p class="stage-title bob-text">Bob Prepares</p>
             <div class="result-capsule bob-bg" id="bob-state">\( |\Psi^+\rangle \)</div>
-            
             <div class="math-formula">\( = \frac{1}{\sqrt{2}}(|01\rangle + |10\rangle)_{AB} \)</div>
             <div class="sub-text">Keeps Particle 2, Sends Particle 1</div>
         </div>
 
-        <div class="col" style="width: 120px;">
+        <div class="col connector-col" style="width: 95px;">
             <div class="connector arrow-connector" id="conn-1" style="width: 100%;"></div> 
         </div>
 
         <div class="col" style="min-width: 350px;">
-            <img src="pictures/cat_alice.svg" alt="Alice" class="character-avatar">
-            <p class="stage-title alice-text" id="alice-title">Receiving Particle...</p>
-
+            <img src="pictures/cat_alice.svg" alt="Alice" class="character-avatar alice-avatar">
+            <p class="stage-title alice-text alice-stage-title" id="alice-title">Receiving Particle...</p>
             <div id="photon-landing-spot" style="position: absolute; width: 40px; height: 40px; z-index: 5;"></div>
 
             <div class="alice-interactive" id="alice-interactive">
-                <div class="alice-choices">
-                    <div class="mode-btn" id="box-control">
-                        <div class="mode-title">Control Mode</div>
-                        <div class="mode-sub">Security Check</div>
+                <div class="mode-and-dice">
+                    <div class="alice-choices">
+                        <div class="mode-btn" id="box-control">
+                            <div class="mode-title">Control Mode</div>
+                            <div class="mode-sub">Security Check</div>
+                        </div>
+                        <div class="mode-btn" id="box-message">
+                            <div class="mode-title">Message Mode</div>
+                            <div class="mode-sub">Data Encoding</div>
+                        </div>
                     </div>
-                    <div class="mode-btn" id="box-message">
-                        <div class="mode-title">Message Mode</div>
-                        <div class="mode-sub">Data Encoding</div>
+
+                    <div class="dice-wrapper pulse" id="dice-container" onclick="rollDice()">
+                        <div class="dice" id="the-dice">🎲</div>
+                        <div class="dice-hint" id="dice-hint">Click to Roll!</div>
                     </div>
                 </div>
-                
-                <div class="dice-wrapper pulse" id="dice-container" onclick="rollDice()">
-                    <div class="dice" id="the-dice">🎲</div>
-                    <div class="dice-hint" id="dice-hint">Click to Roll!</div>
+
+                <div class="probability-control">
+                    <label for="message-prob-slider" class="probability-label">
+                        Message Mode Probability: <span id="message-prob-value">50</span>%
+                    </label>
+                    <input
+                        type="range"
+                        id="message-prob-slider"
+                        min="0"
+                        max="100"
+                        value="50"
+                        step="1"
+                        oninput="updateMessageProbability(this.value)"
+                    >
+                    <div class="probability-hint">
+                        Control Mode Probability: <span id="control-prob-value">50</span>%
+                    </div>
                 </div>
             </div>
 
@@ -502,7 +552,6 @@
                 </div>
             </div>
         </div>
-
     </div>
 
     <p class="bottom-hint" id="hint-text">Wait for the particle to arrive...</p>
@@ -516,16 +565,37 @@
         <div class="calc-process-container" id="calc-process-container">
         </div>
     </div>
-
 </div>
 
 <script>
     let selectedMode = "";
     let flashInterval;
+    let messageModeProbability = 0.5; // 預設 50%
 
     document.addEventListener("DOMContentLoaded", () => {
+        const savedProbability = localStorage.getItem('messageModeProbability');
+        if (savedProbability !== null) {
+            messageModeProbability = parseFloat(savedProbability);
+            const sliderValue = Math.round(messageModeProbability * 100);
+            document.getElementById('message-prob-slider').value = sliderValue;
+            updateMessageProbability(sliderValue);
+        } else {
+            updateMessageProbability(50);
+        }
+
         setTimeout(animatePhotonTransfer, 800);
     });
+
+    function updateMessageProbability(value) {
+        const messagePercent = parseInt(value, 10);
+        const controlPercent = 100 - messagePercent;
+
+        document.getElementById('message-prob-value').innerText = messagePercent;
+        document.getElementById('control-prob-value').innerText = controlPercent;
+
+        messageModeProbability = messagePercent / 100;
+        localStorage.setItem('messageModeProbability', messageModeProbability);
+    }
 
     function animatePhotonTransfer() {
         const stage = document.getElementById('stage');
@@ -596,15 +666,15 @@
             clearInterval(flashInterval);
             dice.classList.remove('rolling-animation');
             
-            const isControl = Math.random() < 0.5;
-            const chosenMode = isControl ? 'control' : 'message';
+            const isMessage = Math.random() < messageModeProbability;
+            const chosenMode = isMessage ? 'message' : 'control';
             
-            if (isControl) {
-                boxControl.classList.add('lit');
-                boxMessage.classList.remove('lit');
-            } else {
+            if (isMessage) {
                 boxControl.classList.remove('lit');
                 boxMessage.classList.add('lit');
+            } else {
+                boxControl.classList.add('lit');
+                boxMessage.classList.remove('lit');
             }
             
             diceHint.innerText = "Selected!";
@@ -613,7 +683,6 @@
             setTimeout(() => {
                 selectMode(chosenMode);
             }, 1200);
-
         }, 1500);
     }
 
@@ -669,6 +738,7 @@
         window.location.href = 'PINGPONGstep2.html';
     }
 </script>
+
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     const dock = document.querySelector('.pingpong-image-dock');
