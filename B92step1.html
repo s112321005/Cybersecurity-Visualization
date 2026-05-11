@@ -5,7 +5,7 @@
     <base href="https://s112321005.github.io/Cybersecurity-Visualization/">
     <title>Quantum Key Distribution: B92</title>
     <style>
-        :root { --primary-blue: #549FD0; --alice-blue: #004aad; --bg-gradient: linear-gradient(135deg, #E0F2FE 0%, #F5F3FF 50%, #ECFDF5 100%); --dark-text: #333333; --bg-color: #f8f9fa; --active-blue: #eaf1fb; }
+        :root { --primary-blue: #549FD0; --alice-blue: #004aad; --bg-gradient: linear-gradient(135deg, #E0F2FE 0%, #F5F3FF 50%, #ECFDF5 100%); --dark-text: #333333; --bg-color: #f8f9fa; --active-blue: #eaf1fb; --photon-yellow: #ffeb3b; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes pulse-anim { 0% { box-shadow: 0 0 0 0 rgba(0, 73, 176, 0.4); } 70% { box-shadow: 0 0 0 15px rgba(0, 73, 176, 0); } 100% { box-shadow: 0 0 0 0 rgba(0, 73, 176, 0); } }
         @keyframes float-anim { 0% { transform: translateY(0px); } 50% { transform: translateY(-8px); } 100% { transform: translateY(0px); } }
@@ -41,6 +41,7 @@
         .state-btn:hover { transform: translateY(-5px); border-color: #b7cdee; background: #fafcff; }
         .state-btn.active { border-color: var(--alice-blue); background: var(--active-blue); transform: scale(1.08); animation: none; box-shadow: 0 0 15px rgba(0, 73, 176, 0.4); }
         
+        .photon-display { width: 65px; height: 65px; background: var(--photon-yellow); border-radius: 50%; box-shadow: 0 0 25px var(--photon-yellow); display: inline-flex; justify-content: center; align-items: center; font-weight: bold; font-size: 1.45rem; color: var(--primary-blue); margin-bottom: 5px; }
         .braket { font-size: 1.8rem; font-weight: bold; color: var(--alice-blue); margin-bottom: 2px; }
         .bit-label { font-size: 1.1rem; color: #333; font-weight: bold; background: #ffeaa7; padding: 2px 10px; border-radius: 10px; }
         
@@ -91,7 +92,7 @@
         <a href="QuantumCybersecurityEducationPlatform.html" class="btn-back" title="back home">◀&#xFE0E;</a>
         <div class="title-pill">Quantum Key Distribution: B92</div>
     </div>
-    <div class="header-center"><p class="step-text">STEP 1 : PREPARE</p></div>
+    <div class="header-center"><p class="step-text">STEP 1: Alice prepares the photon</p></div>
     <div class="header-right">
         <button id="next-btn" class="nav-btn" onclick="nextStep()" disabled>Next</button>
     </div>
@@ -106,8 +107,7 @@
             <div class="basis-column">
                 <div class="basis-title">S Basis (Rectilinear)</div>
                 <div class="state-btn" onclick="selectState('0', 'rectilinear', this)">
-                    <img src="pictures/vertical.svg" width="60" style="margin-bottom:5px;" alt="Rectilinear">
-                    <span class="braket">|→&#xFE0E;⟩&#xFE0E;</span>
+                    <div class="photon-display">|→⟩</div>
                     <span class="bit-label">Bit 0</span>
                 </div>
             </div>
@@ -117,8 +117,7 @@
             <div class="basis-column">
                 <div class="basis-title">D Basis (Diagonal)</div>
                 <div class="state-btn" onclick="selectState('1', 'diagonal', this)">
-                    <img src="pictures/diagonal.svg" width="60" style="margin-bottom:5px;" alt="Diagonal">
-                    <span class="braket">|↗&#xFE0E;⟩&#xFE0E;</span>
+                    <div class="photon-display">|↗⟩</div>
                     <span class="bit-label">Bit 1</span>
                 </div>
             </div>
@@ -169,7 +168,7 @@
         localStorage.removeItem('b92Step2Data'); 
         
         // Go to step two and pass the selected values to Bob through the URL.
-        window.location.href = `B92step2.html?aliceMsg=${selectedMsg}&aliceBasis=${selectedBasis}`;
+        window.location.href = `fB92step2.html?aliceMsg=${selectedMsg}&aliceBasis=${selectedBasis}`;
     }
 </script>
 <script>
