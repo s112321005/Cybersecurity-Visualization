@@ -150,14 +150,14 @@
         <div class="col" style="min-width: 230px;" id="bob-col">
             <img src="pictures/cat_bob.svg" width="120" alt="Bob" class="character-avatar">
             <div class="bob-interactive" id="bob-interactive">
-                <p style="margin:0; font-weight:bold; color:var(--primary-blue);">Choose a filter!</p>
+                <p style="margin:0; font-weight:bold; color:var(--primary-blue);">Choose a polarizer!</p>
                 <div class="bob-choices">
                     <div class="bob-choice-btn pulse" onclick="startMeasurementProcess('vertical', this)">
-                        <img src="pictures/b_vertical.svg" width="80" alt="Vertical filter">
+                        <img src="pictures/b_vertical.svg" width="80" alt="Vertical polarizer">
                         <div class="filter-circle">|↑⟩</div>
                     </div>
                     <div class="bob-choice-btn pulse" onclick="startMeasurementProcess('anti-diagonal', this)">
-                        <img src="pictures/b_diagonal.svg" width="80" alt="Anti-diagonal filter">
+                        <img src="pictures/b_diagonal.svg" width="80" alt="Anti-diagonal polarizer">
                         <div class="filter-circle">|↖⟩</div>
                     </div>
                 </div>
@@ -165,7 +165,7 @@
 
             <div class="bob-active-filter" id="bob-active-filter">
                 <p class="flow-label">Bob Measured</p>
-                <img id="bob-active-img" src="" width="80" style="margin-bottom: 10px;" alt="Selected filter">
+                <img id="bob-active-img" src="" width="80" style="margin-bottom: 10px;" alt="Selected polarizer">
                 <div class="filter-circle" id="bob-filter-label">-</div>
             </div>
         </div>
@@ -198,12 +198,12 @@
         </div>
     </div>
 
-    <p class="bottom-hint" id="hint-text">Help Bob test the incoming photon</p>
+    <p class="bottom-hint" id="hint-text">Help Bob test the incoming photon with a polarizer</p>
 
     <div class="explanation-box" id="explain-box">
         <div class="explain-header">
             <p class="explain-title" id="explain-title">Analyzing Result...</p>
-            <button class="retry-btn" onclick="resetBob()">↺ Try Another Filter</button>
+            <button class="retry-btn" onclick="resetBob()">↺ Try Another Polarizer</button>
         </div>
         <p class="explain-desc" id="explain-desc">Loading explanation...</p>
     </div>
@@ -353,20 +353,22 @@
         const explainBox = document.getElementById("explain-box");
         const explainTitle = document.getElementById("explain-title");
         const explainDesc = document.getElementById("explain-desc");
-        const filterName = bobFilter === "vertical" ? "vertical filter |↑⟩" : "anti-diagonal filter |↖⟩";
+        const blockedState = bobFilter === "vertical" ? "|0⟩" : "|+⟩";
+        const inferredState = bobFilter === "vertical" ? "|+⟩" : "|0⟩";
+        const recordQubit = bobFilter === "vertical" ? "|1⟩" : "|0⟩";
 
         if (isConclusive) {
             explainBox.style.borderLeftColor = "var(--match-green)";
             explainBox.style.backgroundColor = "#f0fdf4";
             explainTitle.style.color = "var(--match-green)";
-            explainTitle.innerHTML = "🟢 Detector Click! (Conclusive Result)";
-            explainDesc.innerHTML = `Bob used the <b>${filterName}</b>. Because the detector clicked, Bob can rule out the state that this filter would block and <span class="highlight-keep">records ${alicePhoton.label}</span>.`;
+            explainTitle.innerHTML = "🟢 Record";
+            explainDesc.innerHTML = `Light passed. This polarizer blocks <b>${blockedState}</b>, so Alice could not have sent <b>${blockedState}</b>.<br>Bob infers Alice sent <b>${inferredState}</b>: <span class="highlight-keep">Qubit ${recordQubit}</span>.`;
         } else {
             explainBox.style.borderLeftColor = "var(--mismatch-red)";
             explainBox.style.backgroundColor = "#fff5f5";
             explainTitle.style.color = "var(--mismatch-red)";
-            explainTitle.innerHTML = "🔴 No Click! (Inconclusive Result)";
-            explainDesc.innerHTML = `Bob used the <b>${filterName}</b>, but the photon was blocked. In B92, a no-click result does not reveal Alice's state, so <span class="highlight-discard">this round is discarded</span>.`;
+            explainTitle.innerHTML = "🔴 Discard";
+            explainDesc.innerHTML = `No light passed. Bob cannot tell whether the photon was blocked or lost, so this result is <span class="highlight-discard">inconclusive</span>.`;
         }
 
         document.getElementById("results-area").classList.add("show-result");
