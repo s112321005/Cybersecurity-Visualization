@@ -5,7 +5,7 @@
     <base href="https://s112321005.github.io/Cybersecurity-Visualization/">
     <title>Quantum Key Distribution：BB84</title>
     <style>
-        :root { --primary-blue: #549FD0; --alice-blue: #004aad; --dark-text: #333333; --bg-color: #f8f9fa; --bg-gradient: linear-gradient(135deg, #E0F2FE 0%, #F5F3FF 50%, #ECFDF5 100%); --photon-yellow: #ffeb3b; --photon-gold: #ffd54f; --match-green: #28a745; --mismatch-red: #dc3545; }
+        :root { --primary-blue: #549FD0; --alice-blue: #004aad; --dark-text: #333333; --bg-color: #f8f9fa; --bg-gradient: linear-gradient(135deg, #E0F2FE 0%, #F5F3FF 50%, #ECFDF5 100%); --photon-yellow: #ffeb3b; --photon-gold: #ffd54f; --match-green: #28a745; --mismatch-red: #dc3545; --zero: #3d7df2; --one: #e55d8b; --plus: #f0a92d; --minus: #23a9a5; }
         body { font-family: 'Segoe UI', sans-serif; display: flex; flex-direction: column; align-items: center; padding: 40px 20px; background: var(--bg-gradient); margin: 0; overflow-y: scroll; }
         .header { width: min(1000px, 95vw); display: flex; align-items: center; justify-content: space-between; margin-bottom: 25px; animation: fadeIn 0.8s ease-out forwards; }
         .header-left { display: flex; align-items: center; gap: 15px; }
@@ -72,9 +72,15 @@
         @keyframes shoot-to-bob { 0% { transform: translate(0, 0) scale(0); opacity: 1; } 20% { transform: translate(calc(var(--tx-bob) * 0.2), calc(var(--ty-bob) * 0.2)) scale(1.3); } 100% { transform: translate(var(--tx-bob), var(--ty-bob)) scale(1); opacity: 1; } }
         @keyframes shoot-bob-to-outcome { 0% { transform: translate(var(--tx-bob), var(--ty-bob)) scale(1); opacity: 1; } 100% { transform: translate(var(--tx-out), var(--ty-out)) scale(1); opacity: 1; } }
         @keyframes shoot-collapse { 0% { transform: translate(var(--tx-bob), var(--ty-bob)) scale(1); opacity: 1; } 100% { transform: translate(var(--tx-bob), var(--ty-bob)) scale(0); opacity: 0; } }
-        .state-photon { width: 34px; height: 34px; background: var(--photon-yellow); border-radius: 50%; box-shadow: 0 0 18px var(--photon-yellow); color: var(--primary-blue); display: inline-flex; justify-content: center; align-items: center; font-size: .86rem; font-weight: bold; flex: 0 0 auto; }
+        .state-photon { --beam-color: var(--zero); --state-angle: 90deg; position: relative; width: 34px; height: 34px; border-radius: 50%; background: radial-gradient(circle, #ffffff 0 47%, color-mix(in srgb, var(--beam-color) 28%, transparent) 48% 54%, transparent 55% 100%); border: 1.5px solid color-mix(in srgb, var(--beam-color) 70%, white); box-shadow: 0 0 18px color-mix(in srgb, var(--beam-color) 38%, transparent); color: transparent; display: inline-flex; justify-content: center; align-items: center; font-size: 0; font-weight: bold; flex: 0 0 auto; }
+        .state-photon::after { content: ""; position: absolute; left: 50%; top: 50%; width: 8px; height: 24px; background: var(--beam-color); transform: translate(-50%, -50%) rotate(var(--state-angle)); box-shadow: 0 0 8px var(--beam-color); clip-path: polygon(50% 0, 100% 18%, 72% 18%, 72% 82%, 100% 82%, 50% 100%, 0 82%, 28% 82%, 28% 18%, 0 18%); }
         #bob-active-img { margin-top: calc(var(--flow-center) - 58px); }
-        .photon-particle { position: absolute; width: 58px; height: 58px; background: var(--photon-yellow); border-radius: 50%; box-shadow: 0 0 25px var(--photon-yellow); display: flex; justify-content: center; align-items: center; color: var(--primary-blue); font-size: 1.28rem; font-weight: bold; pointer-events: none; z-index: 100; }
+        .photon-particle { --beam-color: var(--zero); --state-angle: 90deg; position: absolute; width: 58px; height: 58px; border-radius: 50%; background: radial-gradient(circle, #ffffff 0 47%, color-mix(in srgb, var(--beam-color) 28%, transparent) 48% 54%, transparent 55% 100%); border: 1.5px solid color-mix(in srgb, var(--beam-color) 70%, white); box-shadow: 0 0 18px color-mix(in srgb, var(--beam-color) 38%, transparent); display: flex; justify-content: center; align-items: center; color: transparent; font-size: 0; font-weight: bold; pointer-events: none; z-index: 100; }
+        .photon-particle::after { content: ""; position: absolute; left: 50%; top: 50%; width: 14px; height: 38px; background: var(--beam-color); transform: translate(-50%, -50%) rotate(var(--state-angle)); box-shadow: 0 0 10px var(--beam-color); clip-path: polygon(50% 0, 100% 18%, 72% 18%, 72% 82%, 100% 82%, 50% 100%, 0 82%, 28% 82%, 28% 18%, 0 18%); }
+        .photon-s1 { --beam-color: var(--one); --state-angle: 0deg; }
+        .photon-s0 { --beam-color: var(--zero); --state-angle: 90deg; }
+        .photon-d1 { --beam-color: var(--minus); --state-angle: -45deg; }
+        .photon-d0 { --beam-color: var(--plus); --state-angle: 45deg; }
         .bb84-image-dock { position: fixed; right: 18px; top: 0; width: 330px; height: 100vh; z-index: 900; pointer-events: none; display: flex; justify-content: center; overflow: visible; isolation: isolate; }
         .bb84-image-viewport { position: relative; width: 285px; height: 100vh; background: #ffffff; box-sizing: border-box; box-shadow: 0 12px 26px rgba(0, 0, 0, 0.12); overflow: visible; z-index: 1; }
         .bb84-image-viewport::before, .bb84-image-viewport::after { content: ""; position: absolute; top: 0; width: 14px; height: 100vh; background: #d9d9d9; z-index: 1; pointer-events: none; }
@@ -215,10 +221,10 @@
     let aliceBasisStr = ""; 
     
     const photonConfig = {
-        's1': { display: 'Bit 1 : |↑⟩', label: 'Bit 1', symbol: '↑', ket: '|↑⟩' },
-        's0': { display: 'Bit 0 : |→⟩', label: 'Bit 0', symbol: '→', ket: '|→⟩' },
-        'd1': { display: 'Bit 1 : |↖⟩', label: 'Bit 1', symbol: '↖', ket: '|↖⟩' },
-        'd0': { display: 'Bit 0 : |↗⟩', label: 'Bit 0', symbol: '↗', ket: '|↗⟩' }
+        's1': { display: 'Qubit: |1⟩', label: 'Qubit: |1⟩', symbol: '↑', ket: '↑', stateKet: '|↑⟩' },
+        's0': { display: 'Qubit: |0⟩', label: 'Qubit: |0⟩', symbol: '→', ket: '→', stateKet: '|→⟩' },
+        'd1': { display: 'Qubit: |1⟩', label: 'Qubit: |1⟩', symbol: '↖', ket: '↖', stateKet: '|↖⟩' },
+        'd0': { display: 'Qubit: |0⟩', label: 'Qubit: |0⟩', symbol: '↗', ket: '↗', stateKet: '|↗⟩' }
     };
 
     function createPhotonDisplay(ket, className = '') {
@@ -230,7 +236,7 @@
         const target = document.getElementById(elementId);
         if (!target) return;
         const photon = photonConfig[photonKey];
-        target.innerHTML = createPhotonDisplay(photon.ket, 'state-photon') + `<span>${photon.label}</span>`;
+        target.innerHTML = createPhotonDisplay(photon.ket, `state-photon photon-${photonKey}`) + `<span>${photon.label}</span>`;
     }
 
     document.addEventListener("DOMContentLoaded", () => {
@@ -291,13 +297,13 @@
         document.getElementById("results-area").classList.remove("show-result");
         
         if (isMatch) {
-            document.getElementById("match-state").textContent = photonConfig[alicePhotonStr].display;
+            setPhotonLabel("match-state", alicePhotonStr);
             document.getElementById("match-container").style.display = "flex";
             document.getElementById("output-mismatch").style.display = "none";
             document.getElementById("output-match").style.opacity = "0"; 
         } else {
-            document.getElementById("mis-state-up").textContent = photonConfig[(bobChosenBasis === "S") ? 's1' : 'd1'].display;
-            document.getElementById("mis-state-down").textContent = photonConfig[(bobChosenBasis === "S") ? 's0' : 'd0'].display;
+            setPhotonLabel("mis-state-up", (bobChosenBasis === "S") ? 's1' : 'd1');
+            setPhotonLabel("mis-state-down", (bobChosenBasis === "S") ? 's0' : 'd0');
             document.getElementById("match-container").style.display = "none";
             document.getElementById("output-mismatch").style.display = "flex";
         }
@@ -320,7 +326,7 @@
         const sourceEl = document.getElementById('input-state');
         const bobEl = document.getElementById('bob-active-img');
         const particle = document.createElement('div');
-        particle.className = 'photon-particle';
+        particle.className = `photon-particle photon-${alicePhotonStr}`;
         particle.textContent = photonConfig[alicePhotonStr].ket;
         const stageRect = stage.getBoundingClientRect();
         const srcRect = sourceEl.getBoundingClientRect();
@@ -370,23 +376,35 @@
         const explainBox = document.getElementById("explain-box");
         const explainTitle = document.getElementById("explain-title");
         const explainDesc = document.getElementById("explain-desc");
+        const aliceSymbol = photonConfig[alicePhotonStr].symbol;
+        const bobBasisLabel = document.getElementById("bob-key-label").textContent;
+        const bitValue = (aliceSymbol === '↑' || aliceSymbol === '↖') ? '1' : '0';
         if (isMatch) {
             document.getElementById("output-match").style.opacity = "1"; 
             explainBox.style.borderLeftColor = "var(--match-green)";
             explainBox.style.backgroundColor = "#f0fdf4";
             explainTitle.style.color = "var(--match-green)";
-            explainTitle.innerHTML = "🟢 Basis Match! (Deterministic Result)";
-            explainDesc.innerHTML = "Bob chose the <b>same basis</b> as Alice. The photon passed through predictably, <span class='highlight-keep'>confirming Bit " + (photonConfig[alicePhotonStr].symbol === '↑' || photonConfig[alicePhotonStr].symbol === '↖' ? '1' : '0') + " deterministically!</span> They will KEEP this bit.";
+
+            const polarizerKet = bobBasisLabel === "S" ? "↑" : "↖";
+            const isBlockedCase =
+                (bobBasisLabel === "S" && alicePhotonStr === "s0") ||
+                (bobBasisLabel === "D" && alicePhotonStr === "d0");
+
+            if (isBlockedCase) {
+                explainTitle.innerHTML = "🟢 No Light! (Deterministic Result)";
+                explainDesc.innerHTML = `After Alice announces the basis, Bob confirms they used the <b>same basis</b>. No light passed through the <b>${polarizerKet}</b> polarizer, so Bob knows the photon was <b>${photonConfig[alicePhotonStr].ket}</b> and <span class='highlight-keep'>records Bit ${bitValue}</span>.`;
+            } else {
+                explainTitle.innerHTML = "🟢 Light Passed! (Deterministic Result)";
+                explainDesc.innerHTML = `After Alice announces the basis, Bob confirms they used the <b>same basis</b>. Light passed through the <b>${polarizerKet}</b> polarizer, so Bob knows the photon was <b>${photonConfig[alicePhotonStr].ket}</b> and <span class='highlight-keep'>records Bit ${bitValue}</span>.`;
+            }
         } else {
             explainBox.style.borderLeftColor = "var(--mismatch-red)";
             explainBox.style.backgroundColor = "#fff5f5";
             explainTitle.style.color = "var(--mismatch-red)";
-            explainTitle.innerHTML = "🔴 Basis Mismatch! (Random Result)";
-            explainDesc.innerHTML = "Bob used a <b>different basis</b>. The photon collapsed randomly (50/50 chance). Because the measurement is unreliable, <span class='highlight-discard'>they must DISCARD this bit.</span>";
+            explainTitle.innerHTML = "🔴 Different Basis! (Random Result)";
+            explainDesc.innerHTML = "After Alice announces the basis, Bob finds they used a <b>different basis</b>, so <span class='highlight-discard'>this bit is discarded</span>.";
         }
-        const aliceSymbol = photonConfig[alicePhotonStr].symbol;
         let aliceBasisType = (aliceSymbol === '↑' || aliceSymbol === '→') ? 'S' : 'D';
-        const bobBasisLabel = document.getElementById("bob-key-label").textContent;
         const qkdData = {
             aliceState: aliceSymbol,
             aliceBasis: aliceBasisType, 

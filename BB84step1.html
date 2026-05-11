@@ -5,7 +5,7 @@
     <base href="https://s112321005.github.io/Cybersecurity-Visualization/">
     <title>Quantum Key Distribution：BB84</title>
     <style>
-        :root { --primary-blue: #549FD0; --alice-blue: #004aad; --dark-text: #333333; --bg-color: #f8f9fa; --bg-gradient: linear-gradient(135deg, #E0F2FE 0%, #F5F3FF 50%, #ECFDF5 100%); --active-blue: #e3f2fd; --photon-yellow: #ffeb3b; --photon-gold: #ffd54f; }
+        :root { --primary-blue: #549FD0; --alice-blue: #004aad; --dark-text: #333333; --bg-color: #f8f9fa; --bg-gradient: linear-gradient(135deg, #E0F2FE 0%, #F5F3FF 50%, #ECFDF5 100%); --active-blue: #e3f2fd; --photon-yellow: #ffeb3b; --photon-gold: #ffd54f; --zero: #3d7df2; --one: #e55d8b; --plus: #f0a92d; --minus: #23a9a5; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes pulse-anim { 0% { box-shadow: 0 0 0 0 rgba(0, 74, 173, 0.4); } 70% { box-shadow: 0 0 0 15px rgba(0, 74, 173, 0); } 100% { box-shadow: 0 0 0 0 rgba(0, 74, 173, 0); } }
         @keyframes float-anim { 0% { transform: translateY(0px); } 50% { transform: translateY(-8px); } 100% { transform: translateY(0px); } }
@@ -30,7 +30,13 @@
         .state-btn { cursor: pointer; padding: 12px; border: 2px solid #eee; border-radius: 20px; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); display: flex; flex-direction: column; align-items: center; gap: 5px; width: 115px; background: white; position: relative; animation: pulse-anim 2s infinite; }
         .state-btn:hover { transform: translateY(-5px); border-color: #bbdefb; background: #fafcff; }
         .state-btn.active { border-color: var(--alice-blue); background: var(--active-blue); transform: scale(1.08); animation: none; box-shadow: 0 0 15px rgba(0, 74, 173, 0.4); }
-        .photon-display { width: 76px; height: 76px; background: var(--photon-yellow); border-radius: 50%; box-shadow: 0 0 25px var(--photon-yellow); display: inline-flex; justify-content: center; align-items: center; font-weight: bold; font-size: 1.55rem; color: var(--primary-blue); margin-bottom: 2px; }
+        .photon-display { --beam-color: var(--zero); --state-angle: 90deg; position: relative; width: 78px; height: 78px; border-radius: 50%; background: radial-gradient(circle, #ffffff 0 47%, color-mix(in srgb, var(--beam-color) 28%, transparent) 48% 54%, transparent 55% 100%); border: 1.5px solid color-mix(in srgb, var(--beam-color) 70%, white); box-shadow: 0 0 18px color-mix(in srgb, var(--beam-color) 38%, transparent); display: grid; place-items: center; margin-bottom: 2px; color: transparent; font-size: 0; overflow: visible; }
+        .photon-display::after { content: ""; position: absolute; left: 50%; top: 50%; width: 16px; height: 48px; background: var(--beam-color); transform: translate(-50%, -50%) rotate(var(--state-angle)); box-shadow: 0 0 10px var(--beam-color); clip-path: polygon(50% 0, 100% 18%, 72% 18%, 72% 82%, 100% 82%, 50% 100%, 0 82%, 28% 82%, 28% 18%, 0 18%); }
+        .photon-display::before { display: none; }
+        .photon-display.photon-s1 { --beam-color: var(--one); --state-angle: 0deg; }
+        .photon-display.photon-s0 { --beam-color: var(--zero); --state-angle: 90deg; }
+        .photon-display.photon-d1 { --beam-color: var(--minus); --state-angle: -45deg; }
+        .photon-display.photon-d0 { --beam-color: var(--plus); --state-angle: 45deg; }
         .braket { font-size: 1.35rem; font-weight: bold; color: var(--alice-blue); margin-bottom: 2px; }
         .bit-label { font-size: 0.85rem; color: #666; font-weight: bold; }
         .explanation-area { display: flex; justify-content: center; align-items: center; margin-top: 20px; padding: 10px; }
@@ -240,11 +246,11 @@
                 <div class="basis-title">S Basis (Rectilinear)</div>
                 <div class="options-row">
                     <div class="state-btn" onclick="selectState('rectilinear', '1', this)">
-                        <div class="photon-display">|↑⟩</div>
+                        <div class="photon-display photon-s1" aria-label="Photon |↑⟩"></div>
                         <span class="bit-label">Bit 1</span>
                     </div>
                     <div class="state-btn" onclick="selectState('rectilinear', '0', this)">
-                        <div class="photon-display">|→⟩</div>
+                        <div class="photon-display photon-s0" aria-label="Photon |→⟩"></div>
                         <span class="bit-label">Bit 0</span>
                     </div>
                 </div>
@@ -254,11 +260,11 @@
                 <div class="basis-title">D Basis (Diagonal)</div>
                 <div class="options-row">
                     <div class="state-btn" onclick="selectState('diagonal', '1', this)">
-                        <div class="photon-display">|↖⟩</div>
+                        <div class="photon-display photon-d1" aria-label="Photon |↖⟩"></div>
                         <span class="bit-label">Bit 1</span>
                     </div>
                     <div class="state-btn" onclick="selectState('diagonal', '0', this)">
-                        <div class="photon-display">|↗⟩</div>
+                        <div class="photon-display photon-d0" aria-label="Photon |↗⟩"></div>
                         <span class="bit-label">Bit 0</span>
                     </div>
                 </div>
