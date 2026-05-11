@@ -5,7 +5,7 @@
     <base href="https://s112321005.github.io/Cybersecurity-Visualization/">
     <title>Quantum Key Distribution: B92</title>
     <style>
-        :root { --primary-blue: #549FD0; --alice-blue: #004aad; --bg-gradient: linear-gradient(135deg, #E0F2FE 0%, #F5F3FF 50%, #ECFDF5 100%); --dark-text: #333333; --bg-color: #f8f9fa; --active-blue: #eaf1fb; --photon-yellow: #ffeb3b; }
+        :root { --primary-blue: #549FD0; --alice-blue: #004aad; --bg-gradient: linear-gradient(135deg, #E0F2FE 0%, #F5F3FF 50%, #ECFDF5 100%); --dark-text: #333333; --bg-color: #f8f9fa; --active-blue: #eaf1fb; --photon-yellow: #ffeb3b; --zero: #3d7df2; --plus: #f0a92d; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes pulse-anim { 0% { box-shadow: 0 0 0 0 rgba(0, 73, 176, 0.4); } 70% { box-shadow: 0 0 0 15px rgba(0, 73, 176, 0); } 100% { box-shadow: 0 0 0 0 rgba(0, 73, 176, 0); } }
         @keyframes float-anim { 0% { transform: translateY(0px); } 50% { transform: translateY(-8px); } 100% { transform: translateY(0px); } }
@@ -41,7 +41,10 @@
         .state-btn:hover { transform: translateY(-5px); border-color: #b7cdee; background: #fafcff; }
         .state-btn.active { border-color: var(--alice-blue); background: var(--active-blue); transform: scale(1.08); animation: none; box-shadow: 0 0 15px rgba(0, 73, 176, 0.4); }
         
-        .photon-display { width: 65px; height: 65px; background: var(--photon-yellow); border-radius: 50%; box-shadow: 0 0 25px var(--photon-yellow); display: inline-flex; justify-content: center; align-items: center; font-weight: bold; font-size: 1.45rem; color: var(--primary-blue); margin-bottom: 5px; }
+        .photon-display { --photon-color: var(--zero); --photon-angle: 90deg; position: relative; width: 65px; height: 65px; border-radius: 50%; background: radial-gradient(circle, #ffffff 0 52%, color-mix(in srgb, var(--photon-color) 30%, #ffffff) 53% 72%, #ffffff 73% 100%); border: 3px solid #ffffff; box-shadow: 0 0 20px color-mix(in srgb, var(--photon-color) 45%, transparent), 0 0 0 1px color-mix(in srgb, var(--photon-color) 20%, #ffffff); display: inline-flex; justify-content: center; align-items: center; margin-bottom: 5px; overflow: visible; }
+        .photon-display::after { content: ""; position: absolute; left: 50%; top: 50%; width: 16px; height: 48px; background: var(--photon-color); transform: translate(-50%, -50%)rotate(var(--photon-angle)); box-shadow: 0 0 8px var(--photon-color); clip-path: polygon(50% 0, 100% 18%, 72% 18%, 72% 82%, 100% 82%, 50% 100%, 0 82%, 28% 82%, 28% 18%, 0 18%); }
+        .photon-display.photon-zero { --photon-color: var(--zero); --photon-angle: 90deg; }
+        .photon-display.photon-plus { --photon-color: var(--plus); --photon-angle: 45deg; }
         .braket { font-size: 1.8rem; font-weight: bold; color: var(--alice-blue); margin-bottom: 2px; }
         .bit-label { font-size: 1.1rem; color: #333; font-weight: bold; background: #ffeaa7; padding: 2px 10px; border-radius: 10px; }
         
@@ -107,7 +110,7 @@
             <div class="basis-column">
                 <div class="basis-title">S Basis (Rectilinear)</div>
                 <div class="state-btn" onclick="selectState('0', 'rectilinear', this)">
-                    <div class="photon-display">|→⟩</div>
+                    <div class="photon-display photon-zero" aria-label="Qubit |0⟩"></div>
                     <span class="bit-label">Bit 0</span>
                 </div>
             </div>
@@ -117,7 +120,7 @@
             <div class="basis-column">
                 <div class="basis-title">D Basis (Diagonal)</div>
                 <div class="state-btn" onclick="selectState('1', 'diagonal', this)">
-                    <div class="photon-display">|↗⟩</div>
+                    <div class="photon-display photon-plus" aria-label="Qubit |+⟩"></div>
                     <span class="bit-label">Bit 1</span>
                 </div>
             </div>
