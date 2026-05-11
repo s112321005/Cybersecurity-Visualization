@@ -396,18 +396,18 @@
                 (bobBasisLabel === "D" && alicePhotonStr === "d0");
 
             if (isBlockedCase) {
-                explainTitle.innerHTML = "🟢 No Light! (Deterministic Result)";
-                explainDesc.innerHTML = `After Alice announces the basis, Bob confirms they used the <b>same basis</b>. No light passed through the <b>${polarizerKet}</b> polarizer, so Bob knows the photon was <b>${photonConfig[alicePhotonStr].ket}</b> and <span class='highlight-keep'>records Bit ${bitValue}</span>.`;
+                explainTitle.innerHTML = "🟢 Record";
+                explainDesc.innerHTML = `After Alice announces the basis, Bob confirms they used the <b>same basis</b>.<br>No light passed through the <b>${polarizerKet}</b> polarizer, so <b>Bob identifies ${photonConfig[alicePhotonStr].label.replace('Qubit: ', '')}</b>. <span class='highlight-keep'>Record Bit ${bitValue}</span>.`;
             } else {
-                explainTitle.innerHTML = "🟢 Light Passed! (Deterministic Result)";
-                explainDesc.innerHTML = `After Alice announces the basis, Bob confirms they used the <b>same basis</b>. Light passed through the <b>${polarizerKet}</b> polarizer, so Bob knows the photon was <b>${photonConfig[alicePhotonStr].ket}</b> and <span class='highlight-keep'>records Bit ${bitValue}</span>.`;
+                explainTitle.innerHTML = "🟢 Record";
+                explainDesc.innerHTML = `After Alice announces the basis, Bob confirms they used the <b>same basis</b>.<br>Light passed through the <b>${polarizerKet}</b> polarizer, so <b>Bob identifies ${photonConfig[alicePhotonStr].label.replace('Qubit: ', '')}</b>. <span class='highlight-keep'>Record Bit ${bitValue}</span>.`;
             }
         } else {
             explainBox.style.borderLeftColor = "var(--mismatch-red)";
             explainBox.style.backgroundColor = "#fff5f5";
             explainTitle.style.color = "var(--mismatch-red)";
-            explainTitle.innerHTML = "🔴 Different Basis! (Random Result)";
-            explainDesc.innerHTML = "After Alice announces the basis, Bob finds they used a <b>different basis</b>, so <span class='highlight-discard'>this bit is discarded</span>.";
+            explainTitle.innerHTML = "🔴 Discard";
+            explainDesc.innerHTML = `After Alice announces the basis, Bob finds they used a <b>different basis</b>.<br>Bob's result is random, so this bit is <span class='highlight-discard'>discarded</span>.`;
         }
         let aliceBasisType = (aliceSymbol === '↑' || aliceSymbol === '→') ? 'S' : 'D';
         const qkdData = {
