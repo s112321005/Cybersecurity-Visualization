@@ -23,7 +23,7 @@
         .character-avatar { position: absolute; top: -140px; margin-bottom: 0; z-index: 10; width: 120px; height: 120px; object-fit: contain; }
         .flow-label { color: gray; font-weight: bold; margin: 0; height: 18px; font-size: 0.9rem; text-align: center; }
         #input-state { margin-top: calc(var(--flow-center) - 40.5px); }
-        .result-capsule { padding: 8px 18px; border-radius: 30px; border: 2px solid var(--primary-blue); color: var(--primary-blue); font-weight: bold; font-size: 1.05rem; background: white; display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 29px; min-width: 120px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        .result-capsule { padding: 9px 20px; border-radius: 31px; border: 2px solid var(--primary-blue); color: var(--primary-blue); font-weight: bold; font-size: 1.05rem; background: white; display: flex; align-items: center; justify-content: center; gap: 9px; min-height: 36px; min-width: 142px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); box-sizing: border-box; }
         .result-capsule.active { background: var(--primary-blue); color: white; }
         #input-state.result-capsule.active { background: var(--alice-blue); border-color: var(--alice-blue); }
         .result-capsule.error { border-color: #999; color: #555; opacity: 0; transition: opacity 0.5s; }
@@ -41,19 +41,19 @@
         .arrow-connector::after { content: ""; position: absolute; top: 50%; right: -2px; width: 0; height: 0; border-top: 8px solid transparent; border-bottom: 8px solid transparent; border-left: 14px solid var(--primary-blue); transform: translateY(-50%); opacity: 0; transition: opacity 0.2s ease 0.4s; }
         .connector.active { opacity: 1; width: 60px; }
         .connector.active.full-width { width: 100%; }
-        .decision-grid > .col > .connector.active.full-width { margin-top: calc(var(--flow-center) - 25px); }
+        .decision-grid > .col > .connector.active.full-width { margin-top: calc(var(--flow-center) - 20px); }
         .arrow-connector.active::after { opacity: 1; }
         .col-connectors { position: relative; width: 60px; height: 180px; }
-        .arrow-single { position: absolute; left: 0; top: var(--flow-center); transform: translateY(-50%); }
-        .arrow-branch-up { position: absolute; left: 0; top: var(--flow-center); transform-origin: left center; transform: translateY(-50%) rotate(-35deg); }
-        .arrow-branch-down { position: absolute; left: 0; top: var(--flow-center); transform-origin: left center; transform: translateY(-50%) rotate(35deg); }
+        .arrow-single { position: absolute; left: 0; top: calc(var(--flow-center) + 5px); transform: translateY(-50%); }
+        .arrow-branch-up { position: absolute; left: 0; top: calc(var(--flow-center) + 5px); transform-origin: left center; transform: translateY(-50%) rotate(-35deg); }
+        .arrow-branch-down { position: absolute; left: 0; top: calc(var(--flow-center) + 5px); transform-origin: left center; transform: translateY(-50%) rotate(35deg); }
         .result-icon { font-size: 2rem; font-weight: bold; margin-left: 15px; }
         .result-icon.match { color: var(--match-green); }
         .result-icon.mismatch { color: var(--mismatch-red); opacity: 0; transition: opacity 0.5s; }
         .output-group { display: flex; align-items: center; }
         #results-area { min-width: 180px; height: 180px; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; position: relative; transform: translateX(-8px); }
         #results-area-title { color: gray; font-weight: bold; margin: 0; height: 18px; font-size: 0.9rem; }
-        #photon-landing-spot { position: absolute; width: 1px; height: 1px; top: var(--flow-center); left: 0; pointer-events: none; }
+        #photon-landing-spot { position: absolute; width: 1px; height: 1px; top: calc(var(--flow-center) + 5px); left: 0; pointer-events: none; }
         #match-container { margin-top: calc(var(--flow-center) - 40.5px); }
         #output-match { margin-top: 0 !important; }
         #output-mismatch { margin-top: calc(var(--flow-center) - 72px) !important; }
@@ -62,7 +62,7 @@
         .explanation-box { position: absolute; bottom: 25px; width: 85%; background: #f8fbff; border-left: 6px solid var(--primary-blue); padding: 18px 30px; border-radius: 15px; box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08); display: flex; flex-direction: column; gap: 8px; box-sizing: border-box; opacity: 0; transform: translateY(20px); pointer-events: none; transition: all 0.5s ease; }
         .explanation-box.show { opacity: 1; transform: translateY(0); pointer-events: auto; }
         .explain-header { display: flex; justify-content: space-between; align-items: center; }
-        .explain- { font-weight: bold; font-size: 1.25rem; margin: 0; display: flex; align-items: center; gap: 8px; }
+        .explain-title { font-weight: bold; font-size: 1.25rem; margin: 0; display: flex; align-items: center; gap: 8px; }
         .explain-desc { color: #555; font-size: 1.05rem; margin: 0; line-height: 1.4; }
         .highlight-keep { color: var(--match-green); font-weight: bold; }
         .highlight-discard { color: var(--mismatch-red); font-weight: bold; }
@@ -72,11 +72,11 @@
         @keyframes shoot-to-bob { 0% { transform: translate(0, 0) scale(0); opacity: 1; } 20% { transform: translate(calc(var(--tx-bob) * 0.2), calc(var(--ty-bob) * 0.2)) scale(1.3); } 100% { transform: translate(var(--tx-bob), var(--ty-bob)) scale(1); opacity: 1; } }
         @keyframes shoot-bob-to-outcome { 0% { transform: translate(var(--tx-bob), var(--ty-bob)) scale(1); opacity: 1; } 100% { transform: translate(var(--tx-out), var(--ty-out)) scale(1); opacity: 1; } }
         @keyframes shoot-collapse { 0% { transform: translate(var(--tx-bob), var(--ty-bob)) scale(1); opacity: 1; } 100% { transform: translate(var(--tx-bob), var(--ty-bob)) scale(0); opacity: 0; } }
-        .state-photon { --beam-color: var(--zero); --state-angle: 90deg; position: relative; width: 34px; height: 34px; border-radius: 50%; background: radial-gradient(circle, #ffffff 0 47%, color-mix(in srgb, var(--beam-color) 28%, transparent) 48% 54%, transparent 55% 100%); border: 1.5px solid color-mix(in srgb, var(--beam-color) 70%, white); box-shadow: 0 0 18px color-mix(in srgb, var(--beam-color) 38%, transparent); color: transparent; display: inline-flex; justify-content: center; align-items: center; font-size: 0; font-weight: bold; flex: 0 0 auto; }
-        .state-photon::after { content: ""; position: absolute; left: 50%; top: 50%; width: 8px; height: 24px; background: var(--beam-color); transform: translate(-50%, -50%) rotate(var(--state-angle)); box-shadow: 0 0 8px var(--beam-color); clip-path: polygon(50% 0, 100% 18%, 72% 18%, 72% 82%, 100% 82%, 50% 100%, 0 82%, 28% 82%, 28% 18%, 0 18%); }
+        .state-photon { --beam-color: var(--zero); --state-angle: 90deg; position: relative; width: 40px; height: 40px; border-radius: 50%; background: radial-gradient(circle, #ffffff 0 52%, color-mix(in srgb, var(--beam-color) 30%, #ffffff) 53% 72%, #ffffff 73% 100%); border: 3px solid #ffffff; box-shadow: 0 0 20px color-mix(in srgb, var(--beam-color) 45%, transparent), 0 0 0 1px color-mix(in srgb, var(--beam-color) 20%, #ffffff); color: transparent; display: inline-flex; justify-content: center; align-items: center; font-size: 0; font-weight: bold; flex: 0 0 auto; box-sizing: border-box; }
+        .state-photon::after { content: ""; position: absolute; left: 50%; top: 50%; width: 11px; height: 31px; background: var(--beam-color); transform: translate(-50%, -50%) rotate(var(--state-angle)); box-shadow: 0 0 6px var(--beam-color); clip-path: polygon(50% 0, 100% 18%, 72% 18%, 72% 82%, 100% 82%, 50% 100%, 0 82%, 28% 82%, 28% 18%, 0 18%); }
         #bob-active-img { margin-top: calc(var(--flow-center) - 58px); }
-        .photon-particle { --beam-color: var(--zero); --state-angle: 90deg; position: absolute; width: 58px; height: 58px; border-radius: 50%; background: radial-gradient(circle, #ffffff 0 47%, color-mix(in srgb, var(--beam-color) 28%, transparent) 48% 54%, transparent 55% 100%); border: 1.5px solid color-mix(in srgb, var(--beam-color) 70%, white); box-shadow: 0 0 18px color-mix(in srgb, var(--beam-color) 38%, transparent); display: flex; justify-content: center; align-items: center; color: transparent; font-size: 0; font-weight: bold; pointer-events: none; z-index: 100; }
-        .photon-particle::after { content: ""; position: absolute; left: 50%; top: 50%; width: 14px; height: 38px; background: var(--beam-color); transform: translate(-50%, -50%) rotate(var(--state-angle)); box-shadow: 0 0 10px var(--beam-color); clip-path: polygon(50% 0, 100% 18%, 72% 18%, 72% 82%, 100% 82%, 50% 100%, 0 82%, 28% 82%, 28% 18%, 0 18%); }
+        .photon-particle { --beam-color: var(--zero); --state-angle: 90deg; position: absolute; width: 62px; height: 62px; border-radius: 50%; background: radial-gradient(circle, #ffffff 0 52%, color-mix(in srgb, var(--beam-color) 30%, #ffffff) 53% 72%, #ffffff 73% 100%); border: 3px solid #ffffff; box-shadow: 0 0 20px color-mix(in srgb, var(--beam-color) 45%, transparent), 0 0 0 1px color-mix(in srgb, var(--beam-color) 20%, #ffffff); display: flex; justify-content: center; align-items: center; color: transparent; font-size: 0; font-weight: bold; pointer-events: none; z-index: 100; box-sizing: border-box; }
+        .photon-particle::after { content: ""; position: absolute; left: 50%; top: 50%; width: 17px; height: 46px; background: var(--beam-color); transform: translate(-50%, -50%) rotate(var(--state-angle)); box-shadow: 0 0 8px var(--beam-color); clip-path: polygon(50% 0, 100% 18%, 72% 18%, 72% 82%, 100% 82%, 50% 100%, 0 82%, 28% 82%, 28% 18%, 0 18%); }
         .photon-s1 { --beam-color: var(--one); --state-angle: 0deg; }
         .photon-s0 { --beam-color: var(--zero); --state-angle: 90deg; }
         .photon-d1 { --beam-color: var(--minus); --state-angle: -45deg; }
@@ -223,8 +223,8 @@
     const photonConfig = {
         's1': { display: 'Qubit: |1⟩', label: 'Qubit: |1⟩', symbol: '↑', ket: '↑', stateKet: '|↑⟩' },
         's0': { display: 'Qubit: |0⟩', label: 'Qubit: |0⟩', symbol: '→', ket: '→', stateKet: '|→⟩' },
-        'd1': { display: 'Qubit: |1⟩', label: 'Qubit: |1⟩', symbol: '↖', ket: '↖', stateKet: '|↖⟩' },
-        'd0': { display: 'Qubit: |0⟩', label: 'Qubit: |0⟩', symbol: '↗', ket: '↗', stateKet: '|↗⟩' }
+        'd1': { display: 'Qubit: |-⟩', label: 'Qubit: |-⟩', symbol: '↖', ket: '↖', stateKet: '|↖⟩' },
+        'd0': { display: 'Qubit: |+⟩', label: 'Qubit: |+⟩', symbol: '↗', ket: '↗', stateKet: '|↗⟩' }
     };
 
     function createPhotonDisplay(ket, className = '') {
