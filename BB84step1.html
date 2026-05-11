@@ -199,6 +199,31 @@
             }
             .bb84-image-card.is-current img { max-width: 270px; max-height: 230px; }
         }
+
+        .bb84-image-dock { right: 16px; width: 430px; font-family:'Arial Rounded MT Bold','Arial Rounded MT','Arial',sans-serif; }
+        .bb84-image-viewport { width: 330px; }
+        .bb84-image-window { width: 500px; margin-left: -85px; }
+        .bb84-image-list { gap: 12px; padding: 52px 0 42px; width: 500px; transition: transform .55s cubic-bezier(.22,.8,.22,1); }
+        .bb84-image-card { width: 350px; min-height: 52px; padding: 0 18px; border: 6px solid var(--primary-blue); border-radius: 16px; filter: none; opacity: 1; transform: scale(1); transition: width .55s cubic-bezier(.22,.8,.22,1), min-height .55s cubic-bezier(.22,.8,.22,1), padding .55s cubic-bezier(.22,.8,.22,1), border-width .55s cubic-bezier(.22,.8,.22,1), border-radius .55s cubic-bezier(.22,.8,.22,1), box-shadow .55s cubic-bezier(.22,.8,.22,1), filter .35s ease, opacity .35s ease, transform .55s cubic-bezier(.22,.8,.22,1); }
+        .bb84-image-card:not(.is-current) { filter: none; opacity: 1; transform: scale(1); }
+        .bb84-image-card.is-current { width: 365px; min-height: 365px; padding: 14px; border: 7px solid var(--primary-blue); border-radius: 20px; box-shadow: 0 12px 28px rgba(84,159,208,.28); margin: 6px 0; }
+        .bb84-step-summary { display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; height: 100%; color: #111; font-weight: 900; font-size: 1rem; letter-spacing: .02em; white-space: nowrap; transition: opacity .22s ease, transform .22s ease; }
+        .bb84-step-number { width: 22px; height: 22px; border-radius: 50%; background: var(--primary-blue); color: #ffffff; display: inline-flex; align-items: center; justify-content: center; font-size: .86rem; line-height: 1; flex: 0 0 auto; }
+        .bb84-step-title { display: inline-block; line-height: 1; }
+        .bb84-image-card img { max-width: 0; max-height: 0; opacity: 0; transform: scale(.92); transition: opacity .28s ease .2s, transform .45s cubic-bezier(.22,.8,.22,1) .12s, max-width .55s cubic-bezier(.22,.8,.22,1), max-height .55s cubic-bezier(.22,.8,.22,1); }
+        .bb84-image-card.is-current .bb84-step-summary { opacity: 0; transform: translateY(-8px); position: absolute; pointer-events: none; }
+        .bb84-image-card.is-current img { max-width: 318px; max-height: 320px; opacity: 1; transform: scale(1); }
+        @media (min-width: 1180px) { body { padding-right: 450px !important; } }
+        @media (max-width: 1179px) {
+            .bb84-image-dock { width: min(94vw, 840px); height: 320px; }
+            .bb84-image-viewport { height: 320px; }
+            .bb84-image-viewport::before, .bb84-image-viewport::after { height: 320px; }
+            .bb84-image-window { height: 320px; }
+            .bb84-image-list { gap: 14px; height: 320px; padding: 0 24px; }
+            .bb84-image-card { width: 270px; min-height: 52px; }
+            .bb84-image-card.is-current { width: 305px; min-height: 250px; margin: 0 10px; }
+            .bb84-image-card.is-current img { max-width: 275px; max-height: 220px; }
+        }
     </style>
 </head>
 <body>
@@ -207,21 +232,11 @@
     <div class="bb84-image-viewport">
         <div class="bb84-image-window">
             <div class="bb84-image-list">
-                <div class="bb84-image-card is-current" data-bb84-step="1" aria-current="step">
-                    <img src="pictures/bb84-1.png" alt="BB84 Step 1">
-                </div>
-                <div class="bb84-image-card" data-bb84-step="2">
-                    <img src="pictures/bb84-2.png" alt="BB84 Step 2">
-                </div>
-                <div class="bb84-image-card" data-bb84-step="3">
-                    <img src="pictures/bb84-3.png" alt="BB84 Step 3">
-                </div>
-                <div class="bb84-image-card" data-bb84-step="4">
-                    <img src="pictures/bb84-4.png" alt="BB84 Step 4">
-                </div>
-                <div class="bb84-image-card" data-bb84-step="5">
-                    <img src="pictures/bb84-5.png" alt="BB84 Step 5">
-                </div>
+                <div class="bb84-image-card is-current" data-bb84-step="1" aria-current="step"><div class="bb84-step-summary"><span class="bb84-step-number">1</span><span class="bb84-step-title">PREPARE</span></div><img src="pictures/bb84-1.png" alt="BB84 Step 1"></div>
+                <div class="bb84-image-card" data-bb84-step="2"><div class="bb84-step-summary"><span class="bb84-step-number">2</span><span class="bb84-step-title">TRANSMIT</span></div><img src="pictures/bb84-2.png" alt="BB84 Step 2"></div>
+                <div class="bb84-image-card" data-bb84-step="3"><div class="bb84-step-summary"><span class="bb84-step-number">3</span><span class="bb84-step-title">MEASURE</span></div><img src="pictures/bb84-3.png" alt="BB84 Step 3"></div>
+                <div class="bb84-image-card" data-bb84-step="4"><div class="bb84-step-summary"><span class="bb84-step-number">4</span><span class="bb84-step-title">SIFTING</span></div><img src="pictures/bb84-4.png" alt="BB84 Step 4"></div>
+                <div class="bb84-image-card" data-bb84-step="5"><div class="bb84-step-summary"><span class="bb84-step-number">5</span><span class="bb84-step-title">KEY</span></div><img src="pictures/bb84-5.png" alt="BB84 Step 5"></div>
             </div>
         </div>
     </div>
@@ -310,7 +325,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const dock = document.querySelector('.bb84-image-dock');
     const windowBox = document.querySelector('.bb84-image-window');
     const list = document.querySelector('.bb84-image-list');
-    const currentCard = document.querySelector('.bb84-image-card.is-current');
+    let currentCard = document.querySelector('.bb84-image-card.is-current');
 
     if (dock) {
         dock.addEventListener('wheel', function (event) {
@@ -318,16 +333,39 @@ document.addEventListener('DOMContentLoaded', function () {
         }, { passive: false });
     }
 
+    function getStep2CollapsedStep1ReferenceOffset(isHorizontal) {
+        const step1Card = document.querySelector('.bb84-image-card[data-bb84-step="1"]');
+        const step3Card = document.querySelector('.bb84-image-card[data-bb84-step="3"]');
+        if (!step1Card || !step3Card || !currentCard) {
+            if (isHorizontal) {
+                return (windowBox.clientWidth / 2) - currentCard.offsetLeft - (currentCard.offsetWidth / 2);
+            }
+            return Math.max(0, (windowBox.clientHeight / 2) - currentCard.offsetTop - (currentCard.offsetHeight / 2));
+        }
+
+        const ariaBefore = currentCard.getAttribute('aria-current');
+
+        currentCard.classList.remove('is-current');
+        currentCard.removeAttribute('aria-current');
+        step3Card.classList.add('is-current');
+        step3Card.setAttribute('aria-current', 'step');
+
+        const targetEdge = isHorizontal ? step1Card.offsetLeft : step1Card.offsetTop;
+
+        step3Card.classList.remove('is-current');
+        step3Card.removeAttribute('aria-current');
+        currentCard.classList.add('is-current');
+        if (ariaBefore) currentCard.setAttribute('aria-current', ariaBefore);
+
+        const currentEdge = isHorizontal ? currentCard.offsetLeft : currentCard.offsetTop;
+        return targetEdge - currentEdge;
+    }
+
     function lockToCurrentStep() {
         if (!windowBox || !list || !currentCard) return;
         const isHorizontal = window.matchMedia('(max-width: 1179px)').matches;
-        if (isHorizontal) {
-            const offset = (windowBox.clientWidth / 2) - currentCard.offsetLeft - (currentCard.offsetWidth / 2);
-            list.style.transform = 'translateX(' + offset + 'px)';
-        } else {
-            const offset = (windowBox.clientHeight / 2) - currentCard.offsetTop - (currentCard.offsetHeight / 2);
-            list.style.transform = 'translateY(' + offset + 'px)';
-        }
+        const offset = getStep2CollapsedStep1ReferenceOffset(isHorizontal);
+        list.style.transform = isHorizontal ? 'translateX(' + offset + 'px)' : 'translateY(' + offset + 'px)';
     }
 
     lockToCurrentStep();
