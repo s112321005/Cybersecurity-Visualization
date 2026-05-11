@@ -5,7 +5,7 @@
     <base href="https://s112321005.github.io/Cybersecurity-Visualization/">
     <title>Quantum Key Distribution : B92 - Shared Key</title>
     <style>
-        :root{--primary-blue:#549FD0;--dark-text:#333333;--bg-gradient:linear-gradient(135deg,#E0F2FE 0%,#F5F3FF 50%,#ECFDF5 100%);--alice-blue:#004aad;--bob-blue:#4C80C5;--match-green:#28a745;--mismatch-red:#dc3545;--soft-blue:#eef7ff;}
+        :root{--primary-blue:#549FD0;--dark-text:#333333;--bg-gradient:linear-gradient(135deg,#E0F2FE 0%,#F5F3FF 50%,#ECFDF5 100%);--alice-blue:#004aad;--bob-blue:#4C80C5;--match-green:#28a745;--mismatch-red:#dc3545;--soft-blue:#eef7ff;--zero:#3d7df2;--one:#e55d8b;--plus:#f0a92d;--minus:#23a9a5;}
         @keyframes fadeIn{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
         @keyframes slideUp{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
         @keyframes drawLine{from{transform:scaleX(0);}to{transform:scaleX(1);}}
@@ -41,7 +41,10 @@
         .round-group{width:100%;min-height:96px;border-radius:16px;background:white;border:1px solid #d8e6ff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;min-width:0;}
         .mini-party{width:50px;height:50px;object-fit:contain;filter:drop-shadow(0 3px 5px rgba(0,0,0,.12));}
         .mini-filter{width:58px;height:58px;object-fit:contain;}
-        .photon-static{position:relative;width:42px;height:42px;background:var(--photon-yellow,#ffeb3b);border-radius:50%;box-shadow:0 0 25px var(--photon-yellow,#ffeb3b);display:flex;justify-content:center;align-items:center;font-weight:bold;font-size:1.45rem;color:var(--primary-blue);z-index:2;}
+        .photon-static{--beam-color:#3d7df2;--state-angle:90deg;position:relative;width:40px;height:40px;border-radius:50%;background:radial-gradient(circle,#ffffff 0 52%,color-mix(in srgb,var(--beam-color) 30%,#ffffff) 53% 72%,#ffffff 73% 100%);border:3px solid #ffffff;box-shadow:0 0 20px color-mix(in srgb,var(--beam-color) 45%,transparent),0 0 0 1px color-mix(in srgb,var(--beam-color) 20%,#ffffff);color:transparent;display:inline-flex;justify-content:center;align-items:center;font-size:0;font-weight:bold;flex:0 0 auto;box-sizing:border-box;z-index:2;}
+        .photon-static::after{content:"";position:absolute;left:50%;top:50%;width:11px;height:31px;background:var(--beam-color);transform:translate(-50%,-50%) rotate(var(--state-angle));box-shadow:0 0 6px var(--beam-color);clip-path:polygon(50% 0,100% 18%,72% 18%,72% 82%,100% 82%,50% 100%,0 82%,28% 82%,28% 18%,0 18%);}
+        .photon-s0{--beam-color:var(--zero,#3d7df2);--state-angle:90deg;}
+        .photon-d0{--beam-color:var(--plus,#f0a92d);--state-angle:45deg;}
         .message-cell{width:100%;min-height:66px;border-radius:16px;background:#fff;border:2px solid #d8e6ff;display:flex;align-items:center;justify-content:center;}
         .message-bit{font-size:2.35rem;font-weight:900;color:var(--primary-blue);line-height:1;}
         .message-note{font-size:2.05rem;font-weight:900;color:#8a8a8a;line-height:1;}
@@ -159,14 +162,14 @@
             const table = document.getElementById('sift-table');
             table.innerHTML = demoRounds.map(function (round, index) {
                 const delay = (1.7 + index * 0.2).toFixed(1) + 's';
-                const photonDirection = round.alice === '0' ? '→' : '↗';
+                const photonClass = round.alice === '0' ? 'photon-s0' : 'photon-d0';
                 const filterImage = round.filter === 'vertical' ? 'pictures/b_vertical.svg' : 'pictures/b_diagonal.svg';
                 const filterLabel = round.filter === 'vertical' ? 'V filter' : 'A-D filter';
                 const messageHtml = round.conclusive ? `<div class="message-bit">${round.bit}</div>` : '<div class="message-note">-</div>';
                 return `
                     <div class="bit-card ${round.conclusive ? 'keep' : 'drop'}" style="--delay:${delay}; animation-delay:${delay},3.4s">
                         <div class="bit-index">${index + 1}</div>
-                        <div class="round-group"><img class="mini-party" src="pictures/cat_alice.svg" alt="Alice"><span class="photon-static">${photonDirection}</span></div>
+                        <div class="round-group"><img class="mini-party" src="pictures/cat_alice.svg" alt="Alice"><span class="photon-static ${photonClass}" aria-label="Photon bit ${round.alice}"></span></div>
                         <div class="round-group"><img class="mini-party" src="pictures/cat_bob.svg" alt="Bob"><img class="mini-filter" src="${filterImage}" alt="${filterLabel}" title="${filterLabel}"></div>
                         <div class="message-cell">${messageHtml}</div>
                     </div>
