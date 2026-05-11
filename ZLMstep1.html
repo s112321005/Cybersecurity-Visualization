@@ -6,9 +6,11 @@
     <title>Quantum Secret Sharing</title>
     <style>
         :root {
-            --primary-blue: #004aad;
+            --primary-blue: #549FD0;
+            --alice-color: #004aad;
             --dark-text: #333333;
             --bg-color: #f8f9fa;
+            --bg-gradient: linear-gradient(135deg, #E0F2FE 0%, #F5F3FF 50%, #ECFDF5 100%);
             --active-blue: #e3f2fd;
         }
 
@@ -37,7 +39,7 @@
         body {
             font-family: 'Segoe UI', sans-serif;
             display: flex; flex-direction: column; align-items: center;
-            padding: 40px 20px; background-color: var(--bg-color); margin: 0;
+            padding: 40px 20px; background: var(--bg-gradient); margin: 0;
             animation: fadeIn 0.8s ease-out;
             overflow-x: hidden;
         }
@@ -500,7 +502,7 @@
         localStorage.removeItem('qssStepData'); 
         localStorage.removeItem('qssStep3Data'); 
         localStorage.setItem('bobOriginalChoice', JSON.stringify({ basis: selectedBasis, msg: selectedMsg }));
-        window.location.href = `QSSstep2.html?bobBasis=${selectedBasis}&bobMsg=${selectedMsg}`;
+        window.location.href = `ZLMstep2.html?bobBasis=${selectedBasis}&bobMsg=${selectedMsg}`;
     }
 </script>
 

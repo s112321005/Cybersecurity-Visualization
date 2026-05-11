@@ -14,13 +14,14 @@
 
     <style>
         :root {
-            --primary-blue: #004aad;
+            --primary-blue: #549FD0;
             /* 新增 Bob 與 Charlie 的專屬顏色 */
             --bob-color: #4C80C5;
             --charlie-color: #478CEA;
             
             --dark-text: #333333;
             --bg-color: #f8f9fa;
+            --bg-gradient: linear-gradient(135deg, #E0F2FE 0%, #F5F3FF 50%, #ECFDF5 100%);
             --photon-yellow: #ffeb3b; 
             --match-green: #28a745;
             --mismatch-red: #dc3545;
@@ -32,7 +33,7 @@
             flex-direction: column; 
             align-items: center;    
             padding: 40px 20px; 
-            background-color: var(--bg-color);
+            background: var(--bg-gradient);
             margin: 0;
             overflow-y: scroll; 
         }
