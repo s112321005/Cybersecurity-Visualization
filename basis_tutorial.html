@@ -59,11 +59,10 @@
         .beam.out { left: calc(50% + 72px); right: 88px; opacity: 0; background: linear-gradient(90deg, transparent, var(--pass-color), transparent); }
         .passed .beam.out { animation: outputBeam 4s linear infinite; }
         .split-mode .beam.out { background: linear-gradient(90deg, transparent, var(--pass-color), transparent); }
-        .split-source { position: absolute; left: calc(50% + 148px); top: var(--split-top); width: 52px; height: 52px; transform: translate(-50%, -50%)scale(0.3); border-radius: 50%; background: radial-gradient(circle, #ffffff 0 24%, var(--split-color)25% 54%, color-mix(in srgb, var(--split-color)24%, transparent)55% 70%, transparent 71%); box-shadow: 0 0 28px color-mix(in srgb, var(--split-color)58%, transparent); opacity: 0; z-index: 5; }
+        .split-source { position: absolute; left: calc(50% + 148px); top: var(--split-top); width: 18px; height: 18px; margin: -9px 0 0 -9px; transform: scale(0.3); border-radius: 50%; background: var(--split-color); box-shadow: 0 0 18px var(--split-color), 0 0 30px color-mix(in srgb, var(--split-color)52%, transparent); opacity: 0; z-index: 5; }
         .split-a { --split-top: 25%; --split-color: #9aa4b2; --split-angle: var(--split-a-angle); filter: grayscale(1); }
         .split-b { --split-top: 39%; --split-color: var(--pass-color); --split-angle: var(--split-b-angle); }
-        .split-source::after { content: ""; position: absolute; left: 50%; top: 50%; width: 5px; height: 25px; border-radius: 999px; background: var(--split-color); transform: translate(-50%, -50%)rotate(var(--split-angle)); box-shadow: 0 0 9px var(--split-color); }
-        .split-source::before { content: ""; position: absolute; left: 50%; top: calc(50% - 20px); width: 0; height: 0; border-left: 6px solid transparent; border-right: 6px solid transparent; border-bottom: 10px solid var(--split-color); transform: translateX(-50%)rotate(var(--split-angle)); transform-origin: 50% 20px; filter: drop-shadow(0 0 5px var(--split-color)); }
+        .split-source::after, .split-source::before { display: none; }
         .split-mode .split-source { animation: splitPop 4s linear infinite; }
         .block-flash { position: absolute; left: 50%; top: 32%; width: 64px; height: 64px; transform: translate(-50%, -50%); border-radius: 50%; border: 4px solid rgba(217, 67, 67, 0.68); opacity: 0; z-index: 6; }
         .block-flash::after { content: ""; position: absolute; left: 50%; top: 50%; width: 8px; height: 62px; border-radius: 999px; background: rgba(217, 67, 67, 0.82); transform: translate(-50%, -50%)rotate(-45deg); box-shadow: 0 0 12px rgba(217, 67, 67, 0.32); }
@@ -105,7 +104,7 @@
         @keyframes photonPass { 0% { left: 83px; transform: scale(0.7); opacity: 0; } 10% { opacity: 1; } 50% { left: 50%; transform: scale(1); opacity: 1; } 90% { left: calc(100% - 78px); transform: scale(1); opacity: 1; } 100% { left: calc(100% - 78px); transform: scale(1); opacity: 0; } }
         @keyframes photonBlock { 0% { left: 83px; transform: scale(0.7); opacity: 0; } 12% { opacity: 1; } 50% { left: 50%; transform: scale(1); opacity: 1; } 64%, 100% { left: 50%; transform: scale(0.08); opacity: 0; } }
         @keyframes blockFlash { 0%, 50%, 100% { opacity: 0; transform: translate(-50%, -50%)scale(0.6); } 58% { opacity: 1; transform: translate(-50%, -50%)scale(1.18); } 78% { opacity: 1; transform: translate(-50%, -50%)scale(1.18); } 88% { opacity: 0; transform: translate(-50%, -50%)scale(1.55); } }
-        @keyframes splitPop { 0%, 50% { opacity: 0; transform: translate(-50%, -50%)scale(0.3); } 60% { opacity: 1; transform: translate(-50%, -50%)scale(1); } 100% { opacity: 1; transform: translate(-50%, -50%)scale(1); } }
+        @keyframes splitPop { 0%, 50% { opacity: 0; transform: scale(0.3); } 60% { opacity: 1; transform: scale(1); } 100% { opacity: 1; transform: scale(1); } }
         @keyframes outputBeam { 0%, 50% { opacity: 0; } 60% { opacity: 0.82; } 100% { opacity: 0.82; } }
         @keyframes detectorAppear { 0%, 89% { opacity: 0; transform: translate(-50%, -50%)scale(0.45); } 90% { opacity: 1; transform: translate(-50%, -50%)scale(1); } 100% { opacity: 1; transform: translate(-50%, -50%)scale(1); } }
         @keyframes glow { from { transform: scale(0.92); } to { transform: scale(1.08); } }
