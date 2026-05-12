@@ -18,6 +18,9 @@
         .nav-btn { border: 2px solid var(--primary-blue); background: white; color: var(--dark-text); padding: 10px 25px; border-radius: 30px; font-weight: bold; font-size: 1rem; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
         .nav-btn:hover { background: var(--primary-blue); color: white; transform: translateY(-2px); }
         .main-card { width: min(1000px, 95vw); min-height: 650px; border: 3px solid var(--primary-blue); border-radius: 35px; background: white; box-sizing: border-box; display: flex; flex-direction: column; align-items: center; padding: 25px 20px; position: relative; }
+        .state-badge { position: absolute; left: 24px; top: 22px; z-index: 30; background: #f0f7ff; border: 2px solid var(--primary-blue); border-left-width: 7px; border-radius: 14px; padding: 10px 14px; box-shadow: 0 6px 16px rgba(0, 74, 173, 0.12); color: var(--dark-text); }
+        .state-badge-title { margin: 0 0 5px; color: var(--primary-blue); font-size: 0.9rem; font-weight: 900; }
+        .state-badge-formula { font-size: 1.05rem; font-weight: 900; }
         .interaction-area { display: flex; width: 100%; align-items: center; justify-content: center; margin-top: 10px; margin-bottom: 30px; box-sizing: border-box; transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1); }
         .entanglement-zone { display: flex; align-items: flex-end; gap: 120px; position: relative; flex-shrink: 0; }
         .formula-wrapper { width: 0; opacity: 0; overflow: hidden; display: flex; justify-content: center; align-items: center; transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.8s ease, margin-left 0.8s cubic-bezier(0.4, 0, 0.2, 1); pointer-events: none; }
@@ -146,6 +149,10 @@
     </div>
 
     <div class="main-card">
+        <div class="state-badge" aria-label="Current entangled state">
+            <p class="state-badge-title">Current Entangled State</p>
+            <div class="state-badge-formula">\( |\Psi^+\rangle = \frac{1}{\sqrt{2}}(|01\rangle + |10\rangle)_{12} \)</div>
+        </div>
         
         <div class="interaction-area" id="main-interaction">
             <div class="entanglement-zone">
@@ -252,30 +259,43 @@
             document.getElementById('guess-controls').style.display = 'none';
 
             if (phase === 1) {
-                document.getElementById('hint').innerHTML = `Pair ${currentPairNumber} generated! Click the Eye icons to measure both.`;
+                document.getElementById('hint').innerHTML = `Pair ${currentPairNumber} generated! Click either Eye icon; the entangled partner will appear automatically.`;
             } else if (phase === 2) {
                 document.getElementById('hint').innerHTML = `<b>Guessing Mode (Pair ${currentPairNumber}):</b> Measure ONE particle, then guess the other's result!`;
             }
         }
 
-        function measureA() {
-            if (aMeasured) return;
+        function revealAliceParticle() {
             aMeasured = true;
             document.getElementById('btn-measure-a').disabled = true;
-            
             const aBall = document.getElementById('alice-ball');
             aBall.style.transform = 'scale(1.2)';
             setTimeout(() => aBall.style.transform = 'scale(1)', 150);
-            
-            // 加上 | ⟩ 符號
             aBall.innerText = `|${currentA}⟩`;
             aBall.classList.add('measured-a');
+        }
+
+        function revealBobParticle() {
+            bMeasured = true;
+            document.getElementById('btn-measure-b').disabled = true;
+            const bBall = document.getElementById('bob-ball');
+            bBall.style.transform = 'scale(1.2)';
+            setTimeout(() => bBall.style.transform = 'scale(1)', 150);
+            bBall.innerText = `|${currentB}⟩`;
+            bBall.classList.add('measured-b');
+        }
+
+        function measureA() {
+            if (aMeasured) return;
+            revealAliceParticle();
             
             if (phase === 1) {
-                if (!bMeasured) {
-                    document.getElementById('hint').innerText = "Alice measured! Now check Bob's result.";
-                }
-                checkCompletionPhase1();
+                document.getElementById('btn-measure-b').disabled = true;
+                document.getElementById('hint').innerText = "Alice measured! Bob's entangled particle appears automatically.";
+                setTimeout(() => {
+                    revealBobParticle();
+                    checkCompletionPhase1();
+                }, 650);
             } else if (phase === 2 && !bMeasured) {
                 targetToGuess = 'B';
                 document.getElementById('btn-measure-b').disabled = true;
@@ -286,22 +306,15 @@
 
         function measureB() {
             if (bMeasured) return;
-            bMeasured = true;
-            document.getElementById('btn-measure-b').disabled = true;
-            
-            const bBall = document.getElementById('bob-ball');
-            bBall.style.transform = 'scale(1.2)';
-            setTimeout(() => bBall.style.transform = 'scale(1)', 150);
-            
-            // 加上 | ⟩ 符號
-            bBall.innerText = `|${currentB}⟩`;
-            bBall.classList.add('measured-b');
+            revealBobParticle();
             
             if (phase === 1) {
-                if (!aMeasured) {
-                    document.getElementById('hint').innerText = "Bob measured! Now check Alice's result.";
-                }
-                checkCompletionPhase1();
+                document.getElementById('btn-measure-a').disabled = true;
+                document.getElementById('hint').innerText = "Bob measured! Alice's entangled particle appears automatically.";
+                setTimeout(() => {
+                    revealAliceParticle();
+                    checkCompletionPhase1();
+                }, 650);
             } else if (phase === 2 && !aMeasured) {
                 targetToGuess = 'A';
                 document.getElementById('btn-measure-a').disabled = true;
