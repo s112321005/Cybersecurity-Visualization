@@ -5,205 +5,73 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <base href="https://s112321005.github.io/Cybersecurity-Visualization/">
     <title>Quantum Cybersecurity Education Platform</title>
+    <link href="https://fonts.googleapis.com/css2?family=Titan+One&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --primary-blue: #5BA4CF;
-            --light-blue: #E1F0F8;
-            --dark-border: #2C3E50;
-            --qss-green: #38C98B;
-            --qsdc-purple: #9B66F9;
-            --bg-gradient: linear-gradient(135deg, #E0F2FE 0%, #F5F3FF 50%, #ECFDF5 100%);
-            --border-width: 5px;
-            --border-radius: 20px;
-            --transition-speed: 0.5s;
-            --easing: cubic-bezier(0.25, 1, 0.3, 1);
-        }
-        body {font-family:'Comfortaa','Segoe UI',Tahoma,sans-serif;font-weight:700;background:var(--bg-gradient);background-attachment:fixed;color:var(--dark-border);margin:0;overflow-x:hidden;min-height:100vh;display:flex;flex-direction:column;align-items:center;position:relative;}
-        body::before {content:"";position:fixed;top:-10%;left:-10%;width:120%;height:120%;background:radial-gradient(circle at 20% 30%,rgba(165,243,252,0.4) 0%,transparent 20%),radial-gradient(circle at 80% 70%,rgba(199,210,254,0.4) 0%,transparent 20%);z-index:-1;filter:blur(60px);animation:moveLight 20s infinite alternate ease-in-out;}
-        
-        .header {display:flex;align-items:center;justify-content:center;gap:15px;margin-top:40px;margin-bottom:60px;transition:opacity 0.4s ease,transform 0.4s ease;}
-        .header img {width:60px;height:auto;}
-        .header h1 {font-size:32px;color:var(--dark-border);margin:0;font-weight:900;letter-spacing:1px;text-shadow:3px 3px 0px white;}
-        
-        .app-container {display:flex;justify-content:center;align-items:stretch;gap:30px;width:100%;max-width:1150px;transition:all var(--transition-speed) var(--easing);}
-        
-        .card {position:relative;width:300px;height:380px;border:var(--border-width) solid var(--dark-border);border-radius:var(--border-radius);box-sizing:border-box;background-color:rgba(255,255,255,0.85);backdrop-filter:blur(10px);flex-shrink:0;box-shadow:8px 8px 0px var(--primary-blue);transition:all 0.2s ease-out;}
-        .collapsible-card {display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:40px 20px 30px;cursor:pointer;}
-        .collapsible-card:hover,#interactive-card:hover {transform:translate(-4px,-4px);box-shadow:12px 12px 0px var(--primary-blue);background-color:rgba(255,255,255,0.95);}
-        .card-badge {position:absolute;top:-20px;background-color:var(--primary-blue);color:white;padding:8px 18px;border-radius:30px;font-size:14px;border:3px solid var(--dark-border);box-shadow:3px 3px 0px white;}
-        .card img {width:160px;height:160px;object-fit:contain;margin-top:30px;}
-        .card-title {font-size:18px;font-weight:800;margin:0;text-align:center;line-height:1.3;color:var(--dark-border);}
-        
-        #interactive-card {cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:40px 20px 30px;}
-        .state-front {position:absolute;top:0;left:0;width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:40px 20px 30px;box-sizing:border-box;transition:opacity 0.4s ease;}
-        .state-expanded {position:absolute;top:0;left:0;width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 20px;box-sizing:border-box;opacity:0;pointer-events:none;transition:opacity 0.4s ease;text-align:center;}
-        .state-expanded img {width:80%;max-width:200px;margin-bottom:30px;margin-top:0;}
-        .state-expanded h2 {color:var(--dark-border);margin:0;font-size:26px;font-weight:900;line-height:1.2;}
-        
-        /* 展開後的右側容器設定 */
-        .right-menu-container {width:0;opacity:0;overflow:hidden;display:flex;flex-direction:column;flex-shrink:0;margin-left:-30px;transition:all var(--transition-speed) var(--easing);position:relative;}
-        
-        /* ===== 新增：無按鈕的「學習軌跡卷宗夾」佈局 ===== */
-        .learning-path {
-            display: flex;
-            flex-direction: column;
-            gap: 25px;
-            height: 520px;
-            overflow: hidden;
-            padding: 5px 38px 15px 5px; 
-            scroll-behavior: smooth;
-            scrollbar-width: none;
-            touch-action: pan-y;
-        }
-
-        /* 自訂可愛的粗野主義捲軸 */
-        .learning-path::-webkit-scrollbar { width: 0; }
-        .learning-path::-webkit-scrollbar-track { 
-            background: linear-gradient(
-                to bottom,
-                rgba(91,164,207,.24) 0 32%,
-                rgba(255,255,255,.78) 32% 34%,
-                rgba(91,164,207,.24) 34% 66%,
-                rgba(255,255,255,.78) 66% 68%,
-                rgba(91,164,207,.24) 68% 100%
-            ); 
-            border-radius: 10px; 
-            border: 2px solid var(--dark-border); 
-            margin-block: 5px; 
-        }
-        .learning-path::-webkit-scrollbar-thumb { 
-            background: var(--primary-blue); 
-            border-radius: 10px; 
-            border: 2px solid white;
-        }
-
-        .section-rail {
-            position: absolute;
-            top: 5px;
-            right: 14px;
-            width: 14px;
-            height: 520px;
-            display: grid;
-            grid-template-rows: repeat(3, 1fr);
-            gap: 8px;
-            pointer-events: none;
-        }
-
-        .section-rail-segment {
-            border: 3px solid var(--dark-border);
-            border-radius: 999px;
-            background: white;
-            transition: background .25s ease;
-        }
-
-        .section-rail-segment.is-active {
-            background: var(--dark-border);
-        }
-
-        /* 卷宗夾區塊 */
-        .path-section {
-            background: rgba(255, 255, 255, 0.65);
-            backdrop-filter: blur(5px);
-            border: var(--border-width) solid var(--dark-border);
-            border-radius: var(--border-radius);
-            padding: 20px;
-            box-shadow: 6px 6px 0px rgba(0,0,0,0.05);
-            position: relative;
-            display: none;
-            animation: sectionPop .32s ease-out;
-        }
-
-        .path-section.is-active-section {
-            display: block;
-        }
-
-        @keyframes sectionPop {
-            from {opacity:0;transform:translateY(12px) scale(.98);}
-            to {opacity:1;transform:translateY(0) scale(1);}
-        }
-
-        /* 頂部標題區：利用「實體標籤」的視覺設計取代按鈕 */
-        .path-header {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            margin-bottom: 20px;
-            border-bottom: 3px dashed rgba(44, 62, 80, 0.3);
-            padding-bottom: 15px;
-        }
-        
-        .path-badge {
-            color: white;
-            padding: 6px 14px;
-            border-radius: 12px;
-            font-size: 16px;
-            font-weight: 900;
-            border: 3px solid var(--dark-border);
-            box-shadow: 3px 3px 0px var(--dark-border);
-        }
-        
-        /* 分別給予三種類別活潑的顏色與微傾斜角度（像貼紙一樣） */
-        .badge-qkd { background-color: var(--primary-blue); transform: rotate(-4deg); }
-        .badge-qss { background-color: var(--primary-blue); transform: rotate(3deg); }
-        .badge-qsdc { background-color: var(--primary-blue); transform: rotate(-2deg); }
-
-        .path-title {
-            font-size: 18px;
-            color: var(--dark-border);
-            margin: 0;
-            font-weight: 900;
-        }
-
-        .path-items {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-
-        /* 子項目卡片樣式微調 */
-        .menu-item {
-            border: 3px solid var(--dark-border);
-            border-radius: 15px;
-            padding: 15px 20px;
-            text-decoration: none;
-            background-color: white;
-            transition: all 0.2s ease-out;
-        }
-        
-        /* 動態懸停陰影：根據不同分類顯示不同顏色的陰影 */
-        .section-qkd .menu-item:hover { transform: translate(-2px, -2px); box-shadow: 6px 6px 0px var(--primary-blue); }
-        .section-qss .menu-item:hover { transform: translate(-2px, -2px); box-shadow: 6px 6px 0px var(--primary-blue); }
-        .section-qsdc .menu-item:hover { transform: translate(-2px, -2px); box-shadow: 6px 6px 0px var(--primary-blue); }
-
-        .text-content {display:flex;flex-direction:column;gap:6px;}
-        .text-content .en-title {color:#1A567B;font-size:22px;font-weight:bold;margin:0;line-height:1.18;}
-        .text-content .topic-subtitle {color:#7A8793;font-size:13px;font-weight:800;line-height:1.35;margin:0;}
-        .text-content .topic-desc {color:#7A8793;font-size:12px;font-weight:700;line-height:1.45;margin:0;}
-        
-        /* 展開動畫控制 */
-        body.is-expanded .header {opacity:0;transform:translateY(-20px);pointer-events:none;}
-        body.is-expanded .collapsible-card {width:0;opacity:0;padding:0;margin:0;border-width:0;pointer-events:none;overflow:hidden;}
-        body.is-expanded #interactive-card {transform:none;box-shadow:8px 8px 0px var(--primary-blue);cursor:default;}
-        body.is-expanded .state-front {opacity:0;pointer-events:none;}
-        body.is-expanded .state-expanded {opacity:1;pointer-events:auto;}
-        body.is-expanded .right-menu-container {width:580px; opacity:1; margin-left:0; padding-top:5px;}
-        body.is-expanded .hub-link-wrapper {opacity:0;transform:translateY(14px);pointer-events:none;}
-        
-        .back-btn-wrapper {margin-top:40px;opacity:0;transform:translateY(20px);visibility:hidden;transition:all 0.4s ease;}
-        body.is-expanded .back-btn-wrapper {opacity:1;transform:translateY(0);visibility:visible;}
-        .back-btn {background-color:var(--primary-blue);color:white;border:var(--border-width) solid var(--dark-border);border-radius:60px;padding:12px 45px;font-size:20px;font-weight:900;cursor:pointer;box-shadow:0 4px 0 var(--dark-border);text-shadow:2px 2px 0 var(--dark-border);transition:all 0.1s;}
-        .back-btn:active {transform:translateY(4px);box-shadow:0 3px 0 var(--dark-border);}
-        .hub-link-wrapper {margin-top:18px;transition:opacity .35s ease,transform .35s ease;}
-        .hub-link {display:inline-flex;align-items:center;justify-content:center;text-decoration:none;background:var(--primary-blue);color:white;border:var(--border-width) solid var(--dark-border);border-radius:60px;padding:13px 54px;font-size:22px;font-weight:900;box-shadow:7px 7px 0 white,11px 11px 0 var(--dark-border);text-shadow:2px 2px 0 var(--dark-border);transition:transform .15s ease,box-shadow .15s ease;}
-        .hub-link:hover {transform:translate(-3px,-3px);box-shadow:10px 10px 0 white,14px 14px 0 var(--dark-border);}
-        .hub-link:active {transform:translate(2px,2px);box-shadow:4px 4px 0 white,8px 8px 0 var(--dark-border);}
+        :root{--primary-blue:#5BA4CF;--light-blue:#E1F0F8;--dark-border:#2C3E50;--qss-green:#38C98B;--qsdc-purple:#9B66F9;--bg-gradient:linear-gradient(135deg,#E0F2FE 0%,#F5F3FF 50%,#ECFDF5 100%);--border-width:5px;--border-radius:20px;--transition-speed:0.5s;--easing:cubic-bezier(0.25,1,0.3,1)}
+        body{font-family:'Comfortaa','Segoe UI',Tahoma,sans-serif;font-weight:700;background:var(--bg-gradient);background-attachment:fixed;color:var(--dark-border);margin:0;overflow-x:hidden;min-height:100vh;display:flex;flex-direction:column;align-items:center;position:relative}
+        body::before{content:"";position:fixed;top:-10%;left:-10%;width:120%;height:120%;background:radial-gradient(circle at 20% 30%,rgba(165,243,252,0.4) 0%,transparent 20%),radial-gradient(circle at 80% 70%,rgba(199,210,254,0.4) 0%,transparent 20%);z-index:-1;filter:blur(60px);animation:moveLight 20s infinite alternate ease-in-out}
+        .header{display:flex;align-items:center;justify-content:center;gap:15px;margin-top:40px;margin-bottom:60px;transition:opacity 0.4s ease,transform 0.4s ease}
+        .header img{width:60px;height:auto}
+        .header h1{font-family:'Titan One','Comfortaa','Segoe UI',sans-serif;font-size:3rem;color:var(--dark-border);margin:0;font-weight:400;letter-spacing:1px;text-shadow:3px 3px 0px white}
+        .app-container{display:flex;justify-content:center;align-items:flex-start;gap:30px;width:100%;max-width:1150px;height:380px;transition:all var(--transition-speed) var(--easing)}
+        .card-link{text-decoration:none;color:inherit;display:block;align-self:flex-start;height:380px}
+        .card{position:relative;width:300px;height:380px;border:var(--border-width) solid var(--dark-border);border-radius:var(--border-radius);box-sizing:border-box;background-color:rgba(255,255,255,0.85);backdrop-filter:blur(10px);flex-shrink:0;box-shadow:8px 8px 0px var(--primary-blue);transition:all 0.2s ease-out}
+        .collapsible-card{display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:40px 20px 30px;cursor:pointer}
+        .collapsible-card:hover,#interactive-card:hover{transform:translate(-4px,-4px);box-shadow:12px 12px 0px var(--primary-blue);background-color:rgba(255,255,255,0.95)}
+        .card-badge{position:absolute;top:-20px;background-color:var(--primary-blue);color:white;padding:8px 18px;border-radius:30px;font-size:14px;border:3px solid var(--dark-border);box-shadow:3px 3px 0px white}
+        .card img{width:160px;height:160px;object-fit:contain;margin-top:30px}
+        .card-title{font-size:26px;font-weight:900;margin:0;text-align:center;line-height:1.3;color:var(--dark-border)}
+        #interactive-card{cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:40px 20px 30px}
+        .state-front{position:absolute;top:0;left:0;width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:40px 20px 30px;box-sizing:border-box;transition:opacity 0.4s ease}
+        .state-expanded{position:absolute;top:0;left:0;width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 20px;box-sizing:border-box;opacity:0;pointer-events:none;transition:opacity 0.4s ease;text-align:center}
+        .state-expanded img{width:80%;max-width:200px;margin-bottom:30px;margin-top:0}
+        .state-expanded h2{color:var(--dark-border);margin:0;font-size:26px;font-weight:900;line-height:1.2}
+        .right-menu-container{width:0;opacity:0;overflow:hidden;display:flex;flex-direction:column;flex-shrink:0;margin-left:-30px;transition:all var(--transition-speed) var(--easing);position:relative}
+        .learning-path{display:flex;flex-direction:column;gap:25px;height:520px;overflow:hidden;padding:5px 38px 15px 5px;scroll-behavior:smooth;scrollbar-width:none;touch-action:pan-y}
+        .learning-path::-webkit-scrollbar{width:0}
+        .learning-path::-webkit-scrollbar-track{background:linear-gradient( to bottom,rgba(91,164,207,.24) 0 32%,rgba(255,255,255,.78) 32% 34%,rgba(91,164,207,.24) 34% 66%,rgba(255,255,255,.78) 66% 68%,rgba(91,164,207,.24) 68% 100% );border-radius:10px;border:2px solid var(--dark-border);margin-block:5px}
+        .learning-path::-webkit-scrollbar-thumb{background:var(--primary-blue);border-radius:10px;border:2px solid white}
+        .section-rail{position:absolute;top:5px;right:14px;width:14px;height:520px;display:grid;grid-template-rows:repeat(3,1fr);gap:8px;pointer-events:none}
+        .section-rail-segment{border:3px solid var(--dark-border);border-radius:999px;background:white;transition:background .25s ease}
+        .section-rail-segment.is-active{background:var(--dark-border)}
+        .path-section{background:rgba(255,255,255,0.65);backdrop-filter:blur(5px);border:var(--border-width) solid var(--dark-border);border-radius:var(--border-radius);padding:20px;box-shadow:6px 6px 0px rgba(0,0,0,0.05);position:relative;display:none;animation:sectionPop .32s ease-out}
+        .path-section.is-active-section{display:block}
+        @keyframes sectionPop{from{opacity:0;transform:translateY(12px) scale(.98)}to{opacity:1;transform:translateY(0) scale(1)}}
+        .path-header{display:flex;align-items:center;gap:15px;margin-bottom:20px;border-bottom:3px dashed rgba(44,62,80,0.3);padding-bottom:15px}
+        .path-badge{color:white;padding:6px 14px;border-radius:12px;font-size:16px;font-weight:900;border:3px solid var(--dark-border);box-shadow:3px 3px 0px var(--dark-border)}
+        .badge-qkd{background-color:var(--primary-blue);transform:rotate(-4deg)}
+        .badge-qss{background-color:var(--primary-blue);transform:rotate(3deg)}
+        .badge-qsdc{background-color:var(--primary-blue);transform:rotate(-2deg)}
+        .path-title{font-size:18px;color:var(--dark-border);margin:0;font-weight:900}
+        .path-items{display:flex;flex-direction:column;gap:15px}
+        .menu-item{border:3px solid var(--dark-border);border-radius:15px;padding:15px 20px;text-decoration:none;background-color:white;transition:all 0.2s ease-out}
+        .section-qkd .menu-item:hover{transform:translate(-2px,-2px);box-shadow:6px 6px 0px var(--primary-blue)}
+        .section-qss .menu-item:hover{transform:translate(-2px,-2px);box-shadow:6px 6px 0px var(--primary-blue)}
+        .section-qsdc .menu-item:hover{transform:translate(-2px,-2px);box-shadow:6px 6px 0px var(--primary-blue)}
+        .text-content{display:flex;flex-direction:column;gap:6px}
+        .text-content .en-title{color:#1A567B;font-size:22px;font-weight:bold;margin:0;line-height:1.18}
+        .text-content .topic-subtitle{color:#7A8793;font-size:13px;font-weight:800;line-height:1.35;margin:0}
+        .text-content .topic-desc{color:#7A8793;font-size:12px;font-weight:700;line-height:1.45;margin:0}
+        body.is-expanded .header{opacity:0;transform:translateY(-20px);pointer-events:none}
+        body.is-expanded .collapsible-card{width:0;opacity:0;padding:0;margin:0;border-width:0;pointer-events:none;overflow:hidden}
+        body.is-expanded #interactive-card{transform:none;box-shadow:8px 8px 0px var(--primary-blue);cursor:default}
+        body.is-expanded .state-front{opacity:0;pointer-events:none}
+        body.is-expanded .state-expanded{opacity:1;pointer-events:auto}
+        body.is-expanded .right-menu-container{width:580px;opacity:1;margin-left:0;padding-top:5px}
+        body.is-expanded .hub-link-wrapper{opacity:0;transform:translateY(14px);pointer-events:none}
+        .back-btn-wrapper{position:absolute;left:0;top:400px;width:300px;display:flex;justify-content:center;opacity:0;transform:translateY(14px);pointer-events:none;transition:opacity .35s ease,transform .35s ease}
+        body.is-expanded .back-btn-wrapper{opacity:1;transform:translateY(0);pointer-events:auto}
+        .hub-link-wrapper{margin-top:25px;transition:opacity .35s ease,transform .35s ease}
+        .hub-link,.back-btn{display:inline-flex;align-items:center;justify-content:center;text-decoration:none;background:var(--primary-blue);color:white;border:var(--border-width) solid var(--dark-border);border-radius:60px;padding:13px 54px;font-size:22px;font-weight:900;box-shadow:0px 4px 0 var(--dark-border);text-shadow:2px 2px 0 var(--dark-border);transition:transform .15s ease,box-shadow .15s ease;cursor:pointer}
+        .hub-link:hover,.back-btn:hover{transform:translate(-3px,-3px);box-shadow:0px 3px 0 var(--dark-border)}
+        .hub-link:active,.back-btn:active{transform:translate(2px,2px);box-shadow:0px 2px 0 var(--dark-border)}
     </style>
 </head>
 <body>
 
     <div class="header">
         <img src="pictures/computer.svg" alt="Computer Icon">
-        <h1>Quantum Cybersecurity Education Platform</h1>
+        <h1>Quantum Security Education Platform</h1>
     </div>
 
     <div class="app-container">
@@ -211,11 +79,14 @@
             <div class="state-front">
                 <div class="card-badge">Education: Introduction</div>
                 <img src="pictures/introduction.svg" alt="Education Tier Icon">
-                <p class="card-title">Quantum Security Applications</p>
+                <p class="card-title">Security Protocol Learning</p>
             </div>
             <div class="state-expanded">
                 <img src="pictures/introduction.svg" alt="Quantum Security Applications Icon">
-                <h2>Quantum Security<br>Applications</h2>
+                <h2>Security Protocol Learning</h2>
+            </div>
+            <div class="back-btn-wrapper">
+                <button class="back-btn" onclick="event.stopPropagation(); collapseView()">Back</button>
             </div>
         </div>
 
@@ -302,28 +173,24 @@
             
         </div>
         
-        <a href="VerifySetting.html" style="text-decoration: none; color: inherit; display: block;">
+        <a href="VerifySetting.html" class="card-link">
             <div class="card collapsible-card">
                 <div class="card-badge">Design: Security Verification</div>
                 <img src="pictures/calculate.svg" alt="Design Tier Icon">
-                <p class="card-title">Computation & Verification</p>
+                <p class="card-title">Security Analysis Verification</p>
             </div>
         </a>
-        <a href="QKDprob.html" style="text-decoration: none; color: inherit; display: block;">
+        <a href="QKDprob.html" class="card-link">
             <div class="card collapsible-card">
                 <div class="card-badge">Analysis: Research & Analysis</div>
                 <img src="pictures/analyze.svg" alt="Analysis Tier Icon">
-                <p class="card-title">Protocol Comparison <br>&<br> Analysis</p>
+                <p class="card-title">Protocol Comparison Evaluation</p>
             </div>
         </a>
     </div>
 
     <div class="hub-link-wrapper">
         <a class="hub-link" href="https://x1000fish.github.io/CatsPlayground/login.html">Hub</a>
-    </div>
-
-    <div class="back-btn-wrapper">
-        <button class="back-btn" onclick="collapseView()">Back</button>
     </div>
 
     <script>
@@ -415,7 +282,6 @@
                 expandView();
             }
         });
-        
     </script>
 
 </body>
