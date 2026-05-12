@@ -11,7 +11,8 @@
         body { font-family: "Segoe UI", "Noto Sans TC", sans-serif; display: flex; flex-direction: column; align-items: center; min-height: 100vh; padding: 34px 18px; background: var(--soft); color: var(--ink); margin: 0; }
         .header { width: min(1120px, 96vw); display: flex; align-items: center; justify-content: space-between; gap: 18px; margin-bottom: 20px; animation: fadeIn 0.65s ease-out both; }
         .header-left { display: flex; align-items: center; gap: 14px; }
-        .btn-back { width: 40px; height: 40px; background-color: var(--primary-blue); color: white; border-radius: 50%; display: grid; place-items: center; text-decoration: none; font-size: 1.2rem; transition: transform 0.2s; box-shadow: 0 3px 10px rgba(0, 74, 173, 0.24); }
+        .btn-back { width: 40px; height: 40px; background-color: var(--primary-blue); color: white; border-radius: 50%; display: grid; place-items: center; text-decoration: none; font-size: 0; transition: transform 0.2s; box-shadow: 0 3px 10px rgba(0, 74, 173, 0.24); }
+        .btn-back::before { content: ""; width: 0; height: 0; border-top: 7px solid transparent; border-bottom: 7px solid transparent; border-right: 11px solid currentColor; margin-left: -2px; }
         .btn-back:hover { transform: translateX(-2px)scale(1.04); }
         .page-title { border: 2px solid var(--primary-blue); color: #07152e; padding: 10px 24px; border-radius: 10px; font-size: 20px; font-weight: 800; background: white; white-space: nowrap; }
         .header-center { flex: 1; text-align: center; font-weight: 800; font-size: 1.15rem; color: var(--ink); }
@@ -143,7 +144,7 @@
 <body>
     <div class="header">
         <div class="header-left">
-            <a href="QuantumCybersecurityEducationPlatform.html" class="btn-back" title="Back home">◀&#xFE0E;</a>
+            <a href="QuantumCybersecurityEducationPlatform.html?section=qkd#quantum-security-applications" class="btn-back" title="Back home">&#x25C0;&#xFE0E;</a>
             <div class="page-title">Polarization Basis</div>
         </div>
         <div class="header-center">See photon direction and quantum states through pass / block results</div>
