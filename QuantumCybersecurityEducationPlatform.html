@@ -31,8 +31,9 @@
         .learning-path::-webkit-scrollbar{width:0}
         .learning-path::-webkit-scrollbar-track{background:linear-gradient( to bottom,rgba(91,164,207,.24) 0 32%,rgba(255,255,255,.78) 32% 34%,rgba(91,164,207,.24) 34% 66%,rgba(255,255,255,.78) 66% 68%,rgba(91,164,207,.24) 68% 100% );border-radius:10px;border:2px solid var(--dark-border);margin-block:5px}
         .learning-path::-webkit-scrollbar-thumb{background:var(--primary-blue);border-radius:10px;border:2px solid white}
-        .section-rail{position:absolute;top:5px;right:14px;width:14px;height:520px;display:grid;grid-template-rows:repeat(3,1fr);gap:8px;pointer-events:none}
-        .section-rail-segment{border:3px solid var(--dark-border);border-radius:999px;background:white;transition:background .25s ease}
+        .section-rail{position:absolute;top:5px;right:14px;width:14px;height:520px;display:grid;grid-template-rows:repeat(3,1fr);gap:8px}
+        .section-rail-segment{border:3px solid var(--dark-border);border-radius:999px;background:white;transition:background .25s ease,transform .15s ease;cursor:pointer;padding:0}
+        .section-rail-segment:hover{transform:scaleX(1.25)}
         .section-rail-segment.is-active{background:var(--dark-border)}
         .path-section{background:rgba(255,255,255,0.65);backdrop-filter:blur(5px);border:var(--border-width) solid var(--dark-border);border-radius:var(--border-radius);padding:20px;box-shadow:6px 6px 0px rgba(0,0,0,0.05);position:relative;display:none;animation:sectionPop .32s ease-out}
         .path-section.is-active-section{display:block}
@@ -91,10 +92,10 @@
         </div>
 
         <div class="right-menu-container">
-            <div class="section-rail" aria-hidden="true">
-                <div class="section-rail-segment is-active"></div>
-                <div class="section-rail-segment"></div>
-                <div class="section-rail-segment"></div>
+            <div class="section-rail" aria-label="Protocol category navigation">
+                <button class="section-rail-segment is-active" type="button" aria-label="Show QKD"></button>
+                <button class="section-rail-segment" type="button" aria-label="Show QSS"></button>
+                <button class="section-rail-segment" type="button" aria-label="Show QSDC"></button>
             </div>
 
             <div class="learning-path">
@@ -214,11 +215,6 @@
             const sections = Array.from(document.querySelectorAll('.path-section'));
             const railSegments = Array.from(document.querySelectorAll('.section-rail-segment'));
             if (!learningPath || sections.length === 0) return;
-            const pathSectionMap = {
-                qkd: 0,
-                qss: 1,
-                qsdc: 2
-            };
 
             function setActivePathSection(index) {
                 activePathSection = Math.max(0, Math.min(sections.length - 1, index));
@@ -227,6 +223,7 @@
                 });
                 railSegments.forEach(function (segment, segmentIndex) {
                     segment.classList.toggle('is-active', segmentIndex === activePathSection);
+                    segment.setAttribute('aria-current', segmentIndex === activePathSection ? 'true' : 'false');
                 });
             }
 
@@ -235,8 +232,17 @@
             }
 
             function stepPathSection(direction) {
-                scrollToPathSection(activePathSection + direction);
+                let nextSection = activePathSection + direction;
+                if (nextSection >= sections.length) nextSection = 0;
+                if (nextSection < 0) nextSection = sections.length - 1;
+                scrollToPathSection(nextSection);
             }
+
+            railSegments.forEach(function (segment, segmentIndex) {
+                segment.addEventListener('click', function () {
+                    setActivePathSection(segmentIndex);
+                });
+            });
 
             learningPath.addEventListener('wheel', function (event) {
                 event.preventDefault();
@@ -269,18 +275,7 @@
                 }, 360);
             }, { passive: true });
 
-            const params = new URLSearchParams(window.location.search);
-            const returnSection = params.get('section');
-            const shouldOpenApplications = window.location.hash === '#quantum-security-applications';
-            const initialSection = Object.prototype.hasOwnProperty.call(pathSectionMap, returnSection)
-                ? pathSectionMap[returnSection]
-                : 0;
-
-            setActivePathSection(initialSection);
-
-            if (shouldOpenApplications) {
-                expandView();
-            }
+            setActivePathSection(0);
         });
     </script>
 
