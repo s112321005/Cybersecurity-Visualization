@@ -61,8 +61,8 @@
             padding: 10px 25px; border-radius: 30px; font-weight: bold; font-size: 1rem;
             cursor: pointer; transition: all 0.2s;
         }
-        .nav-btn:not(:disabled) { background: var(--primary-blue); color: white; box-shadow: 0 4px 15px rgba(84, 159, 208, 0.3); }
-        .nav-btn:hover:not(:disabled) { background: var(--primary-blue); color: white; }
+        .nav-btn:not(:disabled) { background: white; color: var(--primary-blue); border-color: var(--primary-blue); box-shadow: 0 4px 15px rgba(84, 159, 208, 0.16); }
+        .nav-btn:hover:not(:disabled) { background: var(--primary-blue); color: white; box-shadow: 0 4px 15px rgba(84, 159, 208, 0.3); }
         .nav-btn:disabled { border-color: #ccc; color: #ccc; cursor: not-allowed; }
 
         /* 主卡片：高度維持 720px */
@@ -354,35 +354,43 @@
             }
             .pingpong-image-card.is-current img { max-width: 270px; max-height: 230px; }
         }
+        .pingpong-image-dock { right: 16px; width: 430px; font-family:'Arial Rounded MT Bold','Arial Rounded MT','Arial',sans-serif; }
+        .pingpong-image-viewport { width: 330px; }
+        .pingpong-image-window { width: 500px; margin-left: -85px; }
+        .pingpong-image-list { gap: 12px; padding: 52px 0 42px; width: 500px; transition: transform .55s cubic-bezier(.22,.8,.22,1); }
+        .pingpong-image-card { width: 350px; min-height: 52px; padding: 0 18px; border: 6px solid var(--primary-blue); border-radius: 16px; filter: none; opacity: 1; transform: scale(1); transition: width .55s cubic-bezier(.22,.8,.22,1), min-height .55s cubic-bezier(.22,.8,.22,1), padding .55s cubic-bezier(.22,.8,.22,1), border-width .55s cubic-bezier(.22,.8,.22,1), border-radius .55s cubic-bezier(.22,.8,.22,1), box-shadow .55s cubic-bezier(.22,.8,.22,1), filter .35s ease, opacity .35s ease, transform .55s cubic-bezier(.22,.8,.22,1); overflow: hidden; }
+        .pingpong-image-card:not(.is-current) { filter: none; opacity: 1; transform: scale(1); }
+        .pingpong-image-card.is-current { width: 365px; min-height: 365px; padding: 14px; border: 7px solid var(--primary-blue); border-radius: 20px; box-shadow: 0 12px 28px rgba(84,159,208,.28); margin: 6px 0; }
+        .pingpong-step-summary { display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; height: 100%; color: #111; font-weight: 900; font-size: 1rem; letter-spacing: .02em; white-space: nowrap; transition: opacity .22s ease, transform .22s ease; }
+        .pingpong-step-number { width: 22px; height: 22px; border-radius: 50%; background: var(--primary-blue); color: #ffffff; display: inline-flex; align-items: center; justify-content: center; font-size: .86rem; line-height: 1; flex: 0 0 auto; }
+        .pingpong-step-title { display: inline-block; line-height: 1; }
+        .pingpong-image-card img { max-width: 0; max-height: 0; opacity: 0; transform: scale(.92); transition: opacity .28s ease .2s, transform .45s cubic-bezier(.22,.8,.22,1) .12s, max-width .55s cubic-bezier(.22,.8,.22,1), max-height .55s cubic-bezier(.22,.8,.22,1); }
+        .pingpong-image-card.is-current .pingpong-step-summary { opacity: 0; transform: translateY(-8px); position: absolute; pointer-events: none; }
+        .pingpong-image-card.is-current img { max-width: 318px; max-height: 320px; opacity: 1; transform: scale(1); }
+        @media (min-width: 1180px) { body { padding-right: 450px !important; } }
+        @media (max-width: 1179px) {
+            .pingpong-image-dock { width: min(94vw, 840px); height: 320px; }
+            .pingpong-image-viewport { height: 320px; }
+            .pingpong-image-viewport::before, .pingpong-image-viewport::after { height: 320px; }
+            .pingpong-image-window { height: 320px; }
+            .pingpong-image-list { gap: 14px; height: 320px; padding: 0 24px; }
+            .pingpong-image-card { width: 270px; min-height: 52px; }
+            .pingpong-image-card.is-current { width: 305px; min-height: 250px; margin: 0 10px; }
+            .pingpong-image-card.is-current img { max-width: 275px; max-height: 220px; }
+        }
     </style>
 </head>
 <body>
 
-<aside class="pingpong-image-dock" aria-label="Ping-Pong current-step image preview" data-message-step="4-m" data-control-step="4-c">
+<aside class="pingpong-image-dock" aria-label="Ping-Pong current-step image preview" data-current-step="4">
     <div class="pingpong-image-viewport">
         <div class="pingpong-image-window">
             <div class="pingpong-image-list">
-                <div class="pingpong-image-card" data-pingpong-step="1">
-                    <img src="pictures/pingpong-1.png" alt="Ping-Pong Step 1">
-                </div>
-                <div class="pingpong-image-card" data-pingpong-step="2">
-                    <img src="pictures/pingpong-2.png" alt="Ping-Pong Step 2">
-                </div>
-                <div class="pingpong-image-card" data-pingpong-step="3">
-                    <img src="pictures/pingpong-3.png" alt="Ping-Pong Step 3">
-                </div>
-                <div class="pingpong-image-card is-current" data-pingpong-step="4-m" aria-current="step">
-                    <img src="pictures/pingpong-4-m.png" alt="Ping-Pong Step 4 Message Mode">
-                </div>
-                <div class="pingpong-image-card" data-pingpong-step="4-c">
-                    <img src="pictures/pingpong-4-c.png" alt="Ping-Pong Step 4 Control Mode">
-                </div>
-                <div class="pingpong-image-card" data-pingpong-step="5-m">
-                    <img src="pictures/pingpong-5-m.png" alt="Ping-Pong Step 5 Message Mode">
-                </div>
-                <div class="pingpong-image-card" data-pingpong-step="5-c">
-                    <img src="pictures/pingpong-5-c.png" alt="Ping-Pong Step 5 Control Mode">
-                </div>
+                <div class="pingpong-image-card" data-pingpong-step="1"><div class="pingpong-step-summary"><span class="pingpong-step-number">1</span><span class="pingpong-step-title">PREPARE</span></div><img src="pictures/pingpong-1.png" alt="Ping-Pong Step 1 Prepare"></div>
+                <div class="pingpong-image-card" data-pingpong-step="2"><div class="pingpong-step-summary"><span class="pingpong-step-number">2</span><span class="pingpong-step-title">TRANSMIT</span></div><img src="pictures/pingpong-2.png" alt="Ping-Pong Step 2 Transmit"></div>
+                <div class="pingpong-image-card" data-pingpong-step="3"><div class="pingpong-step-summary"><span class="pingpong-step-number">3</span><span class="pingpong-step-title">SELECTION</span></div><img src="pictures/pingpong-3.png" alt="Ping-Pong Step 3 Selection"></div>
+                <div class="pingpong-image-card is-current" data-pingpong-step="4" aria-current="step"><div class="pingpong-step-summary"><span class="pingpong-step-number">4</span><span class="pingpong-step-title">OPERATION</span></div><img id="pingpong-step4-img" src="pictures/pingpong-4-m.png" alt="Ping-Pong Step 4 Operation"></div>
+                <div class="pingpong-image-card" data-pingpong-step="5"><div class="pingpong-step-summary"><span class="pingpong-step-number">5</span><span class="pingpong-step-title">CHECK / DECODE</span></div><img id="pingpong-step5-img" src="pictures/pingpong-5-m.png" alt="Ping-Pong Step 5 Check or Decode"></div>
             </div>
         </div>
     </div>
@@ -393,7 +401,7 @@
         <a href="QuantumCybersecurityEducationPlatform.html?section=qsdc#quantum-security-applications" class="btn-back">◀&#xFE0E;</a>
         <div class="title-pill">QSDC : Ping-Pong</div>
     </div>
-    <div class="header-center" id="header-subtitle">STEP 2 : Alice's Operation</div>
+    <div class="header-center" id="header-subtitle">STEP 4 : OPERATION</div>
     <div class="header-right">
         <button class="nav-btn" onclick="prevStep()">Back</button>
         <button class="nav-btn" id="next-btn" onclick="nextStep()" disabled>Next</button>
@@ -453,7 +461,17 @@
     const bubble = document.getElementById('alice-bubble');
     const interactive = document.getElementById('interactive-area');
 
+    function configureModeUI() {
+        const header = document.getElementById('header-subtitle');
+        if (header) header.innerText = mode === 'control' ? 'STEP 4 : MEASURE' : 'STEP 4 : ENCODE';
+        const step4Img = document.getElementById('pingpong-step4-img');
+        const step5Img = document.getElementById('pingpong-step5-img');
+        if (step4Img) step4Img.src = mode === 'control' ? 'pictures/pingpong-4-c.png' : 'pictures/pingpong-4-m.png';
+        if (step5Img) step5Img.src = mode === 'control' ? 'pictures/pingpong-5-c.png' : 'pictures/pingpong-5-m.png';
+    }
+
     window.onload = () => {
+        configureModeUI();
         const title = document.getElementById('final-state-title');
         const hint = document.getElementById('hint-text');
 
@@ -661,17 +679,14 @@ document.addEventListener('DOMContentLoaded', function () {
     function lockToCurrentStep() {
         if (!windowBox || !list || !currentCard) return;
         const isHorizontal = window.matchMedia('(max-width: 1179px)').matches;
-        if (isHorizontal) {
-            const offset = (windowBox.clientWidth / 2) - currentCard.offsetLeft - (currentCard.offsetWidth / 2);
-            list.style.transform = 'translateX(' + offset + 'px)';
-        } else {
-            const offset = (windowBox.clientHeight / 2) - currentCard.offsetTop - (currentCard.offsetHeight / 2);
-            list.style.transform = 'translateY(' + offset + 'px)';
-        }
+        const offset = isHorizontal
+            ? (windowBox.clientWidth / 2) - currentCard.offsetLeft - (currentCard.offsetWidth / 2)
+            : Math.max(0, (windowBox.clientHeight / 2) - currentCard.offsetTop - (currentCard.offsetHeight / 2));
+        list.style.transform = isHorizontal ? 'translateX(' + offset + 'px)' : 'translateY(' + offset + 'px)';
     }
 
-    const currentMode = localStorage.getItem('pingpongMode') || 'message';
-    const currentStep = currentMode === 'control' ? (dock?.dataset.controlStep || '4-c') : (dock?.dataset.messageStep || '4-m');
+    if (typeof configureModeUI === 'function') configureModeUI();
+    const currentStep = dock?.dataset.currentStep || '4';
     setCurrentCard(currentStep);
     lockToCurrentStep();
     window.addEventListener('resize', lockToCurrentStep);

@@ -6,104 +6,101 @@
     <base href="https://s112321005.github.io/Cybersecurity-Visualization/">
     <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <style>
-        :root { --primary-blue: #549FD0; --alice-color: #004aad; --bob-blue: #4C80C5; --dark-text: #333333; --bg-color: #f8f9fa; --bg-gradient: linear-gradient(135deg, #E0F2FE 0%, #F5F3FF 50%, #ECFDF5 100%); --photon-yellow: #ffeb3b; --match-green: #28a745; --mismatch-red: #dc3545; }
-        body { font-family: 'Segoe UI', system-ui, sans-serif; display: flex; flex-direction: column; align-items: center; padding: 40px 20px; background: var(--bg-gradient); margin: 0; }
-        .header { width: min(1000px, 95vw); display: flex; align-items: center; justify-content: space-between; margin-bottom: 25px; animation: fadeIn 0.8s ease-out forwards; }
-        .header-left { display: flex; align-items: center; gap: 15px; }
-        .btn-back { width: 40px; height: 40px; background-color: var(--primary-blue); color: white; border-radius: 50%; display: flex; justify-content: center; align-items: center; text-decoration: none; font-size: 1rem; transition: transform 0.2s; cursor: pointer; border: none; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        .btn-back:hover { transform: scale(1.1); }
-        .page-title { border: 2px solid var(--primary-blue); color: var(--dark-text); padding: 10px 40px; border-radius: 10px; font-size: 20px; font-weight: bold; background: white; white-space: nowrap; }
-        .header-center { flex-grow: 1; margin-left: 20px; font-weight: bold; font-size: 1.2rem; color: var(--dark-text); text-align: center; white-space: nowrap; }
-        .header-right { display: flex; gap: 15px; }
-        .nav-btn { border: 2px solid var(--primary-blue); background: white; color: var(--dark-text); padding: 10px 25px; border-radius: 30px; font-weight: bold; font-size: 1rem; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
-        .nav-btn:hover { background: var(--primary-blue); color: white; transform: translateY(-2px); }
-        .main-card { width: min(1000px, 95vw); min-height: 650px; border: 3px solid var(--primary-blue); border-radius: 35px; background: white; box-sizing: border-box; display: flex; flex-direction: column; align-items: center; padding: 25px 20px; position: relative; }
-        .state-badge { position: absolute; left: 24px; top: 22px; z-index: 30; background: #f0f7ff; border: 2px solid var(--primary-blue); border-left-width: 7px; border-radius: 14px; padding: 10px 14px; box-shadow: 0 6px 16px rgba(0, 74, 173, 0.12); color: var(--dark-text); }
-        .state-badge-title { margin: 0 0 5px; color: var(--primary-blue); font-size: 0.9rem; font-weight: 900; }
-        .state-badge-formula { font-size: 1.05rem; font-weight: 900; }
-        .interaction-area { display: flex; width: 100%; align-items: center; justify-content: center; margin-top: 10px; margin-bottom: 30px; box-sizing: border-box; transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1); }
-        .entanglement-zone { display: flex; align-items: flex-end; gap: 120px; position: relative; flex-shrink: 0; }
-        .formula-wrapper { width: 0; opacity: 0; overflow: hidden; display: flex; justify-content: center; align-items: center; transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.8s ease, margin-left 0.8s cubic-bezier(0.4, 0, 0.2, 1); pointer-events: none; }
-        .interaction-area.reveal .formula-wrapper { width: 360px; opacity: 1; margin-left: 60px; pointer-events: auto; }
-        .bell-label { font-size: 1.7rem; color: var(--primary-blue); background: #f0f7ff; padding: 20px 30px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); border-left: 6px solid var(--primary-blue); display: flex; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.8s, transform 0.5s; transform: translateY(10px); z-index: 5; margin-bottom: -10px; pointer-events: none; }
-        .bell-label.show { opacity: 1; transform: translateY(0); pointer-events: auto; }
-        .interaction-area.reveal .bell-label { transform: translateX(0); }
-        .particle-group { display: flex; flex-direction: column; align-items: center; z-index: 10; gap: 15px; width: 110px; }
-        .avatar { width: 90px; height: auto; pointer-events: none; }
-        .svg-btn { background: #f0f7ff; border: 2px solid #cce0ff; border-radius: 50%; width: 65px; height: 65px; cursor: pointer; transition: all 0.2s; padding: 5px; outline: none; display: flex; justify-content: center; align-items: center; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
-        .svg-btn:hover:not(:disabled) { transform: scale(1.15); border-color: var(--primary-blue); background: white; }
-        .svg-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-        .eye-icon { width: 100%; height: auto; }
-        .photon-particle { width: 65px; height: 65px; background: var(--photon-yellow); border-radius: 50%; box-shadow: 0 0 35px rgba(255, 235, 59, 0.8), inset -5px -5px 15px rgba(0,0,0,0.1); display: flex; justify-content: center; align-items: center; font-weight: bold; font-size: 2.2rem; color: var(--dark-text); transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 15; position: relative; }
-        .photon-particle.measured-a { background: var(--alice-color); color: white; box-shadow: 0 0 30px var(--alice-color); font-size: 1.8rem; }
-        .photon-particle.measured-b { background: var(--bob-blue); color: white; box-shadow: 0 0 30px var(--bob-blue); font-size: 1.8rem; }
-        .entangle-link { position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); width: 230px; height: 6px; background: var(--photon-yellow); box-shadow: 0 0 18px 6px rgba(255, 235, 59, 0.6); z-index: 1; border-radius: 5px; overflow: hidden; transition: opacity 0.3s; }
-        .entangle-link::after { content: ""; position: absolute; width: 100%; height: 100%; background: linear-gradient(90deg, rgba(255,255,255,0), rgba(255,255,255,0.9), rgba(255,255,255,0)); animation: wave 1.2s infinite linear; }
-        @keyframes wave { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
-        .controls { display: flex; gap: 15px; z-index: 20; margin-bottom: 20px; height: 45px; align-items: center; }
-        .hint-box { width: 95%; padding: 12px 20px; background: #f0f7ff; border-left: 5px solid var(--primary-blue); border-radius: 10px; text-align: center; font-size: 1.15rem; color: #444; line-height: 1.4; box-sizing: border-box; margin-bottom: 15px; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        .history-panel { width: 90%; background: #ffffff; border: 2px solid #e0e0e0; border-radius: 15px; padding: 15px 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); display: flex; flex-direction: column; gap: 15px; margin-bottom: 20px; }
-        .history-title { font-weight: bold; color: var(--dark-text); font-size: 1.1rem; border-bottom: 2px dashed #ddd; padding-bottom: 8px; margin: 0; text-align: left; }
-        .log-row { display: flex; align-items: center; gap: 15px; width: 100%; }
-        .log-avatar { width: 45px; height: auto; }
-        .log-circle { width: 24px; height: 24px; border-radius: 50%; flex-shrink: 0; display: flex; justify-content: center; align-items: center; color: white; font-weight: bold; font-size: 0.9rem; }
-        .circle-a { background-color: var(--alice-color); box-shadow: 0 0 8px var(--alice-color); }
-        .circle-b { background-color: var(--bob-blue); box-shadow: 0 0 8px var(--bob-blue); }
-        .log-bits { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 8px; flex-grow: 1; scroll-behavior: smooth; align-items: flex-end; min-height: 50px; }
-        .log-bits::-webkit-scrollbar { height: 6px; }
-        .log-bits::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 10px; }
-        .log-bits::-webkit-scrollbar-thumb { background: #c1c1c1; border-radius: 10px; }
-        .log-item { display: flex; flex-direction: column; align-items: center; gap: 4px; animation: popIn 0.3s ease-out; }
-        .log-index { font-size: 0.8rem; color: #777; font-weight: bold; font-family: 'Segoe UI', sans-serif; }
-        .bit-box { min-width: 40px; height: 32px; display: flex; justify-content: center; align-items: center; font-weight: bold; font-family: 'Courier New', monospace; font-size: 1.2rem; border-radius: 6px; background: #f4f7f6; border: 1px solid #ddd; color: #000; }
-        .bit-a { border-color: #b3d4ff; background: #e6f0ff; }
-        .bit-b { border-color: #cce0ff; background: #f0f6ff; }
-        @keyframes popIn { 0% { transform: scale(0); } 80% { transform: scale(1.1); } 100% { transform: scale(1); } }
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(4px); display: flex; justify-content: center; align-items: center; z-index: 9999; opacity: 0; visibility: hidden; transition: opacity 0.3s, visibility 0.3s; }
-        .modal-overlay.show { opacity: 1; visibility: visible; }
-        .modal-content { background: white; border-radius: 25px; padding: 40px; width: min(450px, 85vw); text-align: center; box-shadow: 0 15px 40px rgba(0,0,0,0.25); transform: scale(0.8) translateY(20px); transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); border: 4px solid #ddd; display: flex; flex-direction: column; align-items: center; }
-        .modal-overlay.show .modal-content { transform: scale(1) translateY(0); }
-        .modal-content.success { border-color: var(--match-green); }
-        .modal-content.error { border-color: var(--mismatch-red); }
-        .modal-icon { width: 80px; height: 80px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 3rem; font-weight: bold; color: white; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
-        .modal-content.success .modal-icon { background: var(--match-green); box-shadow: 0 0 20px rgba(40,167,69,0.4); }
-        .modal-content.error .modal-icon { background: var(--mismatch-red); box-shadow: 0 0 20px rgba(220,53,69,0.4); }
-        .modal-title { font-size: 2rem; margin: 0 0 15px; font-weight: bold; }
-        .modal-content.success .modal-title { color: var(--match-green); }
-        .modal-content.error .modal-title { color: var(--mismatch-red); }
-        .modal-text { font-size: 1.2rem; color: #555; margin-bottom: 30px; line-height: 1.5; }
-        .modal-btn { background: var(--dark-text); color: white; border: none; padding: 12px 35px; font-size: 1.1rem; font-weight: bold; border-radius: 30px; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 10px rgba(0,0,0,0.15); }
-        .modal-content.success .modal-btn { background: var(--match-green); }
-        .modal-content.error .modal-btn { background: var(--mismatch-red); }
-        .modal-btn:hover { transform: translateY(-3px); box-shadow: 0 6px 15px rgba(0,0,0,0.2); }
-
-        /* ===== Ping-Pong right-side image-only fixed current-step window ===== */
-        .pingpong-image-dock { position: fixed; right: 18px; top: 0; width: 330px; height: 100vh; z-index: 900; pointer-events: none; display: flex; justify-content: center; overflow: visible; isolation: isolate; }
-        .pingpong-image-viewport { position: relative; width: 285px; height: 100vh; background: #ffffff; box-sizing: border-box; box-shadow: 0 12px 26px rgba(0, 0, 0, 0.12); overflow: visible; z-index: 1; }
-        .pingpong-image-viewport::before,
-        .pingpong-image-viewport::after { content: ""; position: absolute; top: 0; width: 14px; height: 100vh; background: #d9d9d9; z-index: 1; pointer-events: none; }
-        .pingpong-image-viewport::before { left: 0; }
-        .pingpong-image-viewport::after { right: 0; }
-        .pingpong-image-window { position: relative; width: 393px; height: 100vh; margin-left: -54px; overflow: hidden; z-index: 10; }
-        .pingpong-image-list { position: relative; display: flex; flex-direction: column; align-items: center; gap: 34px; padding: 24px 0 34px; box-sizing: border-box; width: 393px; transform: translateY(0); transition: transform .45s ease; z-index: 20; }
-        .pingpong-image-card { position: relative; width: 232px; min-height: 245px; padding: 12px; box-sizing: border-box; background: #ffffff; border: 0 solid transparent; border-radius: 30px; display: flex; align-items: center; justify-content: center; flex: 0 0 auto; transition: filter .25s ease, opacity .25s ease, transform .25s ease, width .25s ease, min-height .25s ease, box-shadow .25s ease; z-index: 20; }
-        .pingpong-image-card:not(.is-current) { filter: grayscale(1) saturate(0); opacity: .42; transform: scale(.9); }
-        .pingpong-image-card.is-current { width: 340px; min-height: 390px; padding: 16px; border: 11px solid #549FD0; border-radius: 36px; box-shadow: 0 12px 28px rgba(84, 159, 208, .28); filter: none; opacity: 1; transform: scale(1); margin: 8px 0; z-index: 100; }
-        .pingpong-image-card img { position: relative; z-index: 101; width: 100%; height: 100%; max-width: 208px; max-height: 276px; object-fit: contain; display: block; }
-        .pingpong-image-card.is-current img { max-width: 305px; max-height: 350px; }
-        @media (min-width: 1180px) { body { padding-right: 350px !important; } }
-        @media (max-width: 1179px) {
-            .pingpong-image-dock { position: relative; right: auto; top: auto; width: min(94vw, 760px); height: 285px; margin: 18px auto 10px; overflow: visible; }
-            .pingpong-image-viewport { width: 100%; height: 285px; }
-            .pingpong-image-viewport::before,
-            .pingpong-image-viewport::after { width: 10px; height: 285px; }
-            .pingpong-image-window { width: 100%; height: 285px; margin-left: 0; overflow: hidden; }
-            .pingpong-image-list { flex-direction: row; align-items: center; gap: 22px; width: max-content; height: 285px; padding: 0 18px; }
-            .pingpong-image-card { width: 220px; min-height: 226px; }
-            .pingpong-image-card.is-current { width: 305px; min-height: 258px; margin: 0 10px; z-index: 100; }
-            .pingpong-image-card.is-current img { max-width: 270px; max-height: 230px; }
-        }
+        :root{--primary-blue:#549FD0;--alice-color:#004aad;--bob-blue:#4C80C5;--dark-text:#333333;--bg-color:#f8f9fa;--bg-gradient:linear-gradient(135deg,#E0F2FE 0%,#F5F3FF 50%,#ECFDF5 100%);--photon-yellow:#ffeb3b;--match-green:#28a745;--mismatch-red:#dc3545}
+        body{font-family:'Segoe UI',system-ui,sans-serif;display:flex;flex-direction:column;align-items:center;padding:40px 20px;background:var(--bg-gradient);margin:0}
+        .header{width:min(1000px,95vw);display:flex;align-items:center;justify-content:space-between;margin-bottom:25px;animation:fadeIn 0.8s ease-out forwards}
+        .header-left{display:flex;align-items:center;gap:15px}
+        .btn-back{width:40px;height:40px;background-color:var(--primary-blue);color:white;border-radius:50%;display:flex;justify-content:center;align-items:center;text-decoration:none;font-size:1rem;transition:transform 0.2s;cursor:pointer;border:none;box-shadow:0 2px 5px rgba(0,0,0,0.1)}
+        .btn-back:hover{transform:scale(1.1)}
+        .page-title{border:2px solid var(--primary-blue);padding:8px 20px;border-radius:30px;font-weight:bold;background:white;color:var(--dark-text);white-space:nowrap}
+        .header-center{flex-grow:1;margin-left:20px;font-weight:bold;font-size:1.2rem;color:var(--dark-text);text-align:center;white-space:nowrap}
+        .header-right{display:flex;gap:15px}
+        .nav-btn{border:2px solid var(--primary-blue);background:white;color:var(--dark-text);padding:10px 25px;border-radius:30px;font-weight:bold;font-size:1rem;cursor:pointer;transition:all 0.2s;box-shadow:0 4px 6px rgba(0,0,0,0.05)}
+        .nav-btn:hover{background:var(--primary-blue);color:white;transform:translateY(-2px)}
+        .main-card{width:min(1000px,95vw);min-height:650px;border:3px solid var(--primary-blue);border-radius:35px;background:white;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;padding:25px 20px;position:relative}
+        .state-badge{position:absolute;left:24px;top:22px;z-index:30;background:#f0f7ff;border:2px solid var(--primary-blue);border-left-width:7px;border-radius:14px;padding:10px 14px;box-shadow:0 6px 16px rgba(0,74,173,0.12);color:var(--dark-text)}
+        .state-badge-title{margin:0 0 5px;color:var(--primary-blue);font-size:0.9rem;font-weight:900}
+        .state-badge-formula{font-size:1.05rem;font-weight:900}
+        .interaction-area{display:flex;width:100%;align-items:center;justify-content:center;margin-top:10px;margin-bottom:30px;box-sizing:border-box}
+        .entanglement-zone{display:flex;align-items:flex-end;gap:120px;position:relative;flex-shrink:0}
+        .particle-group{display:flex;flex-direction:column;align-items:center;z-index:10;gap:15px;width:110px}
+        .avatar{width:90px;height:auto;pointer-events:none}
+        .svg-btn{background:#f0f7ff;border:2px solid #cce0ff;border-radius:50%;width:65px;height:65px;cursor:pointer;transition:all 0.2s;padding:5px;outline:none;display:flex;justify-content:center;align-items:center;box-shadow:0 4px 8px rgba(0,0,0,0.1)}
+        .svg-btn:hover:not(:disabled){transform:scale(1.15);border-color:var(--primary-blue);background:white}
+        .svg-btn:disabled{opacity:0.5;cursor:not-allowed}
+        .eye-icon{width:100%;height:auto}
+        .photon-particle{width:65px;height:65px;background:var(--photon-yellow);border-radius:50%;box-shadow:0 0 35px rgba(255,235,59,0.8),inset -5px -5px 15px rgba(0,0,0,0.1);display:flex;justify-content:center;align-items:center;font-weight:bold;font-size:2.2rem;color:var(--dark-text);transition:all 0.3s cubic-bezier(0.175,0.885,0.32,1.275);z-index:15;position:relative}
+        .photon-particle.measured-a{background:var(--alice-color);color:white;box-shadow:0 0 30px var(--alice-color);font-size:1.8rem}
+        .photon-particle.measured-b{background:var(--bob-blue);color:white;box-shadow:0 0 30px var(--bob-blue);font-size:1.8rem}
+        .entangle-link{position:absolute;bottom:30px;left:50%;transform:translateX(-50%);width:230px;height:6px;background:var(--photon-yellow);box-shadow:0 0 18px 6px rgba(255,235,59,0.6);z-index:1;border-radius:5px;overflow:hidden;transition:opacity 0.3s}
+        .entangle-link::after{content:"";position:absolute;width:100%;height:100%;background:linear-gradient(90deg,rgba(255,255,255,0),rgba(255,255,255,0.9),rgba(255,255,255,0));animation:wave 1.2s infinite linear}
+        @keyframes wave{0%{transform:translateX(-100%)}100%{transform:translateX(100%)}}
+        .controls{display:flex;gap:15px;z-index:20;margin-bottom:20px;height:45px;align-items:center}
+        .hint-box{width:95%;padding:12px 20px;background:#f0f7ff;border-left:5px solid var(--primary-blue);border-radius:10px;text-align:center;font-size:1.15rem;color:#444;line-height:1.4;box-sizing:border-box;margin-bottom:15px}
+        @keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+        .history-panel{width:90%;background:#ffffff;border:2px solid #e0e0e0;border-radius:15px;padding:15px 20px;box-shadow:0 4px 15px rgba(0,0,0,0.03);display:flex;flex-direction:column;gap:15px;margin-bottom:20px}
+        .history-title{font-weight:bold;color:var(--dark-text);font-size:1.1rem;border-bottom:2px dashed #ddd;padding-bottom:8px;margin:0;text-align:left}
+        .log-row{display:flex;align-items:center;gap:15px;width:100%}
+        .log-avatar{width:45px;height:auto}
+        .log-circle{width:24px;height:24px;border-radius:50%;flex-shrink:0;display:flex;justify-content:center;align-items:center;color:white;font-weight:bold;font-size:0.9rem}
+        .circle-a{background-color:var(--alice-color);box-shadow:0 0 8px var(--alice-color)}
+        .circle-b{background-color:var(--bob-blue);box-shadow:0 0 8px var(--bob-blue)}
+        .log-bits{display:flex;gap:8px;overflow-x:auto;padding-bottom:8px;flex-grow:1;scroll-behavior:smooth;align-items:flex-end;min-height:50px}
+        .log-bits::-webkit-scrollbar{height:6px}
+        .log-bits::-webkit-scrollbar-track{background:#f1f1f1;border-radius:10px}
+        .log-bits::-webkit-scrollbar-thumb{background:#c1c1c1;border-radius:10px}
+        .log-item{display:flex;flex-direction:column;align-items:center;gap:4px;animation:popIn 0.3s ease-out}
+        .log-index{font-size:0.8rem;color:#777;font-weight:bold;font-family:'Segoe UI',sans-serif}
+        .bit-box{min-width:40px;height:32px;display:flex;justify-content:center;align-items:center;font-weight:bold;font-family:'Courier New',monospace;font-size:1.2rem;border-radius:6px;background:#f4f7f6;border:1px solid #ddd;color:#000}
+        .bit-a{border-color:#b3d4ff;background:#e6f0ff}
+        .bit-b{border-color:#cce0ff;background:#f0f6ff}
+        @keyframes popIn{0%{transform:scale(0)}80%{transform:scale(1.1)}100%{transform:scale(1)}}
+        .modal-overlay{position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.5);backdrop-filter:blur(4px);display:flex;justify-content:center;align-items:center;z-index:9999;opacity:0;visibility:hidden;transition:opacity 0.3s,visibility 0.3s}
+        .modal-overlay.show{opacity:1;visibility:visible}
+        .modal-content{background:white;border-radius:25px;padding:40px;width:min(450px,85vw);text-align:center;box-shadow:0 15px 40px rgba(0,0,0,0.25);transform:scale(0.8) translateY(20px);transition:transform 0.4s cubic-bezier(0.175,0.885,0.32,1.275);border:4px solid #ddd;display:flex;flex-direction:column;align-items:center}
+        .modal-overlay.show .modal-content{transform:scale(1) translateY(0)}
+        .modal-content.success{border-color:var(--match-green)}
+        .modal-content.error{border-color:var(--mismatch-red)}
+        .modal-icon{width:80px;height:80px;border-radius:50%;display:flex;justify-content:center;align-items:center;font-size:3rem;font-weight:bold;color:white;margin-bottom:20px;box-shadow:0 4px 15px rgba(0,0,0,0.1)}
+        .modal-content.success .modal-icon{background:var(--match-green);box-shadow:0 0 20px rgba(40,167,69,0.4)}
+        .modal-content.error .modal-icon{background:var(--mismatch-red);box-shadow:0 0 20px rgba(220,53,69,0.4)}
+        .modal-title{font-size:2rem;margin:0 0 15px;font-weight:bold}
+        .modal-content.success .modal-title{color:var(--match-green)}
+        .modal-content.error .modal-title{color:var(--mismatch-red)}
+        .modal-text{font-size:1.2rem;color:#555;margin-bottom:30px;line-height:1.5}
+        .modal-btn{background:var(--dark-text);color:white;border:none;padding:12px 35px;font-size:1.1rem;font-weight:bold;border-radius:30px;cursor:pointer;transition:all 0.2s;box-shadow:0 4px 10px rgba(0,0,0,0.15)}
+        .modal-content.success .modal-btn{background:var(--match-green)}
+        .modal-content.error .modal-btn{background:var(--mismatch-red)}
+        .modal-btn:hover{transform:translateY(-3px);box-shadow:0 6px 15px rgba(0,0,0,0.2)}
+        .pingpong-image-dock{position:fixed;right:18px;top:0;width:330px;height:100vh;z-index:900;pointer-events:none;display:flex;justify-content:center;overflow:visible;isolation:isolate}
+        .pingpong-image-viewport{position:relative;width:285px;height:100vh;background:#ffffff;box-sizing:border-box;box-shadow:0 12px 26px rgba(0,0,0,0.12);overflow:visible;z-index:1}
+        .pingpong-image-viewport::before,.pingpong-image-viewport::after{content:"";position:absolute;top:0;width:14px;height:100vh;background:#d9d9d9;z-index:1;pointer-events:none}
+        .pingpong-image-viewport::before{left:0}
+        .pingpong-image-viewport::after{right:0}
+        .pingpong-image-window{position:relative;width:393px;height:100vh;margin-left:-54px;overflow:hidden;z-index:10}
+        .pingpong-image-list{position:relative;display:flex;flex-direction:column;align-items:center;gap:34px;padding:24px 0 34px;box-sizing:border-box;width:393px;transform:translateY(0);transition:transform .45s ease;z-index:20}
+        .pingpong-image-card{position:relative;width:232px;min-height:245px;padding:12px;box-sizing:border-box;background:#ffffff;border:0 solid transparent;border-radius:30px;display:flex;align-items:center;justify-content:center;flex:0 0 auto;transition:filter .25s ease,opacity .25s ease,transform .25s ease,width .25s ease,min-height .25s ease,box-shadow .25s ease;z-index:20}
+        .pingpong-image-card:not(.is-current){filter:grayscale(1) saturate(0);opacity:.42;transform:scale(.9)}
+        .pingpong-image-card.is-current{width:340px;min-height:390px;padding:16px;border:11px solid #549FD0;border-radius:36px;box-shadow:0 12px 28px rgba(84,159,208,.28);filter:none;opacity:1;transform:scale(1);margin:8px 0;z-index:100}
+        .pingpong-image-card img{position:relative;z-index:101;width:100%;height:100%;max-width:208px;max-height:276px;object-fit:contain;display:block}
+        .pingpong-image-card.is-current img{max-width:305px;max-height:350px}
+        @media (min-width:1180px){body{padding-right:350px !important}}
+        @media (max-width:1179px){.pingpong-image-dock{position:relative;right:auto;top:auto;width:min(94vw,760px);height:285px;margin:18px auto 10px;overflow:visible}.pingpong-image-viewport{width:100%;height:285px}.pingpong-image-viewport::before,.pingpong-image-viewport::after{width:10px;height:285px}.pingpong-image-window{width:100%;height:285px;margin-left:0;overflow:hidden}.pingpong-image-list{flex-direction:row;align-items:center;gap:22px;width:max-content;height:285px;padding:0 18px}.pingpong-image-card{width:220px;min-height:226px}.pingpong-image-card.is-current{width:305px;min-height:258px;margin:0 10px;z-index:100}.pingpong-image-card.is-current img{max-width:270px;max-height:230px}}
+        .pingpong-image-dock{right:16px;width:430px;font-family:'Arial Rounded MT Bold','Arial Rounded MT','Arial',sans-serif}
+        .pingpong-image-viewport{width:330px}
+        .pingpong-image-window{width:500px;margin-left:-85px}
+        .pingpong-image-list{gap:12px;padding:52px 0 42px;width:500px;transition:transform .55s cubic-bezier(.22,.8,.22,1)}
+        .pingpong-image-card{width:350px;min-height:52px;padding:0 18px;border:6px solid var(--primary-blue);border-radius:16px;filter:none;opacity:1;transform:scale(1);transition:width .55s cubic-bezier(.22,.8,.22,1),min-height .55s cubic-bezier(.22,.8,.22,1),padding .55s cubic-bezier(.22,.8,.22,1),border-width .55s cubic-bezier(.22,.8,.22,1),border-radius .55s cubic-bezier(.22,.8,.22,1),box-shadow .55s cubic-bezier(.22,.8,.22,1),filter .35s ease,opacity .35s ease,transform .55s cubic-bezier(.22,.8,.22,1)}
+        .pingpong-image-card:not(.is-current){filter:none;opacity:1;transform:scale(1)}
+        .pingpong-image-card.is-current{width:365px;min-height:365px;padding:14px;border:7px solid var(--primary-blue);border-radius:20px;box-shadow:0 12px 28px rgba(84,159,208,.28);margin:6px 0}
+        .pingpong-step-summary{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;height:100%;color:#111;font-weight:900;font-size:1rem;letter-spacing:.02em;white-space:nowrap;transition:opacity .22s ease,transform .22s ease}
+        .pingpong-step-number{width:22px;height:22px;border-radius:50%;background:var(--primary-blue);color:#ffffff;display:inline-flex;align-items:center;justify-content:center;font-size:.86rem;line-height:1;flex:0 0 auto}
+        .pingpong-step-title{display:inline-block;line-height:1}
+        .pingpong-image-card img{max-width:0;max-height:0;opacity:0;transform:scale(.92);transition:opacity .28s ease .2s,transform .45s cubic-bezier(.22,.8,.22,1) .12s,max-width .55s cubic-bezier(.22,.8,.22,1),max-height .55s cubic-bezier(.22,.8,.22,1)}
+        .pingpong-image-card.is-current .pingpong-step-summary{opacity:0;transform:translateY(-8px);position:absolute;pointer-events:none}
+        .pingpong-image-card.is-current img{max-width:318px;max-height:320px;opacity:1;transform:scale(1)}
+        @media (min-width:1180px){body{padding-right:450px !important}}
+        @media (max-width:1179px){.pingpong-image-dock{width:min(94vw,840px);height:320px}.pingpong-image-viewport{height:320px}.pingpong-image-viewport::before,.pingpong-image-viewport::after{height:320px}.pingpong-image-window{height:320px}.pingpong-image-list{gap:14px;height:320px;padding:0 24px}.pingpong-image-card{width:270px;min-height:52px}.pingpong-image-card.is-current{width:305px;min-height:250px;margin:0 10px}.pingpong-image-card.is-current img{max-width:275px;max-height:220px}}
     </style>
 </head>
 <body>
@@ -111,27 +108,11 @@
         <div class="pingpong-image-viewport">
             <div class="pingpong-image-window">
                 <div class="pingpong-image-list">
-                    <div class="pingpong-image-card is-current" data-pingpong-step="1" aria-current="step">
-                        <img src="pictures/pingpong-1.png" alt="Ping-Pong Step 1">
-                    </div>
-                    <div class="pingpong-image-card" data-pingpong-step="2">
-                        <img src="pictures/pingpong-2.png" alt="Ping-Pong Step 2">
-                    </div>
-                    <div class="pingpong-image-card" data-pingpong-step="3">
-                        <img src="pictures/pingpong-3.png" alt="Ping-Pong Step 3">
-                    </div>
-                    <div class="pingpong-image-card" data-pingpong-step="4-m">
-                        <img src="pictures/pingpong-4-m.png" alt="Ping-Pong Step 4 Message Mode">
-                    </div>
-                    <div class="pingpong-image-card" data-pingpong-step="4-c">
-                        <img src="pictures/pingpong-4-c.png" alt="Ping-Pong Step 4 Control Mode">
-                    </div>
-                    <div class="pingpong-image-card" data-pingpong-step="5-m">
-                        <img src="pictures/pingpong-5-m.png" alt="Ping-Pong Step 5 Message Mode">
-                    </div>
-                    <div class="pingpong-image-card" data-pingpong-step="5-c">
-                        <img src="pictures/pingpong-5-c.png" alt="Ping-Pong Step 5 Control Mode">
-                    </div>
+                    <div class="pingpong-image-card is-current" data-pingpong-step="1" aria-current="step"><div class="pingpong-step-summary"><span class="pingpong-step-number">1</span><span class="pingpong-step-title">PREPARE</span></div><img src="pictures/pingpong-1.png" alt="Ping-Pong Step 1 Prepare"></div>
+                    <div class="pingpong-image-card" data-pingpong-step="2"><div class="pingpong-step-summary"><span class="pingpong-step-number">2</span><span class="pingpong-step-title">TRANSMIT</span></div><img src="pictures/pingpong-2.png" alt="Ping-Pong Step 2 Transmit"></div>
+                    <div class="pingpong-image-card" data-pingpong-step="3"><div class="pingpong-step-summary"><span class="pingpong-step-number">3</span><span class="pingpong-step-title">SELECTION</span></div><img src="pictures/pingpong-3.png" alt="Ping-Pong Step 3 Selection"></div>
+                    <div class="pingpong-image-card" data-pingpong-step="4"><div class="pingpong-step-summary"><span class="pingpong-step-number">4</span><span class="pingpong-step-title">OPERATION</span></div><img src="pictures/pingpong-4-m.png" alt="Ping-Pong Step 4 Operation"></div>
+                    <div class="pingpong-image-card" data-pingpong-step="5"><div class="pingpong-step-summary"><span class="pingpong-step-number">5</span><span class="pingpong-step-title">CHECK / DECODE</span></div><img src="pictures/pingpong-5-m.png" alt="Ping-Pong Step 5 Check or Decode"></div>
                 </div>
             </div>
         </div>
@@ -139,7 +120,7 @@
 
     <div class="header">
         <div class="header-left">
-            <a href="QuantumCybersecurityEducationPlatform.html?section=qsdc#quantum-security-applications" class="btn-back" title="Back to Home">◀&#xFE0E;</a>
+            <a href="QuantumCybersecurityEducationPlatform.html?section=qsdc#quantum-security-applications" class="btn-back" title="Back to Home">?&#xFE0E;</a>
             <div class="page-title">QSDC : ping pong</div>
         </div>
         <div class="header-center"></div>
@@ -151,7 +132,9 @@
     <div class="main-card">
         <div class="state-badge" aria-label="Current entangled state">
             <p class="state-badge-title">Current Entangled State</p>
-            <div class="state-badge-formula">\( |\Psi^+\rangle = \frac{1}{\sqrt{2}}(|01\rangle + |10\rangle)_{12} \)</div>
+            <div class="state-badge-formula" id="state-badge-formula">
+                \( |\Psi^+\rangle = \frac{1}{\sqrt{2}}(|01\rangle + |10\rangle)_{12} \)
+            </div>
         </div>
         
         <div class="interaction-area" id="main-interaction">
@@ -174,13 +157,11 @@
                     <div id="bob-ball" class="photon-particle">?</div>
                 </div>
             </div>
-
-            <div class="formula-wrapper"><div id="bell-display" class="bell-label"><span>\( |\Psi^+\rangle = \frac{1}{\sqrt{2}}(|01\rangle + |10\rangle)_{12} \)</span></div></div>
         </div>
 
         <div class="controls" id="guess-controls" style="display: none;">
-            <button class="nav-btn" onclick="submitGuess(0)">Guess Result is |0⟩</button>
-            <button class="nav-btn" onclick="submitGuess(1)">Guess Result is |1⟩</button>
+            <button class="nav-btn" onclick="submitGuess(0)">Guess Result is |0?</button>
+            <button class="nav-btn" onclick="submitGuess(1)">Guess Result is |1?</button>
         </div>
 
         <div class="hint-box" id="hint">
@@ -204,7 +185,7 @@
 
     <div class="modal-overlay" id="result-modal">
         <div class="modal-content" id="modal-card">
-            <div class="modal-icon" id="modal-icon">✓</div>
+            <div class="modal-icon" id="modal-icon">?</div>
             <h2 class="modal-title" id="modal-title">Title</h2>
             <p class="modal-text" id="modal-text">Message</p>
             <button class="modal-btn" onclick="closeModal()">Continue</button>
@@ -224,6 +205,35 @@
         let correctlyGuessed10 = false;
         let correctlyGuessed01 = false;
         let isCurrentGuessCorrect = false;
+        let measuredFormulaBits = { 1: false, 2: false };
+
+        function formatStateBit(termA, termB, particleNumber) {
+            const value = particleNumber === 1 ? termA : termB;
+            const matchesCurrentPair = termA === currentA && termB === currentB;
+            const shouldColor = matchesCurrentPair && measuredFormulaBits[particleNumber];
+            return shouldColor ? `\\textcolor{#549FD0}{${value}}` : `${value}`;
+        }
+
+        function renderStateBadgeFormula() {
+            const formula = document.getElementById('state-badge-formula');
+            const zeroOne = `${formatStateBit(0, 1, 1)}${formatStateBit(0, 1, 2)}`;
+            const oneZero = `${formatStateBit(1, 0, 1)}${formatStateBit(1, 0, 2)}`;
+            formula.innerHTML = `\\( |\\Psi^+\\rangle = \\frac{1}{\\sqrt{2}}(|${zeroOne}\\rangle + |${oneZero}\\rangle)_{12} \\)`;
+            if (window.MathJax?.typesetPromise) {
+                MathJax.typesetClear?.([formula]);
+                MathJax.typesetPromise([formula]);
+            }
+        }
+
+        function resetStateBadgeColor() {
+            measuredFormulaBits = { 1: false, 2: false };
+            renderStateBadgeFormula();
+        }
+
+        function colorStateBadgeBit(particleNumber) {
+            measuredFormulaBits[particleNumber] = true;
+            renderStateBadgeFormula();
+        }
 
         function generatePair() {
             currentPairNumber++; 
@@ -244,6 +254,7 @@
             aMeasured = false;
             bMeasured = false;
             targetToGuess = null;
+            resetStateBadgeColor();
             
             const aBall = document.getElementById('alice-ball');
             const bBall = document.getElementById('bob-ball');
@@ -271,8 +282,9 @@
             const aBall = document.getElementById('alice-ball');
             aBall.style.transform = 'scale(1.2)';
             setTimeout(() => aBall.style.transform = 'scale(1)', 150);
-            aBall.innerText = `|${currentA}⟩`;
+            aBall.innerText = `|${currentA}?`;
             aBall.classList.add('measured-a');
+            colorStateBadgeBit(1);
         }
 
         function revealBobParticle() {
@@ -281,8 +293,9 @@
             const bBall = document.getElementById('bob-ball');
             bBall.style.transform = 'scale(1.2)';
             setTimeout(() => bBall.style.transform = 'scale(1)', 150);
-            bBall.innerText = `|${currentB}⟩`;
+            bBall.innerText = `|${currentB}?`;
             bBall.classList.add('measured-b');
+            colorStateBadgeBit(2);
         }
 
         function measureA() {
@@ -345,12 +358,14 @@
             
             if (targetToGuess === 'A') {
                 aMeasured = true;
-                document.getElementById('alice-ball').innerText = `|${currentA}⟩`;
+                document.getElementById('alice-ball').innerText = `|${currentA}?`;
                 document.getElementById('alice-ball').classList.add('measured-a');
+                colorStateBadgeBit(1);
             } else {
                 bMeasured = true;
-                document.getElementById('bob-ball').innerText = `|${currentB}⟩`;
+                document.getElementById('bob-ball').innerText = `|${currentB}?`;
                 document.getElementById('bob-ball').classList.add('measured-b');
+                colorStateBadgeBit(2);
             }
             
             document.getElementById('guess-controls').style.display = 'none';
@@ -372,7 +387,7 @@
             const icon = document.getElementById('modal-icon');
             
             card.className = `modal-content ${type}`;
-            icon.innerText = (type === 'success') ? '✓' : '✗';
+            icon.innerText = (type === 'success') ? '?' : '?';
             document.getElementById('modal-title').innerText = title;
             document.getElementById('modal-text').innerText = text;
             
@@ -388,9 +403,7 @@
 
                 if (correctlyGuessed10 && correctlyGuessed01) {
                     phase = 3;
-                    document.getElementById('hint').innerHTML = "<b>Excellent!</b> Your observations perfectly match the definition of the <b>|Ψ⁺⟩₁₂</b> state (where particle 1 belongs to Alice and particle 2 to Bob): a <span style='display:inline-block;vertical-align:middle;text-align:center;font-size:0.85em;line-height:1.1;margin:0 4px;'><span style='border-bottom:1px solid currentColor;display:block;'>1</span><span style='display:block;'>2</span></span> probability of measuring |10⟩ and a <span style='display:inline-block;vertical-align:middle;text-align:center;font-size:0.85em;line-height:1.1;margin:0 4px;'><span style='border-bottom:1px solid currentColor;display:block;'>1</span><span style='display:block;'>2</span></span> probability of measuring |01⟩.";
-                    document.getElementById('bell-display').classList.add('show');
-                    document.getElementById('main-interaction').classList.add('reveal');
+                    document.getElementById('hint').innerHTML = "<b>Excellent!</b> Your observations perfectly match the definition of the <b>|�Z????</b> state (where particle 1 belongs to Alice and particle 2 to Bob): a <span style='display:inline-block;vertical-align:middle;text-align:center;font-size:0.85em;line-height:1.1;margin:0 4px;'><span style='border-bottom:1px solid currentColor;display:block;'>1</span><span style='display:block;'>2</span></span> probability of measuring |10? and a <span style='display:inline-block;vertical-align:middle;text-align:center;font-size:0.85em;line-height:1.1;margin:0 4px;'><span style='border-bottom:1px solid currentColor;display:block;'>1</span><span style='display:block;'>2</span></span> probability of measuring |01?.";
                 } else {
                     document.getElementById('hint').innerHTML = `Correct! Now, let's try the other scenario to confirm your understanding...`;
                     setTimeout(generatePair, 600);
@@ -402,23 +415,23 @@
         }
 
         function recordLog() {
-            // 加上 | ⟩ 符號
+            // �[�W | ? �Ÿ�
             const logA = document.getElementById('log-bits-a');
             const itemA = document.createElement('div');
             itemA.className = "log-item";
             itemA.innerHTML = `
                 <div class="log-index">${currentPairNumber}</div>
-                <div class="bit-box bit-a">|${currentA}⟩</div>
+                <div class="bit-box bit-a">|${currentA}?</div>
             `;
             logA.appendChild(itemA);
             logA.scrollLeft = logA.scrollWidth;
             
-            // 加上 | ⟩ 符號
+            // �[�W | ? �Ÿ�
             const logB = document.getElementById('log-bits-b');
             const itemB = document.createElement('div');
             itemB.className = "log-item";
             itemB.innerHTML = `
-                <div class="bit-box bit-b">|${currentB}⟩</div>
+                <div class="bit-box bit-b">|${currentB}?</div>
             `;
             logB.appendChild(itemB);
             logB.scrollLeft = logB.scrollWidth;
@@ -441,16 +454,39 @@
                 }, { passive: false });
             }
 
+            function getStep2CollapsedStep1ReferenceOffset(isHorizontal) {
+                const step1Card = document.querySelector('.pingpong-image-card[data-pingpong-step="1"]');
+                const step3Card = document.querySelector('.pingpong-image-card[data-pingpong-step="3"]');
+                if (!step1Card || !step3Card || !currentCard) {
+                    if (isHorizontal) {
+                        return (windowBox.clientWidth / 2) - currentCard.offsetLeft - (currentCard.offsetWidth / 2);
+                    }
+                    return Math.max(0, (windowBox.clientHeight / 2) - currentCard.offsetTop - (currentCard.offsetHeight / 2));
+                }
+
+                const ariaBefore = currentCard.getAttribute('aria-current');
+
+                currentCard.classList.remove('is-current');
+                currentCard.removeAttribute('aria-current');
+                step3Card.classList.add('is-current');
+                step3Card.setAttribute('aria-current', 'step');
+
+                const targetEdge = isHorizontal ? step1Card.offsetLeft : step1Card.offsetTop;
+
+                step3Card.classList.remove('is-current');
+                step3Card.removeAttribute('aria-current');
+                currentCard.classList.add('is-current');
+                if (ariaBefore) currentCard.setAttribute('aria-current', ariaBefore);
+
+                const currentEdge = isHorizontal ? currentCard.offsetLeft : currentCard.offsetTop;
+                return targetEdge - currentEdge;
+            }
+
             window.lockPingpongImageToCurrentStep = function () {
                 if (!windowBox || !list || !currentCard) return;
                 const isHorizontal = window.matchMedia('(max-width: 1179px)').matches;
-                if (isHorizontal) {
-                    const offset = (windowBox.clientWidth / 2) - currentCard.offsetLeft - (currentCard.offsetWidth / 2);
-                    list.style.transform = 'translateX(' + offset + 'px)';
-                } else {
-                    const offset = (windowBox.clientHeight / 2) - currentCard.offsetTop - (currentCard.offsetHeight / 2);
-                    list.style.transform = 'translateY(' + offset + 'px)';
-                }
+                const offset = getStep2CollapsedStep1ReferenceOffset(isHorizontal);
+                list.style.transform = isHorizontal ? 'translateX(' + offset + 'px)' : 'translateY(' + offset + 'px)';
             };
 
             window.showPingpongImageStep = function (stepKey) {
