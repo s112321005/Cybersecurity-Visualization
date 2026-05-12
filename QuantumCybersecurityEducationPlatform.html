@@ -50,9 +50,10 @@
             gap: 25px;
             height: 520px;
             overflow: hidden;
-            padding: 5px 80px 15px 5px; 
+            padding: 5px 38px 15px 5px; 
             scroll-behavior: smooth;
             scrollbar-width: none;
+            touch-action: pan-y;
         }
 
         /* 自訂可愛的粗野主義捲軸 */
@@ -74,33 +75,29 @@
             background: var(--primary-blue); 
             border-radius: 10px; 
             border: 2px solid white;
-            box-shadow: inset 0 0 0 1px var(--dark-border);
         }
 
         .section-rail {
             position: absolute;
             top: 5px;
-            right: 10px;
-            width: 48px;
+            right: 14px;
+            width: 14px;
             height: 520px;
             display: grid;
             grid-template-rows: repeat(3, 1fr);
-            gap: 10px;
+            gap: 8px;
             pointer-events: none;
         }
 
         .section-rail-segment {
-            border: 4px solid var(--primary-blue);
-            border-radius: 18px;
+            border: 3px solid var(--dark-border);
+            border-radius: 999px;
             background: white;
-            box-shadow: 4px 4px 0 rgba(44,62,80,.16);
-            transition: background .25s ease, box-shadow .25s ease, transform .25s ease;
+            transition: background .25s ease;
         }
 
         .section-rail-segment.is-active {
-            background: var(--primary-blue);
-            box-shadow: 4px 4px 0 var(--dark-border);
-            transform: translate(-2px,-2px);
+            background: var(--dark-border);
         }
 
         /* 卷宗夾區塊 */
@@ -338,6 +335,7 @@
     <script>
         let activePathSection = 0;
         let pathWheelLocked = false;
+        let pathTouchStartY = null;
 
         function expandView() {
             document.body.classList.add('is-expanded');
@@ -370,17 +368,40 @@
                 setActivePathSection(index);
             }
 
+            function stepPathSection(direction) {
+                scrollToPathSection(activePathSection + direction);
+            }
+
             learningPath.addEventListener('wheel', function (event) {
                 event.preventDefault();
                 if (pathWheelLocked || Math.abs(event.deltaY) < 8) return;
 
                 pathWheelLocked = true;
-                scrollToPathSection(activePathSection + (event.deltaY > 0 ? 1 : -1));
+                stepPathSection(event.deltaY > 0 ? 1 : -1);
 
                 window.setTimeout(function () {
                     pathWheelLocked = false;
                 }, 520);
             }, { passive: false });
+
+            learningPath.addEventListener('touchstart', function (event) {
+                if (!event.touches || event.touches.length === 0) return;
+                pathTouchStartY = event.touches[0].clientY;
+            }, { passive: true });
+
+            learningPath.addEventListener('touchend', function (event) {
+                if (pathTouchStartY === null || !event.changedTouches || event.changedTouches.length === 0) return;
+                const touchDelta = pathTouchStartY - event.changedTouches[0].clientY;
+                pathTouchStartY = null;
+                if (pathWheelLocked || Math.abs(touchDelta) < 35) return;
+
+                pathWheelLocked = true;
+                stepPathSection(touchDelta > 0 ? 1 : -1);
+
+                window.setTimeout(function () {
+                    pathWheelLocked = false;
+                }, 360);
+            }, { passive: true });
 
             setActivePathSection(0);
         });
