@@ -15,7 +15,8 @@
         body{font-family:'Segoe UI',sans-serif;display:flex;flex-direction:column;align-items:center;padding:40px 20px;background:var(--bg-gradient);margin:0;overflow-y:scroll;color:var(--dark-text);}
         .header{width:min(1000px,95vw);display:flex;align-items:center;justify-content:space-between;margin-bottom:25px;animation:fadeIn .8s ease-out forwards;}
         .header-left{display:flex;align-items:center;gap:15px;}
-        .btn-back{width:40px;height:40px;background-color:var(--primary-blue);color:white;border-radius:50%;display:flex;justify-content:center;align-items:center;text-decoration:none;font-size:1rem;transition:transform .2s;cursor:pointer;border:none;box-shadow:0 2px 5px rgba(0,0,0,.1);}
+        .btn-back{width:40px;height:40px;background-color:var(--primary-blue);color:white;border-radius:50%;display:flex;justify-content:center;align-items:center;text-decoration:none;font-size:0;transition:transform .2s;cursor:pointer;border:none;box-shadow:0 2px 5px rgba(0,0,0,.1);}
+        .btn-back::before{content:"";width:0;height:0;border-top:7px solid transparent;border-bottom:7px solid transparent;border-right:11px solid currentColor;margin-left:-2px;}
         .btn-back:hover{transform:scale(1.1);}
         .title-pill{border:2px solid var(--primary-blue);padding:8px 20px;border-radius:30px;font-weight:bold;background:white;color:var(--dark-text);}
         .header-center{flex-grow:1;margin-left:20px;font-weight:bold;font-size:1.2rem;color:var(--dark-text);text-align:center;}
@@ -135,7 +136,7 @@
 
     <div class="header">
         <div class="header-left">
-            <a href="QuantumCybersecurityEducationPlatform.html" class="btn-back" title="back home">◀&#xFE0E</a>
+            <a href="QuantumCybersecurityEducationPlatform.html?section=qkd#quantum-security-applications" class="btn-back" title="back home">&#x25C0;&#xFE0E;</a>
             <div class="title-pill">Quantum Key Distribution : BB84</div>
         </div>
         <div class="header-center" id="step-title">STEP 4 : SIFTING</div>
