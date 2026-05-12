@@ -67,16 +67,19 @@
         
         /* --- General 場景彈出視窗 (限制在 main window 內部) --- */
         .general-popup {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(255, 255, 255, 0.95);
+            position: absolute; top: 105px; left: 0; width: 100%; height: calc(100% - 115px);
+            background: rgba(255, 255, 255, 0.88);
             border-radius: var(--border-radius);
             z-index: 500; display: none; justify-content: center; align-items: center;
+            animation: generalPopupFadeIn 0.18s ease-out;
         }
         .general-popup-content {
-            position: relative; width: 90%; height: 85%;
+            position: relative; width: 76%; height: 76%;
             background: white; border: 3px solid var(--primary-blue);
             border-radius: 12px; display: flex; justify-content: center; align-items: center;
             box-shadow: 0 10px 30px rgba(0,0,0,0.2); overflow: hidden;
+            transform-origin: top right;
+            animation: generalPopupScaleIn 0.18s ease-out;
         }
         #general-scene-img { max-width: 95%; max-height: 95%; object-fit: contain; pointer-events: none; }
         .general-popup-close {
@@ -86,6 +89,29 @@
             cursor: pointer; font-weight: bold; border-radius: 8px; line-height: 0; transition: transform 0.1s;
         }
         .general-popup-close:hover { background-color: #eee; transform: scale(1.05); }
+        .general-popup.closing {
+            pointer-events: none;
+            animation: generalPopupFadeOut 0.28s ease-in forwards;
+        }
+        .general-popup.closing .general-popup-content {
+            animation: generalPopupShrinkToButton 0.28s cubic-bezier(0.55, 0, 0.85, 0.3) forwards;
+        }
+        @keyframes generalPopupFadeIn {
+            from { background: rgba(255, 255, 255, 0); }
+            to { background: rgba(255, 255, 255, 0.88); }
+        }
+        @keyframes generalPopupFadeOut {
+            from { background: rgba(255, 255, 255, 0.88); }
+            to { background: rgba(255, 255, 255, 0); }
+        }
+        @keyframes generalPopupScaleIn {
+            from { opacity: 0; transform: scale(0.94); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        @keyframes generalPopupShrinkToButton {
+            from { opacity: 1; transform: translate(0, 0) scale(1); border-radius: 12px; }
+            to { opacity: 0.15; transform: translate(15%, -45%) scale(0.04); border-radius: 50%; }
+        }
 
         /* Lightbox (全螢幕) */
         #lightbox { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 1000; display: none; justify-content: center; align-items: center; overflow: hidden; }
@@ -113,7 +139,7 @@
 
         <div class="header-group">
             <div class="header-title">
-                <a href="QuantumCybersecurityEducationPlatform.html" class="btn-back">◀&#xFE0E;</a>
+                <a href="javascript:void(0)" onclick="window.history.back()" class="btn-back">◀&#xFE0E;</a>
                 <span class="category-full-desc" id="mode-desc">QKD：Jointly Establish a Secure Key</span>
             </div>
         </div>
@@ -229,11 +255,18 @@
             const currentModeName = quantumData[modeIdx].mode; // QKD, QSS, or QSDC
             // 設定對應的 General 圖片名稱
             document.getElementById('general-scene-img').src = `pictures/${currentModeName}general.png`;
-            document.getElementById('general-popup').style.display = 'flex';
+            const popup = document.getElementById('general-popup');
+            popup.classList.remove('closing');
+            popup.style.display = 'flex';
         }
 
         function closeGeneralScene() {
-            document.getElementById('general-popup').style.display = 'none';
+            const popup = document.getElementById('general-popup');
+            popup.classList.add('closing');
+            setTimeout(() => {
+                popup.style.display = 'none';
+                popup.classList.remove('closing');
+            }, 280);
         }
 
         // --- Lightbox 邏輯 ---
@@ -283,9 +316,7 @@
 
         window.addEventListener('mouseup', () => { isDragging = false; if (scale > 1) lb.style.cursor = 'grab'; });
 
-        // 全局滾輪切換 Protocol
         window.addEventListener('wheel', (e) => {
-            // 如果 Lightbox 或 General 視窗開著，暫停滾輪切換 Protocol
             if (lb.style.display === "flex" || document.getElementById('general-popup').style.display === "flex") return;
             if (isThrottled) return;
             isThrottled = true;
