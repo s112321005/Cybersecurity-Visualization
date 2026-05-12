@@ -57,11 +57,19 @@
             font-size: 1.2rem; color: var(--dark-text); text-align: center; 
             white-space: nowrap;
         }
+        .step-title-stack {
+            display: inline-flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            line-height: 1.15;
+            white-space: normal;
+        }
         .header-right { display: flex; gap: 15px; }
         .nav-btn {
             border: 2px solid var(--primary-blue); background: white; color: var(--dark-text);
             padding: 10px 25px; border-radius: 30px; font-weight: bold; font-size: 1rem;
-            cursor: pointer; transition: all 0.2s;
+            cursor: pointer; transition: all 0.2s; white-space: nowrap;
         }
         .nav-btn:not(:disabled) { background: var(--primary-blue); color: white; box-shadow: 0 4px 15px rgba(84, 159, 208, 0.3); }
         .nav-btn:hover:not(:disabled) { background: var(--primary-blue); color: white; }
@@ -427,7 +435,7 @@
         <a href="QuantumCybersecurityEducationPlatform.html?section=qsdc#quantum-security-applications" class="btn-back" title="back home">◀&#xFE0E;</a>
         <div class="title-pill">Quantum Security Direct Communication：Ping-Pong</div>
     </div>
-    <div class="header-center">STEP 3 : Decoding & Verification</div>
+    <div class="header-center"><span class="step-title-stack"><span>Decoding</span><span>&amp;</span><span>Verification</span></span></div>
     <div class="header-right">
         <button class="nav-btn" id="back-btn" onclick="prevStep()">Back</button>
         <button class="nav-btn" id="next-btn" onclick="nextStep()" disabled>Start Security Analysis</button>
