@@ -347,6 +347,11 @@
             const sections = Array.from(document.querySelectorAll('.path-section'));
             const railSegments = Array.from(document.querySelectorAll('.section-rail-segment'));
             if (!learningPath || sections.length === 0) return;
+            const pathSectionMap = {
+                qkd: 0,
+                qss: 1,
+                qsdc: 2
+            };
 
             function setActivePathSection(index) {
                 activePathSection = Math.max(0, Math.min(sections.length - 1, index));
@@ -397,7 +402,18 @@
                 }, 360);
             }, { passive: true });
 
-            setActivePathSection(0);
+            const params = new URLSearchParams(window.location.search);
+            const returnSection = params.get('section');
+            const shouldOpenApplications = window.location.hash === '#quantum-security-applications';
+            const initialSection = Object.prototype.hasOwnProperty.call(pathSectionMap, returnSection)
+                ? pathSectionMap[returnSection]
+                : 0;
+
+            setActivePathSection(initialSection);
+
+            if (shouldOpenApplications) {
+                expandView();
+            }
         });
         
     </script>
