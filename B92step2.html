@@ -9,7 +9,8 @@
         body { font-family: 'Segoe UI', sans-serif; display: flex; flex-direction: column; align-items: center; padding: 40px 20px; background: var(--bg-gradient); margin: 0; overflow-y: scroll; }
         .header { width: min(1000px, 95vw); display: flex; align-items: center; justify-content: space-between; margin-bottom: 25px; animation: fadeIn 0.8s ease-out forwards; }
         .header-left { display: flex; align-items: center; gap: 15px; }
-        .btn-back { width: 40px; height: 40px; background-color: var(--primary-blue); color: white; border-radius: 50%; display: flex; justify-content: center; align-items: center; text-decoration: none; font-size: 1rem; transition: transform 0.2s; cursor: pointer; border: none; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .btn-back { width: 40px; height: 40px; background-color: var(--primary-blue); color: white; border-radius: 50%; display: flex; justify-content: center; align-items: center; text-decoration: none; font-size: 0; transition: transform 0.2s; cursor: pointer; border: none; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .btn-back::before { content: ""; width: 0; height: 0; border-top: 7px solid transparent; border-bottom: 7px solid transparent; border-right: 11px solid currentColor; margin-left: -2px; }
         .btn-back:hover { transform: scale(1.1); }
         .title-pill { border: 2px solid var(--primary-blue); padding: 8px 20px; border-radius: 30px; font-weight: bold; background: white; color: var(--dark-text); }
         .header-center { flex-grow: 1; margin-left: 20px; font-weight: bold; font-size: 1.2rem; color: var(--dark-text); text-align: center; }
@@ -17,7 +18,7 @@
         .nav-btn { border: 2px solid var(--primary-blue); background: white; color: var(--dark-text); padding: 10px 25px; border-radius: 30px; font-weight: bold; font-size: 1rem; cursor: pointer; transition: all 0.2s; }
         .nav-btn:hover, .nav-btn.ready { background: var(--primary-blue); color: white; }
         .nav-btn:disabled { opacity: 0.3; pointer-events: none; }
-        .main-card { width: min(1000px, 95vw); height: 600px; border: 3px solid var(--primary-blue); border-radius: 35px; position: relative; background: white; box-sizing: border-box; overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; padding-top: 25px; padding-bottom: 50px; animation: fadeIn 0.8s ease-out forwards; }
+        .main-card { width: min(1000px, 95vw); height: 700px; border: 3px solid var(--primary-blue); border-radius: 35px; position: relative; background: white; box-sizing: border-box; overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; padding-top: 25px; padding-bottom: 50px; animation: fadeIn 0.8s ease-out forwards; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         .decision-grid { --flow-center: 93px; --branch-center-gap: 71px; display: flex; align-items: flex-start; justify-content: center; gap: 30px; width: 100%; height: 180px; }
         .col { display: flex; flex-direction: column; justify-content: flex-start; align-items: center; position: relative; min-height: 180px; }
@@ -27,7 +28,7 @@
         .result-capsule { padding: 8px 18px; border-radius: 30px; border: 2px solid var(--primary-blue); color: var(--primary-blue); font-weight: bold; font-size: 1.05rem; background: white; display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 29px; min-width: 120px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
         .result-capsule.active { background: var(--primary-blue); color: white; }
         #input-state.result-capsule.active { background: var(--alice-blue); border-color: var(--alice-blue); }
-        .result-capsule.error { border-color: #999; color: #555; opacity: 0; transition: opacity 0.5s; }
+        .result-capsule.error { border-color: #999; color: #5e5353; opacity: 0; transition: opacity 0.5s; }
         .result-capsule.keep { background: #549FD0; border-color: #549FD0; color: white; }
         .filter-circle { min-width: 58px; height: 45px; border-radius: 24px; background: #4c80c5; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1.1rem; margin-top: 10px; padding: 0 12px; box-shadow: 0 4px 10px rgba(0, 74, 173, 0.3); box-sizing: border-box; }
         .bob-interactive { display: flex; flex-direction: column; align-items: center; gap: 10px; transition: opacity 0.3s ease; }
@@ -73,6 +74,10 @@
         .explain-header { display: flex; justify-content: space-between; align-items: center; }
         .explain-title { font-weight: bold; font-size: 1.25rem; margin: 0; }
         .explain-desc { color: #555; font-size: 1.05rem; margin: 0; line-height: 1.4; }
+        .record-options { display: flex; gap: 12px; margin-top: 10px; flex-wrap: wrap; }
+        .record-option { display: inline-flex; align-items: center; gap: 8px; border: 2px solid #d8e6ff; background: white; border-radius: 16px; padding: 8px 12px; color: #667085; font-weight: 900; transition: transform .25s ease, border-color .25s ease, box-shadow .25s ease, color .25s ease; }
+        .record-option.is-inferred { transform: translateY(-6px); border-color: var(--match-green); color: var(--match-green); box-shadow: 0 10px 22px rgba(40, 167, 69, .22); }
+        .record-bit { font-weight: 900; color: inherit; white-space: nowrap; }
         .highlight-keep { color: var(--match-green); font-weight: bold; }
         .highlight-discard { color: var(--mismatch-red); font-weight: bold; }
         .retry-btn { padding: 8px 20px; border-radius: 20px; border: 2px solid #ccc; background: white; color: #555; cursor: pointer; font-weight: bold; transition: all 0.2s; font-size: 0.95rem; }
@@ -125,7 +130,7 @@
 
 <div class="header">
     <div class="header-left">
-        <a href="QuantumCybersecurityEducationPlatform.html" class="btn-back" title="back home">◀&#xFE0E</a>
+        <a href="QuantumCybersecurityEducationPlatform.html?section=qkd#quantum-security-applications" class="btn-back" title="back home">&#x25C0;&#xFE0E;</a>
         <div class="title-pill">Quantum Key Distribution：B92</div>
     </div>
     <div class="header-center" id="step-title">STEP 2 : TRANSMIT</div>
@@ -243,6 +248,16 @@
         return createPhotonDisplay(photon) + `<span>Qubit: ${photon.label}</span>`;
     }
 
+    function getB92Inference(bobFilter) {
+        const inferredBit = bobFilter === "vertical" ? "1" : "0";
+        return {
+            blockedState: bobFilter === "vertical" ? qubitVisuals.zero : qubitVisuals.plus,
+            inferredState: bobFilter === "vertical" ? qubitVisuals.plus : qubitVisuals.zero,
+            recordBit: inferredBit,
+            otherBit: inferredBit === "1" ? "0" : "1"
+        };
+    }
+
     function setAliceState() {
         document.getElementById("input-state").innerHTML = createQubitDisplay(alicePhoton);
     }
@@ -353,21 +368,29 @@
         const explainBox = document.getElementById("explain-box");
         const explainTitle = document.getElementById("explain-title");
         const explainDesc = document.getElementById("explain-desc");
-        const blockedState = bobFilter === "vertical" ? "|0⟩" : "|+⟩";
-        const inferredState = bobFilter === "vertical" ? "|+⟩" : "|0⟩";
-        const recordQubit = bobFilter === "vertical" ? "|1⟩" : "|0⟩";
+        const inference = getB92Inference(bobFilter);
+        const optionsHtml = `
+            <div class="record-options" aria-label="B92 record choices">
+                <div class="record-option ${inference.recordBit === "0" ? "is-inferred" : ""}">
+                    <span class="record-bit">0</span>${createPhotonDisplay(qubitVisuals.zero)}<span>${qubitVisuals.zero.label}</span>
+                </div>
+                <div class="record-option ${inference.recordBit === "1" ? "is-inferred" : ""}">
+                    <span class="record-bit">1</span>${createPhotonDisplay(qubitVisuals.plus)}<span>${qubitVisuals.plus.label}</span>
+                </div>
+            </div>
+        `;
 
         if (isConclusive) {
             explainBox.style.borderLeftColor = "var(--match-green)";
             explainBox.style.backgroundColor = "#f0fdf4";
             explainTitle.style.color = "var(--match-green)";
-            explainTitle.innerHTML = "🟢 Record";
-            explainDesc.innerHTML = `Light passed. This polarizer blocks <b>${blockedState}</b>, so Alice could not have sent <b>${blockedState}</b>.<br>Bob infers Alice sent <b>${inferredState}</b>: <span class="highlight-keep">Qubit ${recordQubit}</span>.`;
+            explainTitle.innerHTML = "Record";
+            explainDesc.innerHTML = `Bob only records two possible Alice states: <b>${qubitVisuals.zero.label}</b> as bit <b>0</b>, or <b>${qubitVisuals.plus.label}</b> as bit <b>1</b>.<br>The selected polarizer rules out <b>${inference.blockedState.label}</b>, so Bob infers Alice sent <b>${inference.inferredState.label}</b> and records <span class="highlight-keep">Outcome ${inference.recordBit}</span>.${optionsHtml}`;
         } else {
             explainBox.style.borderLeftColor = "var(--mismatch-red)";
             explainBox.style.backgroundColor = "#fff5f5";
             explainTitle.style.color = "var(--mismatch-red)";
-            explainTitle.innerHTML = "🔴 Discard";
+            explainTitle.innerHTML = "Discard";
             explainDesc.innerHTML = `No light passed. Bob cannot tell whether the photon was blocked or lost, so this result is <span class="highlight-discard">inconclusive</span>.`;
         }
 
@@ -400,7 +423,7 @@
     }
 
     function prevStep() { window.location.href = 'B92step1.html'; }
-    function nextStep() { window.location.href = 'B92step3.html'; }
+    function nextStep() { window.location.href = 'B92step4.html'; }
 </script>
 <script>
 document.addEventListener('DOMContentLoaded', function () {
