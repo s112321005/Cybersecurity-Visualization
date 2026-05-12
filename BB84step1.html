@@ -13,7 +13,8 @@
         body { font-family: 'Segoe UI', sans-serif; display: flex; flex-direction: column; align-items: center; padding: 40px 20px; background: var(--bg-gradient); margin: 0; animation: fadeIn 0.8s ease-out; overflow-x: hidden; }
         .header { width: min(1000px, 95vw); display: flex; align-items: center; justify-content: space-between; margin-bottom: 25px; height: 60px; }
         .header-left { display: flex; align-items: center; gap: 15px; }
-        .btn-back { width: 40px; height: 40px; background-color: var(--primary-blue); color: white; border-radius: 50%; display: flex; justify-content: center; align-items: center; text-decoration: none; font-size: 1.1rem; transition: transform 0.2s; cursor: pointer; border: none; box-shadow: 0 2px 6px rgba(0,0,0,0.15); padding: 0; margin: 0; box-sizing: border-box; flex-shrink: 0; }
+        .btn-back { width: 40px; height: 40px; background-color: var(--primary-blue); color: white; border-radius: 50%; display: flex; justify-content: center; align-items: center; text-decoration: none; font-size: 0; transition: transform 0.2s; cursor: pointer; border: none; box-shadow: 0 2px 6px rgba(0,0,0,0.15); padding: 0; margin: 0; box-sizing: border-box; flex-shrink: 0; }
+        .btn-back::before { content: ""; width: 0; height: 0; border-top: 7px solid transparent; border-bottom: 7px solid transparent; border-right: 11px solid currentColor; margin-left: -2px; }
         .btn-back:hover { transform: scale(1.1); }
         .title-pill { border: 2px solid var(--primary-blue); height: 48px; padding: 0 25px; border-radius: 30px; font-weight: bold; background: white; display: flex; align-items: center; justify-content: center; box-sizing: border-box; white-space: nowrap; font-size: 1.1rem; }
         .step-text { font-weight: bold; font-size: 1.1rem; margin: 0; color: var(--dark-text); }
@@ -244,7 +245,7 @@
 
 <div class="header">
     <div class="header-left">
-        <a href="QuantumCybersecurityEducationPlatform.html" class="btn-back"  title="back home">◀&#xFE0E</a>
+        <a href="QuantumCybersecurityEducationPlatform.html?section=qkd#quantum-security-applications" class="btn-back"  title="back home">&#x25C0;&#xFE0E;</a>
         <div class="title-pill">Quantum Key Distribution：BB84</div>
     </div>
     <div class="header-center"><p class="step-text">STEP 1：Alice prepares the photon</p></div>

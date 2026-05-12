@@ -17,7 +17,8 @@
         .active-line { stroke: #333 !important; stroke-width: 4 !important; stroke-dasharray: none; }
         .nav-btn { border: 2px solid var(--primary-blue); background: white; color: var(--dark-text); padding: 10px 25px; border-radius: 30px; font-weight: bold; font-size: 1rem; cursor: pointer; transition: all 0.2s; }
         .nav-btn:hover { background: var(--primary-blue); color: white; }
-        .btn-back { width: 40px; height: 40px; background-color: var(--primary-blue); color: white; border-radius: 50%; display: flex; justify-content: center; align-items: center; text-decoration: none; font-size: 1rem; transition: transform 0.2s; cursor: pointer; border: none; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .btn-back { width: 40px; height: 40px; background-color: var(--primary-blue); color: white; border-radius: 50%; display: flex; justify-content: center; align-items: center; text-decoration: none; font-size: 0; transition: transform 0.2s; cursor: pointer; border: none; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .btn-back::before { content: ""; width: 0; height: 0; border-top: 7px solid transparent; border-bottom: 7px solid transparent; border-right: 11px solid currentColor; margin-left: -2px; }
         .btn-back:hover { transform: scale(1.1); }
         .title-pill { border: 2px solid var(--primary-blue); padding: 8px 20px; border-radius: 30px; font-weight: bold; background: white; color: var(--dark-text); }
         .header-center { flex-grow: 1; margin-left: 20px; font-weight: bold; font-size: 1.2rem; color: var(--dark-text); text-align: center; }
@@ -46,7 +47,7 @@
 <div class="container">
     <div class="top-bar" style="display: flex; align-items: center; justify-content: space-between; max-width: 1100px; margin: 0 auto 20px auto;">
         <div class="header-left" style="display: flex; align-items: center; gap: 20px;">
-            <a href="QuantumCybersecurityEducationPlatform.html" class="btn-back" title="back home">◀&#xFE0E</a>
+            <a href="QuantumCybersecurityEducationPlatform.html?section=qkd#quantum-security-applications" class="btn-back" title="back home">&#x25C0;&#xFE0E;</a>
             <div class="title-pill">Quantum Key Distribution：BB84</div>
         </div>
         <div class="header-center">STEP 3：Final Result</div>
