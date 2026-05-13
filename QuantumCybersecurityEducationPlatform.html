@@ -214,6 +214,7 @@
             const learningPath = document.querySelector('.learning-path');
             const sections = Array.from(document.querySelectorAll('.path-section'));
             const railSegments = Array.from(document.querySelectorAll('.section-rail-segment'));
+            const sectionMap = { qkd: 0, qss: 1, qsdc: 2 };
             if (!learningPath || sections.length === 0) return;
 
             function setActivePathSection(index) {
@@ -275,7 +276,26 @@
                 }, 360);
             }, { passive: true });
 
-            setActivePathSection(0);
+            function openLinkedSection() {
+                const params = new URLSearchParams(window.location.search);
+                const requestedSection = (params.get('section') || '').toLowerCase();
+                const shouldOpenLearning = window.location.hash === '#quantum-security-applications';
+
+                if (Object.prototype.hasOwnProperty.call(sectionMap, requestedSection)) {
+                    setActivePathSection(sectionMap[requestedSection]);
+                } else {
+                    setActivePathSection(0);
+                }
+
+                if (shouldOpenLearning && Object.prototype.hasOwnProperty.call(sectionMap, requestedSection)) {
+                    expandView();
+                }
+            }
+
+            openLinkedSection();
+
+            window.addEventListener('hashchange', openLinkedSection);
+            window.addEventListener('popstate', openLinkedSection);
         });
     </script>
 
