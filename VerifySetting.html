@@ -7,128 +7,49 @@
     <title>Protocol Selection & Verification - Quantum Platform</title>
     <style>
         :root { --primary-blue: #549FD0; --alice-blue: #004aad; --bg-gradient: linear-gradient(135deg, #E0F2FE 0%, #F5F3FF 50%, #ECFDF5 100%); --text-dark: #333333; --bg-color: #f0f2f5; --border-width: 4px; --border-radius: 15px; }
-        body { 
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-            background: var(--bg-gradient); margin: 0; height: 100vh; 
-            display: flex; justify-content: center; align-items: center; 
-            overflow: hidden; user-select: none; 
-        }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--bg-gradient); margin: 0; height: 100vh; display: flex; justify-content: center; align-items: center; overflow: hidden; user-select: none; }
         .page-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-gradient); z-index: -1; }
         .selection-window { background-color: white; border: var(--border-width) solid var(--primary-blue); border-radius: var(--border-radius); width: 80vw; height: 650px; max-width: 1400px; padding: 30px 60px; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15); display: flex; flex-direction: column; box-sizing: border-box; position: relative; }
-        
-        /* 標題區域：左上角固定分類描述 */
         .header-group { margin-bottom: 15px; }
         .header-title { font-size: 26px; font-weight: 900; color: var(--text-dark); margin: 0; display: flex; align-items: center; gap: 15px; }
         .category-full-desc { font-size: 40px; font-weight: 800; color: var(--text-dark); margin-left: 10px; }
-        
-        /* 右上角 General Scene 按鈕 */
-        .btn-general {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            width: 35px;
-            height: 35px;
-            border-radius: 50%;
-            background-color: white;
-            border: 2px solid var(--primary-blue);
-            color: var(--primary-blue);
-            font-weight: bold;
-            font-size: 20px;
-            cursor: pointer;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            transition: all 0.2s;
-            z-index: 50;
-        }
+        .btn-general { position: absolute; top: 20px; right: 20px; width: 35px; height: 35px; border-radius: 50%; background-color: white; border: 2px solid var(--primary-blue); color: var(--primary-blue); font-weight: bold; font-size: 20px; cursor: pointer; display: flex; justify-content: center; align-items: center; transition: all 0.2s; z-index: 50; }
         .btn-general:hover { background-color: var(--primary-blue); color: white; }
-
         .scene-image-container { flex-grow: 1; min-height: 0; border-radius: 12px; background-color: white; display: flex; flex-direction: column; justify-content: center; align-items: center; margin-bottom: 25px; position: relative; overflow: hidden; cursor: zoom-in; }
         #bg-png { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 1; pointer-events: none; }
         #scene-img { max-width: 95%; max-height: 95%; object-fit: contain; position: relative; z-index: 2; pointer-events: none; }
-        
         .controls-row { display: flex; align-items: center; justify-content: center; position: relative; width: 100%; height: 60px; margin-bottom: 10px; }
         .carousel-area { display: flex; align-items: center; gap: 10px; }
         .nav-arrow { font-size: 22px; cursor: pointer; color: var(--text-dark); user-select: none; padding: 5px 15px; transition: transform 0.1s; }
         .nav-arrow:active { transform: scale(0.8); }
         .category-box { width: 180px; height: 45px; border: 3px solid var(--text-dark); border-radius: 10px; display: flex; justify-content: center; align-items: center; font-size: 22px; font-weight: 900; color: var(--text-dark); letter-spacing: 1px; background-color: #fcfcfc; }
         .action-btn { position: absolute; right: 0; bottom: 5px; background-color: var(--primary-blue); color: white; border: none; border-radius: 30px; padding: 0 35px; height: 45px; font-size: 16px; font-weight: bold; cursor: pointer; transition: all 0.2s; white-space: nowrap; z-index: 10; }
-        .action-btn:hover { background-color: #3f8fbd; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(84,159,208,0.2); }
+        .action-btn:hover { background-color: #3f8fbd; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(84, 159, 208, 0.2); }
         .learn-btn { left: 0; right: auto; }
-        .btn-back { width: 40px; height: 40px; background-color: var(--primary-blue); color: white; border-radius: 50%; display: flex; justify-content: center; align-items: center; text-decoration: none; font-size: 1.1rem; transition: transform 0.2s; cursor: pointer; border: none; box-shadow: 0 2px 6px rgba(0,0,0,0.15); flex-shrink: 0; }
-        
-        /* Pagination Dots */
+        .btn-back { width: 40px; height: 40px; background-color: var(--primary-blue); color: white; border-radius: 50%; display: flex; justify-content: center; align-items: center; text-decoration: none; font-size: 1.1rem; transition: transform 0.2s; cursor: pointer; border: none; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15); flex-shrink: 0; }
         .pagination-dots { position: absolute; right: 30px; top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; gap: 12px; align-items: center; }
         .dot { width: 10px; height: 10px; border: 2px solid var(--text-dark); border-radius: 50%; transition: all 0.3s ease; cursor: pointer; background-color: transparent; }
         .dot.active { background-color: var(--text-dark); transform: scale(1.4); }
         .dot.out-of-range { border-color: #ccc; background-color: transparent; cursor: default; }
-        
         .scroll-hint { position: absolute; right: 65px; top: 50%; transform: translateY(-50%); color: #aaa; font-size: 13px; font-style: italic; writing-mode: vertical-rl; }
-        
-        /* --- General 場景彈出視窗 (限制在 main window 內部) --- */
-        .general-popup {
-            position: absolute; top: 105px; left: 0; width: 100%; height: calc(100% - 115px);
-            background: rgba(255, 255, 255, 0.88);
-            border-radius: var(--border-radius);
-            z-index: 500; display: none; justify-content: center; align-items: center;
-            animation: generalPopupFadeIn 0.18s ease-out;
-        }
-        .general-popup-content {
-            position: relative; width: 76%; height: 76%;
-            background: white; border: 3px solid var(--primary-blue);
-            border-radius: 12px; display: flex; justify-content: center; align-items: center;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2); overflow: hidden;
-            transform-origin: top right;
-            animation: generalPopupScaleIn 0.18s ease-out;
-        }
+        .general-popup { position: absolute; top: 105px; left: 0; width: 100%; height: calc(100% - 115px); background: rgba(255, 255, 255, 0.88); border-radius: var(--border-radius); z-index: 500; display: none; justify-content: center; align-items: center; animation: generalPopupFadeIn 0.18s ease-out; }
+        .general-popup-content { position: relative; width: 76%; height: 76%; background: white; border: 3px solid var(--primary-blue); border-radius: 12px; display: flex; justify-content: center; align-items: center; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2); overflow: hidden; transform-origin: top right; animation: generalPopupScaleIn 0.18s ease-out; }
         #general-scene-img { max-width: 95%; max-height: 95%; object-fit: contain; pointer-events: none; }
-        .general-popup-close {
-            position: absolute; top: 15px; right: 20px; width: 40px; height: 40px;
-            background-color: white; border: 3px solid black; color: black;
-            font-size: 28px; display: flex; justify-content: center; align-items: center;
-            cursor: pointer; font-weight: bold; border-radius: 8px; line-height: 0; transition: transform 0.1s;
-        }
+        .general-popup-close { position: absolute; top: 15px; right: 20px; width: 40px; height: 40px; background-color: white; border: 3px solid black; color: black; font-size: 28px; display: flex; justify-content: center; align-items: center; cursor: pointer; font-weight: bold; border-radius: 8px; line-height: 0; transition: transform 0.1s; }
         .general-popup-close:hover { background-color: #eee; transform: scale(1.05); }
-        .general-popup.closing {
-            pointer-events: none;
-            animation: generalPopupFadeOut 0.28s ease-in forwards;
-        }
-        .general-popup.closing .general-popup-content {
-            animation: generalPopupShrinkToButton 0.28s cubic-bezier(0.55, 0, 0.85, 0.3) forwards;
-        }
-        @keyframes generalPopupFadeIn {
-            from { background: rgba(255, 255, 255, 0); }
-            to { background: rgba(255, 255, 255, 0.88); }
-        }
-        @keyframes generalPopupFadeOut {
-            from { background: rgba(255, 255, 255, 0.88); }
-            to { background: rgba(255, 255, 255, 0); }
-        }
-        @keyframes generalPopupScaleIn {
-            from { opacity: 0; transform: scale(0.94); }
-            to { opacity: 1; transform: scale(1); }
-        }
-        @keyframes generalPopupShrinkToButton {
-            from { opacity: 1; transform: translate(0, 0) scale(1); border-radius: 12px; }
-            to { opacity: 0.15; transform: translate(15%, -45%) scale(0.04); border-radius: 50%; }
-        }
-
-        /* Lightbox (全螢幕) */
-        #lightbox { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 1000; display: none; justify-content: center; align-items: center; overflow: hidden; }
+        .general-popup.closing { pointer-events: none; animation: generalPopupFadeOut 0.28s ease-in forwards; }
+        .general-popup.closing .general-popup-content { animation: generalPopupShrinkToButton 0.28s cubic-bezier(0.55, 0, 0.85, 0.3) forwards; }
+        @keyframes generalPopupFadeIn { from { background: rgba(255, 255, 255, 0); } to { background: rgba(255, 255, 255, 0.88); } }
+        @keyframes generalPopupFadeOut { from { background: rgba(255, 255, 255, 0.88); } to { background: rgba(255, 255, 255, 0); } }
+        @keyframes generalPopupScaleIn { from { opacity: 0; transform: scale(0.94); } to { opacity: 1; transform: scale(1); } }
+        @keyframes generalPopupShrinkToButton { from { opacity: 1; transform: translate(0, 0) scale(1); border-radius: 12px; } to { opacity: 0.15; transform: translate(15%, -45%) scale(0.04); border-radius: 50%; } }
+        #lightbox { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.9); z-index: 1000; display: none; justify-content: center; align-items: center; overflow: hidden; }
         #lightbox-content { position: relative; width: 85vw; height: 85vh; display: flex; justify-content: center; align-items: center; transform-origin: center; transition: transform 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94); }
         #lb-bg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 1; pointer-events: none; }
         #lb-img { max-width: 90%; max-height: 90%; object-fit: contain; position: relative; z-index: 2; pointer-events: none; }
-        
-        #lightbox-close { 
-            position: absolute; top: 30px; right: 40px; 
-            width: 45px; height: 45px; background-color: white; 
-            border: 3px solid black; color: black; font-size: 32px; 
-            display: flex; justify-content: center; align-items: center;
-            cursor: pointer; z-index: 1001; font-weight: bold; user-select: none;
-            border-radius: 8px; line-height: 0; transition: transform 0.1s;
-        }
+        #lightbox-close { position: absolute; top: 30px; right: 40px; width: 45px; height: 45px; background-color: white; border: 3px solid black; color: black; font-size: 32px; display: flex; justify-content: center; align-items: center; cursor: pointer; z-index: 1001; font-weight: bold; user-select: none; border-radius: 8px; line-height: 0; transition: transform 0.1s; }
         #lightbox-close:hover { background-color: #eee; transform: scale(1.05); }
-        #lightbox-hint { position: absolute; bottom: 20px; color: white; background: rgba(0,0,40,0.6); padding: 8px 20px; border-radius: 20px; font-size: 14px; pointer-events: none; z-index: 1001; text-align: center; }
+        #lightbox-hint { position: absolute; bottom: 20px; color: white; background: rgba(0, 0, 40, 0.6); padding: 8px 20px; border-radius: 20px; font-size: 14px; pointer-events: none; z-index: 1001; text-align: center; }
     </style>
 </head>
 <body oncontextmenu="return false;">
@@ -140,7 +61,7 @@
         <div class="header-group">
             <div class="header-title">
                 <a href="https://s112321005.github.io/Cybersecurity-Visualization/QuantumCybersecurityEducationPlatform.html" class="btn-back" title="Back to Home" aria-label="Back to Home">◀&#xFE0E;</a>
-                <span class="category-full-desc" id="mode-desc">QKD：Jointly Establish a Secure Key</span>
+                <span class="category-full-desc" id="mode-desc">BB84 Protocol</span>
             </div>
         </div>
         
@@ -182,8 +103,8 @@
     <script>
         const quantumData = [
             { mode: "QKD", description: "QKD：Jointly Establish a Secure Key", protocols: [{ name: "BB84", link: "bb84_analysis.html" }, { name: "B92", link: "b92_analysis.html" }]},
-            { mode: "QSS", description: "QSS：Secret Sharing, Cooperative Recovery", protocols: [ { name: "ZhangLiMan", link: "zlm_analysis.html" }]},
-            { mode: "QSDC", description: "QSDC：Secure Quantum Message Transmission", protocols: [ { name: "pingpong", link: "pingpong_analysis.html" }]}
+            { mode: "QSS", description: "QSS：Secret Sharing, Cooperative Recovery", protocols: [ { name: "ZhangLiMan", link: "zlm_analysis.html" }, { name: "ZhangMan", link: "zm_analysis.html" }]},
+            { mode: "QSDC", description: "QSDC：Secure Quantum Message Transmission", protocols: [ { name: "pingpong", link: "pingpong_analysis.html" }, { name: "im_pingpong", link: "im_pingpong_analysis.html" }]}
         ];
         
         let modeIdx = 0, protoIdx = 0, isThrottled = false;
@@ -192,7 +113,17 @@
             BB84: "BB84step1.html",
             B92: "B92step1.html",
             ZhangLiMan: "ZLMstep1.html",
-            pingpong: "PINGPONGstep1.html"
+            ZhangMan: "ZMstep1.html",
+            pingpong: "PINGPONGstep1.html",
+            im_pingpong: "IM_PINGPONGstep1.html"
+        };
+        const protocolDisplayNames = {
+            BB84: "BB84",
+            B92: "B92",
+            ZhangLiMan: "Zhang Li-Man",
+            ZhangMan: "Zhang-Man",
+            pingpong: "Ping-Pong",
+            im_pingpong: "Improved Ping-Pong"
         };
         
         // 紀錄已瀏覽過的分類，供 General Scene 判斷是否為第一次切換
@@ -202,7 +133,7 @@
             const currentProto = currentMode.protocols[protoIdx];
             
             // 更新左上角大標題與分類方塊
-            document.getElementById('mode-desc').textContent = currentMode.description;
+            document.getElementById('mode-desc').textContent = `${protocolDisplayNames[currentProto.name] || currentProto.name} Protocol`;
             document.getElementById('mode-name').textContent = currentMode.mode;
             document.getElementById('goBtn').onclick = () => { window.location.href = currentProto.link; };
             document.getElementById('learnBtn').onclick = () => { window.location.href = protocolLearningLinks[currentProto.name]; };
