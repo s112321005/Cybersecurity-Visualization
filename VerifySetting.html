@@ -6,70 +6,89 @@
     <base href="https://s112321005.github.io/Cybersecurity-Visualization/">
     <title>Protocol Selection & Verification - Quantum Platform</title>
     <style>
-        :root { --primary-blue: #549FD0; --alice-blue: #004aad; --bg-gradient: linear-gradient(135deg, #E0F2FE 0%, #F5F3FF 50%, #ECFDF5 100%); --text-dark: #333333; --bg-color: #f0f2f5; --border-width: 4px; --border-radius: 15px; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--bg-gradient); margin: 0; height: 100vh; display: flex; justify-content: center; align-items: center; overflow: hidden; user-select: none; }
-        .page-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-gradient); z-index: -1; }
-        .selection-window { background-color: white; border: var(--border-width) solid var(--primary-blue); border-radius: var(--border-radius); width: 80vw; height: 650px; max-width: 1400px; padding: 30px 60px; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15); display: flex; flex-direction: column; box-sizing: border-box; position: relative; }
-        .header-group { margin-bottom: 15px; }
-        .header-title { font-size: 26px; font-weight: 900; color: var(--text-dark); margin: 0; display: flex; align-items: center; gap: 15px; }
-        .category-full-desc { font-size: 40px; font-weight: 800; color: var(--text-dark); margin-left: 10px; }
-        .btn-general { position: absolute; top: 20px; right: 20px; width: 35px; height: 35px; border-radius: 50%; background-color: white; border: 2px solid var(--primary-blue); color: var(--primary-blue); font-weight: bold; font-size: 20px; cursor: pointer; display: flex; justify-content: center; align-items: center; transition: all 0.2s; z-index: 50; }
-        .btn-general:hover { background-color: var(--primary-blue); color: white; }
-        .scene-image-container { flex-grow: 1; min-height: 0; border-radius: 12px; background-color: white; display: flex; flex-direction: column; justify-content: center; align-items: center; margin-bottom: 25px; position: relative; overflow: hidden; cursor: zoom-in; }
-        #bg-png { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 1; pointer-events: none; }
-        #scene-img { max-width: 95%; max-height: 95%; object-fit: contain; position: relative; z-index: 2; pointer-events: none; }
-        .controls-row { display: flex; align-items: center; justify-content: center; position: relative; width: 100%; height: 60px; margin-bottom: 10px; }
-        .carousel-area { display: flex; align-items: center; gap: 10px; }
-        .nav-arrow { font-size: 22px; cursor: pointer; color: var(--text-dark); user-select: none; padding: 5px 15px; transition: transform 0.1s; }
-        .nav-arrow:active { transform: scale(0.8); }
-        .category-box { width: 180px; height: 45px; border: 3px solid var(--text-dark); border-radius: 10px; display: flex; justify-content: center; align-items: center; font-size: 22px; font-weight: 900; color: var(--text-dark); letter-spacing: 1px; background-color: #fcfcfc; }
-        .action-btn { position: absolute; right: 0; bottom: 5px; background-color: var(--primary-blue); color: white; border: none; border-radius: 30px; padding: 0 35px; height: 45px; font-size: 16px; font-weight: bold; cursor: pointer; transition: all 0.2s; white-space: nowrap; z-index: 10; }
-        .action-btn:hover { background-color: #3f8fbd; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(84, 159, 208, 0.2); }
-        .learn-btn { left: 0; right: auto; }
-        .btn-back { width: 40px; height: 40px; background-color: var(--primary-blue); color: white; border-radius: 50%; display: flex; justify-content: center; align-items: center; text-decoration: none; font-size: 1.1rem; transition: transform 0.2s; cursor: pointer; border: none; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15); flex-shrink: 0; }
-        .pagination-dots { position: absolute; right: 30px; top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; gap: 12px; align-items: center; }
-        .dot { width: 10px; height: 10px; border: 2px solid var(--text-dark); border-radius: 50%; transition: all 0.3s ease; cursor: pointer; background-color: transparent; }
-        .dot.active { background-color: var(--text-dark); transform: scale(1.4); }
-        .dot.out-of-range { border-color: #ccc; background-color: transparent; cursor: default; }
-        .scroll-hint { position: absolute; right: 65px; top: 50%; transform: translateY(-50%); color: #aaa; font-size: 13px; font-style: italic; writing-mode: vertical-rl; }
-        .general-popup { position: absolute; top: 105px; left: 0; width: 100%; height: calc(100% - 115px); background: rgba(255, 255, 255, 0.88); border-radius: var(--border-radius); z-index: 500; display: none; justify-content: center; align-items: center; animation: generalPopupFadeIn 0.18s ease-out; }
-        .general-popup-content { position: relative; width: 76%; height: 76%; background: white; border: 3px solid var(--primary-blue); border-radius: 12px; display: flex; justify-content: center; align-items: center; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2); overflow: hidden; transform-origin: top right; animation: generalPopupScaleIn 0.18s ease-out; }
-        #general-scene-img { max-width: 95%; max-height: 95%; object-fit: contain; pointer-events: none; }
-        .general-popup-close { position: absolute; top: 15px; right: 20px; width: 40px; height: 40px; background-color: white; border: 3px solid black; color: black; font-size: 28px; display: flex; justify-content: center; align-items: center; cursor: pointer; font-weight: bold; border-radius: 8px; line-height: 0; transition: transform 0.1s; }
-        .general-popup-close:hover { background-color: #eee; transform: scale(1.05); }
-        .general-popup.closing { pointer-events: none; animation: generalPopupFadeOut 0.28s ease-in forwards; }
-        .general-popup.closing .general-popup-content { animation: generalPopupShrinkToButton 0.28s cubic-bezier(0.55, 0, 0.85, 0.3) forwards; }
-        @keyframes generalPopupFadeIn { from { background: rgba(255, 255, 255, 0); } to { background: rgba(255, 255, 255, 0.88); } }
-        @keyframes generalPopupFadeOut { from { background: rgba(255, 255, 255, 0.88); } to { background: rgba(255, 255, 255, 0); } }
-        @keyframes generalPopupScaleIn { from { opacity: 0; transform: scale(0.94); } to { opacity: 1; transform: scale(1); } }
-        @keyframes generalPopupShrinkToButton { from { opacity: 1; transform: translate(0, 0) scale(1); border-radius: 12px; } to { opacity: 0.15; transform: translate(15%, -45%) scale(0.04); border-radius: 50%; } }
-        #lightbox { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.9); z-index: 1000; display: none; justify-content: center; align-items: center; overflow: hidden; }
-        #lightbox-content { position: relative; width: 85vw; height: 85vh; display: flex; justify-content: center; align-items: center; transform-origin: center; transition: transform 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94); }
-        #lb-bg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 1; pointer-events: none; }
-        #lb-img { max-width: 90%; max-height: 90%; object-fit: contain; position: relative; z-index: 2; pointer-events: none; }
-        #lightbox-close { position: absolute; top: 30px; right: 40px; width: 45px; height: 45px; background-color: white; border: 3px solid black; color: black; font-size: 32px; display: flex; justify-content: center; align-items: center; cursor: pointer; z-index: 1001; font-weight: bold; user-select: none; border-radius: 8px; line-height: 0; transition: transform 0.1s; }
-        #lightbox-close:hover { background-color: #eee; transform: scale(1.05); }
-        #lightbox-hint { position: absolute; bottom: 20px; color: white; background: rgba(0, 0, 40, 0.6); padding: 8px 20px; border-radius: 20px; font-size: 14px; pointer-events: none; z-index: 1001; text-align: center; }
+        :root{--primary-blue:#549FD0;--alice-blue:#004aad;--bg-gradient:linear-gradient(135deg,#E0F2FE 0%,#F5F3FF 50%,#ECFDF5 100%);--text-dark:#333333;--bg-color:#f0f2f5;--border-color:#5BA4D3;--shadow-color:#2C3E50;--border-width:8px;--border-radius:24px;}
+        body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:var(--bg-gradient);margin:0;height:100vh;display:flex;justify-content:center;align-items:center;overflow:hidden;user-select:none;}
+        .page-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:var(--bg-gradient);z-index:-1;}
+        .selection-window{background-color:white;border:var(--border-width) solid var(--border-color);border-radius:var(--border-radius);width:86vw;height:650px;max-width:1500px;padding:30px 54px;box-shadow:14px 14px 0px var(--shadow-color);display:flex;flex-direction:column;box-sizing:border-box;position:relative;transform:translateY(-5px);}
+        .header-group{margin-bottom:15px;}
+        .header-title{font-size:26px;font-weight:900;color:var(--text-dark);margin:0;display:flex;align-items:center;gap:15px;}
+        .category-full-desc{font-size:40px;font-weight:900;color:var(--shadow-color);margin-left:10px;letter-spacing:1px;}
+        .btn-general{position:absolute;top:25px;right:25px;width:42px;height:42px;border-radius:50%;background-color:white;border:4px solid var(--border-color);color:var(--border-color);font-weight:900;font-size:22px;cursor:pointer;display:flex;justify-content:center;align-items:center;box-shadow:4px 4px 0px var(--shadow-color);transition:all 0.15s ease;z-index:50;}
+        .btn-general:hover{transform:translate(-2px,-2px);box-shadow:6px 6px 0px var(--shadow-color);background-color:#f8f9fa;}
+        .btn-general:active{transform:translate(2px,2px);box-shadow:0px 0px 0px var(--shadow-color);}
+        .btn-back{width:44px;height:44px;background-color:var(--primary-blue);color:white;border-radius:50%;display:flex;justify-content:center;align-items:center;text-decoration:none;font-size:1.2rem;cursor:pointer;border:4px solid var(--border-color);box-shadow:4px 4px 0px var(--shadow-color);flex-shrink:0;transition:all 0.15s ease;}
+        .btn-back:hover{transform:translate(-2px,-2px);box-shadow:6px 6px 0px var(--shadow-color);background-color:#3E8FBC;border-color:#3E8FBC;}
+        .btn-back:active{transform:translate(2px,2px);box-shadow:0px 0px 0px var(--shadow-color);}
+        .scene-image-container{flex-grow:1;min-height:0;border-radius:16px;background-color:#f9fbfd;border:4px dashed #cddae5;display:flex;flex-direction:column;justify-content:center;align-items:center;margin-bottom:25px;position:relative;overflow:hidden;cursor:zoom-in;}
+        #bg-png{position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;z-index:1;pointer-events:none;opacity:0.8;}
+        #scene-img{max-width:95%;max-height:95%;object-fit:contain;position:relative;z-index:2;pointer-events:none;filter:drop-shadow(0 10px 15px rgba(0,0,0,0.1));}
+        .controls-row{display:grid;grid-template-columns:minmax(180px,240px) minmax(440px,580px) minmax(180px,240px);align-items:center;justify-content:space-between;column-gap:18px;position:relative;width:100%;min-height:60px;margin-bottom:10px;}
+        .carousel-area{grid-column:2;grid-row:1;display:flex;align-items:center;justify-content:center;gap:15px;min-width:0;}
+        .nav-arrow{font-size:28px;cursor:pointer;color:var(--shadow-color);user-select:none;padding:5px 12px;transition:transform 0.15s;flex:0 0 auto;font-weight:900;}
+        .nav-arrow:hover{color:var(--primary-blue);transform:scale(1.2) translateY(-2px);}
+        .nav-arrow:active{transform:scale(0.9);}
+        .category-box{width:clamp(400px,40vw,500px);min-width:0;height:54px;border:4px solid var(--border-color);border-radius:16px;display:flex;justify-content:center;align-items:center;text-align:center;font-size:clamp(16px,1.4vw,20px);font-weight:900;color:var(--shadow-color);letter-spacing:0.5px;background-color:white;padding:0 15px;line-height:1.1;white-space:nowrap;overflow:hidden;box-shadow:4px 4px 0px var(--shadow-color);}
+        .action-btn{position:static;grid-row:1;background-color:var(--border-color);border:none;color:white;border-radius:50px;padding:0 28px;height:52px;font-size:18px;font-weight:900;cursor:pointer;transition:all 0.15s cubic-bezier(0.25,0.8,0.25,1);white-space:nowrap;z-index:10;max-width:240px;letter-spacing:1px;display:flex;justify-content:center;align-items:center;text-shadow:2px 2px 0px var(--shadow-color);box-sizing:border-box;}
+        .action-btn:hover{transform:translateY(-4px) scale(1.03);background-color:#4A8DBA;box-shadow:0 8px 15px rgba(44,62,80,0.2);}
+        .action-btn:active{transform:translateY(0px) scale(0.98);}
+        .learn-btn{grid-column:1;justify-self:start;}
+        #goBtn{grid-column:3;justify-self:end;}
+        .pagination-dots{position:absolute;right:20px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:15px;align-items:center;z-index:20;}
+        .arrow-hint{width:0;height:0;border-left:10px solid transparent;border-right:10px solid transparent;cursor:pointer;transition:transform 0.15s ease;}
+        .arrow-hint.up{border-bottom:16px solid var(--border-color);}
+        .arrow-hint.up:hover{transform:translateY(-4px) scale(1.1);}
+        .arrow-hint.down{border-top:16px solid var(--border-color);}
+        .arrow-hint.down:hover{transform:translateY(4px) scale(1.1);}
+        .dot{width:14px;height:180px;border:4px solid var(--border-color);border-radius:20px;transition:all 0.3s ease;cursor:pointer;background-color:white;position:relative;overflow:hidden;}
+        .dot::after{content:'';position:absolute;left:0;top:0;width:100%;height:50%;background-color:var(--shadow-color);border-radius:12px;transition:transform 0.3s cubic-bezier(0.25,0.8,0.25,1);transform:translateY(0);}
+        .dot.idx-1::after{transform:translateY(100%);}
+        .dot.active{}
+        .dot.out-of-range{display:none;}
+        .general-popup{position:absolute;top:105px;left:0;width:100%;height:calc(100% - 115px);background:rgba(255,255,255,0.88);border-radius:var(--border-radius);z-index:500;display:none;justify-content:center;align-items:center;animation:generalPopupFadeIn 0.2s ease-out;}
+        .general-popup-content{position:relative;width:76%;height:76%;background:white;border:var(--border-width) solid var(--border-color);border-radius:20px;display:flex;justify-content:center;align-items:center;box-shadow:12px 12px 0px var(--shadow-color);overflow:hidden;transform-origin:top right;animation:generalPopupScaleIn 0.25s cubic-bezier(0.175,0.885,0.32,1.275);}
+        #general-scene-img{max-width:95%;max-height:95%;object-fit:contain;pointer-events:none;}
+        .general-popup-close{position:absolute;top:15px;right:20px;width:44px;height:44px;background-color:white;border:4px solid var(--border-color);color:var(--border-color);font-size:30px;display:flex;justify-content:center;align-items:center;cursor:pointer;font-weight:bold;border-radius:12px;line-height:0;transition:all 0.15s ease;box-shadow:4px 4px 0px var(--shadow-color);}
+        .general-popup-close:hover{transform:translate(-2px,-2px);box-shadow:6px 6px 0px var(--shadow-color);background-color:#e0f2fe;color:var(--shadow-color);}
+        .general-popup-close:active{transform:translate(2px,2px);box-shadow:0px 0px 0px var(--shadow-color);}
+        .general-popup.closing{pointer-events:none;animation:generalPopupFadeOut 0.25s ease-in forwards;}
+        .general-popup.closing .general-popup-content{animation:generalPopupShrinkToButton 0.25s cubic-bezier(0.55,0,0.85,0.3) forwards;}
+        @keyframes generalPopupFadeIn{from{background:rgba(255,255,255,0);}to{background:rgba(255,255,255,0.88);}}
+        @keyframes generalPopupFadeOut{from{background:rgba(255,255,255,0.88);}to{background:rgba(255,255,255,0);}}
+        @keyframes generalPopupScaleIn{from{opacity:0;transform:scale(0.9) translateY(20px);}to{opacity:1;transform:scale(1) translateY(0);}}
+        @keyframes generalPopupShrinkToButton{from{opacity:1;transform:translate(0,0) scale(1);border-radius:20px;}to{opacity:0;transform:translate(15%,-45%) scale(0.05);border-radius:50%;}}
+        #lightbox{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(20,25,30,0.95);z-index:1000;display:none;justify-content:center;align-items:center;overflow:hidden;}
+        #lightbox-content{position:relative;width:85vw;height:85vh;display:flex;justify-content:center;align-items:center;transform-origin:center;transition:transform 0.2s cubic-bezier(0.25,0.46,0.45,0.94);}
+        #lb-bg{position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;z-index:1;pointer-events:none;opacity:0.5;}
+        #lb-img{max-width:90%;max-height:90%;object-fit:contain;position:relative;z-index:2;pointer-events:none;filter:drop-shadow(0 20px 30px rgba(0,0,0,0.5));}
+        #lightbox-close{position:absolute;top:30px;right:40px;width:50px;height:50px;background-color:white;border:4px solid var(--border-color);color:var(--border-color);font-size:36px;display:flex;justify-content:center;align-items:center;cursor:pointer;z-index:1001;font-weight:bold;user-select:none;border-radius:12px;line-height:0;transition:all 0.15s ease;box-shadow:4px 4px 0px var(--shadow-color);}
+        #lightbox-close:hover{transform:translate(-2px,-2px);box-shadow:6px 6px 0px var(--shadow-color);background-color:#e0f2fe;}
+        #lightbox-close:active{transform:translate(2px,2px);box-shadow:0px 0px 0px var(--shadow-color);}
+        #lightbox-hint{position:absolute;bottom:30px;color:white;background:rgba(44,62,80,0.8);border:2px solid white;padding:10px 24px;border-radius:30px;font-size:15px;font-weight:bold;pointer-events:none;z-index:1001;text-align:center;box-shadow:0 4px 15px rgba(0,0,0,0.3);}
+        @media (max-width:1100px) {
+        .selection-window{width:94vw;padding:26px 30px;box-shadow:8px 8px 0px var(--shadow-color);transform:none;}
+        .controls-row{grid-template-columns:1fr;row-gap:16px;min-height:auto;}
+        .carousel-area{grid-column:1;grid-row:1;}
+        .learn-btn{grid-column:1;grid-row:2;justify-self:center;width:80%;max-width:300px;}
+        #goBtn{grid-column:1;grid-row:3;justify-self:center;width:80%;max-width:300px;}
+        .category-box{width:min(480px,85vw);font-size:16px;height:48px;}
+        .pagination-dots{right:12px;transform:translateY(-50%) scale(0.8);}
+        }
     </style>
 </head>
 <body oncontextmenu="return false;">
     <div class="page-overlay"></div>
     <div class="selection-window" id="mainWindow">
-        
         <button class="btn-general" onclick="showGeneralScene()">？</button>
-
         <div class="header-group">
             <div class="header-title">
                 <a href="https://s112321005.github.io/Cybersecurity-Visualization/QuantumCybersecurityEducationPlatform.html" class="btn-back" title="Back to Home" aria-label="Back to Home">◀&#xFE0E;</a>
                 <span class="category-full-desc" id="mode-desc">BB84 Protocol</span>
             </div>
         </div>
-        
         <div class="scene-image-container" onclick="openLightbox()" ondragstart="return false;">
             <img id="bg-png" src="pictures/scene-background.png" alt="Background">
             <img id="scene-img" src="" alt="Protocol Scene">
         </div>
-
         <div class="controls-row">
             <div class="carousel-area">
                 <div class="nav-arrow" onclick="changeMode(-1)">&#9664;</div>
@@ -79,10 +98,7 @@
             <button class="action-btn learn-btn" id="learnBtn">Learn This Topic</button>
             <button class="action-btn" id="goBtn">Analyze NOW!</button>
         </div>
-
-        <div class="scroll-hint">Scroll to Switch Protocols</div>
         <div class="pagination-dots" id="dotContainer"></div>
-
         <div id="general-popup" class="general-popup">
             <div class="general-popup-content">
                 <div class="general-popup-close" onclick="closeGeneralScene()">&times;</div>
@@ -90,23 +106,20 @@
             </div>
         </div>
     </div>
-
     <div id="lightbox" ondragstart="return false;">
         <div id="lightbox-close" onclick="closeLightbox()">&times;</div>
         <div id="lightbox-content">
             <img id="lb-bg" src="pictures/scene-background.png" alt="Background">
             <img id="lb-img" src="" alt="Zoomed Scene">
         </div>
-        <div id="lightbox-hint">Scroll: Zoom In/Out | Drag: Move (When Zoomed) | Click ×: Close</div>
+        <div id="lightbox-hint">Scroll: Zoom In/Out &nbsp;|&nbsp; Drag: Move &nbsp;|&nbsp; Click ×: Close</div>
     </div>
-
     <script>
         const quantumData = [
-            { mode: "QKD", description: "QKD：Jointly Establish a Secure Key", protocols: [{ name: "BB84", link: "bb84_analysis.html" }, { name: "B92", link: "b92_analysis.html" }]},
-            { mode: "QSS", description: "QSS：Secret Sharing, Cooperative Recovery", protocols: [ { name: "ZhangLiMan", link: "zlm_analysis.html" }, { name: "ZhangMan", link: "zm_analysis.html" }]},
-            { mode: "QSDC", description: "QSDC：Secure Quantum Message Transmission", protocols: [ { name: "pingpong", link: "pingpong_analysis.html" }, { name: "im_pingpong", link: "im_pingpong_analysis.html" }]}
+            { mode: "QKD", fullName: "Quantum Key Distribution", description: "QKD：Jointly Establish a Secure Key", protocols: [{ name: "BB84", link: "bb84_analysis.html" }, { name: "B92", link: "b92_analysis.html" }]},
+            { mode: "QSS", fullName: "Quantum Secret Sharing", description: "QSS：Secret Sharing, Cooperative Recovery", protocols: [ { name: "ZhangLiMan", link: "zlm_analysis.html" }, { name: "ZhangMan", link: "zm_analysis.html" }]},
+            { mode: "QSDC", fullName: "Quantum Security Direct Communication", description: "QSDC：Secure Quantum Message Transmission", protocols: [ { name: "pingpong", link: "pingpong_analysis.html" }, { name: "im_pingpong", link: "im_pingpong_analysis.html" }]}
         ];
-        
         let modeIdx = 0, protoIdx = 0, isThrottled = false;
         let scale = 1, posX = 0, posY = 0, isDragging = false, startX, startY;
         const protocolLearningLinks = {
@@ -125,102 +138,88 @@
             pingpong: "Ping-Pong",
             im_pingpong: "Improved Ping-Pong"
         };
-        
-        // 紀錄已瀏覽過的分類，供 General Scene 判斷是否為第一次切換
         const visitedModes = new Set();
         function updateDisplay() {
             const currentMode = quantumData[modeIdx];
             const currentProto = currentMode.protocols[protoIdx];
-            
-            // 更新左上角大標題與分類方塊
-            document.getElementById('mode-desc').textContent = `${protocolDisplayNames[currentProto.name] || currentProto.name} Protocol`;
-            document.getElementById('mode-name').textContent = currentMode.mode;
+            document.getElementById('mode-desc').textContent = `${currentMode.mode} : ${protocolDisplayNames[currentProto.name] || currentProto.name}`;
+            document.getElementById('mode-name').textContent = currentMode.fullName;
             document.getElementById('goBtn').onclick = () => { window.location.href = currentProto.link; };
             document.getElementById('learnBtn').onclick = () => { window.location.href = protocolLearningLinks[currentProto.name]; };
-            
-            // 更新圖片：命名規則為 scene-分類-協定.png
             const img = document.getElementById('scene-img');
             img.src = `pictures/scene-${currentMode.mode}-${currentProto.name}.png`;
-            
             updateDots();
-
-            // 判斷是否為第一次切換到此分類
             if (!visitedModes.has(currentMode.mode)) {
                 visitedModes.add(currentMode.mode);
                 showGeneralScene();
             }
         }
-
         function updateDots() {
             const container = document.getElementById('dotContainer');
-            container.innerHTML = '';
+            container.innerHTML = ''; // 清空重新生成
+            const arrowUp = document.createElement('div');
+            arrowUp.className = 'arrow-hint up';
+            arrowUp.onclick = () => changeProtocol(-1);
+            container.appendChild(arrowUp);
             const protocols = quantumData[modeIdx].protocols;
             const total = protocols.length;
-
-            protocols.forEach((_, i) => {
-                const dot = document.createElement('div');
-                let className = 'dot';
-                if (i === protoIdx) className += ' active';
-                if (total > 5 && Math.abs(i - protoIdx) > 2) className += ' out-of-range';
-                
-                dot.className = className;
-                dot.onclick = () => { protoIdx = i; updateDisplay(); };
-                container.appendChild(dot);
-            });
+            const track = document.createElement('div');
+            track.className = `dot idx-${protoIdx} active`;
+            track.onclick = (e) => {
+                const rect = track.getBoundingClientRect();
+                const clickY = e.clientY - rect.top;
+                if (total === 2) {
+                    protoIdx = clickY < rect.height / 2 ? 0 : 1;
+                }
+                updateDisplay();
+            };
+            container.appendChild(track);
+            const arrowDown = document.createElement('div');
+            arrowDown.className = 'arrow-hint down';
+            arrowDown.onclick = () => changeProtocol(1);
+            container.appendChild(arrowDown);
         }
-
         function changeMode(dir) {
             modeIdx = (modeIdx + dir + quantumData.length) % quantumData.length;
-            protoIdx = 0; // 切換分類時重置為該分類第一個協定
+            protoIdx = 0;
             updateDisplay();
         }
-
         function changeProtocol(dir) {
             const currentMode = quantumData[modeIdx];
             protoIdx = (protoIdx + dir + currentMode.protocols.length) % currentMode.protocols.length;
             updateDisplay();
         }
-
-        // --- General Scene 彈出邏輯 ---
         function showGeneralScene() {
-            const currentModeName = quantumData[modeIdx].mode; // QKD, QSS, or QSDC
-            // 設定對應的 General 圖片名稱
+            const currentModeName = quantumData[modeIdx].mode;
             document.getElementById('general-scene-img').src = `pictures/${currentModeName}general.png`;
             const popup = document.getElementById('general-popup');
             popup.classList.remove('closing');
             popup.style.display = 'flex';
         }
-
         function closeGeneralScene() {
             const popup = document.getElementById('general-popup');
             popup.classList.add('closing');
             setTimeout(() => {
                 popup.style.display = 'none';
                 popup.classList.remove('closing');
-            }, 280);
+            }, 240);
         }
-
-        // --- Lightbox 邏輯 ---
         const lb = document.getElementById('lightbox');
         const lbContent = document.getElementById('lightbox-content');
-
         function openLightbox() {
             const mainImg = document.getElementById('scene-img');
             document.getElementById('lb-img').src = mainImg.src;
             lb.style.display = "flex";
             resetZoom();
         }
-
         function closeLightbox() { lb.style.display = "none"; }
         function resetZoom() { scale = 1; posX = 0; posY = 0; updateImgTransform(true); }
-
         function updateImgTransform(withTransition = false) {
-            if (scale <= 1) { posX = 0; posY = 0; lb.style.cursor = 'default'; } 
+            if (scale <= 1) { posX = 0; posY = 0; lb.style.cursor = 'default'; }
             else { lb.style.cursor = 'grab'; }
-            lbContent.style.transition = withTransition ? "transform 0.3s ease" : "none";
+            lbContent.style.transition = withTransition ? "transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)" : "none";
             lbContent.style.transform = `translate(${posX}px, ${posY}px) scale(${scale})`;
         }
-
         lb.addEventListener('wheel', (e) => {
             e.preventDefault();
             const delta = e.deltaY > 0 ? -0.15 : 0.15;
@@ -228,7 +227,6 @@
             scale = Math.min(Math.max(1, scale + delta), 3);
             updateImgTransform(scale < oldScale && scale === 1);
         });
-
         lb.addEventListener('mousedown', (e) => {
             if (e.target.id === 'lightbox-close' || scale <= 1) return;
             isDragging = true;
@@ -237,16 +235,13 @@
             startY = e.clientY - posY;
             lbContent.style.transition = "none";
         });
-
         window.addEventListener('mousemove', (e) => {
             if (!isDragging || lb.style.display !== "flex") return;
             posX = e.clientX - startX;
             posY = e.clientY - startY;
             updateImgTransform();
         });
-
         window.addEventListener('mouseup', () => { isDragging = false; if (scale > 1) lb.style.cursor = 'grab'; });
-
         window.addEventListener('wheel', (e) => {
             if (lb.style.display === "flex" || document.getElementById('general-popup').style.display === "flex") return;
             if (isThrottled) return;
@@ -254,7 +249,6 @@
             changeProtocol(e.deltaY > 0 ? 1 : -1);
             setTimeout(() => { isThrottled = false; }, 300);
         });
-
         updateDisplay();
     </script>
 </body>
