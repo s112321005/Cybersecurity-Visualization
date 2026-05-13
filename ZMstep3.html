@@ -31,9 +31,11 @@
         .party-alice{left:calc(35.1% + 130px);top:74px;transform:translateX(-50%)}
         .party-bob{left:147px;top:296px}
         .party-charlie{right:185px;top:296px}
-        #stage.message-layout .party-alice{left:calc(35.1% + 60px)}
-        #stage.message-layout .party-bob{left:77px}
-        #stage.message-layout .party-charlie{right:255px}
+        #stage.message-layout .party-alice{left:calc(35.1% + 20px);top:26px;transform:translateX(-50%)}
+        #stage.message-layout .party-bob{left:37px;top:248px}
+        #stage.message-layout .party-charlie{right:295px;top:248px}
+        #stage.message-layout .mode-badge{left:853px;top:18px;transform:translateX(-50%)}
+        #stage.message-layout .floating-announcement{left:85px;top:92px;transform:none}
         .qubit-row{display:flex;align-items:center;justify-content:center;gap:10px}
         .qubit{width:42px;height:42px;border-radius:50%;background:var(--qubit-fill);display:flex;align-items:center;justify-content:center;font-weight:900;color:#1f2937;box-shadow:0 0 16px rgba(84,159,208,.18);border:4px solid var(--alice-color);transition:all .25s ease}
         .party-bob .qubit{border-color:var(--bob-color)}
@@ -60,6 +62,7 @@
         .panel-title{margin:0;color:var(--primary-blue);font-weight:900;font-size:1.18rem;text-align:center}
         .panel-desc{margin:0;color:#667085;font-weight:800;text-align:center;line-height:1.35}
         .center-panel.message-panel{left:755px;top:66px;transform:none;width:195px;align-items:flex-start;gap:8px}
+        #stage.message-layout .center-panel.message-panel{left:755px;top:66px;transform:none;width:195px;align-items:flex-start;gap:8px}
         .center-panel.detecting-panel{left:50%;top:510px;transform:translateX(-50%);width:420px;align-items:center;gap:12px;text-align:center}
         .detecting-controls{display:flex;gap:10px;justify-content:center;align-items:center;flex-wrap:wrap;width:100%;position:relative;min-height:52px}
         #replay-btn,#step-btn{position:absolute;left:-210px;min-width:150px}
@@ -140,7 +143,7 @@
         .pingpong-image-card.is-current img{max-width:318px;max-height:320px;opacity:1;transform:scale(1)}
 
         @media (min-width:1180px){body{padding-right:450px!important}}
-        @media (max-width:1179px){body{padding-right:20px!important}.pingpong-image-dock{position:relative;right:auto;top:auto;width:min(94vw,840px);height:320px;margin:18px auto 10px}.pingpong-image-viewport{width:100%;height:320px}.pingpong-image-viewport::before,.pingpong-image-viewport::after{height:320px;width:10px;z-index:0}.pingpong-image-window{width:100%;height:320px;margin-left:0}.pingpong-image-list{flex-direction:row;align-items:center;gap:14px;width:max-content;height:320px;padding:0 24px}.pingpong-image-card{width:270px;min-height:52px}.pingpong-image-card.is-current{width:305px;min-height:250px;margin:0 10px}.pingpong-image-card.is-current img{max-width:275px;max-height:220px}.main-card{height:760px}.party-alice{left:calc(35% + 90px);top:74px}.party-bob{left:109px;top:308px}.party-charlie{right:85px;top:308px}#stage.message-layout .party-alice{left:calc(35% + 20px)}#stage.message-layout .party-bob{left:39px}#stage.message-layout .party-charlie{right:155px}.party img{width:112px}.center-panel{top:340px;width:min(430px,82vw)}.center-panel.message-panel{left:calc(54% + 20px);top:175px;transform:translateX(-50%);width:min(210px,82vw);align-items:center}.center-panel.detecting-panel{left:50%;top:510px;transform:translateX(-50%);width:min(420px,92vw);align-items:center}.mode-badge{left:calc(54% + 20px);top:110px}.mode-badge.corner{left:18px;top:160px;transform:none}.floating-announcement{left:calc(35% + 90px);top:32px;transform:translateX(-50%);max-width:220px}#replay-btn,#step-btn{left:-15px}
+        @media (max-width:1179px){body{padding-right:20px!important}.pingpong-image-dock{position:relative;right:auto;top:auto;width:min(94vw,840px);height:320px;margin:18px auto 10px}.pingpong-image-viewport{width:100%;height:320px}.pingpong-image-viewport::before,.pingpong-image-viewport::after{height:320px;width:10px;z-index:0}.pingpong-image-window{width:100%;height:320px;margin-left:0}.pingpong-image-list{flex-direction:row;align-items:center;gap:14px;width:max-content;height:320px;padding:0 24px}.pingpong-image-card{width:270px;min-height:52px}.pingpong-image-card.is-current{width:305px;min-height:250px;margin:0 10px}.pingpong-image-card.is-current img{max-width:275px;max-height:220px}.main-card{height:760px}.party-alice{left:calc(35% + 90px);top:74px}.party-bob{left:109px;top:308px}.party-charlie{right:85px;top:308px}#stage.message-layout .party-alice{left:calc(35% + 20px);top:26px}#stage.message-layout .party-bob{left:24px;top:260px}#stage.message-layout .party-charlie{right:190px;top:260px}.party img{width:112px}.center-panel{top:340px;width:min(430px,82vw)}.center-panel.message-panel{left:calc(54% + 20px);top:175px;transform:translateX(-50%);width:min(210px,82vw);align-items:center}.center-panel.detecting-panel{left:50%;top:510px;transform:translateX(-50%);width:min(420px,92vw);align-items:center}.mode-badge{left:calc(54% + 20px);top:110px}.mode-badge.corner{left:18px;top:160px;transform:none}.floating-announcement{left:calc(35% + 90px);top:32px;transform:translateX(-50%);max-width:220px}#replay-btn,#step-btn{left:-15px}
         #next-step-btn{left:-15px;top:-414px}#replay-btn{top:-470px}#step-btn{top:-414px}
         #next-step-btn{position:absolute;left:-210px;top:-414px;min-width:150px}.operation-grid{grid-template-columns:1fr}.qubit{width:38px;height:38px}.hint-box{width:86%}}
     </style>
@@ -415,6 +418,22 @@
         window.addEventListener('resize', updateEntangleLines);
     });
 
+    function forceInitialEntanglement() {
+        setEntanglementPairs([
+            { line: 'line12', tag: 'etag12', a: 'q1', b: 'q2', label: '\\( |\\Psi^-\\rangle_{12} \\)', tagOffsetY: 10 },
+            { line: 'line34', tag: 'etag34', a: 'q3', b: 'q4', label: '\\( |\\Psi^-\\rangle_{34} \\)', tagOffsetY: 10 },
+            { line: 'line56', tag: 'etag56', a: 'q5', b: 'q6', label: '\\( |\\Psi^-\\rangle_{56} \\)', tagOffsetY: 10 }
+        ]);
+        resetPairVisibility();
+        updateEntangleLines();
+        setTimeout(updateEntangleLines, 0);
+        setTimeout(updateEntangleLines, 80);
+    }
+
+    function forceInitialDetectingEntanglement() {
+        forceInitialEntanglement();
+    }
+
     function configureModeUI() {
         const badge = document.getElementById('mode-badge');
         const header = document.getElementById('header-subtitle');
@@ -439,8 +458,11 @@
         const announceBox = document.getElementById('announcement');
         if (announceBox) { announceBox.classList.remove('show'); announceBox.innerHTML = ''; }
         setTimeout(updateEntangleLines, 0);
+        setTimeout(updateEntangleLines, 80);
 
         if (selectedMode === 'detecting') {
+            if (stage) stage.classList.remove('message-layout');
+            forceInitialDetectingEntanglement();
             if (step4Img) step4Img.src = 'pictures/zm-4-d.png';
             badge.innerText = 'Detecting Mode';
             badge.style.borderColor = 'var(--detect)';
@@ -463,7 +485,9 @@
             } else {
                 setDetectingControls('after-auto');
             }
+            forceInitialDetectingEntanglement();
         } else {
+            forceInitialEntanglement();
             if (step4Img) step4Img.src = 'pictures/zm-4-m.png';
             badge.innerText = 'Message Mode';
             badge.style.borderColor = 'var(--message)';
@@ -482,7 +506,8 @@
                 </div>
                 <button class="action-btn primary" id="measure16-btn" onclick="runMessageMeasurement()" disabled style="display:none">Measure q1,q6<br>and Announce</button>
             `;
-            if (window.MathJax) MathJax.typesetPromise([panel]);
+            if (window.MathJax) MathJax.typesetPromise([panel]).then(forceInitialEntanglement);
+            else forceInitialEntanglement();
         }
     }
 
@@ -727,10 +752,9 @@
     }
 
     function prepareDetectingRun() {
-        setEntanglementPairs([...initialEntanglementPairs]);
-        resetPairVisibility();
-        updateEntangleLines();
+        forceInitialDetectingEntanglement();
         clearDetectingResults();
+        forceInitialDetectingEntanglement();
         const basis = randomBasis();
         const aliceQ1 = randomBasisResult(basis);
         const bobQ2 = oppositeResult(aliceQ1, basis);
