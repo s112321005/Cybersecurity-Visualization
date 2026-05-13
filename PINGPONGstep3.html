@@ -112,6 +112,7 @@
             height: 30px; min-width: 120px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); z-index: 2;
             transition: opacity 0.4s ease;
         }
+        .compare-capsule { height: auto; min-height: 52px; line-height: 1.15; flex-direction: column; gap: 2px; padding: 8px 18px; }
 
         /* 角色專屬樣式 */
         .bob-text { color: var(--bob-color) !important; }
@@ -461,8 +462,8 @@
             <div class="result-capsule bob-bg" id="bob-state" style="opacity: 0; position: absolute; top: 0; display: none;">Measured...</div>
 
             <div id="control-compare-area" style="position: absolute; top: 0; display: flex; gap: 10px; z-index: 5;">
-                <div class="result-capsule classical-bg" id="alice-msg-display" style="opacity: 0; display: none; min-width: 90px;">Alice P1: -</div>
-                <div class="result-capsule bob-bg" id="bob-p2-display" style="opacity: 0; display: none; min-width: 90px;">Bob P2: -</div>
+                <div class="result-capsule classical-bg compare-capsule" id="alice-msg-display" style="opacity: 0; display: none; min-width: 90px;">Alice<br>P1: -</div>
+                <div class="result-capsule bob-bg compare-capsule" id="bob-p2-display" style="opacity: 0; display: none; min-width: 90px;">Bob<br>P2: -</div>
             </div>
 
             <div id="photon-landing-spot" style="position: absolute; top: -10px; width: 40px; height: 40px; z-index: 5;"></div>
@@ -608,7 +609,7 @@
             
             const aliceMsgDisplay = document.getElementById("alice-msg-display");
             aliceMsgDisplay.style.display = "flex";
-            aliceMsgDisplay.innerHTML = `Alice P1: ${aliceMeasuredValue}`;
+            aliceMsgDisplay.innerHTML = `Alice<br>P1: ${aliceMeasuredValue}`;
             setTimeout(() => aliceMsgDisplay.style.opacity = "1", 50);
 
             document.getElementById("measure-btn").innerText = "Measure P2 & Compare";
@@ -655,7 +656,7 @@
             
             const bobP2Display = document.getElementById("bob-p2-display");
             bobP2Display.style.display = "flex";
-            bobP2Display.innerHTML = `Bob P2: ${bobMeasuredValue}`;
+            bobP2Display.innerHTML = `Bob<br>P2: ${bobMeasuredValue}`;
             setTimeout(() => bobP2Display.style.opacity = "1", 50);
 
             htmlContent = `
