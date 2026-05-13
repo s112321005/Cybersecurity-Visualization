@@ -84,10 +84,10 @@
 
         /* Alice 的對話框 (位置相對於 decision-grid 保持不變) */
         .speech-bubble {
-            position: absolute; top: -90px; background: white; border: 3px solid var(--alice-color);
-            padding: 0 15px; border-radius: 20px; font-weight: bold; font-size: 0.95rem;
-            color: var(--alice-color); min-width: 160px; box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            z-index: 20; height: 65px; display: flex; align-items: center; justify-content: center; 
+            position: absolute; top: -100px; background: white; border: 3px solid var(--alice-color);
+            padding: 8px 16px 12px; border-radius: 20px; font-weight: bold; font-size: 0.88rem; line-height: 1.18;
+            color: var(--alice-color); min-width: 175px; max-width: 205px; box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            z-index: 20; min-height: 72px; height: auto; display: flex; align-items: center; justify-content: center; 
             box-sizing: border-box; text-align: center;
         }
         .speech-bubble::before {
@@ -115,6 +115,8 @@
             align-items: center; justify-content: center; text-align: center; height: 65px; box-sizing: border-box;
         }
         .gate-btn:hover { background: #f4f9ff; transform: translateY(-3px); }
+        .measurement-label { background: white !important; color: var(--alice-color); box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+        .measurement-label:hover { background: white !important; transform: none; }
         
         .pulse { animation: pulse-anim 1.5s infinite; }
         @keyframes pulse-anim {
@@ -477,16 +479,23 @@
 
         if (mode === 'control') {
             title.innerText = "Final States";
-            hint.innerText = "Select an operation to proceed.";
-            bubble.innerText = "Security Check Mode! Let's measure.";
+            hint.innerText = "Select the final state after Z-basis measurement.";
+            bubble.innerText = "Security Check Mode: select result.";
             interactive.innerHTML = `
-                <div class="gate-btn pulse" onclick="executeAction('measure')" style="min-width: 180px;">
+                <div class="gate-btn measurement-label" style="min-width: 180px; cursor: default; pointer-events: none;">
                     <span>Z-Basis Measurement</span>
                     <small style="font-weight: normal; font-size: 0.85rem; opacity: 0.8;">(Collapse into 0 or 1)</small>
                 </div>
             `;
             document.getElementById('label-0').innerText = "|0⟩";
             document.getElementById('label-1').innerText = "|1⟩";
+
+            const state0 = document.getElementById('final-state-0');
+            const state1 = document.getElementById('final-state-1');
+            state0.classList.add('pulse-clickable');
+            state1.classList.add('pulse-clickable');
+            state0.setAttribute('onclick', "executeAction('0')");
+            state1.setAttribute('onclick', "executeAction('1')");
         } else {
             title.innerText = "Encode";
             hint.innerText = "Select a bit to encode.";
@@ -516,6 +525,14 @@
             bubble.innerText = `Measuring... It could be 0 or 1!`;
             animateParticle('0', false);
             animateParticle('1', true);
+        } else if (mode === 'control') {
+            bubble.innerText = `Measuring... Alice may observe |${choice}⟩.`;
+            document.getElementById(choice === '0' ? 'arrow-0' : 'arrow-1').classList.add('fork-active');
+            
+            if (choice === '0') { document.getElementById('final-state-1').style.opacity = '0.4'; }
+            else { document.getElementById('final-state-0').style.opacity = '0.4'; }
+
+            animateParticle(choice, true);
         } else {
             bubble.innerText = `Applying ${choice === '0' ? 'I' : 'Z'} Gate...`;
             document.getElementById(choice === '0' ? 'arrow-0' : 'arrow-1').classList.add('fork-active');
@@ -573,10 +590,8 @@
                 particle.remove();
                 
                 if (mode === 'control') {
-                    activateFinalState(bit);
                     if (isLastAnimation) {
-                        bubble.innerText = "Click on the outcome to view results!";
-                        document.getElementById('hint-text').innerText = "Click on the highlighted capsule to proceed.";
+                        showResult(bit, targetId);
                     }
                 } else {
                     if (isLastAnimation) {
