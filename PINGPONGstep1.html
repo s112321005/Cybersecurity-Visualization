@@ -205,15 +205,9 @@
     let messageModeProbability = 0.5; // default 50%
 
     document.addEventListener("DOMContentLoaded", () => {
-        const savedProbability = localStorage.getItem('messageModeProbability');
-        if (savedProbability !== null) {
-            messageModeProbability = parseFloat(savedProbability);
-            const sliderValue = Math.round(messageModeProbability * 100);
-            document.getElementById('message-prob-slider').value = sliderValue;
-            updateMessageProbability(sliderValue);
-        } else {
-            updateMessageProbability(50);
-        }
+        messageModeProbability = 0.5;
+        document.getElementById('message-prob-slider').value = 50;
+        updateMessageProbability(50);
 
         setTimeout(animatePhotonTransfer, 800);
     });
