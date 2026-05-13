@@ -10,7 +10,8 @@
         body{font-family:'Segoe UI',system-ui,sans-serif;display:flex;flex-direction:column;align-items:center;padding:40px 20px;background:var(--bg-gradient);margin:0}
         .header{width:min(1000px,95vw);display:flex;align-items:center;justify-content:space-between;margin-bottom:25px;animation:fadeIn 0.8s ease-out forwards}
         .header-left{display:flex;align-items:center;gap:15px}
-        .btn-back{width:40px;height:40px;background-color:var(--primary-blue);color:white;border-radius:50%;display:flex;justify-content:center;align-items:center;text-decoration:none;font-size:1rem;transition:transform 0.2s;cursor:pointer;border:none;box-shadow:0 2px 5px rgba(0,0,0,0.1)}
+        .btn-back{width:40px;height:40px;background-color:var(--primary-blue);color:white;border-radius:50%;display:flex;justify-content:center;align-items:center;text-decoration:none;font-size:0;transition:transform 0.2s;cursor:pointer;border:none;box-shadow:0 2px 5px rgba(0,0,0,0.1)}
+        .btn-back::before{content:"";width:0;height:0;border-top:7px solid transparent;border-bottom:7px solid transparent;border-right:11px solid currentColor;margin-left:-2px}
         .btn-back:hover{transform:scale(1.1)}
         .page-title{border:2px solid var(--primary-blue);padding:8px 20px;border-radius:30px;font-weight:bold;background:white;color:var(--dark-text);white-space:nowrap}
         .header-center{flex-grow:1;margin-left:20px;font-weight:bold;font-size:1.2rem;color:var(--dark-text);text-align:center;white-space:nowrap}
@@ -20,7 +21,8 @@
         .main-card{width:min(1000px,95vw);min-height:650px;border:3px solid var(--primary-blue);border-radius:35px;background:white;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;padding:25px 20px;position:relative}
         .state-badge{position:absolute;left:24px;top:22px;z-index:30;background:#f0f7ff;border:2px solid var(--primary-blue);border-left-width:7px;border-radius:14px;padding:10px 14px;box-shadow:0 6px 16px rgba(0,74,173,0.12);color:var(--dark-text)}
         .state-badge-title{margin:0 0 5px;color:var(--primary-blue);font-size:0.9rem;font-weight:900}
-        .state-badge-formula{font-size:1.05rem;font-weight:900}
+        .state-badge-formula{font-size:1.05rem;font-weight:900;white-space:nowrap;min-height:27px;transition:opacity .65s ease,transform .65s ease,filter .65s ease}
+        .state-badge-formula.formula-transition{opacity:.22;transform:translateY(-4px) scale(.98);filter:blur(1px)}
         .interaction-area{display:flex;width:100%;align-items:center;justify-content:center;margin-top:10px;margin-bottom:30px;box-sizing:border-box}
         .entanglement-zone{display:flex;align-items:flex-end;gap:120px;position:relative;flex-shrink:0}
         .particle-group{display:flex;flex-direction:column;align-items:center;z-index:10;gap:15px;width:110px}
@@ -120,7 +122,7 @@
 
     <div class="header">
         <div class="header-left">
-            <a href="QuantumCybersecurityEducationPlatform.html?section=qsdc#quantum-security-applications" class="btn-back" title="Back to Home">?&#xFE0E;</a>
+            <a href="QuantumCybersecurityEducationPlatform.html?section=qsdc#quantum-security-applications" class="btn-back" title="Back to Home" aria-label="Back to Home">&#x25C0;&#xFE0E;</a>
             <div class="page-title">QSDC : ping pong</div>
         </div>
         <div class="header-center"></div>
@@ -132,7 +134,7 @@
     <div class="main-card">
         <div class="state-badge" aria-label="Current entangled state">
             <p class="state-badge-title">Current Entangled State</p>
-            <div class="state-badge-formula" id="state-badge-formula">
+            <div class="state-badge-formula" id="state-badge-formula" aria-live="polite">
                 \( |\Psi^+\rangle = \frac{1}{\sqrt{2}}(|01\rangle + |10\rangle)_{12} \)
             </div>
         </div>
@@ -160,8 +162,8 @@
         </div>
 
         <div class="controls" id="guess-controls" style="display: none;">
-            <button class="nav-btn" onclick="submitGuess(0)">Guess Result is |0?</button>
-            <button class="nav-btn" onclick="submitGuess(1)">Guess Result is |1?</button>
+            <button class="nav-btn" onclick="submitGuess(0)">Guess Result is |0⟩</button>
+            <button class="nav-btn" onclick="submitGuess(1)">Guess Result is |1⟩</button>
         </div>
 
         <div class="hint-box" id="hint">
@@ -207,32 +209,78 @@
         let isCurrentGuessCorrect = false;
         let measuredFormulaBits = { 1: false, 2: false };
 
-        function formatStateBit(termA, termB, particleNumber) {
-            const value = particleNumber === 1 ? termA : termB;
-            const matchesCurrentPair = termA === currentA && termB === currentB;
-            const shouldColor = matchesCurrentPair && measuredFormulaBits[particleNumber];
-            return shouldColor ? `\\textcolor{#549FD0}{${value}}` : `${value}`;
+        let stateBadgeCollapsed = false;
+        const STATE_BADGE_COLLAPSE_COMPLETE_MS = 1850;
+
+        function getCurrentTermKey() {
+            return `${currentA}${currentB}`;
         }
 
-        function renderStateBadgeFormula() {
+        function typesetStateBadgeFormula() {
             const formula = document.getElementById('state-badge-formula');
-            const zeroOne = `${formatStateBit(0, 1, 1)}${formatStateBit(0, 1, 2)}`;
-            const oneZero = `${formatStateBit(1, 0, 1)}${formatStateBit(1, 0, 2)}`;
-            formula.innerHTML = `\\( |\\Psi^+\\rangle = \\frac{1}{\\sqrt{2}}(|${zeroOne}\\rangle + |${oneZero}\\rangle)_{12} \\)`;
             if (window.MathJax?.typesetPromise) {
                 MathJax.typesetClear?.([formula]);
                 MathJax.typesetPromise([formula]);
             }
         }
 
+        function setStateBadgeLatex(latex, animate = false) {
+            const formula = document.getElementById('state-badge-formula');
+            const applyLatex = () => {
+                formula.innerHTML = `\\( ${latex} \\)`;
+                typesetStateBadgeFormula();
+                if (animate) {
+                    requestAnimationFrame(() => formula.classList.remove('formula-transition'));
+                }
+            };
+            if (animate) {
+                formula.classList.add('formula-transition');
+                setTimeout(applyLatex, 650);
+            } else {
+                formula.classList.remove('formula-transition');
+                applyLatex();
+            }
+        }
+
+        function renderStateBadgeFormula(mode = 'superposition', activeTerm = null, fadingTerm = null) {
+            if (mode === 'collapsed') {
+                setStateBadgeLatex(`|\\Psi^+\\rangle \\rightarrow |${activeTerm}\\rangle_{12}`, true);
+                return;
+            }
+
+            if (!activeTerm && !fadingTerm) {
+                setStateBadgeLatex('|\\Psi^+\\rangle = \\frac{1}{\\sqrt{2}}(|01\\rangle + |10\\rangle)_{12}');
+                return;
+            }
+
+            const activeColor = '#549FD0';
+            const fadeColor = '#b8c2cc';
+            const term01 = activeTerm === '01' ? `\\color{${activeColor}}{|01\\rangle}` : fadingTerm === '01' ? `\\color{${fadeColor}}{|01\\rangle}` : '|01\\rangle';
+            const term10 = activeTerm === '10' ? `\\color{${activeColor}}{|10\\rangle}` : fadingTerm === '10' ? `\\color{${fadeColor}}{|10\\rangle}` : '|10\\rangle';
+            setStateBadgeLatex(`|\\Psi^+\\rangle = \\frac{1}{\\sqrt{2}}(${term01} + ${term10})_{12}`, true);
+        }
+
         function resetStateBadgeColor() {
             measuredFormulaBits = { 1: false, 2: false };
+            stateBadgeCollapsed = false;
             renderStateBadgeFormula();
         }
 
         function colorStateBadgeBit(particleNumber) {
             measuredFormulaBits[particleNumber] = true;
-            renderStateBadgeFormula();
+            if (phase === 1 && !stateBadgeCollapsed) {
+                collapseStateBadgeToMeasuredTerm();
+            } else if (!stateBadgeCollapsed) {
+                renderStateBadgeFormula('superposition', getCurrentTermKey());
+            }
+        }
+
+        function collapseStateBadgeToMeasuredTerm() {
+            const activeTerm = getCurrentTermKey();
+            const fadingTerm = activeTerm === '01' ? '10' : '01';
+            stateBadgeCollapsed = true;
+            renderStateBadgeFormula('superposition', activeTerm, fadingTerm);
+            setTimeout(() => renderStateBadgeFormula('collapsed', activeTerm), 720);
         }
 
         function generatePair() {
@@ -282,7 +330,7 @@
             const aBall = document.getElementById('alice-ball');
             aBall.style.transform = 'scale(1.2)';
             setTimeout(() => aBall.style.transform = 'scale(1)', 150);
-            aBall.innerText = `|${currentA}?`;
+            aBall.innerText = `|${currentA}⟩`;
             aBall.classList.add('measured-a');
             colorStateBadgeBit(1);
         }
@@ -293,7 +341,7 @@
             const bBall = document.getElementById('bob-ball');
             bBall.style.transform = 'scale(1.2)';
             setTimeout(() => bBall.style.transform = 'scale(1)', 150);
-            bBall.innerText = `|${currentB}?`;
+            bBall.innerText = `|${currentB}⟩`;
             bBall.classList.add('measured-b');
             colorStateBadgeBit(2);
         }
@@ -308,7 +356,7 @@
                 setTimeout(() => {
                     revealBobParticle();
                     checkCompletionPhase1();
-                }, 650);
+                }, STATE_BADGE_COLLAPSE_COMPLETE_MS);
             } else if (phase === 2 && !bMeasured) {
                 targetToGuess = 'B';
                 document.getElementById('btn-measure-b').disabled = true;
@@ -327,7 +375,7 @@
                 setTimeout(() => {
                     revealAliceParticle();
                     checkCompletionPhase1();
-                }, 650);
+                }, STATE_BADGE_COLLAPSE_COMPLETE_MS);
             } else if (phase === 2 && !aMeasured) {
                 targetToGuess = 'A';
                 document.getElementById('btn-measure-a').disabled = true;
@@ -358,12 +406,12 @@
             
             if (targetToGuess === 'A') {
                 aMeasured = true;
-                document.getElementById('alice-ball').innerText = `|${currentA}?`;
+                document.getElementById('alice-ball').innerText = `|${currentA}⟩`;
                 document.getElementById('alice-ball').classList.add('measured-a');
                 colorStateBadgeBit(1);
             } else {
                 bMeasured = true;
-                document.getElementById('bob-ball').innerText = `|${currentB}?`;
+                document.getElementById('bob-ball').innerText = `|${currentB}⟩`;
                 document.getElementById('bob-ball').classList.add('measured-b');
                 colorStateBadgeBit(2);
             }
@@ -387,7 +435,7 @@
             const icon = document.getElementById('modal-icon');
             
             card.className = `modal-content ${type}`;
-            icon.innerText = (type === 'success') ? '?' : '?';
+            icon.innerText = (type === 'success') ? '✓' : '✕';
             document.getElementById('modal-title').innerText = title;
             document.getElementById('modal-text').innerText = text;
             
@@ -403,7 +451,7 @@
 
                 if (correctlyGuessed10 && correctlyGuessed01) {
                     phase = 3;
-                    document.getElementById('hint').innerHTML = "<b>Excellent!</b> Your observations perfectly match the definition of the <b>|�Z????</b> state (where particle 1 belongs to Alice and particle 2 to Bob): a <span style='display:inline-block;vertical-align:middle;text-align:center;font-size:0.85em;line-height:1.1;margin:0 4px;'><span style='border-bottom:1px solid currentColor;display:block;'>1</span><span style='display:block;'>2</span></span> probability of measuring |10? and a <span style='display:inline-block;vertical-align:middle;text-align:center;font-size:0.85em;line-height:1.1;margin:0 4px;'><span style='border-bottom:1px solid currentColor;display:block;'>1</span><span style='display:block;'>2</span></span> probability of measuring |01?.";
+                    document.getElementById('hint').innerHTML = "<b>Excellent!</b> Your observations perfectly match the definition of the <b>|Ψ+⟩</b> state (where particle 1 belongs to Alice and particle 2 to Bob): a <span style='display:inline-block;vertical-align:middle;text-align:center;font-size:0.85em;line-height:1.1;margin:0 4px;'><span style='border-bottom:1px solid currentColor;display:block;'>1</span><span style='display:block;'>2</span></span> probability of measuring |10⟩ and a <span style='display:inline-block;vertical-align:middle;text-align:center;font-size:0.85em;line-height:1.1;margin:0 4px;'><span style='border-bottom:1px solid currentColor;display:block;'>1</span><span style='display:block;'>2</span></span> probability of measuring |01⟩.";
                 } else {
                     document.getElementById('hint').innerHTML = `Correct! Now, let's try the other scenario to confirm your understanding...`;
                     setTimeout(generatePair, 600);
@@ -415,23 +463,23 @@
         }
 
         function recordLog() {
-            // �[�W | ? �Ÿ�
+            // Add | ⟩ symbol
             const logA = document.getElementById('log-bits-a');
             const itemA = document.createElement('div');
             itemA.className = "log-item";
             itemA.innerHTML = `
                 <div class="log-index">${currentPairNumber}</div>
-                <div class="bit-box bit-a">|${currentA}?</div>
+                <div class="bit-box bit-a">|${currentA}⟩</div>
             `;
             logA.appendChild(itemA);
             logA.scrollLeft = logA.scrollWidth;
             
-            // �[�W | ? �Ÿ�
+            // Add | ⟩ symbol
             const logB = document.getElementById('log-bits-b');
             const itemB = document.createElement('div');
             itemB.className = "log-item";
             itemB.innerHTML = `
-                <div class="bit-box bit-b">|${currentB}?</div>
+                <div class="bit-box bit-b">|${currentB}⟩</div>
             `;
             logB.appendChild(itemB);
             logB.scrollLeft = logB.scrollWidth;
