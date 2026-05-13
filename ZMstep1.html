@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <base href="https://s112321005.github.io/Cybersecurity-Visualization/">
+    <title>Quantum Secret Sharing : Zhang-Man Protocol - Step 1</title>
+    <script>window.MathJax={tex:{inlineMath:[["\\(","\\)"]],displayMath:[["$$","$$"]]}};</script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        :root{--primary-blue:#549FD0;--dark-text:#333333;--bg-gradient:linear-gradient(135deg,#EAF5FE 0%,#F7FBFF 55%,#EEF8F6 100%);--alice-color:#004aad;--bob-color:#4C80C5;--charlie-color:#478CEA;--pair12:#60A5FA;--pair34:#2DD4BF;--pair56:#C084FC;--qubit-fill:#F8FCFF;--qubit-border:var(--alice-color)}
+        *{box-sizing:border-box}
+        body{font-family:'Segoe UI',system-ui,sans-serif;display:flex;flex-direction:column;align-items:center;padding:40px 20px;background:var(--bg-gradient);margin:0;overflow-y:scroll;color:var(--dark-text)}
+        .header{width:min(1000px,95vw);display:flex;align-items:center;justify-content:space-between;margin-bottom:25px}
+        .header-left{display:flex;align-items:center;gap:15px}
+        .btn-back{width:40px;height:40px;background-color:var(--primary-blue);color:white;border-radius:50%;display:flex;justify-content:center;align-items:center;text-decoration:none;font-size:1rem;transition:transform .2s;cursor:pointer;border:none;box-shadow:0 2px 5px rgba(0,0,0,.1)}
+        .btn-back:hover{transform:scale(1.1)}
+        .title-pill{border:2px solid var(--primary-blue);padding:8px 20px;border-radius:30px;font-weight:bold;background:white;color:var(--dark-text);white-space:nowrap}
+        .header-center{flex-grow:1;margin-left:20px;font-weight:bold;font-size:1.2rem;color:var(--dark-text);text-align:center;white-space:nowrap}
+        .header-right{display:flex;gap:15px}
+        .nav-btn,.action-btn{border:2px solid var(--primary-blue);background:white;color:var(--primary-blue);padding:10px 22px;border-radius:30px;font-weight:bold;font-size:1rem;cursor:pointer;transition:all .2s;box-shadow:0 4px 15px rgba(84,159,208,.16);white-space:nowrap}
+        .nav-btn:hover:not(:disabled),.action-btn:hover:not(:disabled){background:var(--primary-blue);color:white;transform:translateY(-2px)}
+        .nav-btn:disabled,.action-btn:disabled{border-color:#ccc;color:#ccc;cursor:not-allowed;box-shadow:none;background:white}
+        .main-card{width:min(1000px,95vw);height:730px;border:3px solid var(--primary-blue);border-radius:35px;position:relative;background:white;overflow:hidden;padding:22px}
+        
+        .party-head{position:absolute;display:flex;align-items:center;justify-content:center;z-index:5}
+        .party-head img{width:128px;height:auto;display:block}
+        .party-alice{left:50%;top:66px;transform:translateX(-50%)}
+        .party-bob{left:125px;top:296px}
+        .party-charlie{right:125px;top:296px}
+
+        .distribute-wrap{position:absolute;left:50%;top:18px;transform:translateX(-50%);z-index:6}
+        .action-btn{padding:10px 26px}
+
+
+        .qubit{position:absolute;z-index:4;width:44px;height:44px;border-radius:50%;background:var(--qubit-fill);border:4px solid var(--qubit-border);display:flex;align-items:center;justify-content:center;font-weight:900;color:#1f2937;box-shadow:0 0 18px rgba(84,159,208,.20);transition:left 1.35s cubic-bezier(.22,.8,.22,1),top 1.35s cubic-bezier(.22,.8,.22,1),transform .25s ease,background .25s ease,color .25s ease,border-color .25s ease,box-shadow .25s ease}
+        .qubit:hover{transform:scale(1.06)}
+        .qubit.q1{left:303px;top:212px}
+        .qubit.q2{left:357px;top:212px}
+        .qubit.q3{left:451px;top:212px}
+        .qubit.q4{left:505px;top:212px}
+        .qubit.q5{left:599px;top:212px}
+        .qubit.q6{left:653px;top:212px}
+        .qubit.keep-alice-q1{left:449px;top:184px}
+        .qubit.keep-alice-q6{left:507px;top:184px}
+        .qubit.to-bob-q2{left:138px;top:412px}
+        .qubit.to-bob-q3{left:196px;top:412px}
+        .qubit.to-charlie-q4{left:748px;top:412px}
+        .qubit.to-charlie-q5{left:806px;top:412px}
+        .qubit.owner-alice{background:var(--qubit-fill);border-color:var(--alice-color);box-shadow:0 0 18px rgba(0,74,173,.28)}
+        .qubit.owner-bob{background:var(--qubit-fill);border-color:var(--bob-color);box-shadow:0 0 18px rgba(76,128,197,.28)}
+        .qubit.owner-charlie{background:var(--qubit-fill);border-color:var(--charlie-color);box-shadow:0 0 18px rgba(71,140,234,.28)}
+
+        .pair-oval{position:absolute;z-index:3;pointer-events:none;top:202px;width:112px;height:60px;border:3px dashed var(--primary-blue);border-radius:999px;background:rgba(84,159,208,.05);transition:opacity .35s ease,transform .35s ease}
+        .pair-oval.p12{left:295px}.pair-oval.p34{left:443px}.pair-oval.p56{left:591px}
+        .pair-oval.hide{opacity:0;transform:scale(.95)}
+
+        .pair-tag{position:absolute;z-index:3;pointer-events:none;padding:5px 12px;border-radius:999px;background:white;border:2px solid #D7E9F7;color:#667085;font-weight:900;font-size:.86rem;white-space:nowrap;box-shadow:0 4px 10px rgba(0,0,0,.04);transition:opacity .35s ease,transform .35s ease}.pair-tag.hide{opacity:0;transform:scale(.95)}
+        .tag12{left:307px;top:270px}.tag34{left:455px;top:270px}.tag56{left:603px;top:270px}
+
+        .ent-line{position:absolute;height:0;border-top:4px dashed var(--primary-blue);opacity:0;transform-origin:left center;transition:opacity .35s ease;z-index:2;pointer-events:none}
+        .ent-line.show{opacity:1}
+        .ent-tag{position:absolute;transform:translate(-50%,-50%);padding:4px 10px;border-radius:999px;background:white;border:2px solid var(--primary-blue);color:var(--primary-blue);font-weight:900;font-size:.82rem;white-space:nowrap;opacity:0;transition:opacity .35s ease;z-index:3;pointer-events:none}
+        .ent-tag.show{opacity:1}
+
+        .hint-box{position:absolute;left:50%;bottom:20px;transform:translateX(-50%);width:82%;background:#F8FCFF;border:2px solid #D8EBF7;border-left:6px solid var(--primary-blue);border-radius:18px;padding:14px 18px;box-shadow:0 8px 20px rgba(84,159,208,.09);z-index:8;pointer-events:auto;cursor:text}
+        .hint-title{margin:0 0 4px;color:var(--primary-blue);font-size:1.05rem;font-weight:900;line-height:1.2}
+        .hint-text{margin:0;color:#556070;font-weight:700;line-height:1.45;font-size:1rem}
+        .hint-box,.hint-box *,.legend-box,.legend-box *{-webkit-user-select:text;-moz-user-select:text;-ms-user-select:text;user-select:text}
+
+        .legend-box{position:absolute;left:50%;top:535px;transform:translateX(-50%);width:82%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;background:#F8FCFF;border:2px solid #D8EBF7;border-radius:18px;padding:8px 14px;box-shadow:0 8px 20px rgba(84,159,208,.09);z-index:7;pointer-events:auto;cursor:text}
+        .legend-line{display:flex;align-items:center;justify-content:center;gap:14px;flex-wrap:wrap;width:100%}
+        .legend-title{margin:0;color:var(--primary-blue);font-size:.94rem;font-weight:900;flex:0 0 auto;white-space:nowrap}
+        .legend-row{display:flex;align-items:center;gap:8px;margin:0;color:#556070;font-weight:700;font-size:.86rem;line-height:1.2;flex:0 0 auto;white-space:nowrap}
+        .legend-owner-dots{display:flex;gap:6px;align-items:center;flex:0 0 auto}
+        .legend-owner-dots span{width:16px;height:16px;border-radius:50%;display:inline-block;background:var(--qubit-fill);border:3px solid var(--alice-color)}
+        .legend-owner-dots span:nth-child(2){border-color:var(--bob-color)}
+        .legend-owner-dots span:nth-child(3){border-color:var(--charlie-color)}
+        .legend-sample-line{width:34px;border-top:4px dashed var(--primary-blue);flex:0 0 auto}
+        .legend-note{margin:0;color:#7A8799;font-size:.82rem;font-weight:700;line-height:1.2;white-space:nowrap}
+
+        .party-note{position:absolute;width:170px;text-align:center;color:#6B7280;font-size:.88rem;font-weight:800;line-height:1.35;z-index:5}
+        .note-bob{left:102px;top:434px}
+        .note-charlie{right:102px;top:434px}
+        .party-note.hide{display:none}
+
+        .pingpong-image-dock{position:fixed;right:16px;top:0;width:430px;height:100vh;z-index:900;pointer-events:none;display:flex;justify-content:center;overflow:visible;isolation:isolate;font-family:'Arial Rounded MT Bold','Arial Rounded MT','Arial',sans-serif}
+        .pingpong-image-viewport{position:relative;width:330px;height:100vh;background:#ffffff;box-shadow:0 12px 26px rgba(0,0,0,.12);overflow:visible;isolation:isolate}
+        .pingpong-image-viewport::before,.pingpong-image-viewport::after{content:"";position:absolute;top:0;width:14px;height:100vh;background:#d9d9d9;pointer-events:none;z-index:0}.pingpong-image-viewport::before{left:0}.pingpong-image-viewport::after{right:0}
+        .pingpong-image-window{position:relative;width:500px;height:100vh;margin-left:-85px;overflow:hidden;z-index:2}
+        .pingpong-image-list{position:relative;display:flex;flex-direction:column;align-items:center;gap:12px;padding:52px 0 42px;width:500px;transform:translateY(0);transition:transform .55s cubic-bezier(.22,.8,.22,1)}
+        .pingpong-image-card{position:relative;width:350px;min-height:52px;padding:0 18px;background:#ffffff;border:6px solid var(--primary-blue);border-radius:16px;display:flex;align-items:center;justify-content:center;flex:0 0 auto;overflow:hidden}
+        .pingpong-image-card.is-current{width:365px;min-height:365px;padding:16px;border:7px solid var(--primary-blue);border-radius:20px;box-shadow:0 12px 28px rgba(84,159,208,.28);margin:6px 0;align-items:flex-start;justify-content:flex-start}
+        .pingpong-step-summary{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;height:100%;color:#111;font-weight:900;font-size:1rem;letter-spacing:.02em;white-space:nowrap;transition:opacity .22s ease,transform .22s ease;text-align:center}
+        .pingpong-step-number{width:22px;height:22px;border-radius:50%;background:var(--primary-blue);color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:.86rem;line-height:1;flex:0 0 auto}
+        .pingpong-image-card.is-current .pingpong-step-summary{opacity:0;transform:translateY(-8px);position:absolute;pointer-events:none}
+        .step-detail{display:none;width:100%;padding:18px 16px;color:#222}
+        .pingpong-image-card.is-current .step-detail{display:flex;flex-direction:column;gap:12px}
+        .step-detail h3{margin:0;color:var(--primary-blue);font-size:1.32rem;line-height:1.2}
+        .step-detail p{margin:0;color:#555;font-weight:800;line-height:1.45;font-size:.98rem}
+        .step-figure{display:flex;align-items:center;justify-content:center;width:100%;height:100%}
+        .step-figure img{display:block;width:100%;height:auto;max-height:100%;object-fit:contain;border-radius:12px}
+        .mini-flow{display:flex;flex-direction:column;gap:8px;margin-top:4px}.mini-flow-row{display:flex;align-items:center;gap:8px;background:#f8fbff;border:1px solid #dbeafe;border-radius:12px;padding:8px 10px;font-weight:900;color:#444}
+
+        @media (min-width:1180px){body{padding-right:450px!important}}
+        @media (max-width:1179px){body{padding-right:20px!important}.pingpong-image-dock{position:relative;right:auto;top:auto;width:min(94vw,840px);height:320px;margin:18px auto 10px}.pingpong-image-viewport{width:100%;height:320px}.pingpong-image-viewport::before,.pingpong-image-viewport::after{height:320px;width:10px;z-index:0}.pingpong-image-window{width:100%;height:320px;margin-left:0}.pingpong-image-list{flex-direction:row;align-items:center;gap:14px;width:max-content;height:320px;padding:0 24px}.pingpong-image-card{width:270px;min-height:52px}.pingpong-image-card.is-current{width:305px;min-height:250px;margin:0 10px}.main-card{height:760px}.party-alice{top:66px}.party-bob{left:70px;top:310px}.party-charlie{right:70px;top:310px}.distribute-wrap{left:50%;top:18px;transform:translateX(-50%)}.qubit.q1{left:201px;top:202px}.qubit.q2{left:255px;top:202px}.qubit.q3{left:341px;top:202px}.qubit.q4{left:395px;top:202px}.qubit.q5{left:481px;top:202px}.qubit.q6{left:535px;top:202px}.pair-oval.p12{left:193px;top:192px}.pair-oval.p34{left:333px;top:192px}.pair-oval.p56{left:473px;top:192px}.tag12{left:205px;top:260px}.tag34{left:345px;top:260px}.tag56{left:485px;top:260px}.qubit.keep-alice-q1{left:336px;top:188px}.qubit.keep-alice-q6{left:394px;top:188px}.qubit.to-bob-q2{left:84px;top:432px}.qubit.to-bob-q3{left:140px;top:432px}.qubit.to-charlie-q4{left:594px;top:432px}.qubit.to-charlie-q5{left:652px;top:432px}.legend-box{position:absolute;left:50%;top:575px;transform:translateX(-50%);width:82%;max-width:none;border-radius:18px;margin:0;padding:8px 12px}.legend-line{justify-content:flex-start;gap:10px}.distribute-wrap{top:18px}.party-note{width:150px;font-size:.8rem}.note-bob{left:42px;top:448px}.note-charlie{right:42px;top:448px}}
+    </style>
+</head>
+<body>
+<aside class="pingpong-image-dock" aria-label="Zhang-Man current-step preview" data-current-step="1">
+    <div class="pingpong-image-viewport">
+        <div class="pingpong-image-window">
+            <div class="pingpong-image-list">
+                <div class="pingpong-image-card is-current" data-pingpong-step="1" aria-current="step"><div class="pingpong-step-summary"><span class="pingpong-step-number">1</span><span class="pingpong-step-title">PREPARE</span></div><div class="step-detail"><div class="step-figure"><img src="pictures/zm-1.png" alt="Prepare step preview"></div></div></div>
+                <div class="pingpong-image-card" data-pingpong-step="2"><div class="pingpong-step-summary"><span class="pingpong-step-number">2</span><span class="pingpong-step-title">DISTRIBUTE</span></div><div class="step-detail"><div class="step-figure"><img src="pictures/zm-2.png" alt="Distribute step preview"></div></div></div>
+                <div class="pingpong-image-card" data-pingpong-step="3"><div class="pingpong-step-summary"><span class="pingpong-step-number">3</span><span class="pingpong-step-title">SELECT MODE</span></div><div class="step-detail"><h3>3. SELECT MODE</h3><p>Choose Detecting Mode or Message Mode.</p></div></div>
+                <div class="pingpong-image-card" data-pingpong-step="4"><div class="pingpong-step-summary"><span class="pingpong-step-number">4</span><span class="pingpong-step-title">CHECK / MESSAGE</span></div><div class="step-detail"><h3>4. CHECK / MESSAGE</h3><p>Detecting: everyone measures. Message: Alice encodes, then measures 1 and 6 and announces the result.</p></div></div>
+                <div class="pingpong-image-card" data-pingpong-step="5"><div class="pingpong-step-summary"><span class="pingpong-step-number">5</span><span class="pingpong-step-title">PUBLIC / RECOVER</span></div><div class="step-detail"><h3>5. PUBLIC / RECOVER</h3><p>Detecting: everyone publishes. Message: Bob and Charlie cooperate to recover the secret.</p></div></div>
+            </div>
+        </div>
+    </div>
+</aside>
+
+<div class="header">
+    <div class="header-left">
+        <a href="QuantumCybersecurityEducationPlatform.html?section=qss#quantum-security-applications" class="btn-back" title="back home">◀&#xFE0E;</a>
+        <div class="title-pill">QSS : Zhang-Man Protocol</div>
+    </div>
+    <div class="header-center" id="step-title">STEP 1 : PREPARE</div>
+    <div class="header-right"><button class="nav-btn" id="next-btn" onclick="nextStep()" disabled>Next</button></div>
+</div>
+
+<div class="main-card" id="stage">
+        <div class="party-head party-alice"><img src="pictures/cat_alice.svg" alt="Alice"></div>
+        <div class="party-head party-bob"><img src="pictures/cat_bob.svg" alt="Bob"></div>
+        <div class="party-head party-charlie"><img src="pictures/cat_charlie.svg" alt="Charlie"></div>
+        <div class="party-note note-bob" id="note-bob">Waiting for Alice to distribute qubits.</div>
+        <div class="party-note note-charlie" id="note-charlie">Waiting for Alice to distribute qubits.</div>
+
+        <div class="distribute-wrap"><button class="action-btn" id="distribute-btn" onclick="distributeQubits()">Distribute Qubits</button></div>
+
+        <div class="pair-oval p12" id="oval12"></div>
+        <div class="pair-oval p34" id="oval34"></div>
+        <div class="pair-oval p56" id="oval56"></div>
+        <div class="pair-tag tag12" id="tag12init">\( |\Psi^-\rangle_{12} \)</div>
+        <div class="pair-tag tag34" id="tag34init">\( |\Psi^-\rangle_{34} \)</div>
+        <div class="pair-tag tag56" id="tag56init">\( |\Psi^-\rangle_{56} \)</div>
+
+        <div class="ent-line" id="line12"></div>
+        <div class="ent-line" id="line34"></div>
+        <div class="ent-line" id="line56"></div>
+        <div class="ent-tag" id="etag12">\( |\Psi^-\rangle_{12} \)</div>
+        <div class="ent-tag" id="etag34">\( |\Psi^-\rangle_{34} \)</div>
+        <div class="ent-tag" id="etag56">\( |\Psi^-\rangle_{56} \)</div>
+
+        <div class="qubit q1" id="q1">q1</div>
+        <div class="qubit q2" id="q2">q2</div>
+        <div class="qubit q3" id="q3">q3</div>
+        <div class="qubit q4" id="q4">q4</div>
+        <div class="qubit q5" id="q5">q5</div>
+        <div class="qubit q6" id="q6">q6</div>
+
+        <div class="legend-box" aria-label="legend">
+            <div class="legend-line">
+                <p class="legend-title">Legend</p>
+                <div class="legend-row"><div class="legend-owner-dots" aria-hidden="true"><span></span><span></span><span></span></div><div>Border color = owner</div></div>
+            </div>
+            <div class="legend-line">
+                <div class="legend-row"><div class="legend-sample-line" aria-hidden="true"></div><div>Dashed line = entanglement</div></div>
+            </div>
+        </div>
+
+        <div class="hint-box">
+            <p class="hint-title" id="hint-title">Preparation</p>
+            <p class="hint-text" id="hint-text">Alice prepares three Bell pairs: (q1,q2), (q3,q4), and (q5,q6). Then she distributes q2,q3 to Bob and q4,q5 to Charlie.</p>
+    </div>
+</div>
+
+<script>
+    const linePairs = [
+        { line: 'line12', tag: 'etag12', a: 'q1', b: 'q2' },
+        { line: 'line34', tag: 'etag34', a: 'q3', b: 'q4' },
+        { line: 'line56', tag: 'etag56', a: 'q5', b: 'q6' }
+    ];
+
+    document.addEventListener('DOMContentLoaded', () => {
+        if (window.MathJax) MathJax.typesetPromise();
+        window.addEventListener('resize', updateEntangleLines);
+    });
+
+    function centerOf(element, container) {
+        const r = element.getBoundingClientRect();
+        const c = container.getBoundingClientRect();
+        return { x: r.left - c.left + r.width / 2, y: r.top - c.top + r.height / 2 };
+    }
+
+    function drawLine(lineId, fromId, toId, tagId) {
+        const area = document.getElementById('stage');
+        const from = document.getElementById(fromId);
+        const to = document.getElementById(toId);
+        const line = document.getElementById(lineId);
+        const tag = document.getElementById(tagId);
+        const a = centerOf(from, area);
+        const b = centerOf(to, area);
+        const dx = b.x - a.x;
+        const dy = b.y - a.y;
+        const length = Math.sqrt(dx * dx + dy * dy);
+        const angle = Math.atan2(dy, dx) * 180 / Math.PI;
+        line.style.left = a.x + 'px';
+        line.style.top = a.y + 'px';
+        line.style.width = length + 'px';
+        line.style.transform = 'rotate(' + angle + 'deg)';
+        tag.style.left = ((a.x + b.x) / 2) + 'px';
+        tag.style.top = ((a.y + b.y) / 2 + 10) + 'px';
+    }
+
+    function updateEntangleLines() {
+        linePairs.forEach(pair => drawLine(pair.line, pair.a, pair.b, pair.tag));
+    }
+
+    function animateLineTracking(duration) {
+        const start = performance.now();
+        function step(now) {
+            updateEntangleLines();
+            if (now - start < duration) requestAnimationFrame(step);
+        }
+        requestAnimationFrame(step);
+    }
+
+    function distributeQubits() {
+        const btn = document.getElementById('distribute-btn');
+        btn.disabled = true;
+        document.getElementById('note-bob').classList.add('hide');
+        document.getElementById('note-charlie').classList.add('hide');
+        document.getElementById('q1').classList.add('keep-alice-q1','owner-alice');
+        document.getElementById('q6').classList.add('keep-alice-q6','owner-alice');
+        document.getElementById('q2').classList.add('to-bob-q2','owner-bob');
+        document.getElementById('q3').classList.add('to-bob-q3','owner-bob');
+        document.getElementById('q4').classList.add('to-charlie-q4','owner-charlie');
+        document.getElementById('q5').classList.add('to-charlie-q5','owner-charlie');
+        ['oval12','oval34','oval56','tag12init','tag34init','tag56init'].forEach(id => document.getElementById(id).classList.add('hide'));
+        ['line12','line34','line56','etag12','etag34','etag56'].forEach(id => document.getElementById(id).classList.add('show'));
+        document.getElementById('step-title').innerText = 'STEP 2 : DISTRIBUTE';
+        document.getElementById('hint-title').innerText = 'Distribution';
+        document.getElementById('hint-text').innerText = 'Distribution complete. Alice keeps q1,q6. Bob receives q2,q3. Charlie receives q4,q5. Dashed lines show the original entanglement remains.';
+        animateLineTracking(1450);
+        setTimeout(() => {
+            updateEntangleLines();
+            if (window.showPingpongImageStep) window.showPingpongImageStep('2');
+            document.getElementById('next-btn').disabled = false;
+        }, 1450);
+    }
+
+    function nextStep() { window.location.href = 'ZMstep2.html'; }
+</script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const dock = document.querySelector('.pingpong-image-dock');
+    const windowBox = document.querySelector('.pingpong-image-window');
+    const list = document.querySelector('.pingpong-image-list');
+    let currentCard = document.querySelector('.pingpong-image-card.is-current');
+    if (dock) { dock.addEventListener('wheel', function (event) { event.preventDefault(); }, { passive: false }); }
+    window.lockPingpongImageToCurrentStep = function () {
+        if (!windowBox || !list || !currentCard) return;
+        const isHorizontal = window.matchMedia('(max-width: 1179px)').matches;
+        const offset = isHorizontal ? (windowBox.clientWidth / 2) - currentCard.offsetLeft - (currentCard.offsetWidth / 2) : Math.max(0, (windowBox.clientHeight / 2) - currentCard.offsetTop - (currentCard.offsetHeight / 2));
+        list.style.transform = isHorizontal ? 'translateX(' + offset + 'px)' : 'translateY(' + offset + 'px)';
+    };
+    window.showPingpongImageStep = function (stepKey) {
+        const nextCard = document.querySelector('.pingpong-image-card[data-pingpong-step="' + stepKey + '"]');
+        if (!nextCard) return;
+        document.querySelectorAll('.pingpong-image-card').forEach(card => { card.classList.remove('is-current'); card.removeAttribute('aria-current'); });
+        nextCard.classList.add('is-current');
+        nextCard.setAttribute('aria-current', 'step');
+        currentCard = nextCard;
+        requestAnimationFrame(window.lockPingpongImageToCurrentStep);
+    };
+    window.showPingpongImageStep(dock?.dataset.currentStep || '1');
+    window.addEventListener('resize', window.lockPingpongImageToCurrentStep);
+});
+</script>
+</body>
+</html>
