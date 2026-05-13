@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <base href="https://s112321005.github.io/Cybersecurity-Visualization/">
+    <title>Quantum Key Distribution : B92 - Basis Comparison</title>
+    <style>
+        :root{--primary-blue:#549FD0;--dark-text:#333333;--bg-gradient:linear-gradient(135deg,#E0F2FE 0%,#F5F3FF 50%,#ECFDF5 100%);--alice-blue:#004aad;--bob-blue:#4C80C5;--match-green:#28a745;--mismatch-red:#dc3545;--soft-blue:#eef7ff;--line:#333;--muted:#777;--zero:#3d7df2;--one:#e55d8b;--plus:#f0a92d;--minus:#23a9a5;}
+        *{box-sizing:border-box;}
+        body{font-family:'Segoe UI',sans-serif;display:flex;flex-direction:column;align-items:center;padding:24px 20px;background:var(--bg-gradient);margin:0;overflow-y:scroll;color:var(--dark-text);}
+        @keyframes fadeIn{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+        @keyframes pulseKeep{0%,100%{box-shadow:0 0 0 0 rgba(40,167,69,.28);}50%{box-shadow:0 0 0 12px rgba(40,167,69,0);}}
+        .header{width:min(1000px,95vw);display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;animation:fadeIn .8s ease-out forwards;}
+        .header-left{display:flex;align-items:center;gap:15px;}
+        .btn-back{width:40px;height:40px;background-color:var(--primary-blue);color:white;border-radius:50%;display:flex;justify-content:center;align-items:center;text-decoration:none;font-size:0;transition:transform .2s;cursor:pointer;border:none;box-shadow:0 2px 5px rgba(0,0,0,.1);}
+        .btn-back::before{content:"";width:0;height:0;border-top:7px solid transparent;border-bottom:7px solid transparent;border-right:11px solid currentColor;margin-left:-2px;}
+        .btn-back:hover{transform:scale(1.1);}
+        .title-pill{border:2px solid var(--primary-blue);padding:8px 20px;border-radius:30px;font-weight:bold;background:white;color:var(--dark-text);white-space:nowrap;}
+        .header-center{flex-grow:1;margin-left:20px;font-weight:bold;font-size:1.2rem;color:var(--dark-text);text-align:center;white-space:nowrap;}
+        .header-right{display:flex;gap:15px;}
+        .nav-btn{border:2px solid var(--primary-blue);background:white;color:var(--dark-text);padding:10px 25px;border-radius:30px;font-weight:bold;font-size:1rem;cursor:pointer;transition:all .2s;white-space:nowrap;}
+        .nav-btn:hover{background:var(--primary-blue);color:white;}
+        .main-card{width:min(1000px,95vw);min-height:740px;border:3px solid var(--primary-blue);border-radius:35px;position:relative;background:white;box-sizing:border-box;overflow:hidden;padding:16px 32px 20px;animation:fadeIn .8s ease-out forwards;}
+        .stage-title{margin:0;color:var(--primary-blue);font-size:1.25rem;text-align:center;font-weight:900;}
+        .stage-subtitle{margin:4px 0 8px;color:#666;text-align:center;font-weight:700;font-size:.92rem;}
+        .column-guide{display:grid;grid-template-columns:27% 33% 30%;justify-content:space-between;align-items:center;gap:24px;margin:8px 34px 10px;}
+        .guide-box{height:48px;border:3px solid var(--primary-blue);border-radius:16px;background:#fff;display:flex;align-items:center;justify-content:center;gap:10px;color:var(--dark-text);font-weight:900;box-shadow:0 5px 14px rgba(84,159,208,.08);}
+        .guide-box.alice{border-color:var(--alice-blue);}
+        .guide-box.bob{border-color:var(--bob-blue);}
+        .guide-box.result{background:#d9e8ff;border-color:#d9e8ff;}
+        .guide-cat{width:40px;height:40px;object-fit:contain;filter:drop-shadow(0 3px 5px rgba(0,0,0,.1));}
+        .basis-compare{display:grid;grid-template-rows:1fr 1fr;gap:12px;}
+        .scenario{position:relative;min-height:260px;border:2px solid #d7e5ff;border-radius:22px;background:transparent;overflow:hidden;}
+        .scenario-header{position:absolute;left:18px;right:18px;top:12px;z-index:5;display:grid;grid-template-columns:27% 33% 30%;justify-content:space-between;align-items:center;gap:24px;font-weight:900;color:var(--alice-blue);}
+        .header-side{display:flex;align-items:center;gap:10px;min-width:0;}
+        .header-side.bob-side{justify-content:center;color:var(--bob-blue);text-align:center;}
+        .header-side.result-side{justify-content:center;color:var(--match-green);text-align:center;}
+        .condition-pill{display:inline-flex;align-items:center;justify-content:center;min-height:34px;padding:5px 12px;border-radius:999px;border:2px solid #bde8c7;background:#f2fff5;color:var(--match-green);font-size:.8rem;line-height:1.15;}
+        .bit-badge{width:30px;height:30px;border-radius:50%;background:var(--alice-blue);color:white;display:inline-flex;align-items:center;justify-content:center;font-size:1.12rem;}
+        .scenario-note{color:#555;font-weight:800;font-size:.92rem;line-height:1.25;}
+        .diagram{position:absolute;left:0;right:0;top:58px;bottom:0;}
+        .arrows{position:absolute;inset:0;width:100%;height:100%;z-index:1;overflow:visible;}
+        .b92-line{stroke:var(--line);stroke-width:3;fill:none;}
+        .b92-line.same{stroke:#9aa4b2;stroke-dasharray:7 6;}
+        .b92-line.diff{stroke:var(--line);}
+        .b92-line.highlight{stroke:var(--match-green);stroke-width:5;}
+        .path-label{display:none;}
+        .path-label.same-label{left:31%;top:17%;color:#7b8491;}
+        .path-label.diff-label{left:31%;top:64%;color:var(--match-green);border-color:#bde8c7;background:#f2fff5;}
+        .node{position:absolute;z-index:3;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;gap:6px;font-weight:900;}
+        .node-title{font-size:.84rem;color:#666;white-space:nowrap;}
+        .basis-card{width:58px;height:58px;border-radius:50%;border:3px solid var(--bob-blue);background:white;color:var(--bob-blue);display:flex;align-items:center;justify-content:center;text-align:center;font-size:1.55rem;font-weight:900;box-shadow:0 8px 18px rgba(76,128,197,.12);line-height:1;}
+        .basis-card.same-basis{border-color:#c7ced8;color:#747c87;background:#f5f6f8;box-shadow:none;}
+        .state-circle{width:48px;height:48px;border-radius:50%;background:var(--primary-blue);color:white;display:flex;align-items:center;justify-content:center;font-size:1rem;font-weight:900;border:3px solid white;box-shadow:0 0 0 2px color-mix(in srgb,var(--primary-blue) 35%,white),0 8px 18px rgba(0,0,0,.1);}
+        .state-zero{background:var(--zero);box-shadow:0 0 0 2px color-mix(in srgb,var(--zero) 35%,white),0 8px 18px rgba(0,0,0,.1);}
+        .state-one{background:var(--one);box-shadow:0 0 0 2px color-mix(in srgb,var(--one) 35%,white),0 8px 18px rgba(0,0,0,.1);}
+        .state-plus{background:var(--plus);box-shadow:0 0 0 2px color-mix(in srgb,var(--plus) 35%,white),0 8px 18px rgba(0,0,0,.1);}
+        .state-minus{background:var(--minus);box-shadow:0 0 0 2px color-mix(in srgb,var(--minus) 35%,white),0 8px 18px rgba(0,0,0,.1);}
+        .state-circle.inactive{background:#cfd6df;color:#6f7782;box-shadow:0 0 0 2px #e1e6ec;filter:grayscale(.75);opacity:.72;}
+        .outcome-row{display:flex;align-items:center;gap:8px;}
+        .result-box{min-width:108px;min-height:44px;border-radius:16px;background:white;border:2px solid #d7e5ff;display:flex;align-items:center;justify-content:center;text-align:center;padding:6px 9px;font-size:.82rem;line-height:1.15;color:#666;box-shadow:0 6px 15px rgba(0,0,0,.06);}
+        .result-box.keep{border-color:var(--match-green);background:#f1fff4;color:var(--match-green);font-weight:900;animation:pulseKeep 1.8s ease-in-out infinite;}
+        .result-box.drop{background:#f6f7f8;color:#8b929c;border-color:#d9dee6;}
+        .compare-callout{position:absolute;left:32px;right:32px;bottom:20px;border-left:7px solid var(--match-green);background:#f2fff5;border-radius:16px;padding:8px 16px;font-weight:800;color:#345;line-height:1.25;font-size:.88rem;}
+        .compare-callout b{color:var(--match-green);}
+        .b92-image-dock{position:fixed;right:16px;top:0;width:430px;height:100vh;z-index:900;pointer-events:none;display:flex;justify-content:center;overflow:visible;isolation:isolate;font-family:'Arial Rounded MT Bold','Arial Rounded MT','Arial',sans-serif;}
+        .b92-image-viewport{position:relative;width:330px;height:100vh;background:#ffffff;box-sizing:border-box;box-shadow:0 12px 26px rgba(0,0,0,.12);overflow:visible;z-index:1;}
+        .b92-image-viewport::before,.b92-image-viewport::after{content:"";position:absolute;top:0;width:14px;height:100vh;background:#d9d9d9;z-index:1;pointer-events:none;}
+        .b92-image-viewport::before{left:0;}
+        .b92-image-viewport::after{right:0;}
+        .b92-image-window{position:relative;width:500px;height:100vh;margin-left:-85px;overflow:hidden;z-index:10;}
+        .b92-image-list{position:relative;display:flex;flex-direction:column;align-items:center;gap:12px;padding:52px 0 42px;box-sizing:border-box;width:500px;transform:translateY(0);transition:transform .55s cubic-bezier(.22,.8,.22,1);z-index:20;}
+        .b92-image-card{position:relative;width:350px;min-height:52px;padding:0 18px;box-sizing:border-box;background:#ffffff;border:6px solid var(--primary-blue);border-radius:16px;display:flex;align-items:center;justify-content:center;flex:0 0 auto;transition:width .55s cubic-bezier(.22,.8,.22,1),min-height .55s cubic-bezier(.22,.8,.22,1),padding .55s cubic-bezier(.22,.8,.22,1),border-width .55s cubic-bezier(.22,.8,.22,1),border-radius .55s cubic-bezier(.22,.8,.22,1),box-shadow .55s cubic-bezier(.22,.8,.22,1),filter .35s ease,opacity .35s ease,transform .55s cubic-bezier(.22,.8,.22,1);z-index:20;overflow:hidden;}
+        .b92-image-card:not(.is-current){filter:none;opacity:1;transform:scale(1);}
+        .b92-image-card.is-current{width:365px;min-height:365px;padding:14px;border:7px solid var(--primary-blue);border-radius:20px;box-shadow:0 12px 28px rgba(84,159,208,.28);filter:none;opacity:1;transform:scale(1);margin:6px 0;z-index:100;}
+        .b92-step-summary{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;height:100%;color:#111;font-weight:900;font-size:1rem;letter-spacing:.02em;white-space:nowrap;transition:opacity .22s ease,transform .22s ease;}
+        .b92-step-number{width:22px;height:22px;border-radius:50%;background:var(--primary-blue);color:#ffffff;display:inline-flex;align-items:center;justify-content:center;font-size:.86rem;line-height:1;flex:0 0 auto;}
+        .b92-step-title{display:inline-block;line-height:1;}
+        .b92-image-card img{position:relative;z-index:101;width:100%;height:100%;max-width:0;max-height:0;object-fit:contain;display:block;opacity:0;transform:scale(.92);transition:opacity .28s ease .2s,transform .45s cubic-bezier(.22,.8,.22,1) .12s,max-width .55s cubic-bezier(.22,.8,.22,1),max-height .55s cubic-bezier(.22,.8,.22,1);}
+        .b92-image-card.is-current .b92-step-summary{opacity:0;transform:translateY(-8px);position:absolute;pointer-events:none;}
+        .b92-image-card.is-current img{max-width:318px;max-height:320px;opacity:1;transform:scale(1);}
+        @media (min-width:1180px){body{padding-right:450px !important;}}
+        @media (max-width:1179px){.b92-image-dock{position:relative;right:auto;top:auto;width:min(94vw,840px);height:320px;margin:18px auto 10px;overflow:visible;}.b92-image-viewport{width:100%;height:320px;}.b92-image-viewport::before,.b92-image-viewport::after{width:10px;height:320px;}.b92-image-window{width:100%;height:320px;margin-left:0;overflow:hidden;}.b92-image-list{flex-direction:row;align-items:center;gap:14px;width:max-content;height:320px;padding:0 24px;}.b92-image-card{width:270px;min-height:52px;}.b92-image-card.is-current{width:305px;min-height:250px;margin:0 10px;z-index:100;}.b92-image-card.is-current img{max-width:275px;max-height:220px;}.main-card{min-height:700px;padding:16px 16px 20px;}.column-guide{grid-template-columns:1fr 1fr 1fr;margin:8px 10px 10px;gap:10px;}.guide-box{height:46px;font-size:.86rem;gap:6px;}.guide-cat{width:32px;height:32px;}.basis-compare{gap:12px;}.scenario{min-height:270px;}.scenario-header{grid-template-columns:1fr;gap:4px;}.header-side.bob-side,.header-side.result-side{justify-content:flex-start;text-align:left;}.condition-pill{justify-content:flex-start;font-size:.76rem;}.diagram{top:96px;}.node-title{font-size:.76rem;}.state-circle{width:44px;height:44px;font-size:.92rem;}.basis-card{width:50px;height:50px;font-size:1.35rem;}.result-box{min-width:88px;font-size:.78rem;}.compare-callout{left:16px;right:16px;bottom:20px;}.path-label{display:none;}}
+    </style>
+</head>
+<body>
+    <aside class="b92-image-dock" aria-label="B92 current-step image preview" data-current-step="3">
+        <div class="b92-image-viewport">
+            <div class="b92-image-window">
+                <div class="b92-image-list">
+                    <div class="b92-image-card" data-b92-step="1"><div class="b92-step-summary"><span class="b92-step-number">1</span><span class="b92-step-title">PREPARE</span></div><img src="pictures/b92-1.png" alt="B92 Step 1"></div>
+                    <div class="b92-image-card" data-b92-step="2"><div class="b92-step-summary"><span class="b92-step-number">2</span><span class="b92-step-title">TRANSMIT</span></div><img src="pictures/b92-2.png" alt="B92 Step 2"></div>
+                    <div class="b92-image-card is-current" data-b92-step="3" aria-current="step"><div class="b92-step-summary"><span class="b92-step-number">3</span><span class="b92-step-title">MEASURE</span></div><img src="pictures/b92-3.png" alt="B92 Step 3"></div>
+                    <div class="b92-image-card" data-b92-step="4"><div class="b92-step-summary"><span class="b92-step-number">4</span><span class="b92-step-title">SIFTING</span></div><img src="pictures/b92-4.png" alt="B92 Step 4"></div>
+                    <div class="b92-image-card" data-b92-step="5"><div class="b92-step-summary"><span class="b92-step-number">5</span><span class="b92-step-title">KEY</span></div><img src="pictures/b92-5.png" alt="B92 Step 5"></div>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <div class="header">
+        <div class="header-left">
+            <a href="QuantumCybersecurityEducationPlatform.html?section=qkd#quantum-security-applications" class="btn-back" title="back home">&#x25C0;&#xFE0E;</a>
+            <div class="title-pill">Quantum Key Distribution : B92</div>
+        </div>
+        <div class="header-center" id="step-title">STEP 3 : BASIS COMPARISON</div>
+        <div class="header-right">
+            <button class="nav-btn" onclick="prevStep()">Back</button>
+            <button class="nav-btn" onclick="nextStep()">Next</button>
+        </div>
+    </div>
+
+    <main class="main-card">
+        <h1 class="stage-title">Bob compares same-basis and different-basis outcomes.</h1>
+        <p class="stage-subtitle">Only the highlighted different-basis result rules out the other B92 signal, so Bob can infer Alice's bit.</p>
+        <div class="column-guide" aria-label="Comparison columns">
+            <div class="guide-box alice"><img class="guide-cat" src="pictures/cat_alice.svg" alt="Alice">Alice Choice</div>
+            <div class="guide-box bob"><img class="guide-cat" src="pictures/cat_bob.svg" alt="Bob">Bob Basis</div>
+            <div class="guide-box result">Result</div>
+        </div>
+
+        <section class="basis-compare" aria-label="B92 basis comparison">
+            <article class="scenario">
+                <div class="scenario-header">
+                    <div class="header-side"><span class="bit-badge">0</span>Alice chooses |0⟩</div>
+                    <div class="header-side bob-side">Bob tests Z / X</div>
+                    <div class="header-side result-side"><span class="condition-pill">Conclusive if Bob sees |-⟩<br>rules out |+⟩</span></div>
+                </div>
+                <div class="diagram">
+                    <svg class="arrows" aria-hidden="true">
+                        <defs>
+                            <marker id="arrow-b92-step3-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                                <path d="M 0 0 L 10 5 L 0 10 z" fill="#333"></path>
+                            </marker>
+                            <marker id="arrow-b92-step3-green-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                                <path d="M 0 0 L 10 5 L 0 10 z" fill="#28a745"></path>
+                            </marker>
+                        </defs>
+                        <line class="b92-line same" x1="17%" y1="50%" x2="36%" y2="26%" marker-end="url(#arrow-b92-step3-a)"></line>
+                        <line class="b92-line diff" x1="17%" y1="50%" x2="36%" y2="74%" marker-end="url(#arrow-b92-step3-a)"></line>
+                        <line class="b92-line same" x1="50%" y1="26%" x2="67%" y2="26%" marker-end="url(#arrow-b92-step3-a)"></line>
+                        <line class="b92-line highlight" x1="50%" y1="74%" x2="67%" y2="62%" marker-end="url(#arrow-b92-step3-green-a)"></line>
+                        <line class="b92-line diff" x1="50%" y1="74%" x2="67%" y2="88%" marker-end="url(#arrow-b92-step3-a)"></line>
+                    </svg>
+                    <div class="path-label same-label">Same Z basis</div>
+                    <div class="path-label diff-label">Different X basis</div>
+                    <div class="node" style="left:14%;top:50%;"><div class="node-title">Alice</div><div class="state-circle state-zero">|0⟩</div></div>
+                    <div class="node" style="left:43%;top:26%;"><div class="basis-card same-basis">Z</div></div>
+                    <div class="node" style="left:43%;top:74%;"><div class="basis-card">X</div></div>
+                    <div class="node" style="left:78%;top:26%;"><div class="outcome-row"><div class="state-circle inactive">|0⟩</div><div class="result-box drop">Same result<br>discard</div></div></div>
+                    <div class="node" style="left:78%;top:62%;"><div class="outcome-row"><div class="state-circle state-minus">|-⟩</div><div class="result-box keep">Record 0<br>rules out |+⟩</div></div></div>
+                    <div class="node" style="left:78%;top:88%;"><div class="outcome-row"><div class="state-circle inactive">|+⟩</div><div class="result-box drop">Same result<br>discard</div></div></div>
+                </div>
+            </article>
+
+            <article class="scenario">
+                <div class="scenario-header">
+                    <div class="header-side"><span class="bit-badge">1</span>Alice chooses |+⟩</div>
+                    <div class="header-side bob-side">Bob tests X / Z</div>
+                    <div class="header-side result-side"><span class="condition-pill">Conclusive if Bob sees |1⟩<br>rules out |0⟩</span></div>
+                </div>
+                <div class="diagram">
+                    <svg class="arrows" aria-hidden="true">
+                        <defs>
+                            <marker id="arrow-b92-step3-b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                                <path d="M 0 0 L 10 5 L 0 10 z" fill="#333"></path>
+                            </marker>
+                            <marker id="arrow-b92-step3-green-b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                                <path d="M 0 0 L 10 5 L 0 10 z" fill="#28a745"></path>
+                            </marker>
+                        </defs>
+                        <line class="b92-line same" x1="17%" y1="50%" x2="36%" y2="26%" marker-end="url(#arrow-b92-step3-b)"></line>
+                        <line class="b92-line diff" x1="17%" y1="50%" x2="36%" y2="74%" marker-end="url(#arrow-b92-step3-b)"></line>
+                        <line class="b92-line same" x1="50%" y1="26%" x2="67%" y2="26%" marker-end="url(#arrow-b92-step3-b)"></line>
+                        <line class="b92-line diff" x1="50%" y1="74%" x2="67%" y2="62%" marker-end="url(#arrow-b92-step3-b)"></line>
+                        <line class="b92-line highlight" x1="50%" y1="74%" x2="67%" y2="88%" marker-end="url(#arrow-b92-step3-green-b)"></line>
+                    </svg>
+                    <div class="path-label same-label">Same X basis</div>
+                    <div class="path-label diff-label">Different Z basis</div>
+                    <div class="node" style="left:14%;top:50%;"><div class="node-title">Alice</div><div class="state-circle state-plus">|+⟩</div></div>
+                    <div class="node" style="left:43%;top:26%;"><div class="basis-card same-basis">X</div></div>
+                    <div class="node" style="left:43%;top:74%;"><div class="basis-card">Z</div></div>
+                    <div class="node" style="left:78%;top:26%;"><div class="outcome-row"><div class="state-circle inactive">|+⟩</div><div class="result-box drop">Same result<br>discard</div></div></div>
+                    <div class="node" style="left:78%;top:62%;"><div class="outcome-row"><div class="state-circle inactive">|0⟩</div><div class="result-box drop">Same result<br>discard</div></div></div>
+                    <div class="node" style="left:78%;top:88%;"><div class="outcome-row"><div class="state-circle state-one">|1⟩</div><div class="result-box keep">Record 1<br>rules out |0⟩</div></div></div>
+                </div>
+            </article>
+        </section>
+
+        <div class="compare-callout">
+            <b>Same basis</b>: inconclusive. <b>Different basis</b>: seeing the opposite state lets Bob rule out the other signal and record the bit.
+        </div>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const dock = document.querySelector('.b92-image-dock');
+            const windowBox = document.querySelector('.b92-image-window');
+            const list = document.querySelector('.b92-image-list');
+            let currentCard = document.querySelector('.b92-image-card.is-current');
+
+            if (dock) {
+                dock.addEventListener('wheel', function (event) {
+                    event.preventDefault();
+                }, { passive: false });
+            }
+
+            window.lockB92ImageToCurrentStep = function () {
+                if (!windowBox || !list || !currentCard) return;
+                const isHorizontal = window.matchMedia('(max-width: 1179px)').matches;
+                if (isHorizontal) {
+                    const offset = (windowBox.clientWidth / 2) - currentCard.offsetLeft - (currentCard.offsetWidth / 2);
+                    list.style.transform = 'translateX(' + offset + 'px)';
+                } else {
+                    const centeredOffset = (windowBox.clientHeight / 2) - currentCard.offsetTop - (currentCard.offsetHeight / 2);
+                    list.style.transform = 'translateY(' + Math.max(0, centeredOffset) + 'px)';
+                }
+            };
+
+            window.lockB92ImageToCurrentStep();
+            window.addEventListener('resize', window.lockB92ImageToCurrentStep);
+        });
+
+        function prevStep() {
+            window.location.href = 'B92step2.html';
+        }
+
+        function nextStep() {
+            window.location.href = 'B92step4.html';
+        }
+    </script>
+</body>
+</html>
