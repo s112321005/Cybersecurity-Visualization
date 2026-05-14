@@ -232,16 +232,29 @@
             const list = document.querySelector('.bb84-image-list');
             let currentCard = document.querySelector('.bb84-image-card.is-current');
 
-            function randomizeSharedKey() {
-                document.querySelectorAll('.bit-card .bit-value').forEach(bit => {
-                    bit.textContent = Math.random() < 0.5 ? '0' : '1';
+            function updateMessageCellsFromPhotonStates() {
+                const stateToBit = {
+                    'photon-d0': '0',
+                    'photon-d1': '1',
+                    'photon-s0': '0',
+                    'photon-s1': '1'
+                };
+
+                document.querySelectorAll('.bit-card').forEach(card => {
+                    const photon = card.querySelector('.photon-static');
+                    const bit = card.querySelector('.bit-value');
+                    if (!photon || !bit) return;
+
+                    const matchedState = Object.keys(stateToBit).find(stateClass => photon.classList.contains(stateClass));
+                    if (matchedState) bit.textContent = stateToBit[matchedState];
                 });
+
                 const keptBits = Array.from(document.querySelectorAll('.bit-card.keep .bit-value'), bit => bit.textContent);
                 const keyBits = document.querySelector('.key-bits');
-                keyBits.innerHTML = keptBits.map(bit => '<div class="key-bit">' + bit + '</div>').join('');
+                if (keyBits) keyBits.innerHTML = keptBits.map(bit => '<div class="key-bit">' + bit + '</div>').join('');
             }
 
-            randomizeSharedKey();
+            updateMessageCellsFromPhotonStates();
 
             if (dock) {
                 dock.addEventListener('wheel', function (event) {
@@ -285,13 +298,9 @@
             }, 5200);
         });
 
-        function prevStep() {
-            window.location.href = 'BB84step2.html';
-        }
+        function prevStep() {window.location.href = 'BB84step2.html';}
 
-        function nextStep() {
-            window.location.href = 'bb84_analysis.html';
-        }
+        function nextStep() {window.location.href = 'bb84_analysis.html';}
     </script>
 </body>
 </html>
