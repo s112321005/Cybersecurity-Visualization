@@ -247,26 +247,37 @@
 
     document.addEventListener("DOMContentLoaded", () => {
         const params = new URLSearchParams(window.location.search);
-        let urlType = params.get("aliceBasis"); 
-        let urlMsg = params.get("aliceMsg"); 
-
+        const urlType = params.get("aliceBasis");
+        const urlMsg = params.get("aliceMsg");
+        const hasFreshStep1Data = Boolean(urlType && urlMsg !== null);
         const savedData = localStorage.getItem('qkdStepData');
-        let parsedData = savedData ? JSON.parse(savedData) : null;
+        let parsedData = null;
 
-        // Step 2 should always allow Bob to choose again.
-        // If Step 1 passed fresh URL data, use that.
-        // Otherwise, only restore Alice's state from saved data,
-        // but do NOT restore Bob's previous measurement result.
-        if (urlType && urlMsg !== null) {
-            setupAliceState(urlType, urlMsg);
-        } else if (parsedData) {
-            let isBit1 = (parsedData.aliceState === '↑' || parsedData.aliceState === '↖');
-            setupAliceState(parsedData.aliceBasis, isBit1 ? "1" : "0");
-        } else {
-            setupAliceState("S", "0");
+        try {
+            parsedData = savedData ? JSON.parse(savedData) : null;
+        } catch (error) {
+            localStorage.removeItem('qkdStepData');
         }
 
-        localStorage.removeItem('qkdStepData');
+        if (hasFreshStep1Data) {
+            localStorage.removeItem('qkdStepData');
+            setupAliceState(urlType, urlMsg);
+            return;
+        }
+
+        if (parsedData && parsedData.aliceState && parsedData.aliceBasis) {
+            const isBit1 = parsedData.aliceState === '↑' || parsedData.aliceState === '↖';
+            setupAliceState(parsedData.aliceBasis, isBit1 ? "1" : "0");
+
+            if (parsedData.bobBasis) {
+                requestAnimationFrame(() => {
+                    startMeasurementProcess(parsedData.bobBasis, true);
+                });
+            }
+            return;
+        }
+
+        setupAliceState("S", "0");
     });
 
     // 獨立出 Alice 設定邏輯
