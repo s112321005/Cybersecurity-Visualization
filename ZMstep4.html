@@ -1,0 +1,934 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <base href="https://s112321005.github.io/Cybersecurity-Visualization/">
+    <title>Quantum Secret Sharing : Zhang-Man Protocol - Step 4</title>
+    <script>window.MathJax={tex:{inlineMath:[["\\(","\\)"]],displayMath:[["$$","$$"]]}};</script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        :root{--primary-blue:#549FD0;--alice-color:#004aad;--bob-color:#4C80C5;--charlie-color:#478CEA;--dark-text:#333333;--bg-gradient:linear-gradient(135deg,#EAF5FE 0%,#F7FBFF 55%,#EEF8F6 100%);--soft-border:#D8EBF7;--hint-bg:#F8FCFF;--qubit-fill:#F8FCFF;--detect:#549FD0;--message:#549FD0}
+        *{box-sizing:border-box}
+        body{font-family:'Segoe UI',system-ui,sans-serif;display:flex;flex-direction:column;align-items:center;padding:40px 20px;background:var(--bg-gradient);margin:0;overflow-y:scroll;color:var(--dark-text)}
+        .header{width:min(1000px,95vw);display:flex;align-items:center;justify-content:space-between;margin-bottom:25px}
+        .header-left{display:flex;align-items:center;gap:15px}
+        .btn-back{width:40px;height:40px;background-color:var(--primary-blue);color:white;border-radius:50%;display:flex;justify-content:center;align-items:center;text-decoration:none;font-size:0;transition:transform .2s;cursor:pointer;border:none;box-shadow:0 2px 5px rgba(0,0,0,.1)}
+        .btn-back::before{content:"";width:0;height:0;border-top:7px solid transparent;border-bottom:7px solid transparent;border-right:11px solid currentColor;margin-left:-2px}
+        .btn-back:hover{transform:scale(1.1)}
+        .title-pill{border:2px solid var(--primary-blue);padding:8px 20px;border-radius:30px;font-weight:bold;background:white;color:var(--dark-text);white-space:nowrap}
+        .header-center{flex-grow:1;margin-left:20px;font-weight:bold;font-size:1.2rem;color:var(--dark-text);text-align:center;white-space:nowrap}
+        .header-right{display:flex;gap:15px}
+        .nav-btn,.action-btn{border:2px solid var(--primary-blue);background:white;color:var(--primary-blue);padding:10px 25px;border-radius:30px;font-weight:bold;font-size:1rem;cursor:pointer;transition:all .2s;box-shadow:0 4px 15px rgba(84,159,208,.16);white-space:nowrap}
+        .nav-btn:hover:not(:disabled),.action-btn:hover:not(:disabled){background:var(--primary-blue);color:white;transform:translateY(-2px)}
+        .nav-btn:disabled,.action-btn:disabled{border-color:#ccc;color:#ccc;cursor:not-allowed;box-shadow:none;background:white}
+
+        .main-card{width:min(1000px,95vw);height:730px;border:3px solid var(--primary-blue);border-radius:35px;position:relative;background:white;overflow:hidden;padding:22px}
+        .mode-badge{position:absolute;left:853px;top:18px;transform:translateX(-50%);border:2px solid var(--primary-blue);background:#fff;border-radius:999px;padding:8px 20px;color:var(--primary-blue);font-weight:900;box-shadow:0 6px 18px rgba(84,159,208,.12);z-index:10;white-space:nowrap;min-width:max-content}
+        .mode-badge.corner{left:24px;top:80px;transform:none;box-shadow:none}
+        .party{position:absolute;display:flex;flex-direction:column;align-items:center;gap:8px;z-index:4}
+        .party img{width:124px;height:auto;display:block}
+        .party-name{font-weight:900;color:#667085;margin:0}
+        .party-alice{left:calc(35.1% + 130px);top:34px;transform:translateX(-50%)}
+        .party-bob{left:147px;top:256px}
+        .party-charlie{right:185px;top:256px}
+        #stage.message-layout .party-alice{left:calc(35.1% + 155px);top:14px;transform:translateX(-50%)}
+        #stage.message-layout .party-bob{left:172px;top:226px}
+        #stage.message-layout .party-charlie{right:160px;top:226px}
+        #stage.message-layout .mode-badge{left:853px;top:18px;transform:translateX(-50%)}
+        #stage.message-layout .floating-announcement{left:85px;top:92px;transform:none}
+        #stage.message-layout .party-bob img,#stage.message-layout .party-charlie img{transform:translateY(-10px)}
+        #stage.message-layout.message-post-eye .party-bob .qubit-row,#stage.message-layout.message-post-eye .party-charlie .qubit-row,#stage.message-layout.message-post-eye .party-bob .measurement-result,#stage.message-layout.message-post-eye .party-charlie .measurement-result{transform:translateY(-20px)}
+        .qubit-row{display:flex;align-items:center;justify-content:center;gap:10px}
+        .qubit{width:42px;height:42px;border-radius:50%;background:var(--qubit-fill);display:flex;align-items:center;justify-content:center;font-weight:900;color:#1f2937;box-shadow:0 0 16px rgba(84,159,208,.18);border:4px solid var(--alice-color);transition:all .25s ease}
+        .party-bob .qubit{border-color:var(--bob-color)}
+        .party-charlie .qubit{border-color:var(--charlie-color)}
+        .party-alice .qubit-row{margin-top:8px;gap:14px}
+        .party-alice .measurement-result{position:absolute;left:118px;top:88px;min-height:32px;min-width:210px;text-align:left;line-height:1.25;white-space:nowrap}
+        .qubit.measured{background:#fff7ed;border-color:#F97316;box-shadow:0 0 18px rgba(249,115,22,.25)}
+        .party-alice .qubit.measured{background:#EAF5FE;border-color:#004aad;box-shadow:0 0 18px rgba(0,74,173,.28)}
+        .qubit.encode-target{position:relative;z-index:20;background:#EAF5FE;border-color:var(--primary-blue);box-shadow:0 0 0 6px rgba(84,159,208,.30),0 0 34px rgba(84,159,208,.85),0 0 58px rgba(84,159,208,.48);animation:q1Pulse 1.15s infinite}
+        @keyframes q1Pulse{0%,100%{transform:scale(1);box-shadow:0 0 0 6px rgba(84,159,208,.24),0 0 28px rgba(84,159,208,.72),0 0 48px rgba(84,159,208,.42)}50%{transform:scale(1.16);box-shadow:0 0 0 10px rgba(84,159,208,.34),0 0 44px rgba(84,159,208,.95),0 0 72px rgba(84,159,208,.56)}}
+        .measurement-result{min-height:28px;color:#6B7280;font-weight:900;font-size:.9rem;display:flex;flex-direction:column;gap:6px;align-items:flex-start}
+        .result-item{display:flex;align-items:center;gap:8px;line-height:1.2;white-space:nowrap}
+        .result-dot{width:12px;height:12px;border-radius:50%;display:inline-block;flex:0 0 12px;box-shadow:0 0 0 3px rgba(84,159,208,.12)}
+        .result-dot.alice{background:var(--alice-color)}
+        .result-dot.bob{background:var(--bob-color)}
+        .result-dot.charlie{background:var(--charlie-color)}
+        .qubit.measuring{transform:scale(1.12);box-shadow:0 0 0 6px rgba(84,159,208,.22),0 0 26px rgba(84,159,208,.65)}
+
+        .ent-line{position:absolute;height:0;border-top:4px dashed var(--primary-blue);opacity:1;transform-origin:left center;transition:opacity .35s ease;z-index:3;pointer-events:none}
+        .ent-line.arc{height:auto;border-top:none;transform:none!important}
+        .ent-tag{position:absolute;transform:translate(-50%,-50%);padding:4px 10px;border-radius:999px;background:white;border:2px solid var(--primary-blue);color:var(--primary-blue);font-weight:900;font-size:.82rem;white-space:nowrap;opacity:1;transition:opacity .35s ease;z-index:5;pointer-events:none}
+
+        .center-panel{position:absolute;left:50%;top:318px;transform:translateX(-50%);width:430px;display:flex;flex-direction:column;align-items:center;gap:14px;z-index:8}
+        .panel-title{margin:0;color:var(--primary-blue);font-weight:900;font-size:1.18rem;text-align:center}
+        .panel-desc{margin:0;color:#667085;font-weight:800;text-align:center;line-height:1.35}
+        .center-panel.message-panel{left:755px;top:66px;transform:none;width:195px;align-items:flex-start;gap:8px}
+        #stage.message-layout .center-panel.message-panel{left:755px;top:66px;transform:none;width:195px;align-items:flex-start;gap:8px}
+        .center-panel.detecting-panel{left:50%;top:510px;transform:translateX(-50%);width:420px;align-items:center;gap:12px;text-align:center}
+        .detecting-controls{display:flex;gap:10px;justify-content:center;align-items:center;flex-wrap:wrap;width:100%;position:relative;min-height:52px}
+        #replay-btn,#step-btn{position:absolute;left:-210px;min-width:150px}
+        #replay-btn{top:-470px}
+        #step-btn{top:-414px}
+        #next-step-btn{position:absolute;left:-210px;top:-414px;min-width:150px}
+        .detecting-controls .action-btn{min-width:150px}
+        .measure-eye{position:absolute;display:flex;align-items:center;justify-content:center;width:70px;height:70px;border-radius:50%;background:rgba(255,255,255,.92);box-shadow:0 8px 20px rgba(84,159,208,.18);border:3px solid #BFDDF3;opacity:0;transform:translate(-50%,-50%) scale(.78);pointer-events:none;z-index:28}
+        .measure-eye img{width:50px;height:50px;display:block}
+        .measure-eye.show{opacity:1;animation:eyePop .95s ease forwards}
+        .measure-eye.alice-eye{border-color:#004aad;box-shadow:0 8px 20px rgba(0,74,173,.18)}
+        .measure-eye.bob-eye{border-color:#4C80C5;box-shadow:0 8px 20px rgba(76,128,197,.18)}
+        .measure-eye.charlie-eye{border-color:#478CEA;box-shadow:0 8px 20px rgba(71,140,234,.18)}
+        .measure-eye.charlie-eye img{filter:brightness(0) saturate(100%) invert(54%) sepia(60%) saturate(1541%) hue-rotate(186deg) brightness(99%) contrast(88%)}
+        @keyframes eyePop{0%{opacity:0;transform:translate(-50%,-50%) scale(.7)}20%{opacity:1}60%{opacity:1;transform:translate(-50%,-50%) scale(1.08)}100%{opacity:0;transform:translate(-50%,-50%) scale(1)}}
+        .operation-grid{display:grid;grid-template-columns:1fr;gap:8px;width:100%}
+        .op-btn{border:2px solid #D8EBF7;background:white;border-radius:16px;padding:8px 8px;cursor:pointer;box-shadow:0 4px 10px rgba(0,0,0,.05);transition:all .2s ease;text-align:center;color:#566172;font-weight:900;min-height:58px;overflow:hidden;display:flex;align-items:center;justify-content:flex-start;gap:8px}
+        .op-btn:hover:not(:disabled){border-color:var(--alice-color);transform:translateY(-2px);background:#F4F9FF;color:var(--alice-color)}
+        .op-btn:not(.selected):not(:disabled){animation:opPulse 1.65s infinite}
+        @keyframes opPulse{0%{box-shadow:0 0 0 0 rgba(84,159,208,.34)}70%{box-shadow:0 0 0 10px rgba(84,159,208,0)}100%{box-shadow:0 0 0 0 rgba(84,159,208,0)}}
+        .op-btn.selected{border-color:var(--primary-blue);background:#F4F9FF;color:var(--primary-blue);box-shadow:0 0 0 4px rgba(84,159,208,.18),0 8px 20px rgba(84,159,208,.22);animation:none}
+        .op-btn.selected .op-main{color:var(--primary-blue)}
+        .op-btn:disabled{opacity:.58;cursor:not-allowed;animation:none}
+        .op-btn.selected:disabled{opacity:1}
+        .op-main{display:inline-flex;align-items:center;justify-content:center;font-size:1.16rem;margin:0;min-width:28px;line-height:1}
+        .op-sub{display:inline-flex;align-items:center;justify-content:center;font-size:.9rem;color:#7A8799;line-height:1;max-width:100%;white-space:nowrap;overflow:visible}
+        .op-sub mjx-container{font-size:122%!important;white-space:nowrap!important;display:inline-block!important;vertical-align:middle!important}
+        .action-btn.primary{background:var(--primary-blue);color:white}
+        .detecting-controls .action-btn.primary{animation:detectPulse 1.5s ease-in-out infinite}
+        .detecting-controls .action-btn.primary:disabled{animation:none}
+        @keyframes detectPulse{0%,100%{box-shadow:0 0 0 0 rgba(84,159,208,.18),0 4px 15px rgba(84,159,208,.20)}50%{box-shadow:0 0 0 10px rgba(84,159,208,0),0 8px 24px rgba(84,159,208,.42)}}
+        #measure16-btn{display:block;align-self:center;margin:4px auto 0;width:195px;max-width:100%;line-height:1.25;white-space:normal}
+        .announcement{display:none;margin-top:4px;background:#fff;border:2px solid #D8EBF7;border-left:6px solid var(--alice-color);border-radius:16px;padding:12px 16px;width:100%;box-shadow:0 8px 20px rgba(84,159,208,.09);font-weight:900;color:#556070;text-align:center}
+        .announcement.show{display:block;animation:fadeIn .35s ease}
+        .floating-announcement{position:absolute;left:calc(35.1% + 130px);top:32px;transform:translateX(-50%);display:none;width:max-content;max-width:260px;min-width:150px;z-index:22;padding:9px 14px;white-space:nowrap}
+        .floating-announcement.show{display:block;animation:none}
+        @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+        .hint-box{position:absolute;left:50%;bottom:20px;transform:translateX(-50%);width:82%;background:var(--hint-bg);border:2px solid var(--soft-border);border-left:6px solid var(--primary-blue);border-radius:18px;padding:14px 18px;box-shadow:0 8px 20px rgba(84,159,208,.09);z-index:8;pointer-events:auto;cursor:text;min-height:112px}
+        .hint-box.expanded{min-height:210px;padding-bottom:20px}
+        #stage.message-layout .hint-box.expanded{min-height:270px;padding-bottom:22px}
+        .hint-title{margin:0 0 4px;color:var(--primary-blue);font-size:1.05rem;font-weight:900;line-height:1.2}
+        .hint-text{margin:0;color:#556070;font-weight:800;line-height:1.45;font-size:1rem}
+        .detecting-hint{display:flex;flex-direction:column;gap:8px}
+        .detecting-formula{background:white;border:1px solid #DBEAFE;border-radius:12px;padding:8px 10px;overflow-x:auto}
+        .detecting-note{font-size:.98rem}
+        .detecting-highlight{display:inline-block;background:#EAF5FE;border:2px solid var(--primary-blue);border-radius:999px;padding:2px 10px;color:#1E4F86;font-weight:900;box-shadow:0 0 0 4px rgba(84,159,208,.12)}
+        .detecting-bottom-formula{margin-top:8px;background:white;border:1px solid #DBEAFE;border-radius:12px;padding:8px 10px;min-height:54px;overflow-x:auto;white-space:nowrap}
+        .formula-hit{display:inline-block;border:2px solid var(--primary-blue);border-radius:999px;background:#EAF5FE;padding:1px 8px;box-shadow:0 0 0 4px rgba(84,159,208,.16),0 0 18px rgba(84,159,208,.32);animation:formulaPulse 1.4s ease-in-out infinite}
+        @keyframes formulaPulse{0%,100%{box-shadow:0 0 0 3px rgba(84,159,208,.16),0 0 12px rgba(84,159,208,.24)}50%{box-shadow:0 0 0 7px rgba(84,159,208,.20),0 0 24px rgba(84,159,208,.42)}}
+
+        .final-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;width:100%;margin-top:8px}
+        .final-card{background:white;border:2px solid #D8EBF7;border-radius:16px;padding:10px 12px;box-shadow:0 6px 14px rgba(84,159,208,.08);font-weight:900;color:#556070;text-align:center}
+        .final-card b{color:var(--primary-blue)}
+        .final-card.pass{border-color:#16A34A;color:#166534;background:#F0FDF4}
+        .final-card.clickable{cursor:pointer;transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease}
+        .final-card.clickable:hover{transform:translateY(-2px);box-shadow:0 8px 18px rgba(84,159,208,.18);border-color:var(--primary-blue)}
+        .result-item.active,.measurement-result.active-result{background:#EAF5FE;border:2px solid var(--primary-blue);border-radius:999px;padding:3px 10px;box-shadow:0 0 0 4px rgba(84,159,208,.16),0 0 18px rgba(84,159,208,.28);animation:resultPulse 1.35s ease-in-out infinite}
+        @keyframes resultPulse{0%,100%{box-shadow:0 0 0 3px rgba(84,159,208,.14),0 0 12px rgba(84,159,208,.22)}50%{box-shadow:0 0 0 7px rgba(84,159,208,.18),0 0 24px rgba(84,159,208,.38)}}
+        .decode-line{background:white;border:1px solid #DBEAFE;border-radius:12px;padding:8px 10px;margin-top:8px;overflow-x:auto;white-space:nowrap}
+        .secret-badge{display:inline-flex;align-items:center;justify-content:center;border:2px solid var(--primary-blue);background:#EAF5FE;color:#1E4F86;border-radius:999px;padding:4px 14px;font-weight:900;box-shadow:0 0 0 4px rgba(84,159,208,.16)}
+        .decode-choice-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:8px}
+        .decode-choice-btn{border:2px solid #D8EBF7;background:#fff;border-radius:14px;padding:7px 10px;font-weight:900;color:#556070;cursor:pointer;box-shadow:0 4px 10px rgba(84,159,208,.07);transition:all .18s ease;text-align:center;line-height:1.25}
+        .decode-choice-btn:hover,.decode-choice-btn.active{border-color:var(--primary-blue);background:#EAF5FE;color:#1E4F86;transform:translateY(-2px);box-shadow:0 8px 18px rgba(84,159,208,.18)}
+        .decode-explain-box{background:white;border:1px solid #DBEAFE;border-radius:12px;padding:8px 10px;margin-top:8px;min-height:52px;overflow-x:auto;font-weight:900;color:#556070}
+        .decode-card-top{position:absolute;right:14px;top:10px;display:flex;align-items:flex-start;justify-content:flex-end;gap:12px;margin:0;z-index:12}
+        .decode-back-btn{border:2px solid var(--primary-blue);background:#fff;color:var(--primary-blue);border-radius:999px;padding:5px 11px;font-weight:900;cursor:pointer;white-space:nowrap}
+        .decode-back-btn:hover{background:var(--primary-blue);color:#fff}
+        .decode-detail-formula{background:white;border:1px solid #DBEAFE;border-radius:12px;padding:5px 9px;margin-top:5px;overflow-x:auto;white-space:nowrap;font-weight:900;line-height:1.25;-webkit-user-select:text;user-select:text}
+        .decode-long-formula{background:white;border:1px solid #DBEAFE;border-radius:12px;padding:6px 10px;margin-top:5px;overflow-x:auto;overflow-y:hidden;font-weight:900;line-height:1.3;-webkit-user-select:text;user-select:text;white-space:nowrap}
+        .decode-long-formula mjx-container{font-size:110%!important}
+        .decode-focus{border-color:var(--primary-blue);background:white;box-shadow:0 0 0 3px rgba(84,159,208,.12)}
+        .swap-hint{margin-top:5px;color:#667085;font-weight:900;font-size:.9rem}
+        .state-box{display:inline-flex;align-items:center;border:2px solid var(--primary-blue);border-radius:999px;background:white;padding:2px 8px;box-shadow:0 0 0 3px rgba(84,159,208,.12);white-space:nowrap}
+        .match-result{display:inline-flex;align-items:center;border:2px solid var(--primary-blue);border-radius:999px;background:white;padding:2px 10px;box-shadow:0 0 0 3px rgba(84,159,208,.12);white-space:nowrap;color:#1E4F86}
+        .unitary-compare-table{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:8px}
+        .unitary-compare-cell{background:white;border:1px solid #DBEAFE;border-radius:12px;padding:10px 8px;text-align:center;font-weight:900;color:#556070;white-space:nowrap}
+        .unitary-compare-cell.active{border:2px solid var(--primary-blue);box-shadow:0 0 0 3px rgba(84,159,208,.12);color:#1E4F86}
+        .decode-detail-body{padding-top:10px}
+        .decode-detail-text{font-weight:900;color:#556070;line-height:1.45}
+        .decode-measure-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:5px}
+        .decode-measure-card{background:white;border:2px solid #D8EBF7;border-radius:14px;padding:5px 9px;box-shadow:0 4px 10px rgba(84,159,208,.07);font-weight:900;color:#556070;text-align:center;white-space:nowrap;line-height:1.2;display:flex;align-items:center;justify-content:center;gap:6px;flex-wrap:nowrap}
+        .q-chip-pair{display:inline-flex;align-items:center;gap:4px;vertical-align:middle;white-space:nowrap}
+        .q-chip{width:26px;height:26px;border-radius:50%;background:var(--qubit-fill);display:inline-flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:900;color:#1f2937;border:3px solid var(--bob-color);box-shadow:0 0 10px rgba(84,159,208,.16)}
+        .q-chip.charlie{border-color:var(--charlie-color)}
+        .q-chip.alice{border-color:var(--alice-color)}
+        .decode-measure-card b{color:var(--primary-blue)}
+        .decode-measure-card.focus{border-color:var(--primary-blue);background:white;box-shadow:0 0 0 3px rgba(84,159,208,.12)}
+
+        .hint-box,.hint-box *{-webkit-user-select:text;-moz-user-select:text;-ms-user-select:text;user-select:text}
+        .swap-formula{display:flex;flex-direction:column;gap:6px;font-weight:900;color:#556070;line-height:1.35;max-height:122px;overflow:auto}
+        .swap-line{background:white;border:1px solid #DBEAFE;border-radius:12px;padding:7px 10px;overflow-x:auto;overflow-y:hidden}
+        .swap-terms{display:inline-flex;flex-wrap:nowrap;gap:6px;align-items:center;white-space:nowrap;width:max-content;min-width:max-content}
+        .swap-inline{display:flex;align-items:center;gap:8px;flex-wrap:nowrap;white-space:nowrap;overflow-x:auto;overflow-y:hidden}
+        .swap-inline .swap-prefix,.swap-inline .swap-suffix{flex:0 0 auto}
+        .swap-term{display:inline-flex;align-items:center;justify-content:center;border:1px solid #E5EEF9;border-radius:10px;background:#fff;padding:5px 8px;transition:all .45s ease}
+        .swap-term.extracted{border-color:var(--primary-blue);background:#EAF5FE;box-shadow:0 0 0 4px rgba(84,159,208,.16),0 10px 22px rgba(84,159,208,.2);transform:scale(1.08)}
+        .encode-formula{display:flex;flex-direction:column;gap:8px;font-weight:900;color:#556070;line-height:1.38}
+        .encode-formula .swap-line{overflow:auto}
+        .encode-formula .swap-line mjx-container{font-size:110%!important}
+        .megaphone{position:absolute;left:0;top:0;display:flex;align-items:center;gap:8px;z-index:25;pointer-events:none;animation:megaphoneFly 1.8s ease-in-out forwards}
+        .megaphone-icon{font-size:30px;line-height:1}
+        .megaphone-text{font-size:1rem;font-weight:900;color:#1E4F86;background:rgba(255,255,255,.96);border:2px solid #BFDDF3;border-radius:999px;padding:4px 10px;box-shadow:0 6px 14px rgba(84,159,208,.16);white-space:nowrap}
+        @keyframes megaphoneFly{0%{opacity:0;transform:translate(0,0) scale(.7)}12%{opacity:1}82%{opacity:1}100%{opacity:0;transform:translate(var(--dx),var(--dy)) scale(1.04)}}
+
+        .pingpong-image-dock{position:fixed;right:16px;top:0;width:430px;height:100vh;z-index:900;pointer-events:none;display:flex;justify-content:center;overflow:visible;isolation:isolate;font-family:'Arial Rounded MT Bold','Arial Rounded MT','Arial',sans-serif}
+        .pingpong-image-viewport{position:relative;width:330px;height:100vh;background:#ffffff;box-shadow:0 12px 26px rgba(0,0,0,.12);overflow:visible;isolation:isolate}
+        .pingpong-image-viewport::before,.pingpong-image-viewport::after{content:"";position:absolute;top:0;width:14px;height:100vh;background:#d9d9d9;pointer-events:none;z-index:0}
+        .pingpong-image-viewport::before{left:0}.pingpong-image-viewport::after{right:0}
+        .pingpong-image-window{position:relative;width:500px;height:100vh;margin-left:-85px;overflow:hidden;z-index:2}
+        .pingpong-image-list{position:relative;display:flex;flex-direction:column;align-items:center;gap:12px;padding:52px 0 42px;width:500px;transform:translateY(0);transition:transform .55s cubic-bezier(.22,.8,.22,1)}
+        .pingpong-image-card{position:relative;width:350px;min-height:52px;padding:0 18px;background:#ffffff;border:6px solid var(--primary-blue);border-radius:16px;display:flex;align-items:center;justify-content:center;flex:0 0 auto;overflow:hidden}
+        .pingpong-image-card.is-current{width:365px;min-height:365px;padding:14px;border:7px solid var(--primary-blue);border-radius:20px;box-shadow:0 12px 28px rgba(84,159,208,.28);margin:6px 0;align-items:center;justify-content:center}
+        .pingpong-step-summary{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;height:100%;color:#111;font-weight:900;font-size:1rem;letter-spacing:.02em;white-space:nowrap;transition:opacity .22s ease,transform .22s ease;text-align:center}
+        .pingpong-step-number{width:22px;height:22px;border-radius:50%;background:var(--primary-blue);color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:.86rem;line-height:1;flex:0 0 auto}
+        .pingpong-image-card img{position:relative;z-index:3;width:100%;height:auto;max-width:0;max-height:0;object-fit:contain;display:block;opacity:0;transform:scale(.92);transition:opacity .28s ease .2s,transform .45s cubic-bezier(.22,.8,.22,1) .12s,max-width .55s cubic-bezier(.22,.8,.22,1),max-height .55s cubic-bezier(.22,.8,.22,1)}
+        .pingpong-image-card.is-current .pingpong-step-summary{opacity:0;transform:translateY(-8px);position:absolute;pointer-events:none}
+        .pingpong-image-card.is-current img{max-width:318px;max-height:320px;opacity:1;transform:scale(1)}
+
+        @media (min-width:1180px){body{padding-right:450px!important}}
+        @media (max-width:1179px){body{padding-right:20px!important}.pingpong-image-dock{position:relative;right:auto;top:auto;width:min(94vw,840px);height:320px;margin:18px auto 10px}.pingpong-image-viewport{width:100%;height:320px}.pingpong-image-viewport::before,.pingpong-image-viewport::after{height:320px;width:10px;z-index:0}.pingpong-image-window{width:100%;height:320px;margin-left:0}.pingpong-image-list{flex-direction:row;align-items:center;gap:14px;width:max-content;height:320px;padding:0 24px}.pingpong-image-card{width:270px;min-height:52px}.pingpong-image-card.is-current{width:305px;min-height:250px;margin:0 10px}.pingpong-image-card.is-current img{max-width:275px;max-height:220px}.main-card{height:760px}.party-alice{left:calc(35% + 90px);top:34px}.party-bob{left:109px;top:268px}.party-charlie{right:85px;top:268px}#stage.message-layout .party-alice{left:calc(35% + 155px);top:14px}#stage.message-layout .party-bob{left:159px;top:238px}#stage.message-layout .party-charlie{right:55px;top:238px}.party img{width:112px}.center-panel{top:340px;width:min(430px,82vw)}.center-panel.message-panel{left:calc(54% + 20px);top:175px;transform:translateX(-50%);width:min(210px,82vw);align-items:center}.center-panel.detecting-panel{left:50%;top:510px;transform:translateX(-50%);width:min(420px,92vw);align-items:center}.mode-badge{left:calc(54% + 20px);top:110px}.mode-badge.corner{left:18px;top:80px;transform:none}.floating-announcement{left:calc(35% + 90px);top:32px;transform:translateX(-50%);max-width:220px}#replay-btn,#step-btn{left:-15px}
+        #next-step-btn{left:-15px;top:-414px}#replay-btn{top:-470px}#step-btn{top:-414px}
+        #next-step-btn{position:absolute;left:-210px;top:-414px;min-width:150px}.operation-grid{grid-template-columns:1fr}.qubit{width:38px;height:38px}.hint-box{width:86%}}
+    </style>
+</head>
+<body>
+<aside class="pingpong-image-dock" aria-label="Zhang-Man current-step image preview" data-current-step="5">
+    <div class="pingpong-image-viewport">
+        <div class="pingpong-image-window">
+            <div class="pingpong-image-list">
+                <div class="pingpong-image-card" data-pingpong-step="1"><div class="pingpong-step-summary"><span class="pingpong-step-number">1</span><span class="pingpong-step-title">PREPARE</span></div><img src="pictures/zm-1.png" alt="Zhang-Man Step 1 Prepare"></div>
+                <div class="pingpong-image-card" data-pingpong-step="2"><div class="pingpong-step-summary"><span class="pingpong-step-number">2</span><span class="pingpong-step-title">DISTRIBUTE</span></div><img src="pictures/zm-2.png" alt="Zhang-Man Step 2 Distribute"></div>
+                <div class="pingpong-image-card" data-pingpong-step="3"><div class="pingpong-step-summary"><span class="pingpong-step-number">3</span><span class="pingpong-step-title">SELECT MODE</span></div><img src="pictures/zm-3.png" alt="Zhang-Man Step 3 Select Mode"></div>
+                <div class="pingpong-image-card" data-pingpong-step="4"><div class="pingpong-step-summary"><span class="pingpong-step-number">4</span><span class="pingpong-step-title">CHECK / MESSAGE</span></div><img id="zm-step4-img" src="pictures/zm-4-m.png" alt="Zhang-Man Step 4"></div>
+                <div class="pingpong-image-card is-current" data-pingpong-step="5" aria-current="step"><div class="pingpong-step-summary"><span class="pingpong-step-number">5</span><span class="pingpong-step-title">PUBLIC / RECOVER</span></div><img id="zm-step5-img" src="pictures/zm-5.png" alt="Zhang-Man Step 5"></div>
+            </div>
+        </div>
+    </div>
+</aside>
+
+<div class="header">
+    <div class="header-left">
+        <a href="QuantumCybersecurityEducationPlatform.html?section=qss#quantum-security-applications" class="btn-back" title="back home" aria-label="Back to Home"></a>
+        <div class="title-pill">QSS : Zhang-Man Protocol</div>
+    </div>
+    <div class="header-center" id="header-subtitle">STEP 5 : ANNOUNCE / DECODE</div>
+    <div class="header-right">
+        <button class="nav-btn" onclick="prevStep()">Back</button>
+        <button class="nav-btn" id="next-btn" onclick="nextStep()" disabled>Next</button>
+    </div>
+</div>
+
+<div class="main-card" id="stage">
+    <div class="mode-badge" id="mode-badge">Mode</div>
+
+    <div class="ent-line" id="line12"></div>
+    <div class="ent-line" id="line34"></div>
+    <div class="ent-line" id="line56"></div>
+    <div class="ent-tag" id="etag12">\( |\Psi^-\rangle_{12} \)</div>
+    <div class="ent-tag" id="etag34">\( |\Psi^-\rangle_{34} \)</div>
+    <div class="ent-tag" id="etag56">\( |\Psi^-\rangle_{56} \)</div>
+
+    <div class="party party-alice" id="party-alice">
+        <img src="pictures/cat_alice.svg" alt="Alice">
+                <div class="qubit-row"><div class="qubit" id="q1">q1</div><div class="qubit" id="q6">q6</div></div>
+        <div class="measurement-result" id="alice-result"></div>
+    </div>
+
+    <div class="party party-bob" id="party-bob">
+        <img src="pictures/cat_bob.svg" alt="Bob">
+                <div class="qubit-row"><div class="qubit" id="q2">q2</div><div class="qubit" id="q3">q3</div></div>
+        <div class="measurement-result" id="bob-result"></div>
+    </div>
+
+    <div class="party party-charlie" id="party-charlie">
+        <img src="pictures/cat_charlie.svg" alt="Charlie">
+                <div class="qubit-row"><div class="qubit" id="q4">q4</div><div class="qubit" id="q5">q5</div></div>
+        <div class="measurement-result" id="charlie-result"></div>
+    </div>
+
+    <div class="center-panel" id="center-panel"></div>
+    <div class="announcement floating-announcement" id="announcement"></div>
+
+    <div class="hint-box" id="hint-box">
+        <p class="hint-title" id="hint-title">Step 4</p>
+        <p class="hint-text" id="hint-text">The action depends on the mode Alice selected in Step 3.</p>
+    </div>
+</div>
+
+<script>
+    const selectedMode = localStorage.getItem('zhangManMode') || 'detecting';
+
+    const initialEntanglementPairs = [
+        { line: 'line12', tag: 'etag12', a: 'q1', b: 'q2', label: '\( |\Psi^-\rangle_{12} \)', tagOffsetY: 10 },
+        { line: 'line34', tag: 'etag34', a: 'q3', b: 'q4', label: '\( |\Psi^-\rangle_{34} \)', tagOffsetY: 10 },
+        { line: 'line56', tag: 'etag56', a: 'q5', b: 'q6', label: '\( |\Psi^-\rangle_{56} \)', tagOffsetY: 10 }
+    ];
+
+    let linePairs = [...initialEntanglementPairs];
+
+    function centerOf(element, container) {
+        const r = element.getBoundingClientRect();
+        const c = container.getBoundingClientRect();
+        return { x: r.left - c.left + r.width / 2, y: r.top - c.top + r.height / 2 };
+    }
+
+    function drawLine(lineId, fromId, toId, tagId, shape = 'straight', tagOffsetY = 10) {
+        const area = document.getElementById('stage');
+        const from = document.getElementById(fromId);
+        const to = document.getElementById(toId);
+        const line = document.getElementById(lineId);
+        const tag = document.getElementById(tagId);
+        if (!area || !from || !to || !line || !tag) return;
+        const a = centerOf(from, area);
+        const b = centerOf(to, area);
+
+        if (shape === 'arc') {
+            const left = Math.min(a.x, b.x);
+            const right = Math.max(a.x, b.x);
+            const width = right - left;
+            const arcHeight = Number(line.dataset.arcHeight || 76);
+            const top = Math.min(a.y, b.y) - arcHeight + 8;
+            line.classList.add('arc');
+            line.style.left = left + 'px';
+            line.style.top = top + 'px';
+            line.style.width = width + 'px';
+            line.style.height = arcHeight + 'px';
+            line.style.border = '4px dashed var(--alice-color)';
+            line.style.borderBottom = 'none';
+            line.style.borderTop = '4px dashed var(--alice-color)';
+            line.style.borderRadius = Math.max(48, width / 2) + 'px ' + Math.max(48, width / 2) + 'px 0 0';
+            line.style.background = 'transparent';
+            line.style.transform = 'none';
+            tag.style.left = ((a.x + b.x) / 2) + 'px';
+            tag.style.top = (top + tagOffsetY) + 'px';
+            return;
+        }
+
+        line.classList.remove('arc');
+        line.style.height = '0';
+        line.style.border = '';
+        line.style.borderTop = '4px dashed var(--alice-color)';
+        line.style.borderRadius = '0';
+        line.style.background = 'transparent';
+
+        const dx = b.x - a.x;
+        const dy = b.y - a.y;
+        const length = Math.sqrt(dx * dx + dy * dy);
+        const angle = Math.atan2(dy, dx) * 180 / Math.PI;
+        line.style.left = a.x + 'px';
+        line.style.top = a.y + 'px';
+        line.style.width = length + 'px';
+        line.style.transform = 'rotate(' + angle + 'deg)';
+        tag.style.left = ((a.x + b.x) / 2) + 'px';
+        tag.style.top = ((a.y + b.y) / 2 + tagOffsetY) + 'px';
+    }
+
+    function setEntanglementPairs(pairs) {
+        linePairs = pairs;
+        linePairs.forEach(pair => {
+            const tag = document.getElementById(pair.tag);
+            if (tag && pair.label) tag.innerHTML = pair.label;
+        });
+        updateEntangleLines();
+    }
+
+    function updateEntangleLines() {
+        linePairs.forEach(pair => {
+            const tag = document.getElementById(pair.tag);
+            if (tag && pair.label) tag.innerHTML = pair.label;
+            const lineEl = document.getElementById(pair.line);
+            if (lineEl) {
+                if (pair.arcHeight) lineEl.dataset.arcHeight = pair.arcHeight;
+                else delete lineEl.dataset.arcHeight;
+            }
+            drawLine(pair.line, pair.a, pair.b, pair.tag, pair.shape || 'straight', pair.tagOffsetY ?? 10);
+        });
+        if (window.MathJax) MathJax.typesetPromise(['etag12','etag34','etag56'].map(id => document.getElementById(id)).filter(Boolean));
+    }
+
+    function showDetectingInitialEntanglement() {
+        if (stage) stage.classList.remove('message-layout');
+        linePairs = [
+            { line: 'line12', tag: 'etag12', a: 'q1', b: 'q2', label: '\\( |\\Psi^-\\rangle_{12} \\)', shape: 'straight', tagOffsetY: 10 },
+            { line: 'line34', tag: 'etag34', a: 'q3', b: 'q4', label: '\\( |\\Psi^-\\rangle_{34} \\)', shape: 'straight', tagOffsetY: 10 },
+            { line: 'line56', tag: 'etag56', a: 'q5', b: 'q6', label: '\\( |\\Psi^-\\rangle_{56} \\)', shape: 'straight', tagOffsetY: 10 }
+        ];
+
+        ['line12','etag12','line34','etag34','line56','etag56'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) {
+                el.style.display = 'block';
+                el.style.opacity = '1';
+                el.style.visibility = 'visible';
+                el.style.filter = '';
+            }
+        });
+
+        ['line12','line34','line56'].forEach(id => {
+            const line = document.getElementById(id);
+            if (line) {
+                line.classList.remove('arc');
+                line.style.height = '0';
+                line.style.border = '';
+                line.style.borderTop = '4px dashed var(--alice-color)';
+                line.style.borderBottom = '';
+                line.style.borderRadius = '0';
+                line.style.background = 'transparent';
+                line.style.transformOrigin = 'left center';
+            }
+        });
+
+        updateEntangleLines();
+        setTimeout(updateEntangleLines, 0);
+        setTimeout(updateEntangleLines, 80);
+        setTimeout(updateEntangleLines, 220);
+    }
+
+    function showOnlyQ34Entanglement() {
+        linePairs = [
+            { line: 'line34', tag: 'etag34', a: 'q3', b: 'q4', label: '\\( |\\Psi^-\\rangle_{34} \\)', shape: 'straight', tagOffsetY: 4 }
+        ];
+
+        const line34 = document.getElementById('line34');
+        const tag34 = document.getElementById('etag34');
+        if (tag34) tag34.innerHTML = '\\( |\\Psi^-\\rangle_{34} \\)';
+
+        ['line12','etag12','line56','etag56'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) {
+                el.style.opacity = '0';
+                el.style.visibility = 'hidden';
+                el.style.display = 'none';
+            }
+        });
+
+        if (line34) {
+            line34.style.display = 'block';
+            line34.style.opacity = '1';
+            line34.style.visibility = 'visible';
+            line34.classList.remove('arc');
+            line34.style.border = '';
+            line34.style.borderTop = '4px dashed var(--alice-color)';
+            line34.style.height = '0';
+            line34.style.borderRadius = '0';
+            line34.style.transformOrigin = 'left center';
+        }
+
+        if (tag34) {
+            tag34.style.display = 'block';
+            tag34.style.opacity = '1';
+            tag34.style.visibility = 'visible';
+        }
+
+        drawLine('line34', 'q3', 'q4', 'etag34', 'straight', 4);
+        if (window.MathJax) MathJax.typesetPromise([tag34]).then(() => drawLine('line34', 'q3', 'q4', 'etag34', 'straight', 4));
+        setTimeout(() => drawLine('line34', 'q3', 'q4', 'etag34', 'straight', 4), 0);
+        setTimeout(() => drawLine('line34', 'q3', 'q4', 'etag34', 'straight', 4), 80);
+        setTimeout(() => drawLine('line34', 'q3', 'q4', 'etag34', 'straight', 4), 200);
+    }
+
+    function showMessageEntanglement(aliceBell, bcBell) {
+        const label16 = bellLatexFromText(aliceBell, '16');
+        const label25 = bellLatexFromText(bcBell, '25');
+        linePairs = [
+            { line: 'line12', tag: 'etag12', a: 'q1', b: 'q6', label: label16, shape: 'straight', tagOffsetY: 50 },
+            { line: 'line56', tag: 'etag56', a: 'q2', b: 'q5', label: label25, shape: 'arc', tagOffsetY: 6, arcHeight: 52 },
+            { line: 'line34', tag: 'etag34', a: 'q3', b: 'q4', label: '\\( |\\Psi^-\\rangle_{34} \\)', shape: 'straight', tagOffsetY: 4 }
+        ];
+
+        ['line12','etag12','line34','etag34','line56','etag56'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) {
+                el.style.display = 'block';
+                el.style.opacity = '1';
+                el.style.visibility = 'visible';
+                el.style.filter = '';
+            }
+        });
+
+        ['line12','line34','line56'].forEach(id => {
+            const line = document.getElementById(id);
+            if (line) {
+                line.classList.remove('arc');
+                line.style.height = '0';
+                line.style.border = '';
+                line.style.borderTop = '4px dashed var(--alice-color)';
+                line.style.borderBottom = '';
+                line.style.borderRadius = '0';
+                line.style.background = 'transparent';
+                line.style.transformOrigin = 'left center';
+            }
+        });
+
+        updateEntangleLines();
+        setTimeout(updateEntangleLines, 0);
+        setTimeout(updateEntangleLines, 80);
+        setTimeout(updateEntangleLines, 220);
+        setTimeout(updateEntangleLines, 420);
+    }
+
+
+    function wait(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    function getEyeAsset(party, basis) {
+        const low = basis.toLowerCase();
+        if (party === 'alice') return 'pictures/a_eye' + low + '.svg';
+        if (party === 'charlie') return 'pictures/c_eye' + low + '.svg';
+        return 'pictures/b_eye' + low + '.svg';
+    }
+
+    async function showMeasureEye(party, basis = 'X') {
+        const stage = document.getElementById('stage');
+        const anchor = document.getElementById('party-' + party);
+        if (!stage || !anchor) return;
+        const c = centerOf(anchor, stage);
+        const src = getEyeAsset(party, basis);
+        const eye = document.createElement('div');
+        eye.className = 'measure-eye ' + party + '-eye';
+        eye.innerHTML = '<img src="' + src + '" alt="' + party + ' ' + basis + ' basis" onerror="this.replaceWith(document.createTextNode(\'👁 ' + basis + '\'))">';
+        eye.style.left = c.x + 'px';
+        eye.style.top = (c.y - 70) + 'px';
+        stage.appendChild(eye);
+        requestAnimationFrame(() => eye.classList.add('show'));
+        await wait(1050);
+        eye.remove();
+    }
+
+    function preloadEyeAssets() {
+        ['pictures/a_eyex.svg','pictures/a_eyez.svg','pictures/b_eyex.svg','pictures/b_eyez.svg','pictures/c_eyex.svg','pictures/c_eyez.svg'].forEach(src => {
+            const img = new Image();
+            img.src = src;
+        });
+    }
+
+    function setMessageResult(targetId, html) {
+        const host = document.getElementById(targetId);
+        if (!host) return;
+        host.innerHTML = '<div class="result-item">' + html + '</div>';
+    }
+
+    function showPostEyeMessageEntanglement() {
+        const stage = document.getElementById('stage');
+        const aliceBell = localStorage.getItem('zhangManAliceBell16') || '|Ψ⁻⟩₁₆';
+
+        if (stage) stage.classList.add('message-post-eye');
+
+        linePairs = [
+            { line: 'line12', tag: 'etag12', a: 'q1', b: 'q6', label: bellLatexFromText(aliceBell, '16'), shape: 'straight', tagOffsetY: 50 },
+            { line: 'line34', tag: 'etag34', a: 'q2', b: 'q3', label: '\\( |\\Psi^-\\rangle_{23} \\)', shape: 'straight', tagOffsetY: 63 },
+            { line: 'line56', tag: 'etag56', a: 'q4', b: 'q5', label: '\\( |\\Phi^+\\rangle_{45} \\)', shape: 'straight', tagOffsetY: 63 }
+        ];
+
+        ['line12','etag12','line34','etag34','line56','etag56'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) {
+                el.style.display = 'block';
+                el.style.opacity = '1';
+                el.style.visibility = 'visible';
+                el.style.filter = '';
+            }
+        });
+
+        ['line12','line34','line56'].forEach(id => {
+            const line = document.getElementById(id);
+            if (line) {
+                line.classList.remove('arc');
+                line.style.height = '0';
+                line.style.border = '';
+                line.style.borderTop = '4px dashed var(--alice-color)';
+                line.style.borderBottom = '';
+                line.style.borderRadius = '0';
+                line.style.background = 'transparent';
+                line.style.transformOrigin = 'left center';
+            }
+        });
+
+        updateEntangleLines();
+        setTimeout(updateEntangleLines, 0);
+        setTimeout(updateEntangleLines, 90);
+        setTimeout(updateEntangleLines, 240);
+    }
+
+    function showMessageMeasurementFeedback(kind) {
+        document.getElementById('alice-result').innerHTML = '';
+        document.getElementById('bob-result').innerHTML = '';
+        document.getElementById('charlie-result').innerHTML = '';
+
+        const publicAlice16 = localStorage.getItem('zhangManAliceBell16') || '|Ψ⁻⟩₁₆';
+        const opBits = localStorage.getItem('zhangManOperation') || '00';
+        const op = operationFromBits(opBits);
+
+        if (kind === 'alice') {
+            showMeasureEye('bob', 'X');
+            showMeasureEye('charlie', 'X');
+            setMessageResult('bob-result', '<span class="result-dot bob"></span><span>Bell(23) = |Ψ⁻⟩</span>');
+            setMessageResult('charlie-result', '<span class="result-dot charlie"></span><span>Bell(45) = |Φ⁺⟩</span>');
+        } else if (kind === 'bc') {
+            showMeasureEye('alice', 'X');
+            setMessageResult('alice-result', '<span class="result-dot alice"></span><span>Original Bell(16) = |Φ⁺⟩</span>');
+            setMessageResult('bob-result', '<span class="result-dot bob"></span><span>Inferred Bell(25) = |Φ⁺⟩</span>');
+            setMessageResult('charlie-result', '<span class="result-dot charlie"></span><span>No operation used here</span>');
+        } else {
+            showMeasureEye('alice', 'X');
+            setMessageResult('alice-result', '<span class="result-dot alice"></span><span>Announced Bell(16) = ' + publicAlice16.replace(/[₀-₉]/g, '') + '</span>');
+            setMessageResult('bob-result', '<span class="result-dot bob"></span><span>Recovered operation = ' + op + '</span>');
+            setMessageResult('charlie-result', '<span class="result-dot charlie"></span><span>Secret bits = ' + opBits + '</span>');
+        }
+
+        setTimeout(showPostEyeMessageEntanglement, 220);
+    }
+
+    function markMeasured(ids) {
+        ids.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.classList.add('measured');
+        });
+    }
+
+    function oppositeResult(value, basis) {
+        if (basis === 'Z') return value === '|0⟩' ? '|1⟩' : '|0⟩';
+        return value === '|+⟩' ? '|−⟩' : '|+⟩';
+    }
+
+    function bellLatexFromText(textValue, pair) {
+        const match = String(textValue || '').match(/[ΦΨ][⁺⁻]/);
+        if (!match) return '\\( |Bell\\rangle_{' + pair + '} \\)';
+        const state = match[0].replace('Φ','\\Phi').replace('Ψ','\\Psi').replace('⁺','^+').replace('⁻','^-');
+        return '\\( |' + state + '\\rangle_{' + pair + '} \\)';
+    }
+
+    function setPlainResult(targetId, rows) {
+        const host = document.getElementById(targetId);
+        if (!host) return;
+        host.innerHTML = rows.map(row => `<div class="result-item" data-qubit="${row.qubit}"><span>${row.qubit}=${row.value}</span></div>`).join('');
+    }
+
+    function highlightResultPair(firstQubit, secondQubit) {
+        document.querySelectorAll('.result-item').forEach(item => item.classList.remove('active'));
+        [firstQubit, secondQubit].forEach(q => {
+            const item = document.querySelector(`.result-item[data-qubit="${q}"]`);
+            if (item) item.classList.add('active');
+        });
+    }
+
+    const bcInferenceExample = {
+        bob23: '|Ψ⁻⟩₂₃',
+        charlie45: '|Φ⁺⟩₄₅',
+        initial34: '|Ψ⁻⟩₃₄',
+        inferred25: '|Φ⁺⟩₂₅',
+        alice16: '|Φ⁺⟩₁₆',
+        operation: 'u₄',
+        secret: '11'
+    };
+
+    function setQ25Highlight(show) {
+        const tag = document.getElementById('etag56');
+        const line = document.getElementById('line56');
+        [tag, line].forEach(el => {
+            if (!el) return;
+            el.style.filter = show ? 'drop-shadow(0 0 8px rgba(84,159,208,.85))' : '';
+        });
+    }
+
+    function qChipPairHTML(pairText) {
+        const map = {
+            '12': [['q1','alice'], ['q2','bob']],
+            '16': [['q1','alice'], ['q6','bob']],
+            '23': [['q2','bob'], ['q3','bob']],
+            '25': [['q2','bob'], ['q5','charlie']],
+            '34': [['q3','bob'], ['q4','charlie']],
+            '45': [['q4','charlie'], ['q5','charlie']],
+            '56': [['q5','charlie'], ['q6','bob']]
+        };
+        const items = map[pairText] || [];
+        return `<span class="q-chip-pair">${items.map(([q, cls]) => `<span class="q-chip ${cls === 'bob' ? '' : cls}">${q}</span>`).join('')}</span>`;
+    }
+
+    function renderMeasurementCards() {
+        return String.raw`
+            <div class="decode-measure-grid">
+                <div class="decode-measure-card focus"><b>Bob measures</b><span class="q-chip-pair"><span class="q-chip">q2</span><span class="q-chip">q3</span></span>\( |\Psi^-\rangle_{23} \)</div>
+                <div class="decode-measure-card focus"><b>Charlie measures</b><span class="q-chip-pair"><span class="q-chip charlie">q4</span><span class="q-chip charlie">q5</span></span>\( |\Phi^+\rangle_{45} \)</div>
+                <div class="decode-measure-card focus"><b>Initial</b><span class="q-chip-pair"><span class="q-chip">q3</span><span class="q-chip charlie">q4</span></span><span class="state-box">\( |\Psi^-\rangle_{34} \)</span></div>
+            </div>`;
+    }
+
+    function bellCore(textValue) {
+        const m = String(textValue || '').match(/[ΦΨ][⁺⁻]/);
+        return m ? m[0] : 'Ψ⁻';
+    }
+
+    function bellLatexCore(core) {
+        return core.replace('Φ','\\Phi').replace('Ψ','\\Psi').replace('⁺','^+').replace('⁻','^-');
+    }
+
+    function bellTextWithPair(textValue, pair) {
+        return '|' + bellCore(textValue) + '⟩' + pair.split('').map(n => '₀₁₂₃₄₅₆₇₈₉'[Number(n)]).join('');
+    }
+
+    function bellLatexWithPair(textValue, pair) {
+        return '\\( |' + bellLatexCore(bellCore(textValue)) + '\\rangle_{' + pair + '} \\)';
+    }
+
+    function operationFromBits(bits) {
+        return { '00': 'I', '01': 'Z', '10': 'Y', '11': 'X' }[bits] || 'I';
+    }
+
+    function original16FromInferred25(bcBell) {
+        return bellTextWithPair(bcBell || '|Ψ⁻⟩₂₅', '16');
+    }
+
+    function renderDecodeChoices() {
+        const stage = document.getElementById('stage');
+        const hintTitle = document.getElementById('hint-title');
+        const hintText = document.getElementById('hint-text');
+        const opBits = localStorage.getItem('zhangManOperation') || '00';
+
+        const hintBox = document.getElementById('hint-box');
+        if (hintBox) hintBox.classList.remove('expanded');
+        hintTitle.innerText = 'Collaborative Decoding';
+        hintText.innerHTML = `
+            <div class="detecting-hint">
+                <div class="detecting-note">Click the three parts in order to see how Bob and Charlie use their Bell-measurement results to infer ${qChipPairHTML('25')}, then combine it with Alice's public ${qChipPairHTML('16')} result to recover the secret bits.</div>
+                <div class="decode-choice-grid">
+                    <button class="decode-choice-btn" data-kind="alice" onclick="showDecodeExplain('alice')">1. Infer ${qChipPairHTML('25')}<br>from ${qChipPairHTML('23')} ${qChipPairHTML('45')}</button>
+                    <button class="decode-choice-btn" data-kind="bc" onclick="showDecodeExplain('bc')">2. Use ${qChipPairHTML('16')} ${qChipPairHTML('25')}<br>find operation</button>
+                    <button class="decode-choice-btn" data-kind="secret" onclick="showDecodeExplain('secret')">3. Recover secret<br><span class="secret-badge">${opBits}</span></button>
+                </div>
+            </div>`;
+        if (window.MathJax) MathJax.typesetPromise([hintText]);
+    }
+
+    function showDecodeExplain(kind) {
+        const hintTitle = document.getElementById('hint-title');
+        const hintText = document.getElementById('hint-text');
+        if (!hintTitle || !hintText) return;
+        const hintBox = document.getElementById('hint-box');
+        if (hintBox) hintBox.classList.add('expanded');
+
+        const publicAlice16 = localStorage.getItem('zhangManAliceBell16') || '|Ψ⁻⟩₁₆';
+        const inferred25 = '|Φ⁺⟩₂₅';
+        const original16 = '|Φ⁺⟩₁₆';
+        const opBits = localStorage.getItem('zhangManOperation') || '00';
+        const op = operationFromBits(opBits);
+
+        let title = 'Collaborative Decoding';
+        let body = '';
+
+        showMessageMeasurementFeedback(kind);
+
+        if (kind === 'alice') {
+            title = 'Infer the <span class="q-chip-pair"><span class="q-chip">q2</span><span class="q-chip charlie">q5</span></span> Bell State';
+            body = String.raw`
+                ${renderMeasurementCards()}
+                <div class="swap-hint">Direct entanglement swapping: ${qChipPairHTML('23')}${qChipPairHTML('45')} → ${qChipPairHTML('25')}${qChipPairHTML('34')}.</div>
+                <div class="decode-long-formula">
+                    <span>\( |\Psi^{-}\rangle_{23}|\Phi^{+}\rangle_{45}= \)</span>
+                    <span class="state-box">\( -\frac{1}{2}|\Phi^{+}\rangle_{25}|\Psi^{-}\rangle_{34} \)</span>
+                    <span>\( +\frac{1}{2}|\Phi^{-}\rangle_{25}|\Psi^{+}\rangle_{34} \)</span>
+                    <span>\( -\frac{1}{2}|\Psi^{+}\rangle_{25}|\Phi^{-}\rangle_{34} \)</span>
+                    <span>\( +\frac{1}{2}|\Psi^{-}\rangle_{25}|\Phi^{+}\rangle_{34} \)</span>
+                </div>
+                <div class="decode-detail-formula decode-focus">
+                    Match <span class="match-result">\( |\Psi^{-}\rangle_{34} \)</span>
+                    \( \Rightarrow |\Phi^{+}\rangle_{25} \)
+                </div>`;
+            setTimeout(() => setQ25Highlight(true), 0);
+        } else if (kind === 'bc') {
+            title = 'Use Alice Public ' + qChipPairHTML('16') + ' Result';
+            body = String.raw`
+                <div class="decode-measure-grid">
+                    <div class="decode-measure-card focus"><b>Original</b>${qChipPairHTML('12')} \( |\Psi^{-}\rangle_{12} \)</div>
+                    <div class="decode-measure-card focus"><b>Original</b>${qChipPairHTML('56')} \( |\Psi^{-}\rangle_{56} \)</div>
+                    <div class="decode-measure-card focus"><b>Inferred</b>${qChipPairHTML('25')}<span class="state-box">\( |\Phi^{+}\rangle_{25} \)</span></div>
+                </div>
+                <div class="swap-hint">Direct entanglement swapping with no operation: ${qChipPairHTML('12')}${qChipPairHTML('56')} → ${qChipPairHTML('16')}${qChipPairHTML('25')}.</div>
+                <div class="decode-long-formula">
+                    <span>\( |\Psi^{-}\rangle_{12}|\Psi^{-}\rangle_{56}= \)</span>
+                    <span class="state-box">\( -\frac{1}{2}|\Phi^{+}\rangle_{16}|\Phi^{+}\rangle_{25} \)</span>
+                    <span>\( +\frac{1}{2}|\Phi^{-}\rangle_{16}|\Phi^{-}\rangle_{25} \)</span>
+                    <span>\( +\frac{1}{2}|\Psi^{+}\rangle_{16}|\Psi^{+}\rangle_{25} \)</span>
+                    <span>\( -\frac{1}{2}|\Psi^{-}\rangle_{16}|\Psi^{-}\rangle_{25} \)</span>
+                </div>
+                <div class="decode-detail-formula decode-focus">
+                    Match <span class="match-result">\( |\Phi^{+}\rangle_{25} \)</span>
+                    \( \Rightarrow |\Phi^{+}\rangle_{16}\ \text{before Alice's operation} \)
+                </div>`;
+            setTimeout(() => setQ25Highlight(true), 0);
+        } else {
+            title = 'Recover Secret Bits';
+            body = String.raw`
+                <div class="decode-detail-text">Only this final comparison uses Alice's selected operation. Compare the original ${qChipPairHTML('16')} state from direct swapping with Alice's public ${qChipPairHTML('16')} result from Step 3.</div>
+                <div class="decode-measure-grid">
+                    <div class="decode-measure-card focus"><b>Original</b>${qChipPairHTML('16')} \( |\Phi^{+}\rangle_{16} \)</div>
+                    <div class="decode-measure-card focus"><b>Alice public</b>${qChipPairHTML('16')} ${bellLatexWithPair(publicAlice16, '16')}</div>
+                    <div class="decode-measure-card focus"><b>Recovered operation</b> \( ${op} \)</div>
+                </div>
+                <div class="unitary-compare-table">
+                    <div class="unitary-compare-cell ${opBits === '00' ? 'active' : ''}">00<br>\(I\)</div>
+                    <div class="unitary-compare-cell ${opBits === '01' ? 'active' : ''}">01<br>\(Z\)</div>
+                    <div class="unitary-compare-cell ${opBits === '10' ? 'active' : ''}">10<br>\(Y\)</div>
+                    <div class="unitary-compare-cell ${opBits === '11' ? 'active' : ''}">11<br>\(X\)</div>
+                </div>
+                <div class="decode-detail-formula decode-focus">
+                    \( |\Phi^{+}\rangle_{16} \)
+                    \( \xrightarrow{${op}} \)
+                    ${bellLatexWithPair(publicAlice16, '16')}
+                    \( \Rightarrow \text{secret bits}=${opBits} \)
+                </div>`;
+            setTimeout(() => setQ25Highlight(false), 0);
+        }
+
+        hintTitle.innerHTML = title;
+        hintText.innerHTML = `
+            <div class="decode-card-top">
+                <button class="decode-back-btn" onclick="setQ25Highlight(false); renderDecodeChoices()">Choose again</button>
+            </div>
+            <div class="decode-detail-body">${body}</div>`;
+        if (window.MathJax) MathJax.typesetPromise([hintText, hintTitle]);
+    }
+
+    function configureStep4UI() {
+        const badge = document.getElementById('mode-badge');
+        const header = document.getElementById('header-subtitle');
+        const panel = document.getElementById('center-panel');
+        const hintTitle = document.getElementById('hint-title');
+        const hintText = document.getElementById('hint-text');
+        const stage = document.getElementById('stage');
+        const step4Img = document.getElementById('zm-step4-img');
+        const step5Img = document.getElementById('zm-step5-img');
+
+        panel.classList.remove('message-panel', 'detecting-panel');
+        if (stage) stage.classList.remove('message-post-eye');
+        document.getElementById('alice-result').innerHTML = '';
+        document.getElementById('bob-result').innerHTML = '';
+        document.getElementById('charlie-result').innerHTML = '';
+
+        if (selectedMode === 'detecting') {
+            if (stage) stage.classList.remove('message-layout');
+            if (step4Img) step4Img.src = 'pictures/zm-5-d.png';
+            if (step5Img) step5Img.src = 'pictures/zm-5-d.png';
+            badge.innerText = 'Detecting Mode';
+            badge.classList.add('corner');
+            badge.style.borderColor = 'var(--detect)';
+            badge.style.color = 'var(--detect)';
+            header.innerText = 'STEP 5 : PUBLIC COMPARE';
+
+            showOnlyQ34Entanglement();
+            markMeasured(['q1','q2','q5','q6']);
+
+            const raw = localStorage.getItem('zhangManDetectingResults');
+            const result = raw ? JSON.parse(raw) : {};
+            const basis = result.basis || 'Z';
+            const aliceQ1 = result.aliceQ1 || '|0⟩';
+            const bobQ2 = result.bobQ2 || oppositeResult(aliceQ1, basis);
+            const aliceQ6 = result.aliceQ6 || '|1⟩';
+            const charlieQ5 = result.charlieQ5 || oppositeResult(aliceQ6, basis);
+            const pass12 = bobQ2 === oppositeResult(aliceQ1, basis);
+            const pass56 = charlieQ5 === oppositeResult(aliceQ6, basis);
+
+            setPlainResult('alice-result', [{ qubit: 'q1', value: aliceQ1 }, { qubit: 'q6', value: aliceQ6 }]);
+            setPlainResult('bob-result', [{ qubit: 'q2', value: bobQ2 }]);
+            setPlainResult('charlie-result', [{ qubit: 'q5', value: charlieQ5 }]);
+
+            hintTitle.innerText = 'Public Comparison';
+            hintText.innerHTML = `
+                <div class="detecting-hint">
+                    <div class="detecting-note">Everyone publishes the checking results. If paired outcomes are opposite in the same basis, this run passes the security check.</div>
+                    <div class="final-grid">
+                        <div class="final-card"><b>Basis</b><br>${basis}</div>
+                        <div class="final-card clickable ${pass12 ? 'pass' : ''}" onclick="highlightResultPair('q1','q2')"><b>q1 / q2</b><br>${aliceQ1} vs ${bobQ2}</div>
+                        <div class="final-card clickable ${pass56 ? 'pass' : ''}" onclick="highlightResultPair('q6','q5')"><b>q6 / q5</b><br>${aliceQ6} vs ${charlieQ5}</div>
+                    </div>
+                    <div class="decode-line">\\( |\\Psi^-\\rangle=\\frac{1}{\\sqrt{2}}(|01\\rangle-|10\\rangle) \\Rightarrow \\text{opposite outcomes in the same basis} \\)</div>
+                </div>`;
+
+            panel.classList.add('detecting-panel');
+            panel.innerHTML = `<button class="action-btn primary" onclick="prevStep()">Back to Measurement</button>`;
+        } else {
+            if (stage) stage.classList.add('message-layout');
+            if (step4Img) step4Img.src = 'pictures/zm-5-m.png';
+            if (step5Img) step5Img.src = 'pictures/zm-5-m.png';
+            badge.innerText = 'Message Mode';
+            badge.classList.remove('corner');
+            badge.style.borderColor = 'var(--message)';
+            badge.style.color = 'var(--message)';
+            header.innerText = 'STEP 5 : COLLABORATIVE DECODE';
+
+            const op = localStorage.getItem('zhangManOperation') || '00';
+            const aliceBell = localStorage.getItem('zhangManAliceBell16') || '|Ψ⁻⟩₁₆';
+            const bcBell = localStorage.getItem('zhangManBobCharlieBell25') || '|Ψ⁻⟩₂₅';
+            const decoded = { '00': 'I', '01': 'Z', '10': 'Y', '11': 'X' }[op] || 'I';
+
+            showMessageEntanglement(aliceBell, bcBell);
+            setTimeout(() => showMessageEntanglement(aliceBell, bcBell), 120);
+            markMeasured(['q1','q6']);
+
+            document.getElementById('alice-result').innerText = `Announced ${aliceBell}`;
+            document.getElementById('bob-result').innerText = 'shares q2,q3';
+            document.getElementById('charlie-result').innerText = 'shares q4,q5';
+
+            renderDecodeChoices();
+
+            panel.classList.add('message-panel');
+            panel.innerHTML = ``;
+        }
+
+        document.getElementById('next-btn').disabled = false;
+        if (window.MathJax) MathJax.typesetPromise();
+        setTimeout(updateEntangleLines, 0);
+        setTimeout(updateEntangleLines, 80);
+    }
+
+    function prevStep() { window.location.href = 'ZMstep3.html'; }
+    function nextStep() { window.location.href = 'QuantumCybersecurityEducationPlatform.html?section=qss#quantum-security-applications'; }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        preloadEyeAssets();
+        configureStep4UI();
+        window.addEventListener('resize', updateEntangleLines);
+    });
+</script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const dock = document.querySelector('.pingpong-image-dock');
+    const windowBox = document.querySelector('.pingpong-image-window');
+    const list = document.querySelector('.pingpong-image-list');
+    let currentCard = document.querySelector('.pingpong-image-card.is-current');
+
+    if (dock) {
+        dock.addEventListener('wheel', function (event) {
+            event.preventDefault();
+        }, { passive: false });
+    }
+
+    window.lockPingpongImageToCurrentStep = function () {
+        if (!windowBox || !list || !currentCard) return;
+        const isHorizontal = window.matchMedia('(max-width: 1179px)').matches;
+        const offset = isHorizontal
+            ? (windowBox.clientWidth / 2) - currentCard.offsetLeft - (currentCard.offsetWidth / 2)
+            : Math.max(0, (windowBox.clientHeight / 2) - currentCard.offsetTop - (currentCard.offsetHeight / 2));
+        list.style.transform = isHorizontal ? 'translateX(' + offset + 'px)' : 'translateY(' + offset + 'px)';
+    };
+
+    window.showPingpongImageStep = function (stepKey) {
+        const nextCard = document.querySelector('.pingpong-image-card[data-pingpong-step="' + stepKey + '"]');
+        if (!nextCard) return;
+        document.querySelectorAll('.pingpong-image-card').forEach(card => {
+            card.classList.remove('is-current');
+            card.removeAttribute('aria-current');
+        });
+        nextCard.classList.add('is-current');
+        nextCard.setAttribute('aria-current', 'step');
+        currentCard = nextCard;
+        requestAnimationFrame(window.lockPingpongImageToCurrentStep);
+    };
+
+    window.showPingpongImageStep(dock?.dataset.currentStep || '4');
+    window.addEventListener('resize', window.lockPingpongImageToCurrentStep);
+});
+</script>
+</body>
+</html>
