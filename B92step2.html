@@ -233,11 +233,26 @@
 
     document.addEventListener("DOMContentLoaded", () => {
         const params = new URLSearchParams(window.location.search);
-        aliceMsg = params.get("aliceMsg") ?? "0";
+        const urlMsg = params.get("aliceMsg");
+        const savedData = localStorage.getItem('b92Step2Data');
+        const parsedData = savedData ? JSON.parse(savedData) : null;
+
+        if (urlMsg !== null) {
+            aliceMsg = urlMsg;
+            localStorage.removeItem('b92Step2Data');
+        } else if (parsedData && (parsedData.aliceMsg === "0" || parsedData.aliceMsg === "1")) {
+            aliceMsg = parsedData.aliceMsg;
+        } else {
+            aliceMsg = "0";
+        }
+
         if (aliceMsg !== "0" && aliceMsg !== "1") aliceMsg = "0";
         alicePhoton = stateConfig[aliceMsg];
         setAliceState();
-        localStorage.removeItem('b92Step2Data');
+
+        if (urlMsg === null && parsedData && parsedData.bobFilter) {
+            startMeasurementProcess(parsedData.bobFilter, null, true);
+        }
     });
 
     function createPhotonDisplay(photon) {
@@ -262,12 +277,18 @@
         document.getElementById("input-state").innerHTML = createQubitDisplay(alicePhoton);
     }
 
-    function startMeasurementProcess(bobFilter, el) {
+    function startMeasurementProcess(bobFilter, el = null, skipAnimation = false) {
         if (hasMeasured) return;
         hasMeasured = true;
         if (window.showB92ImageStep) window.showB92ImageStep('3');
         document.querySelectorAll('.bob-choice-btn').forEach(btn => btn.classList.remove('active'));
-        el.classList.add('active');
+        if (el) {
+            el.classList.add('active');
+        } else {
+            const selector = bobFilter === "vertical" ? '.bob-choice-btn:nth-child(1)' : '.bob-choice-btn:nth-child(2)';
+            const restoredBtn = document.querySelector(selector);
+            if (restoredBtn) restoredBtn.classList.add('active');
+        }
         document.getElementById("bob-interactive").style.display = "none";
         document.getElementById("hint-text").style.opacity = "0";
 
@@ -279,7 +300,18 @@
 
         const isConclusive = (aliceMsg === "0" && bobFilter === "anti-diagonal") || (aliceMsg === "1" && bobFilter === "vertical");
         prepareOutcome(isConclusive, bobFilter);
-        animateMeasurement(isConclusive, bobFilter);
+
+        if (skipAnimation) {
+            if (isConclusive) {
+                document.getElementById("arrow-branch-up").classList.add("active");
+                document.getElementById("arrow-branch-down").classList.add("active");
+            } else {
+                document.getElementById("arrow-single").classList.add("active");
+            }
+            displayFinalResult(isConclusive, bobFilter);
+        } else {
+            animateMeasurement(isConclusive, bobFilter);
+        }
     }
 
     function prepareOutcome(isConclusive, bobFilter) {
