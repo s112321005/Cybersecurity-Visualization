@@ -7,7 +7,7 @@
     <script>window.MathJax={tex:{inlineMath:[["\\(","\\)"]],displayMath:[["$$","$$"]]}};</script>
     <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <style>
-        :root{--primary-blue:#549FD0;--alice-color:#004aad;--bob-color:#4C80C5;--charlie-color:#478CEA;--dark-text:#333333;--bg-gradient:linear-gradient(135deg,#EAF5FE 0%,#F7FBFF 55%,#EEF8F6 100%);--soft-border:#D8EBF7;--hint-bg:#F8FCFF;--qubit-fill:#F8FCFF;--detect:#16A34A;--message:#549FD0}
+        :root{--primary-blue:#549FD0;--alice-color:#004aad;--bob-color:#4C80C5;--charlie-color:#478CEA;--dark-text:#333333;--bg-gradient:linear-gradient(135deg,#EAF5FE 0%,#F7FBFF 55%,#EEF8F6 100%);--soft-border:#D8EBF7;--hint-bg:#F8FCFF;--qubit-fill:#F8FCFF;--detect:#549FD0;--message:#549FD0}
         *{box-sizing:border-box}
         body{font-family:'Segoe UI',system-ui,sans-serif;display:flex;flex-direction:column;align-items:center;padding:40px 20px;background:var(--bg-gradient);margin:0;overflow-y:scroll;color:var(--dark-text)}
         .header{width:min(1000px,95vw);display:flex;align-items:center;justify-content:space-between;margin-bottom:25px}
@@ -97,7 +97,7 @@
         #measure16-btn{display:block;align-self:center;margin:4px auto 0;width:195px;max-width:100%;line-height:1.25;white-space:normal}
         .announcement{display:none;margin-top:4px;background:#fff;border:2px solid #D8EBF7;border-left:6px solid var(--alice-color);border-radius:16px;padding:12px 16px;width:100%;box-shadow:0 8px 20px rgba(84,159,208,.09);font-weight:900;color:#556070;text-align:center}
         .announcement.show{display:block;animation:fadeIn .35s ease}
-        .floating-announcement{position:absolute;left:calc(35.1% + 130px);top:32px;transform:translateX(-50%);display:none;width:max-content;max-width:260px;min-width:150px;z-index:22;padding:9px 14px;white-space:nowrap}
+        .floating-announcement{position:absolute;left:calc(35.1% + 130px);top:22px;transform:translateX(-50%);display:none;width:max-content;max-width:260px;min-width:150px;z-index:22;padding:9px 14px;white-space:nowrap}
         .floating-announcement.show{display:block;animation:none}
         @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 
@@ -123,6 +123,7 @@
         .encode-formula{display:flex;flex-direction:column;gap:8px;font-weight:900;color:#556070;line-height:1.38}
         .encode-formula .swap-line{overflow:auto}
         .encode-formula .swap-line mjx-container{font-size:110%!important}
+        .encode-formula .swap-line:last-child{white-space:nowrap;overflow-x:auto;overflow-y:hidden}
         .megaphone{position:absolute;left:0;top:0;display:flex;align-items:center;gap:8px;z-index:25;pointer-events:none;animation:megaphoneFly 1.8s ease-in-out forwards}
         .megaphone-icon{font-size:30px;line-height:1}
         .megaphone-text{font-size:1rem;font-weight:900;color:#1E4F86;background:rgba(255,255,255,.96);border:2px solid #BFDDF3;border-radius:999px;padding:4px 10px;box-shadow:0 6px 14px rgba(84,159,208,.16);white-space:nowrap}
@@ -231,10 +232,49 @@
         { index: 3, sign: '-', bell16: '|Ψ⁻⟩₁₆', bell25: '|Ψ⁻⟩₂₅', latex16: '\\Psi^-', latex25: '\\Psi^-' }
     ];
     const operationMap = {
-        '00': { op: 'I', resultLatex: '\\Psi^-', resultText: '|Ψ⁻⟩₁₂' },
-        '01': { op: 'Z', resultLatex: '\\Psi^+', resultText: '|Ψ⁺⟩₁₂' },
-        '10': { op: 'X', resultLatex: '\\Phi^+', resultText: '|Φ⁺⟩₁₂' },
-        '11': { op: 'Y', resultLatex: '\\Phi^-', resultText: '|Φ⁻⟩₁₂' }
+        '00': { op: 'I', resultLatex: '\\Psi^-', resultText: '|Ψ⁻⟩₁₂', encodedKey: 'psi-minus' },
+        '01': { op: 'Z', resultLatex: '\\Psi^+', resultText: '|Ψ⁺⟩₁₂', encodedKey: 'psi-plus' },
+        '10': { op: 'Y', resultLatex: '\\Phi^+', resultText: '|Φ⁺⟩₁₂', encodedKey: 'phi-plus' },
+        '11': { op: 'X', resultLatex: '\\Phi^-', resultText: '|Φ⁻⟩₁₂', encodedKey: 'phi-minus' }
+    };
+
+    const operationSwapTables = {
+        '00': {
+            encodedLatex: '\\Psi^-',
+            terms: [
+                { sign: '-', bell16: '|Φ⁺⟩₁₆', bell25: '|Φ⁺⟩₂₅', latex16: '\\Phi^+', latex25: '\\Phi^+' },
+                { sign: '+', bell16: '|Φ⁻⟩₁₆', bell25: '|Φ⁻⟩₂₅', latex16: '\\Phi^-', latex25: '\\Phi^-' },
+                { sign: '+', bell16: '|Ψ⁺⟩₁₆', bell25: '|Ψ⁺⟩₂₅', latex16: '\\Psi^+', latex25: '\\Psi^+' },
+                { sign: '-', bell16: '|Ψ⁻⟩₁₆', bell25: '|Ψ⁻⟩₂₅', latex16: '\\Psi^-', latex25: '\\Psi^-' }
+            ]
+        },
+        '01': {
+            encodedLatex: '\\Psi^+',
+            terms: [
+                { sign: '+', bell16: '|Φ⁺⟩₁₆', bell25: '|Φ⁻⟩₂₅', latex16: '\\Phi^+', latex25: '\\Phi^-' },
+                { sign: '-', bell16: '|Φ⁻⟩₁₆', bell25: '|Φ⁺⟩₂₅', latex16: '\\Phi^-', latex25: '\\Phi^+' },
+                { sign: '-', bell16: '|Ψ⁺⟩₁₆', bell25: '|Ψ⁻⟩₂₅', latex16: '\\Psi^+', latex25: '\\Psi^-' },
+                { sign: '+', bell16: '|Ψ⁻⟩₁₆', bell25: '|Ψ⁺⟩₂₅', latex16: '\\Psi^-', latex25: '\\Psi^+' }
+            ]
+        },
+        '10': {
+            encodedLatex: '\\Phi^+',
+            terms: [
+                { sign: '-', bell16: '|Φ⁺⟩₁₆', bell25: '|Ψ⁻⟩₂₅', latex16: '\\Phi^+', latex25: '\\Psi^-' },
+                { sign: '-', bell16: '|Φ⁻⟩₁₆', bell25: '|Ψ⁺⟩₂₅', latex16: '\\Phi^-', latex25: '\\Psi^+' },
+                { sign: '+', bell16: '|Ψ⁺⟩₁₆', bell25: '|Φ⁻⟩₂₅', latex16: '\\Psi^+', latex25: '\\Phi^-' },
+                { sign: '+', bell16: '|Ψ⁻⟩₁₆', bell25: '|Φ⁺⟩₂₅', latex16: '\\Psi^-', latex25: '\\Phi^+' }
+            ]
+        },
+        '11': {
+            encodedLatex: '\\Phi^-',
+            terms: [
+                { sign: '-', bell16: '|Φ⁺⟩₁₆', bell25: '|Ψ⁺⟩₂₅', latex16: '\\Phi^+', latex25: '\\Psi^+' },
+                { sign: '-', bell16: '|Φ⁻⟩₁₆', bell25: '|Ψ⁻⟩₂₅', latex16: '\\Phi^-', latex25: '\\Psi^-' },
+                { sign: '+', bell16: '|Ψ⁺⟩₁₆', bell25: '|Φ⁺⟩₂₅', latex16: '\\Psi^+', latex25: '\\Phi^+' },
+                { sign: '+', bell16: '|Ψ⁻⟩₁₆', bell25: '|Φ⁻⟩₂₅', latex16: '\\Psi^-', latex25: '\\Phi^-' }
+            ]
+        }
     };
 
     const initialEntanglementPairs = [
@@ -258,29 +298,37 @@
     function renderSwapFormula(selectedIndex = null) {
         const hintTitle = document.getElementById('hint-title');
         const hintText = document.getElementById('hint-text');
-        const hintBox = document.getElementById('hint-box');
+        const table = operationSwapTables[operationChoice] || operationSwapTables['00'];
+
         hintTitle.innerText = 'Entanglement Swapping: 1256 → 1625';
         hintText.innerHTML = String.raw`
             <div class="swap-formula">
-                <div class="swap-line">\( |\Psi^-\rangle_{12}|\Psi^-\rangle_{56} \)</div>
+                <div class="swap-line">\( |${table.encodedLatex}\rangle_{12}|\Psi^-\rangle_{56} \)</div>
                 <div class="swap-line swap-inline">
                     <span class="swap-prefix">\( =\frac{1}{2}( \)</span>
                     <span class="swap-terms">
-                        <span class="swap-term" id="swap-term-0">\( -|\Phi^+\rangle_{16}|\Phi^+\rangle_{25} \)</span>
-                        <span class="swap-term" id="swap-term-1">\( +|\Phi^-\rangle_{16}|\Phi^-\rangle_{25} \)</span>
-                        <span class="swap-term" id="swap-term-2">\( +|\Psi^+\rangle_{16}|\Psi^+\rangle_{25} \)</span>
-                        <span class="swap-term" id="swap-term-3">\( -|\Psi^-\rangle_{16}|\Psi^-\rangle_{25} \)</span>
+                        ${table.terms.map((term, index) => {
+                            const sign = index === 0 ? term.sign : (term.sign === '-' ? '-' : '+');
+                            return `<span class="swap-term" id="swap-term-${index}">\\( ${sign}|${term.latex16}\\rangle_{16}|${term.latex25}\\rangle_{25} \\)</span>`;
+                        }).join('')}
                     </span>
                     <span class="swap-suffix">\( ) \)</span>
                 </div>
-                <div class="swap-line">\( |\Psi^-\rangle_{12}|\Psi^-\rangle_{34}|\Psi^-\rangle_{56}\Rightarrow |Bell\rangle_{16}|\Psi^-\rangle_{34}|Bell\rangle_{25} \)</div>
+                <div class="swap-line">\( |${table.encodedLatex}\rangle_{12}|\Psi^-\rangle_{34}|\Psi^-\rangle_{56}\Rightarrow |Bell\rangle_{16}|\Psi^-\rangle_{34}|Bell\rangle_{25} \)</div>
             </div>`;
-        if (window.MathJax) MathJax.typesetPromise([hintText]).then(() => {
-            if (selectedIndex !== null) {
-                const term = document.getElementById('swap-term-' + selectedIndex);
-                if (term) term.classList.add('extracted');
-            }
-        });
+
+        if (window.MathJax) {
+            MathJax.typesetClear([hintText]);
+            MathJax.typesetPromise([hintText]).then(() => {
+                if (selectedIndex !== null) {
+                    const term = document.getElementById('swap-term-' + selectedIndex);
+                    if (term) term.classList.add('extracted');
+                }
+            });
+        } else if (selectedIndex !== null) {
+            const term = document.getElementById('swap-term-' + selectedIndex);
+            if (term) term.classList.add('extracted');
+        }
     }
 
 
@@ -295,14 +343,15 @@
     function renderEncodedFormula(operation) {
         const hintTitle = document.getElementById('hint-title');
         const hintText = document.getElementById('hint-text');
-        const hintBox = document.getElementById('hint-box');
         const cfg = operationMap[operation];
         if (!cfg) return;
-        hintTitle.innerText = 'Encoding on q1';
+
+        hintTitle.innerText = 'Encoding on Target Particle 1';
         hintText.innerHTML = String.raw`
             <div class="encode-formula">
-                <div class="swap-line">\( (${cfg.op} \otimes I)|\Psi^-\rangle_{12} = |${cfg.resultLatex}\rangle_{12} \)</div>
-                <div class="swap-line">\( |\psi_{\text{encoded}}\rangle = |${cfg.resultLatex}\rangle_{12}|\Psi^-\rangle_{34}|\Psi^-\rangle_{56} \)</div>
+                <div class="swap-line"><b>Target Particle:</b> 1　<b>Operation:</b> ${operation} (${cfg.op})</div>
+                <div class="swap-line">\( ${cfg.op}_1|\Psi^-\rangle_{12}=|${cfg.resultLatex}\rangle_{12} \)</div>
+                <div class="swap-line">\( |\psi_{\text{encoded}}\rangle=|${cfg.resultLatex}\rangle_{12}\otimes|\Psi^-\rangle_{34} \)</div>
             </div>`;
         if (window.MathJax) MathJax.typesetPromise([hintText]);
     }
@@ -345,7 +394,7 @@
             const right = Math.max(a.x, b.x);
             const width = right - left;
             const arcHeight = 76;
-            const top = Math.min(a.y, b.y) + 8;
+            const top = Math.min(a.y, b.y) - arcHeight + 8;
 
             line.classList.add('arc');
             line.style.left = left + 'px';
@@ -353,13 +402,14 @@
             line.style.width = width + 'px';
             line.style.height = arcHeight + 'px';
             line.style.border = '4px dashed var(--alice-color)';
-            line.style.borderTop = 'none';
-            line.style.borderRadius = '0 0 ' + Math.max(48, width / 2) + 'px ' + Math.max(48, width / 2) + 'px';
+            line.style.borderBottom = 'none';
+            line.style.borderTop = '4px dashed var(--alice-color)';
+            line.style.borderRadius = Math.max(48, width / 2) + 'px ' + Math.max(48, width / 2) + 'px 0 0';
             line.style.background = 'transparent';
             line.style.transform = 'none';
 
             tag.style.left = ((a.x + b.x) / 2) + 'px';
-            tag.style.top = (top + arcHeight - tagOffsetY) + 'px';
+            tag.style.top = (top + tagOffsetY) + 'px';
             return;
         }
 
@@ -501,8 +551,8 @@
                 <div class="operation-grid">
                     <button class="op-btn" onclick="selectOperation('00', this)"><span class="op-main">00</span><span class="op-sub">\( I=\begin{bmatrix}1 & 0\\ 0 & 1\end{bmatrix}_{2\times2} \)</span></button>
                     <button class="op-btn" onclick="selectOperation('01', this)"><span class="op-main">01</span><span class="op-sub">\( Z=\begin{bmatrix}1 & 0\\ 0 & -1\end{bmatrix}_{2\times2} \)</span></button>
-                    <button class="op-btn" onclick="selectOperation('10', this)"><span class="op-main">10</span><span class="op-sub">\( X=\begin{bmatrix}0 & 1\\ 1 & 0\end{bmatrix}_{2\times2} \)</span></button>
-                    <button class="op-btn" onclick="selectOperation('11', this)"><span class="op-main">11</span><span class="op-sub">\( Y=\begin{bmatrix}0 & 1\\ -1 & 0\end{bmatrix}_{2\times2} \)</span></button>
+                    <button class="op-btn" onclick="selectOperation('10', this)"><span class="op-main">10</span><span class="op-sub">\( Y=\begin{bmatrix}0 & 1\\ -1 & 0\end{bmatrix}_{2\times2} \)</span></button>
+                    <button class="op-btn" onclick="selectOperation('11', this)"><span class="op-main">11</span><span class="op-sub">\( X=\begin{bmatrix}0 & 1\\ 1 & 0\end{bmatrix}_{2\times2} \)</span></button>
                 </div>
                 <button class="action-btn primary" id="measure16-btn" onclick="runMessageMeasurement()" disabled style="display:none">Measure q1,q6<br>and Announce</button>
             `;
@@ -574,6 +624,7 @@
     function getEyeAsset(party, basis) {
         const low = basis.toLowerCase();
         if (party === 'alice') return 'pictures/a_eye' + low + '.svg';
+        if (party === 'charlie') return 'pictures/c_eye' + low + '.svg';
         return 'pictures/b_eye' + low + '.svg';
     }
 
@@ -595,7 +646,7 @@
     }
 
     function preloadEyeAssets() {
-        ['pictures/a_eyex.svg','pictures/a_eyez.svg','pictures/b_eyex.svg','pictures/b_eyez.svg'].forEach(src => {
+        ['pictures/a_eyex.svg','pictures/a_eyez.svg','pictures/b_eyex.svg','pictures/b_eyez.svg','pictures/c_eyex.svg','pictures/c_eyez.svg'].forEach(src => {
             const img = new Image();
             img.src = src;
         });
@@ -905,7 +956,9 @@
         document.querySelectorAll('.op-btn').forEach(btn => btn.disabled = true);
         document.getElementById('q1').classList.remove('encode-target');
 
-        const selectedSwap = swapResults[Math.floor(Math.random() * swapResults.length)];
+        const currentSwapTable = operationSwapTables[operationChoice] || operationSwapTables['00'];
+        const selectedIndex = Math.floor(Math.random() * currentSwapTable.terms.length);
+        const selectedSwap = { ...currentSwapTable.terms[selectedIndex], index: selectedIndex };
         aliceBellResult = selectedSwap.bell16;
 
         markMeasured(['q1','q6']);
