@@ -21,8 +21,8 @@
         .main-card{width:min(1000px,95vw);min-height:650px;border:3px solid var(--primary-blue);border-radius:35px;background:white;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;padding:25px 20px;position:relative}
         .state-badge{position:absolute;left:24px;top:22px;z-index:30;background:#f0f7ff;border:2px solid var(--primary-blue);border-left-width:7px;border-radius:14px;padding:10px 14px;box-shadow:0 6px 16px rgba(0,74,173,0.12);color:var(--dark-text)}
         .state-badge-title{margin:0 0 5px;color:var(--primary-blue);font-size:0.9rem;font-weight:900}
-        .state-badge-formula{font-size:1.05rem;font-weight:900;white-space:nowrap;min-height:27px;transition:opacity .65s ease,transform .65s ease,filter .65s ease}
-        .state-badge-formula.formula-transition{opacity:.22;transform:translateY(-4px) scale(.98);filter:blur(1px)}
+        .state-badge-formula{font-size:1.05rem;font-weight:900;white-space:nowrap;min-height:27px;color:#2C3E50}
+        .state-badge-formula.formula-transition{opacity:1;transform:none;filter:none}
         .interaction-area{display:flex;width:100%;align-items:center;justify-content:center;margin-top:10px;margin-bottom:30px;box-sizing:border-box}
         .entanglement-zone{display:flex;align-items:flex-end;gap:120px;position:relative;flex-shrink:0}
         .particle-group{display:flex;flex-direction:column;align-items:center;z-index:10;gap:15px;width:110px}
@@ -243,8 +243,32 @@
         }
 
         function renderStateBadgeFormula(mode = 'superposition', activeTerm = null, fadingTerm = null) {
+            const activeColor = '#549FD0';
+            const fadeColor = '#b8c2cc';
+
+            function coloredDigit(digit, color) {
+                return `\\textcolor{${color}}{${digit}}`;
+            }
+
+            function formatTerm(term, activeTerm, fadingTerm) {
+                const digits = term.split('');
+                const isActive = term === activeTerm;
+                const isFading = term === fadingTerm;
+
+                const formattedDigits = digits.map((digit, index) => {
+                    const particleNumber = index + 1;
+                    if (!measuredFormulaBits[particleNumber]) return digit;
+                    if (isActive) return coloredDigit(digit, activeColor);
+                    if (isFading) return coloredDigit(digit, fadeColor);
+                    return digit;
+                }).join('');
+
+                return `|${formattedDigits}\\rangle`;
+            }
+
             if (mode === 'collapsed') {
-                setStateBadgeLatex(`|\\Psi^+\\rangle \\rightarrow |${activeTerm}\\rangle_{12}`, true);
+                const collapsedTerm = formatTerm(activeTerm, activeTerm, null);
+                setStateBadgeLatex(`|\\Psi^+\\rangle \\rightarrow ${collapsedTerm}_{12}`, true);
                 return;
             }
 
@@ -253,10 +277,8 @@
                 return;
             }
 
-            const activeColor = '#549FD0';
-            const fadeColor = '#b8c2cc';
-            const term01 = activeTerm === '01' ? `\\color{${activeColor}}{|01\\rangle}` : fadingTerm === '01' ? `\\color{${fadeColor}}{|01\\rangle}` : '|01\\rangle';
-            const term10 = activeTerm === '10' ? `\\color{${activeColor}}{|10\\rangle}` : fadingTerm === '10' ? `\\color{${fadeColor}}{|10\\rangle}` : '|10\\rangle';
+            const term01 = formatTerm('01', activeTerm, fadingTerm);
+            const term10 = formatTerm('10', activeTerm, fadingTerm);
             setStateBadgeLatex(`|\\Psi^+\\rangle = \\frac{1}{\\sqrt{2}}(${term01} + ${term10})_{12}`, true);
         }
 
@@ -268,10 +290,16 @@
 
         function colorStateBadgeBit(particleNumber) {
             measuredFormulaBits[particleNumber] = true;
-            if (phase === 1 && !stateBadgeCollapsed) {
-                collapseStateBadgeToMeasuredTerm();
+            if (phase === 1) {
+                if (!stateBadgeCollapsed) {
+                    collapseStateBadgeToMeasuredTerm();
+                } else {
+                    renderStateBadgeFormula('collapsed', getCurrentTermKey());
+                }
             } else if (!stateBadgeCollapsed) {
                 renderStateBadgeFormula('superposition', getCurrentTermKey());
+            } else {
+                renderStateBadgeFormula('collapsed', getCurrentTermKey());
             }
         }
 
