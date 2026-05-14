@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <base href="https://s112321005.github.io/Cybersecurity-Visualization/">
-    <title>Quantum Key Distribution : B92 - Basis Comparison</title>
+    <title>Quantum Key Distribution : B92</title>
     <style>
         :root{--primary-blue:#549FD0;--dark-text:#333333;--bg-gradient:linear-gradient(135deg,#E0F2FE 0%,#F5F3FF 50%,#ECFDF5 100%);--alice-blue:#004aad;--bob-blue:#4C80C5;--match-green:#28a745;--mismatch-red:#dc3545;--soft-blue:#eef7ff;--line:#333;--muted:#777;--zero:#3d7df2;--one:#e55d8b;--plus:#f0a92d;--minus:#23a9a5}
         *{box-sizing:border-box}
@@ -125,7 +125,7 @@
             <a href="QuantumCybersecurityEducationPlatform.html?section=qkd#quantum-security-applications" class="btn-back" title="back home">&#x25C0;&#xFE0E;</a>
             <div class="title-pill">Quantum Key Distribution : B92</div>
         </div>
-        <div class="header-center" id="step-title">STEP 3 : BASIS COMPARISON</div>
+        <div class="header-center" id="step-title">STEP 3 : MEASURE</div>
         <div class="header-right">
             <button class="nav-btn" onclick="prevStep()">Back</button>
             <button class="nav-btn" onclick="nextStep()">Next</button>
@@ -181,9 +181,9 @@
                     <div class="node" style="left:11%;top:44%;"><div class="node-title">Alice</div><div class="state-circle state-zero">|0⟩</div></div>
                     <div class="node" style="left:48%;top:26%;"><div class="basis-card same-basis" data-filter="vertical">Z</div></div>
                     <div class="node" style="left:48%;top:74%;"><div class="basis-card" data-filter="diagonal">X</div></div>
-                    <div class="node" style="left:83%;top:26%;"><div class="outcome-row"><div class="state-circle inactive">|0⟩</div><div class="result-box drop">Same result<br>discard</div></div></div>
+                    <div class="node" style="left:83%;top:26%;"><div class="outcome-row"><div class="state-circle state-zero inactive">|0⟩</div><div class="result-box drop">Z result<br>discard</div></div></div>
                     <div class="node" style="left:83%;top:56%;"><div class="outcome-row"><div class="state-circle state-minus">|-⟩</div><div class="result-box keep">Record 0<br>rules out |+⟩</div></div></div>
-                    <div class="node" style="left:83%;top:88%;"><div class="outcome-row"><div class="state-circle inactive">|+⟩</div><div class="result-box drop">Same result<br>discard</div></div></div>
+                    <div class="node" style="left:83%;top:88%;"><div class="outcome-row"><div class="state-circle state-plus inactive">|+⟩</div><div class="result-box drop">X result<br>discard</div></div></div>
                 </div>
             </article>
 
@@ -214,15 +214,15 @@
                     <div class="node" style="left:11%;top:44%;"><div class="node-title">Alice</div><div class="state-circle state-plus">|+⟩</div></div>
                     <div class="node" style="left:48%;top:26%;"><div class="basis-card same-basis" data-filter="diagonal">X</div></div>
                     <div class="node" style="left:48%;top:74%;"><div class="basis-card" data-filter="vertical">Z</div></div>
-                    <div class="node" style="left:83%;top:26%;"><div class="outcome-row"><div class="state-circle inactive">|+⟩</div><div class="result-box drop">Same result<br>discard</div></div></div>
+                    <div class="node" style="left:83%;top:26%;"><div class="outcome-row"><div class="state-circle state-plus inactive">|+⟩</div><div class="result-box drop">X result<br>discard</div></div></div>
                     <div class="node" style="left:83%;top:56%;"><div class="outcome-row"><div class="state-circle state-one">|1⟩</div><div class="result-box keep">Record 1<br>rules out |0⟩</div></div></div>
-                    <div class="node" style="left:83%;top:88%;"><div class="outcome-row"><div class="state-circle inactive">|0⟩</div><div class="result-box drop">Same result<br>discard</div></div></div>
+                    <div class="node" style="left:83%;top:88%;"><div class="outcome-row"><div class="state-circle state-zero inactive">|0⟩</div><div class="result-box drop">Z result<br>discard</div></div></div>
                 </div>
             </article>
         </section>
 
         <div class="compare-callout">
-            <b>Same basis</b>: inconclusive. <b>Different basis</b>: seeing the opposite state lets Bob rule out the other signal and record the bit.
+            <b>Result photons now follow Bob's selected basis</b>: Z gives |0⟩ / |1⟩ outcomes, and X gives |+⟩ / |-⟩ outcomes. Conclusive different-basis results let Bob rule out the other signal and record the bit.
         </div>
     </main>
 
