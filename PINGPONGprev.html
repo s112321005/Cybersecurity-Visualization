@@ -208,6 +208,7 @@
         let correctlyGuessed01 = false;
         let isCurrentGuessCorrect = false;
         let measuredFormulaBits = { 1: false, 2: false };
+        let phase1GeneratedTerms = [];
 
         let stateBadgeCollapsed = false;
         const STATE_BADGE_COLLAPSE_COMPLETE_MS = 1850;
@@ -315,8 +316,15 @@
             currentPairNumber++; 
 
             if (phase === 1) {
-                currentA = Math.floor(Math.random() * 2);
-                currentB = 1 - currentA;
+                let term;
+                if (phase1GeneratedTerms.length === 2 && phase1GeneratedTerms[0] === phase1GeneratedTerms[1]) {
+                    term = phase1GeneratedTerms[0] === '10' ? '01' : '10';
+                } else {
+                    term = Math.random() < 0.5 ? '10' : '01';
+                }
+                currentA = Number(term[0]);
+                currentB = Number(term[1]);
+                phase1GeneratedTerms.push(term);
             } else if (phase === 2) {
                 if (!correctlyGuessed10) {
                     currentA = 1;
