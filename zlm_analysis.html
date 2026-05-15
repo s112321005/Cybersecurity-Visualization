@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=1900">
     <base href="https://s112321005.github.io/Cybersecurity-Visualization/">
-    <title>Visual Analysis : ZhangLiMan Protocol</title>
+    <title>Security Analysis Visualization：ZhangLiMan Protocol</title>
     <style>
         :root { --primary-blue: #549FD0; --alice-blue: #004aad; --bg-gradient: linear-gradient(135deg, #E0F2FE 0%, #F5F3FF 50%, #ECFDF5 100%); --light-blue: #D0E0FF; --inactive-gray: #e0e0e0; --bg-color: #f8f9fa; --eve-red: #D32F2F; --bob-blue: #4C80C5; --charlie-blue: #478CEA; --op-purple: #FFE69A; }
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--bg-gradient); display: flex; flex-direction: column; align-items: center; margin: 0; padding: 20px 0; color: #333; min-width: 1450px !important; }
@@ -541,7 +541,7 @@
         let title = `${roleName}`;
         if (roleName === 'Eavesdropper') {
             extraClass = data.isOn ? 'eve-on' : 'eve-off';
-            title = `${roleName} ：${data.isOn ? 'ON' : 'OFF'}`;
+            title = `${roleName}  : ${data.isOn ? 'ON' : 'OFF'}`;
         }
         let details = '';
         const keyMap = {
@@ -871,7 +871,6 @@
                         <mstyle class="eve-calc-red"><mn>${totalPercent}</mn><mo>%</mo></mstyle>
                     </mrow>
                 </math>
-                <div class="eve-calc-note">Numerator: detected Eve probabilities in current order. Denominator: all terminal probabilities in current order.</div>
             </div>
         `;
     }

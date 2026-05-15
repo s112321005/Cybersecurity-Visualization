@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <base href="https://s112321005.github.io/Cybersecurity-Visualization/">
-    <title>Visual Analysis : Ping-Pong Protocol</title>
+    <title>Security Analysis Visualization：Ping-Pong Protocol</title>
     <style>
         :root { --primary-blue: #549FD0; --alice-blue: #004aad; --bg-gradient: linear-gradient(135deg, #E0F2FE 0%, #F5F3FF 50%, #ECFDF5 100%); --light-blue: #D0E0FF; --inactive-gray: #e0e0e0; --bg-color: #f8f9fa; --eve-red: #D32F2F; --bob-blue: #4C80C5; --op-purple: #FFE69A; }
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--bg-gradient); display: flex; flex-direction: column; align-items: center; margin: 0; padding: 20px 0; color: #333; min-width: 1450px !important; }
@@ -56,6 +56,20 @@
         .clickable-node { cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; pointer-events: auto; }
         .clickable-node:hover { transform: scale(1.15) translate(-43%, -43%); z-index: 100; }
         .clickable-node:hover .qss-shape, .clickable-node:hover .math-box-alice { box-shadow: 0 0 15px var(--alice-blue); }
+        #eve-detected-indicator { cursor: pointer; user-select: none; margin-left: auto !important; border-color: var(--eve-red) !important; color: var(--eve-red) !important; }
+        #eve-detected-indicator:hover { background: #fff1f1; box-shadow: 0 4px 10px rgba(211,47,47,0.18); }
+        .eve-calc-red { color: var(--eve-red); font-weight: 900; }
+        .eve-calc-blue { color: var(--primary-blue); font-weight: 900; }
+        #math-display { overflow-x: auto; user-select: none; padding: 26px 18px 30px; }
+        #math-display math { font-family: "Times New Roman", serif; font-size: 21px; white-space: nowrap; }
+        #math-display .eve-calc-note { margin-top: 16px; font-size: 14px; font-weight: 800; color: #667085; text-align: center; }
+        .eve-calc-wrapper { display: inline-flex; flex-direction: column; align-items: center; gap: 18px; min-width: max-content; padding: 8px 22px 12px; }
+        .eve-calc-main-row { display: inline-flex; align-items: center; justify-content: flex-start; gap: 16px; min-width: max-content; }
+        .eve-calc-main-row > math { flex: 0 0 auto; }
+        .eve-fraction-stack { display: inline-flex; flex-direction: column; align-items: stretch; justify-content: center; gap: 11px; min-width: max-content; }
+        .eve-fraction-stack math { display: block; text-align: center; margin: 0; }
+        .eve-fraction-line { width: 100%; height: 2px; background: #333; flex: 0 0 auto; }
+        .eve-final-row { margin-top: 4px; }
         .pull-tab { position: absolute; top: 0; left: 50%; transform: translateX(-50%); background-color: var(--primary-blue); color: white; padding: 10px 40px 15px 40px; border-bottom-left-radius: 20px; border-bottom-right-radius: 20px; cursor: pointer; font-size: 16px; font-weight: bold; z-index: 10001; box-shadow: 0 4px 15px rgba(0,0,0,0.3); transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1); display: flex; gap: 10px; align-items: center; }
         .pull-tab:hover { background-color: #3f8fbd; padding-top: 15px; }
         .settings-overlay { position: fixed; inset: 0; width: 100dvw; height: 100dvh; min-height: 100vh; background: var(--bg-gradient); z-index: 10000; transform: translateY(-100%); transition: transform 0.8s cubic-bezier(0.22, 1, 0.36, 1); display: flex; flex-direction: column; align-items: center; justify-content: flex-start; overflow-y: auto; overflow-x: hidden; box-sizing: border-box; padding: 80px 16px 48px; box-shadow: 0 15px 50px rgba(0,0,0,0.2); }
@@ -250,7 +264,7 @@
     <div class="top-bar">            
         <a href="javascript:history.back()" class="btn-back">◀</a>
         <div class="page-title">Quantum Security Direct Communication : Ping-Pong Protocol</div>
-        <div id="eve-detected-indicator" class="page-title" style="display: none; margin-left: 20%; border-color: #D32F2F; color: #D32F2F;">Eve detected probability： 0%</div>
+        <div id="eve-detected-indicator" class="page-title" onclick="showEveDetectedCalculation()" title="Click to show Eve detection calculation" style="display: none; margin-left: 20%; border-color: #D32F2F; color: #D32F2F;">Eve detected probability： 0%</div>
     </div>
     <div class="main-content">
         <div class="sidebar">
@@ -514,8 +528,10 @@
         const eveIndicator = document.getElementById('eve-detected-indicator');
             if (eveIndicator) {
                 if (ppSettings.eve.isOn) {
+                    eveIndicator.textContent = 'Eve detected probability： 0%';
                     eveIndicator.style.display = 'block'; // Eve 模式啟動時顯示
                 } else {
+                    eveIndicator.textContent = 'Eve detected probability： 0%';
                     eveIndicator.style.display = 'none';  // 關閉時隱藏
                 }
             }
@@ -620,7 +636,7 @@
             `;
             const yStart = 350, yOffset = 130;
             // 完美水平對齊座標
-            const xBob1 = 12, xAliceMeas = 30, xAliceOut = 40, xEveMeas = 53, xEveOut = 65, xBobMeas = 76, xBobOut = 88, xEnd = 95;
+            const xBob1 = 12, xAliceMeas = 30, xAliceOut = 40, xEveMeas = 53, xEveOut = 65, xBobMeas = 76, xBobOut = 88, xEnd = 90;
             html += `<div class="classical-label" style="left: ${xAliceMeas+5}%; top: ${yStart -230}px; border-color:var(--primary-blue); color:var(--primary-blue);">Entanglement Broken</div>`;
 
             html += `<div class="node" style="left: ${xBob1}%; top: ${yStart}px;">
@@ -657,9 +673,9 @@
             html += `<div class="node" style="left: ${xBobOut}%; top: ${yStart - yOffset}px;">
                         <div class="circle-node bg-bob">${bobBit0}</div>
                      </div>`;
-            html += `<div class="node" style="left: ${xEnd}%; top: ${yStart - yOffset}px;"> 
+            html += `<div class="node" style="left: ${xEnd+3.5}%; top: ${yStart - yOffset}px;"> 
             <div class="circle-node" style="background-color: #D0E0FF; color: #333; font-size: 26px;">✖</div></div>`;
-            html += createFinalProbCircle(xEnd - 3, yStart - yOffset, 0.5);
+            html += createFinalProbCircle(xEnd+4, yStart - yOffset, 0.5);
 
 
             drawArrowedLine(svg, xAliceMeas, yStart, xAliceOut, yStart + yOffset, 0.5);//下支線
@@ -685,9 +701,9 @@
             html += `<div class="node" style="left: ${xBobOut}%; top: ${yStart + yOffset}px;">
                         <div class="circle-node bg-bob">${bobBit1}</div>
                      </div>`;
-            html += `<div class="node" style="left: ${xEnd}%; top: ${yStart + yOffset}px;">
+            html += `<div class="node" style="left: ${xEnd+3.5}%; top: ${yStart + yOffset}px;">
                         <div class="circle-node" style="background-color: #D0E0FF; color: #333; font-size: 26px;">✖</div></div>`;
-            html += createFinalProbCircle(xEnd - 3, yStart + yOffset, 0.5);
+            html += createFinalProbCircle(xEnd+4, yStart + yOffset, 0.5);
 
         } else if (currentMode === 'control' && !ppSettings.eve.isOn) {
             avatars.innerHTML = `
@@ -754,7 +770,7 @@
             `;
             
             const yStart = 350, yOffset = 130;
-            const xBob1 = 15, xAliceOp = 35, xAliceOut = 55, xBobMeas = 70, xBobOut = 85; //bob開始節點
+            const xBob1 = 12, xAliceOp = 32, xAliceOut = 52, xBobMeas = 67, xBobOut = 82; //bob開始節點
             
             html += `<div class="node" style="left: ${xBob1}%; top: ${yStart}px;"> 
                         <div style="position: absolute; top: -50px; display:flex; gap: 5px; white-space: nowrap;">
@@ -785,7 +801,7 @@
             drawArrowedLine(svg, xBobMeas -2, yStart - yOffset, xBobOut-6, yStart - yOffset, 1.0); //Bob測量線+節點(上)
             html += `<div class="node" style="left: ${xBobOut +2}%; top: ${yStart - yOffset}px;">
                         <div class="math-box">\\(${state0.bell} = ${state0.latex}\\)</div></div>`;
-            html += createFinalProbCircle(xBobOut + 5, yStart - yOffset, 1.0);
+            html += createFinalProbCircle(xBobOut + 9.5, yStart - yOffset, 1.0);
 
             // Msg 1 Branch
             drawArrowedLine(svg, xBob1+9, yStart, xAliceOp - 2, yStart + yOffset, 1.0);//Bob傳給Alice運算(下)
@@ -810,7 +826,7 @@
             html += `<div class="node" style="left: ${xBobOut +2}%; top: ${yStart + yOffset}px;">
                         <div class="math-box">\\(${state1.bell} = ${state1.latex}\\)</div>
                      </div>`;
-            html += createFinalProbCircle(xBobOut + 5, yStart + yOffset, 1.0);
+            html += createFinalProbCircle(xBobOut + 9.5, yStart + yOffset, 1.0);
         }
 
         nodes.innerHTML = html;
@@ -835,10 +851,88 @@
         return { latex: '?', bell: '?' };
     }
 
+    function probabilityToFraction(prob) {
+        return toFraction(prob);
+    }
+
+    function showEveDetectedCalculation() {
+        const panel = document.getElementById('calculation-panel');
+        const display = document.getElementById('math-display');
+        if (!panel || !display) return;
+
+        panel.style.display = 'block';
+        display.dataset.calcType = 'eve-detected';
+        panel.oncontextmenu = () => false;
+        display.oncontextmenu = () => false;
+        const title = panel.querySelector('h4');
+        if (title) title.textContent = 'Eve Detection Calculation';
+
+        if (!ppSettings.eve || !ppSettings.eve.isOn) {
+            display.innerHTML = `<div class="eve-calc-note">Eve is OFF. No detection calculation is available.</div>`;
+            return;
+        }
+
+        const allTerms = [
+            { prob: 0.5, colorClass: 'eve-calc-blue' },
+            { prob: 0.5, colorClass: 'eve-calc-blue' }
+        ];
+        const detectedTotal = 0;
+        const allTotal = allTerms.reduce((sum, term) => sum + term.prob, 0);
+        const finalProbability = allTotal === 0 ? 0 : detectedTotal / allTotal;
+
+        function termToMathML(term, visibleIndex) {
+            const frac = probabilityToFraction(term.prob);
+            const sign = visibleIndex === 0 ? '' : '+';
+            return `
+                ${sign ? `<mo>${sign}</mo>` : ''}
+                <mstyle class="${term.colorClass}">
+                    <mfrac><mn>${frac.num}</mn><mn>${frac.den}</mn></mfrac>
+                </mstyle>
+            `;
+        }
+
+        const allTermsMathML = allTerms.map((term, index) => termToMathML(term, index)).join('');
+        const detectedTermsMathML = `<mstyle class="eve-calc-red"><mn>${detectedTotal}</mn></mstyle>`;
+        const finalPercent = (finalProbability * 100).toFixed(1).replace('.0', '');
+
+        display.innerHTML = `
+            <div class="eve-calc-wrapper" oncontextmenu="return false;">
+                <div class="eve-calc-main-row">
+                    <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML">
+                        <mrow><msub><mi>P</mi><mtext>detected</mtext></msub><mo>=</mo></mrow>
+                    </math>
+                    <div class="eve-fraction-stack">
+                        <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><mrow>${detectedTermsMathML}</mrow></math>
+                        <div class="eve-fraction-line"></div>
+                        <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><mrow>${allTermsMathML}</mrow></math>
+                    </div>
+                </div>
+                <math class="eve-final-row" display="block" xmlns="http://www.w3.org/1998/Math/MathML">
+                    <mrow>
+                        <mtext>Detected probability</mtext><mo>=</mo>
+                        <mfrac>
+                            <mstyle class="eve-calc-red"><mn>${detectedTotal}</mn></mstyle>
+                            <mrow>${allTermsMathML}</mrow>
+                        </mfrac>
+                        <mo>=</mo><mstyle class="eve-calc-red"><mn>${finalPercent}</mn><mo>%</mo></mstyle>
+                    </mrow>
+                </math>
+                <div class="eve-calc-note">Blue terms: all terminal probabilities in current order. Red term: detected Eve probability.</div>
+            </div>`;
+
+        if (window.MathJax) {
+            MathJax.typesetClear([display]);
+            MathJax.typesetPromise([display]);
+        }
+    }
+
     function showCalc(gate) {
         const panel = document.getElementById('calculation-panel');
         const display = document.getElementById('math-display');
         panel.style.display = 'block';
+        display.dataset.calcType = 'gate';
+        const title = panel.querySelector('h4');
+        if (title) title.textContent = 'Quantum State Transformation';
         
         let bellInitial = ppSettings.bob.state === 'psi_plus' ? '|\\psi^+\\rangle' : '|\\psi^-\\rangle';
         let stateStr = ppSettings.bob.state === 'psi_plus' ? '|01\\rangle + |10\\rangle' : '|01\\rangle - |10\\rangle';
