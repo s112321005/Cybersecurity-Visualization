@@ -235,7 +235,7 @@
         '00': { op: 'I', resultLatex: '\\Psi^-', resultText: '|Ψ⁻⟩₁₂', encodedKey: 'psi-minus' },
         '01': { op: 'Z', resultLatex: '\\Psi^+', resultText: '|Ψ⁺⟩₁₂', encodedKey: 'psi-plus' },
         '10': { op: 'Y', resultLatex: '\\Phi^+', resultText: '|Φ⁺⟩₁₂', encodedKey: 'phi-plus' },
-        '11': { op: 'X', resultLatex: '\\Phi^-', resultText: '|Φ⁻⟩₁₂', encodedKey: 'phi-minus' }
+        '11': { op: 'X', resultLatex: '\\Phi^-', resultText: '-|Φ⁻⟩₁₂', encodedKey: 'phi-minus', phase: '-' }
     };
 
     const operationSwapTables = {
@@ -268,11 +268,12 @@
         },
         '11': {
             encodedLatex: '\\Phi^-',
+            encodedPhase: '-',
             terms: [
-                { sign: '-', bell16: '|Φ⁺⟩₁₆', bell25: '|Ψ⁺⟩₂₅', latex16: '\\Phi^+', latex25: '\\Psi^+' },
-                { sign: '-', bell16: '|Φ⁻⟩₁₆', bell25: '|Ψ⁻⟩₂₅', latex16: '\\Phi^-', latex25: '\\Psi^-' },
-                { sign: '+', bell16: '|Ψ⁺⟩₁₆', bell25: '|Φ⁺⟩₂₅', latex16: '\\Psi^+', latex25: '\\Phi^+' },
-                { sign: '+', bell16: '|Ψ⁻⟩₁₆', bell25: '|Φ⁻⟩₂₅', latex16: '\\Psi^-', latex25: '\\Phi^-' }
+                { sign: '+', bell16: '|Φ⁺⟩₁₆', bell25: '|Ψ⁺⟩₂₅', latex16: '\\Phi^+', latex25: '\\Psi^+' },
+                { sign: '+', bell16: '|Φ⁻⟩₁₆', bell25: '|Ψ⁻⟩₂₅', latex16: '\\Phi^-', latex25: '\\Psi^-' },
+                { sign: '-', bell16: '|Ψ⁺⟩₁₆', bell25: '|Φ⁺⟩₂₅', latex16: '\\Psi^+', latex25: '\\Phi^+' },
+                { sign: '-', bell16: '|Ψ⁻⟩₁₆', bell25: '|Φ⁻⟩₂₅', latex16: '\\Psi^-', latex25: '\\Phi^-' }
             ]
         }
     };
@@ -300,10 +301,12 @@
         const hintText = document.getElementById('hint-text');
         const table = operationSwapTables[operationChoice] || operationSwapTables['00'];
 
+        const encodedPrefix = table.encodedPhase === '-' ? '-' : '';
+        const encodedState = encodedPrefix + '|' + table.encodedLatex + '\\rangle_{12}';
         hintTitle.innerText = 'Entanglement Swapping: 1256 → 1625';
         hintText.innerHTML = String.raw`
             <div class="swap-formula">
-                <div class="swap-line">\( |${table.encodedLatex}\rangle_{12}|\Psi^-\rangle_{56} \)</div>
+                <div class="swap-line">\( ${encodedState}|\Psi^-\rangle_{56} \)</div>
                 <div class="swap-line swap-inline">
                     <span class="swap-prefix">\( =\frac{1}{2}( \)</span>
                     <span class="swap-terms">
@@ -314,7 +317,7 @@
                     </span>
                     <span class="swap-suffix">\( ) \)</span>
                 </div>
-                <div class="swap-line">\( |${table.encodedLatex}\rangle_{12}|\Psi^-\rangle_{34}|\Psi^-\rangle_{56}\Rightarrow |Bell\rangle_{16}|\Psi^-\rangle_{34}|Bell\rangle_{25} \)</div>
+                <div class="swap-line">\( ${encodedState}|\Psi^-\rangle_{34}|\Psi^-\rangle_{56}\Rightarrow |Bell\rangle_{16}|\Psi^-\rangle_{34}|Bell\rangle_{25} \)</div>
             </div>`;
 
         if (window.MathJax) {
@@ -346,12 +349,14 @@
         const cfg = operationMap[operation];
         if (!cfg) return;
 
+        const encodedPrefix = cfg.phase === '-' ? '-' : '';
+        const encodedState = encodedPrefix + '|' + cfg.resultLatex + '\\rangle_{12}';
         hintTitle.innerText = 'Encoding on Target Particle 1';
         hintText.innerHTML = String.raw`
             <div class="encode-formula">
                 <div class="swap-line"><b>Target Particle:</b> 1　<b>Operation:</b> ${operation} (${cfg.op})</div>
-                <div class="swap-line">\( ${cfg.op}_1|\Psi^-\rangle_{12}=|${cfg.resultLatex}\rangle_{12} \)</div>
-                <div class="swap-line">\( |\psi_{\text{encoded}}\rangle=|${cfg.resultLatex}\rangle_{12}\otimes|\Psi^-\rangle_{34} \)</div>
+                <div class="swap-line">\( ${cfg.op}_1|\Psi^-\rangle_{12}=${encodedState} \)</div>
+                <div class="swap-line">\( |\psi_{\text{encoded}}\rangle=${encodedState}\otimes|\Psi^-\rangle_{34} \)</div>
             </div>`;
         if (window.MathJax) MathJax.typesetPromise([hintText]);
     }
