@@ -176,7 +176,6 @@
                     </svg>
                     
                     <div class="node" style="left: 10%; top: 50%;">
-                        <img id="b92-initial-key-img" src="pictures/vertical.svg" class="polarizer-img">
                         <div class="state-circle" id="b92-initial-state-text">|→⟩</div>
                     </div>
                     <div class="node" style="left: 41%; top: 25%;">
@@ -230,7 +229,7 @@
                 </div>
             </div>
             
-            <div class="diagram-area eve-layout" style="height: 900px;">
+            <div class="diagram-area eve-layout" style="height: 1020px;">
                 <div class="character-avatar avatar-alice" style="left: 8%; width: 130px;"><img src="pictures/cat_alice.svg" alt="Alice"></div>
                 <div class="character-avatar avatar-eve" style="left: 38%; width: 350px;"><img src="pictures/Eavesdropper.svg" alt="Eve" style="width:60px;"></div>
                 <div class="character-avatar avatar-bob" style="left: 72%; width: 228px;"><img src="pictures/cat_bob.svg" alt="Bob"></div>
@@ -254,19 +253,18 @@
                         <line class="eve-bob-line diff-path" data-prob="12.5%" x1="54%" y1="60%" x2="68%" y2="68%" stroke="#333" stroke-width="3" marker-end="url(#arrow-b92-resend)" />
                         <line class="eve-bob-line same-path" data-prob="12.5%" x1="54%" y1="90%" x2="68%" y2="82%" stroke="#333" stroke-width="3" marker-end="url(#arrow-b92-resend)" />
                         <line class="eve-bob-line diff-path" data-prob="12.5%" x1="54%" y1="90%" x2="68%" y2="98%" stroke="#333" stroke-width="3" marker-end="url(#arrow-b92-resend)" />
-                        <line class="eve-bob-line same-path" data-prob="25%" x1="76%" y1="15%" x2="84%" y2="15%" stroke="#333" stroke-width="3" marker-end="url(#arrow-b92-resend)" />
-                        <line class="eve-bob-line diff-path" data-prob="12.5%" x1="76%" y1="35%" x2="84%" y2="30%" stroke="#333" stroke-width="3" marker-end="url(#arrow-b92-resend)" />
-                        <line class="eve-bob-line diff-path" data-prob="12.5%" x1="76%" y1="35%" x2="84%" y2="40%" stroke="#333" stroke-width="3" marker-end="url(#arrow-b92-resend)" />
-                        <line class="eve-bob-line same-path" data-prob="6.25%" x1="76%" y1="52%" x2="84%" y2="48%" stroke="#333" stroke-width="3" marker-end="url(#arrow-b92-resend)" />
-                        <line class="eve-bob-line same-path" data-prob="6.25%" x1="76%" y1="52%" x2="84%" y2="56%" stroke="#333" stroke-width="3" marker-end="url(#arrow-b92-resend)" />
-                        <line class="eve-bob-line diff-path" data-prob="12.5%" x1="76%" y1="68%" x2="84%" y2="68%" stroke="#333" stroke-width="3" marker-end="url(#arrow-b92-resend)" />
-                        <line class="eve-bob-line same-path" data-prob="6.25%" x1="76%" y1="82%" x2="84%" y2="78%" stroke="#333" stroke-width="3" marker-end="url(#arrow-b92-resend)" />
-                        <line class="eve-bob-line same-path" data-prob="6.25%" x1="76%" y1="82%" x2="84%" y2="86%" stroke="#333" stroke-width="3" marker-end="url(#arrow-b92-resend)" />
-                        <line class="eve-bob-line diff-path" data-prob="12.5%" x1="76%" y1="98%" x2="84%" y2="98%" stroke="#333" stroke-width="3" marker-end="url(#arrow-b92-resend)" />
+                        <line id="bob-result-line-1" class="eve-bob-line same-path" data-prob="25%" x1="76%" y1="15%" x2="84%" y2="15%" stroke="#333" stroke-width="3" marker-end="url(#arrow-b92-resend)" />
+                        <line id="bob-result-line-2" class="eve-bob-line diff-path" data-prob="12.5%" x1="76%" y1="35%" x2="84%" y2="30%" stroke="#333" stroke-width="3" marker-end="url(#arrow-b92-resend)" />
+                        <line id="bob-result-line-3" class="eve-bob-line diff-path" data-prob="12.5%" x1="76%" y1="35%" x2="84%" y2="40%" stroke="#333" stroke-width="3" marker-end="url(#arrow-b92-resend)" />
+                        <line id="bob-result-line-4" class="eve-bob-line same-path" data-prob="6.25%" x1="76%" y1="52%" x2="84%" y2="52%" stroke="#333" stroke-width="3" marker-end="url(#arrow-b92-resend)" />
+                        <line id="bob-result-line-5" class="eve-bob-line diff-path" data-prob="6.25%" x1="76%" y1="68%" x2="84%" y2="63%" stroke="#333" stroke-width="3" marker-end="url(#arrow-b92-resend)" />
+                        <line id="bob-result-line-6" class="eve-bob-line diff-path" data-prob="12.5%" x1="76%" y1="68%" x2="84%" y2="73%" stroke="#333" stroke-width="3" marker-end="url(#arrow-b92-resend)" />
+                        <line id="bob-result-line-7" class="eve-bob-line same-path" data-prob="6.25%" x1="76%" y1="82%" x2="84%" y2="78%" stroke="#333" stroke-width="3" marker-end="url(#arrow-b92-resend)" />
+                        <line id="bob-result-line-8" class="eve-bob-line same-path" data-prob="6.25%" x1="76%" y1="82%" x2="84%" y2="86%" stroke="#333" stroke-width="3" marker-end="url(#arrow-b92-resend)" />
+                        <line id="bob-result-line-9" class="eve-bob-line diff-path" data-prob="12.5%" x1="76%" y1="98%" x2="84%" y2="98%" stroke="#333" stroke-width="3" marker-end="url(#arrow-b92-resend)" />
                     </svg>
                     
                     <div class="node" style="left: 8%; top: 50%;">
-                        <img id="eve-alice-key" src="pictures/vertical.svg" class="polarizer-img">
                         <div class="state-circle" id="eve-alice-state">|→⟩</div>
                     </div>
                     
@@ -274,10 +272,10 @@
                     <div class="node" style="left: 32%; top: 75%;"><img id="eve-pol-diff" src="pictures/red_diagonal.svg" class="polarizer-img"></div>
                     <div class="node" style="left: 50%; top: 25%;"><div class="eve-state-circle" id="eve-state-same">|→⟩</div></div>
                     <div class="node" style="left: 50%; top: 60%;">
-                        <div class="eve-state-circle" style="transform: rotate(-45deg);"><span id="eve-state-diff1" style="transform: rotate(45deg); display:block;">|↖⟩</span></div>
+                        <div class="eve-state-circle" style="transform: rotate(-45deg);"><span id="eve-state-diff1" style="transform: rotate(45deg); display:block;">|↗⟩</span></div>
                     </div>
                     <div class="node" style="left: 50%; top: 90%;">
-                        <div class="eve-state-circle" style="transform: rotate(45deg);"><span id="eve-state-diff2" style="transform: rotate(-45deg); display:block;">|↗⟩</span></div>
+                        <div class="eve-state-circle" style="transform: rotate(45deg);"><span id="eve-state-diff2" style="transform: rotate(-45deg); display:block;">|→⟩</span></div>
                     </div>
                     
                     <div class="node bob-same-node" style="left: 72%; top: 15%;"><img id="bob-pol-1" src="pictures/vertical.svg" class="polarizer-img"></div>
@@ -290,11 +288,11 @@
                     <div class="node bob-same-node" style="left: 88%; top: 15%;"><div class="state-circle inactive" id="bob-final-1">|→⟩</div></div>
                     <div class="node bob-diff-node" style="left: 88%; top: 30%;"><div class="state-circle" id="bob-final-2" style="transform: rotate(-45deg);"><span style="transform: rotate(45deg); display:block;">|↖⟩</span></div></div>
                     <div class="node bob-diff-node" style="left: 88%; top: 40%;"><div class="state-circle inactive" id="bob-final-3" style="transform: rotate(45deg);"><span style="transform: rotate(-45deg); display:block;">|↗⟩</span></div></div>
-                    <div class="node bob-same-node" style="left: 88%; top: 48%;"><div class="state-circle inactive" id="bob-final-4">|→⟩</div></div>
-                    <div class="node bob-same-node" style="left: 88%; top: 56%;"><div class="state-circle eve-error" id="bob-final-5">|↑⟩</div></div>
-                    <div class="node bob-diff-node" style="left: 88%; top: 68%;"><div class="state-circle" id="bob-final-6" style="transform: rotate(-45deg);"><span style="transform: rotate(45deg); display:block;">|↖⟩</span></div></div>
+                    <div class="node bob-same-node" style="left: 88%; top: 52%;"><div class="state-circle inactive" id="bob-final-4">|→⟩</div></div>
+                    <div class="node bob-same-node" style="left: 88%; top: 63%;"><div class="state-circle eve-error" id="bob-final-5">|→⟩</div></div>
+                    <div class="node bob-diff-node" style="left: 88%; top: 73%;"><div class="state-circle" id="bob-final-6" style="transform: rotate(-45deg);"><span style="transform: rotate(45deg); display:block;">|↗⟩</span></div></div>
                     <div class="node bob-same-node" style="left: 88%; top: 78%;"><div class="state-circle inactive" id="bob-final-7">|→⟩</div></div>
-                    <div class="node bob-same-node" style="left: 88%; top: 86%;"><div class="state-circle eve-error" id="bob-final-8">|↑⟩</div></div>
+                    <div class="node bob-same-node" style="left: 88%; top: 86%;"><div class="state-circle eve-error" id="bob-final-8">|→⟩</div></div>
                     <div class="node bob-diff-node" style="left: 88%; top: 98%;"><div class="state-circle inactive" id="bob-final-9" style="transform: rotate(45deg);"><span style="transform: rotate(-45deg); display:block;">|↗⟩</span></div></div>
                 </div>
             </div>
@@ -676,7 +674,7 @@
         const eveSameNode = document.querySelector('#view-b92-eve-resend #eve-state-same');
         if (eveSameNode) eveSameNode.innerText = stateSymbol;
         
-        const diff1StateSymbol = isAliceZ ? '|↖⟩' : '|↑⟩';
+        const diff1StateSymbol = stateSymbol;
         const diff2StateSymbol = isAliceZ ? '|↗⟩' : '|→⟩';
         const eveDiff1 = document.querySelector('#view-b92-eve-resend #eve-state-diff1');
         if (eveDiff1) eveDiff1.innerText = diff1StateSymbol;
@@ -691,20 +689,17 @@
             });
         }
 
-        setStateCircleText('#view-b92-eve-resend #bob-final-1', stateSymbol);
-        setStateCircleText('#view-b92-eve-resend #bob-final-2, #view-b92-eve-resend #bob-final-6', diff1StateSymbol);
-        setStateCircleText('#view-b92-eve-resend #bob-final-3, #view-b92-eve-resend #bob-final-9', diff2StateSymbol);
+        setStateCircleText('#view-b92-eve-resend #bob-final-1, #view-b92-eve-resend #bob-final-4', stateSymbol);
+        setStateCircleText('#view-b92-eve-resend #bob-final-2, #view-b92-eve-resend #bob-final-5', diff1StateSymbol);
+        setStateCircleText('#view-b92-eve-resend #bob-final-3, #view-b92-eve-resend #bob-final-6, #view-b92-eve-resend #bob-final-9', diff2StateSymbol);
 
         if (isBobBasisSameAsAlice) {
             const bobBasisStateSymbols = isBobZ ? ['|↑⟩', '|→⟩'] : ['|↖⟩', '|↗⟩'];
-            setStateCircleText('#view-b92-eve-resend #bob-final-4', bobBasisStateSymbols[1]);
-            setStateCircleText('#view-b92-eve-resend #bob-final-5', bobBasisStateSymbols[0]);
             setStateCircleText('#view-b92-eve-resend #bob-final-7', bobBasisStateSymbols[0]);
-            setStateCircleText('#view-b92-eve-resend #bob-final-8', bobBasisStateSymbols[1]);
         } else {
-            setStateCircleText('#view-b92-eve-resend #bob-final-4, #view-b92-eve-resend #bob-final-5', diff1StateSymbol);
-            setStateCircleText('#view-b92-eve-resend #bob-final-7, #view-b92-eve-resend #bob-final-8', diff2StateSymbol);
+            setStateCircleText('#view-b92-eve-resend #bob-final-7', diff2StateSymbol);
         }
+        setStateCircleText('#view-b92-eve-resend #bob-final-8', stateSymbol);
         
         const sameNodes = document.querySelectorAll('#view-b92-eve-resend .bob-same-node .polarizer-img, #view-b92-eve-resend .bob-same-node .state-circle');
         const diffNodes = document.querySelectorAll('#view-b92-eve-resend .bob-diff-node .polarizer-img, #view-b92-eve-resend .bob-diff-node .state-circle');
@@ -735,6 +730,85 @@
             sameLines.forEach(l => l.classList.add('line-inactive'));
             diffLines.forEach(l => l.classList.remove('line-inactive'));
         }
+
+        function copyElementClass(source, target) {
+            const sourceClass = source.getAttribute('class') || '';
+            if (sourceClass) target.setAttribute('class', sourceClass);
+            else target.removeAttribute('class');
+        }
+
+        function mirrorCircleState(sourceSelector, targetSelector) {
+            const source = document.querySelector(sourceSelector);
+            const target = document.querySelector(targetSelector);
+            if (!source || !target) return;
+            copyElementClass(source, target);
+            const sourceSpan = source.querySelector('span');
+            const targetSpan = target.querySelector('span');
+            const sourceText = sourceSpan ? sourceSpan.innerText : source.innerText;
+            if (targetSpan) targetSpan.innerText = sourceText;
+            else target.innerText = sourceText;
+        }
+
+        function mirrorImageState(sourceSelector, targetSelector) {
+            const source = document.querySelector(sourceSelector);
+            const target = document.querySelector(targetSelector);
+            if (!source || !target) return;
+            if (source.tagName === 'IMG' && target.tagName === 'IMG') target.src = source.src;
+            copyElementClass(source, target);
+        }
+
+        function mirrorLineState(sourceSelector, targetSelector) {
+            const source = document.querySelector(sourceSelector);
+            const target = document.querySelector(targetSelector);
+            if (!source || !target) return;
+            const sourceClass = source.getAttribute('class') || '';
+            if (sourceClass) target.setAttribute('class', sourceClass);
+            else target.removeAttribute('class');
+            const strokeWidth = source.getAttribute('stroke-width');
+            if (strokeWidth) target.setAttribute('stroke-width', strokeWidth);
+        }
+
+        function mirrorBobGroup(sourceGroup, targetGroup) {
+            sourceGroup.polarizers.forEach((sourceSelector, index) => {
+                mirrorImageState(sourceSelector, targetGroup.polarizers[index]);
+            });
+            sourceGroup.results.forEach((sourceSelector, index) => {
+                mirrorCircleState(sourceSelector, targetGroup.results[index]);
+            });
+            sourceGroup.lines.forEach((sourceSelector, index) => {
+                mirrorLineState(sourceSelector, targetGroup.lines[index]);
+            });
+        }
+
+        const bobGroups = [
+            {
+                eveState: stateSymbol,
+                polarizers: ['#view-b92-eve-resend #bob-pol-1', '#view-b92-eve-resend #bob-pol-2'],
+                results: ['#view-b92-eve-resend #bob-final-1', '#view-b92-eve-resend #bob-final-2', '#view-b92-eve-resend #bob-final-3'],
+                lines: ['#view-b92-eve-resend #bob-result-line-1', '#view-b92-eve-resend #bob-result-line-2', '#view-b92-eve-resend #bob-result-line-3']
+            },
+            {
+                eveState: diff1StateSymbol,
+                polarizers: ['#view-b92-eve-resend #bob-pol-3', '#view-b92-eve-resend #bob-pol-4'],
+                results: ['#view-b92-eve-resend #bob-final-4', '#view-b92-eve-resend #bob-final-5', '#view-b92-eve-resend #bob-final-6'],
+                lines: ['#view-b92-eve-resend #bob-result-line-4', '#view-b92-eve-resend #bob-result-line-5', '#view-b92-eve-resend #bob-result-line-6']
+            },
+            {
+                eveState: diff2StateSymbol,
+                polarizers: ['#view-b92-eve-resend #bob-pol-5', '#view-b92-eve-resend #bob-pol-6'],
+                results: ['#view-b92-eve-resend #bob-final-7', '#view-b92-eve-resend #bob-final-8', '#view-b92-eve-resend #bob-final-9'],
+                lines: ['#view-b92-eve-resend #bob-result-line-7', '#view-b92-eve-resend #bob-result-line-8', '#view-b92-eve-resend #bob-result-line-9']
+            }
+        ];
+
+        const firstGroupByEveState = {};
+        bobGroups.forEach((group, index) => {
+            if (firstGroupByEveState[group.eveState] === undefined) {
+                firstGroupByEveState[group.eveState] = index;
+            } else {
+                mirrorBobGroup(bobGroups[firstGroupByEveState[group.eveState]], group);
+            }
+        });
     }
 </script>
 </body>
