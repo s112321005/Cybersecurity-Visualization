@@ -2,9 +2,9 @@
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=1900">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <base href="https://s112321005.github.io/Cybersecurity-Visualization/">
-    <title>QSDC Visualization: Ping-Pong Protocol</title>
+    <title>Security Analysis Visualization：Ping-Pong Protocol</title>
     <style>
         :root { --primary-blue: #549FD0; --alice-blue: #004aad; --bg-gradient: linear-gradient(135deg, #E0F2FE 0%, #F5F3FF 50%, #ECFDF5 100%); --light-blue: #D0E0FF; --inactive-gray: #e0e0e0; --bg-color: #f8f9fa; --eve-red: #D32F2F; --bob-blue: #4C80C5; --op-purple: #FFE69A; }
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--bg-gradient); display: flex; flex-direction: column; align-items: center; margin: 0; padding: 20px 0; color: #333; min-width: 1450px !important; }
@@ -55,7 +55,7 @@
         .clickable-node:hover .qss-shape, .clickable-node:hover .math-box-alice { box-shadow: 0 0 15px var(--alice-blue); }
         .pull-tab { position: absolute; top: 0; left: 50%; transform: translateX(-50%); background-color: var(--primary-blue); color: white; padding: 10px 40px 15px 40px; border-bottom-left-radius: 20px; border-bottom-right-radius: 20px; cursor: pointer; font-size: 16px; font-weight: bold; z-index: 10001; box-shadow: 0 4px 15px rgba(0,0,0,0.3); transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1); display: flex; gap: 10px; align-items: center; }
         .pull-tab:hover { background-color: #3f8fbd; padding-top: 15px; }
-        .settings-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: var(--bg-gradient); z-index: 10000; transform: translateY(-100%); transition: transform 0.8s cubic-bezier(0.22, 1, 0.36, 1); display: flex; flex-direction: column; align-items: center; justify-content: flex-start; overflow-y: auto; box-sizing: border-box; padding-top: 80px; box-shadow: 0 15px 50px rgba(0,0,0,0.2); }
+        .settings-overlay { position: fixed; inset: 0; width: 100dvw; height: 100dvh; min-height: 100vh; background: var(--bg-gradient); z-index: 10000; transform: translateY(-100%); transition: transform 0.8s cubic-bezier(0.22, 1, 0.36, 1); display: flex; flex-direction: column; align-items: center; justify-content: flex-start; overflow-y: auto; overflow-x: hidden; box-sizing: border-box; padding: 80px 16px 48px; box-shadow: 0 15px 50px rgba(0,0,0,0.2); }
         .settings-overlay.show { transform: translateY(0); }
         .overlay-container { width: 1200px; max-width: 95vw; display: flex; flex-direction: column; align-items: center; padding-bottom: 50px; }
         .main-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; width: 100%; margin-bottom: 30px; }
@@ -65,16 +65,19 @@
         .name-tag { background-color: var(--primary-blue); color: white; padding: 6px 30px; border-radius: 20px; font-weight: bold; font-size: 16px; margin-bottom: 15px; z-index: 3; text-align: center; min-width: 140px; box-sizing: border-box; transition: all 0.3s ease; }
         .name-tag.gray { background-color: #b0b0b0; color: white; }
         .name-tag.red-text { background-color: var(--eve-red); }
-        .click-toggle { cursor: pointer; margin-bottom: -15px; z-index: 3; display: inline-grid; grid-template-areas: "toggle-area"; border-radius: 20px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.1); transition: transform 0.2s ease, box-shadow 0.2s ease; }
+        .click-toggle { --toggle-active: var(--primary-blue); --toggle-inactive: #b0b0b0; cursor: pointer; margin-bottom: -12px; z-index: 3; display: inline-block; border-radius: 99px; transition: transform 0.2s ease, box-shadow 0.2s ease; user-select: none; -webkit-tap-highlight-color: transparent; }
         .click-toggle:active { transform: scale(0.95); box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
         .click-toggle input { display: none; }
-        .click-toggle span { grid-area: toggle-area; padding: 6px 30px; font-weight: bold; font-size: 16px; text-align: center; min-width: 140px; box-sizing: border-box; transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
-        .click-toggle .text-off { background-color: #b0b0b0; color: white; }
-        .click-toggle .text-on { background-color: var(--primary-blue); color: white; }
-        .click-toggle input:not(:checked) ~ .text-on { transform: translateY(-100%); opacity: 0; pointer-events: none; }
-        .click-toggle input:not(:checked) ~ .text-off { transform: translateY(0); opacity: 1; }
-        .click-toggle input:checked ~ .text-on { transform: translateY(0); opacity: 1; }
-        .click-toggle input:checked ~ .text-off { transform: translateY(100%); opacity: 0; pointer-events: none; }
+        .click-toggle .toggle-track { width: 132px; height: 32px; border-color: var(--toggle-active); padding: 3px; background-color: #f7fbff; box-shadow: 0 4px 10px rgba(0,0,0,0.1), inset 0 2px 5px rgba(0,0,0,0.05); box-sizing: border-box; transition: border-color 0.3s ease, filter 0.3s ease, opacity 0.3s ease; }
+        .click-toggle .toggle-text { font-size: 0.74rem; padding: 0 8px; color: var(--toggle-active); }
+        .click-toggle .toggle-thumb { top: 3px; left: 3px; width: calc((100% - 6px) / 2); height: calc(100% - 6px); background-color: var(--toggle-inactive); transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1), background-color 0.3s ease; box-shadow: 0 3px 8px rgba(0,0,0,0.18); }
+        .click-toggle input:not(:checked) ~ .toggle-track { border-color: var(--toggle-inactive); }
+        .click-toggle input:not(:checked) ~ .toggle-track .toggle-text { color: var(--toggle-inactive); }
+        .click-toggle input:not(:checked) ~ .toggle-track .text-left { color: #777; }
+        .click-toggle input:checked ~ .toggle-track .text-right,
+        .click-toggle.status-toggle-static .toggle-track .text-right { color: #ffffff; }
+        .click-toggle input:checked ~ .toggle-track .toggle-thumb,
+        .click-toggle.status-toggle-static .toggle-track .toggle-thumb { background-color: var(--toggle-active); transform: translateX(100%); }
         .status-toggle-static { cursor: default; }
         .control-panel { border: 2px solid var(--primary-blue); border-radius: 10px; padding: 30px 25px 25px 25px; background-color: white; min-height: 350px; box-sizing: border-box; width: 100%; transition: all 0.3s ease; display: flex; flex-direction: column; }
         .control-panel.disabled { border-color: #b0b0b0 !important; color: #777; }
@@ -89,23 +92,25 @@
         .disabled .pill-radio span { border-color: #b0b0b0 !important; color: #b0b0b0 !important; cursor: not-allowed; background-color: white !important; }
         .state-type { padding: 4px 8px; border-radius: 12px; border: 2px solid var(--primary-blue); font-weight: bold; font-size: 14px; color: var(--primary-blue); outline: none; }
         #alice-col .name-tag { background-color: var(--alice-blue) !important; color: #ffffff !important; }
-        #alice-col .status-toggle-static { background-color: var(--alice-blue) !important; color: #ffffff !important; }
+        #alice-col .click-toggle { --toggle-active: var(--alice-blue); }
         #alice-col .control-panel:not(.disabled) { border-color: var(--alice-blue) !important; }
         #alice-col .control-panel:not(.disabled) .pill-radio span { border-color: var(--alice-blue) !important; color: var(--alice-blue) !important; }
         #alice-col .control-panel:not(.disabled) .pill-radio input[type="radio"]:checked + span { background-color: var(--alice-blue) !important; border-color: var(--alice-blue) !important; color: #ffffff !important; }
         #alice-col .control-panel:not(.disabled) .setting-title::before { background-color: var(--alice-blue); }        
-        #bob-col .name-tag, #bob-col .status-toggle-static { background-color: var(--bob-blue) !important; }
+        #bob-col .name-tag { background-color: var(--bob-blue) !important; }
+        #bob-col .click-toggle { --toggle-active: var(--bob-blue); }
         #bob-col .control-panel:not(.disabled) { border-color: var(--bob-blue) !important; }
         #bob-col .control-panel:not(.disabled) .pill-radio span { border-color: var(--bob-blue) !important; color: var(--bob-blue) !important; }
         #bob-col .control-panel:not(.disabled) .pill-radio input:checked + span { background-color: var(--bob-blue) !important; color: white !important; }
         #bob-col .control-panel:not(.disabled) .setting-title::before { background-color: var(--bob-blue); }
         #bob-col .state-type { border-color: var(--bob-blue); color: var(--bob-blue); }
-        .theme-red .click-toggle .text-on { background-color: #D32F2F !important; }
+        .theme-red .click-toggle { --toggle-active: var(--eve-red); }
         .theme-red .control-panel:not(.disabled) { border-color: #D32F2F !important; }
         .theme-red .control-panel:not(.disabled) .pill-radio span { border-color: #D32F2F !important; color: #D32F2F !important; }
         .theme-red .control-panel:not(.disabled) .pill-radio input:checked + span { background-color: #D32F2F !important; border-color: #D32F2F !important; color: white !important; }
         .theme-red .control-panel:not(.disabled) .setting-title::before { background-color: #e57373 !important; }
         #settings-overlay input:disabled + span { opacity: 0.45; cursor: not-allowed; filter: grayscale(0.35); }
+        #settings-overlay input:disabled ~ .toggle-track { opacity: 0.45; cursor: not-allowed; filter: grayscale(0.35); }
 
         .settings-mode-row { display: flex; justify-content: center; align-items: center; width: 100%; margin: 0 0 24px; padding: 0; box-sizing: border-box; }
         .modern-toggle { cursor: pointer; display: inline-block; user-select: none; -webkit-tap-highlight-color: transparent; }
@@ -119,6 +124,18 @@
         #settings-overlay select:disabled { opacity: 0.45; cursor: not-allowed; filter: grayscale(0.35); }
         .apply-btn { background-color: #28a745; color: white; border: none; padding: 12px 50px; border-radius: 25px; font-size: 20px; font-weight: bold; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 10px rgba(40, 167, 69, 0.3); }
         .apply-btn:hover { background-color: #218838; transform: scale(1.05); }
+        @media (max-width: 760px) {
+            body { min-width: 0 !important; padding: 0; align-items: stretch; overflow-x: auto; }
+            .pull-tab { position: fixed; left: 50%; white-space: nowrap; }
+            .settings-overlay { width: 100vw; height: 100dvh; min-height: 100vh; padding: 76px 18px 42px; align-items: center; justify-content: flex-start; }
+            .overlay-container { width: 100%; max-width: 420px; align-items: center; padding-bottom: 24px; }
+            .settings-mode-row { margin-bottom: 18px; }
+            .modern-toggle .toggle-track { width: min(330px, calc(100vw - 48px)); }
+            .main-grid { grid-template-columns: 1fr; gap: 24px; width: 100%; }
+            .character-col { width: 100%; }
+            .control-panel { min-height: auto; width: 100%; padding: 28px 18px 20px; }
+            .apply-btn { width: 100%; max-width: 330px; padding: 12px 18px; }
+        }
     </style>
     <script> MathJax = { options: { enableMenu: false } };</script>
     <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
@@ -146,7 +163,13 @@
             <div class="character-col" id="bob-col">
                 <img src="pictures/cat_bob.svg" class="character-img" alt="Bob">
                 <div class="name-tag">Bob</div>
-                <div class="click-toggle"><span class="text-on status-toggle-static">ON</span></div>
+                <div class="click-toggle status-toggle-static" aria-label="Bob status on">
+                    <div class="toggle-track">
+                        <span class="toggle-text text-left">OFF</span>
+                        <span class="toggle-text text-right">ON</span>
+                        <div class="toggle-thumb"></div>
+                    </div>
+                </div>
                 <div class="control-panel">
                     <div class="setting-title">Particle Selection</div>
                     <div class="flex-row" style="margin-bottom: 15px; gap: 8px;">
@@ -165,7 +188,13 @@
             <div class="character-col" id="alice-col">
                 <img src="pictures/cat_alice.svg" class="character-img" alt="Alice">
                 <div class="name-tag">Alice</div>
-                <div class="click-toggle"><span class="text-on status-toggle-static">ON</span></div>
+                <div class="click-toggle status-toggle-static" aria-label="Alice status on">
+                    <div class="toggle-track">
+                        <span class="toggle-text text-left">OFF</span>
+                        <span class="toggle-text text-right">ON</span>
+                        <div class="toggle-thumb"></div>
+                    </div>
+                </div>
                 <div class="control-panel">
                     <div class="setting-title">Particle Selection</div>
                     <div class="flex-row" style="margin-bottom: 15px; gap: 8px;">
@@ -196,7 +225,11 @@
                 <div class="name-tag gray" id="eve-tag" data-role="eavesdropper">Eavesdropper</div>
                 <label class="click-toggle">
                     <input type="checkbox" class="status-toggle" id="eve-status-toggle">
-                    <span class="text-on">ON</span><span class="text-off">OFF</span>
+                    <div class="toggle-track">
+                        <span class="toggle-text text-left">OFF</span>
+                        <span class="toggle-text text-right">ON</span>
+                        <div class="toggle-thumb"></div>
+                    </div>
                 </label>
                 <div class="control-panel disabled" id="eve-panel">
                     <div class="setting-title">Attack Selection</div>
@@ -431,7 +464,7 @@
 
     function renderSidebar() {
         const container = document.getElementById('mode-options');
-        let html = `<h4>Select Mode</h4>`;
+        let html = `<h4>Alice Select Mode</h4>`;
         html += `<div class="option-row ${currentMode === 'control' ? 'active' : ''}" onclick="selectMode('control')">
                     <div class="state-btn">Control Mode</div>
                  </div>`;

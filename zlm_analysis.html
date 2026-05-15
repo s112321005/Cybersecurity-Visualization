@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=1900">
     <base href="https://s112321005.github.io/Cybersecurity-Visualization/">
-    <title>QSS Visualization：ZhangLiMan Protocol</title>
+    <title>Security Analysis Visualization：ZhangLiMan Protocol</title>
     <style>
         :root { --primary-blue: #549FD0; --alice-blue: #004aad; --bg-gradient: linear-gradient(135deg, #E0F2FE 0%, #F5F3FF 50%, #ECFDF5 100%); --light-blue: #D0E0FF; --inactive-gray: #e0e0e0; --bg-color: #f8f9fa; --eve-red: #D32F2F; --bob-blue: #4C80C5; --charlie-blue: #478CEA; --op-purple: #FFE69A; }
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--bg-gradient); display: flex; flex-direction: column; align-items: center; margin: 0; padding: 20px 0; color: #333; min-width: 1450px !important; }
@@ -96,16 +96,19 @@
         .name-tag { background-color: var(--primary-blue); color: white; padding: 6px 30px; border-radius: 20px; font-weight: bold; font-size: 16px; margin-bottom: 15px; z-index: 3; text-align: center; min-width: 140px; box-sizing: border-box; transition: all 0.3s ease; }
         .name-tag.gray { background-color: #b0b0b0; color: white; }
         .name-tag.red-text { background-color: var(--eve-red); }
-        .click-toggle { cursor: pointer; margin-bottom: -15px; z-index: 3; display: inline-grid; grid-template-areas: "toggle-area"; border-radius: 20px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.1); transition: transform 0.2s ease, box-shadow 0.2s ease; }
+        .click-toggle { --toggle-active: var(--primary-blue); --toggle-inactive: #b0b0b0; cursor: pointer; margin-bottom: -12px; z-index: 3; display: inline-block; border-radius: 99px; transition: transform 0.2s ease, box-shadow 0.2s ease; user-select: none; -webkit-tap-highlight-color: transparent; }
         .click-toggle:active { transform: scale(0.95); box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
         .click-toggle input { display: none; }
-        .click-toggle span { grid-area: toggle-area; padding: 6px 30px; font-weight: bold; font-size: 16px; text-align: center; min-width: 140px; box-sizing: border-box; transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
-        .click-toggle .text-off { background-color: #b0b0b0; color: white; }
-        .click-toggle .text-on { background-color: var(--primary-blue); color: white; }
-        .click-toggle input:not(:checked) ~ .text-on { transform: translateY(-100%); opacity: 0; pointer-events: none; }
-        .click-toggle input:not(:checked) ~ .text-off { transform: translateY(0); opacity: 1; }
-        .click-toggle input:checked ~ .text-on { transform: translateY(0); opacity: 1; }
-        .click-toggle input:checked ~ .text-off { transform: translateY(100%); opacity: 0; pointer-events: none; }
+        .click-toggle .toggle-track { width: 132px; height: 32px; border-color: var(--toggle-active); padding: 3px; background-color: #f7fbff; box-shadow: 0 4px 10px rgba(0,0,0,0.1), inset 0 2px 5px rgba(0,0,0,0.05); box-sizing: border-box; transition: border-color 0.3s ease, filter 0.3s ease, opacity 0.3s ease; }
+        .click-toggle .toggle-text { font-size: 0.74rem; padding: 0 8px; color: var(--toggle-active); }
+        .click-toggle .toggle-thumb { top: 3px; left: 3px; width: calc((100% - 6px) / 2); height: calc(100% - 6px); background-color: var(--toggle-inactive); transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1), background-color 0.3s ease; box-shadow: 0 3px 8px rgba(0,0,0,0.18); }
+        .click-toggle input:not(:checked) ~ .toggle-track { border-color: var(--toggle-inactive); }
+        .click-toggle input:not(:checked) ~ .toggle-track .toggle-text { color: var(--toggle-inactive); }
+        .click-toggle input:not(:checked) ~ .toggle-track .text-left { color: #777; }
+        .click-toggle input:checked ~ .toggle-track .text-right,
+        .click-toggle.status-toggle-static .toggle-track .text-right { color: #ffffff; }
+        .click-toggle input:checked ~ .toggle-track .toggle-thumb,
+        .click-toggle.status-toggle-static .toggle-track .toggle-thumb { background-color: var(--toggle-active); transform: translateX(100%); }
         .status-toggle-static { cursor: default; }
         .control-panel { border: 2px solid var(--primary-blue); border-radius: 10px; padding: 25px; background-color: white; height: 350px; box-sizing: border-box; width: 100%; transition: all 0.3s ease; display: flex; flex-direction: column; }
         .control-panel.disabled { border-color: #b0b0b0 !important; color: #777; }
@@ -120,22 +123,24 @@
         .pill-radio input:disabled:not(:checked) + span { border-color: #b0b0b0 !important; color: #b0b0b0 !important; background-color: #f8f9fa !important; cursor: not-allowed; opacity: 0.72; }
         .disabled .pill-radio span { border-color: #b0b0b0 !important; color: #b0b0b0 !important; cursor: not-allowed; background-color: white !important; }
         #alice-col .name-tag { background-color: var(--alice-blue) !important; color: #ffffff !important; }
-        #alice-col .status-toggle-static { background-color: var(--alice-blue) !important; color: #ffffff !important; }
+        #alice-col .click-toggle { --toggle-active: var(--alice-blue); }
         #alice-col .control-panel:not(.disabled) { border-color: var(--alice-blue) !important; }
         #alice-col .control-panel:not(.disabled) .pill-radio span { border-color: var(--alice-blue) !important; color: var(--alice-blue) !important; }
         #alice-col .control-panel:not(.disabled) .pill-radio input[type="radio"]:checked + span { background-color: var(--alice-blue) !important; border-color: var(--alice-blue) !important; color: #ffffff !important; }
-        #alice-col .control-panel:not(.disabled) .setting-title::before { background-color: var(--alice-blue); }        #bob-col .name-tag, #bob-col .status-toggle-static { background-color: var(--bob-blue) !important; }
+        #alice-col .control-panel:not(.disabled) .setting-title::before { background-color: var(--alice-blue); }        #bob-col .name-tag { background-color: var(--bob-blue) !important; }
+        #bob-col .click-toggle { --toggle-active: var(--bob-blue); }
         #bob-col .control-panel:not(.disabled) { border-color: var(--bob-blue) !important; }
         #bob-col .control-panel:not(.disabled) .pill-radio span { border-color: var(--bob-blue) !important; color: var(--bob-blue) !important; }
         #bob-col .control-panel:not(.disabled) .pill-radio input:checked + span { background-color: var(--bob-blue) !important; color: white !important; }
         #bob-col .control-panel:not(.disabled) .setting-title::before { background-color: var(--bob-blue); }
-        #charlie-col .name-tag, #charlie-col .status-toggle-static, #charlie-col .click-toggle .text-on { background-color: #478CEA !important; color: #ffffff !important; }
+        #charlie-col .name-tag { background-color: #478CEA !important; color: #ffffff !important; }
+        #charlie-col .click-toggle { --toggle-active: #478CEA; }
         #charlie-col .control-panel:not(.disabled) { border-color: #478CEA !important; }
         #charlie-col .control-panel:not(.disabled) .pill-radio span { border-color: #478CEA !important; color: #478CEA !important; }
         #charlie-col .control-panel:not(.disabled) .pill-radio input:checked + span { background-color: #478CEA !important; border-color: #478CEA !important; color: #ffffff !important; }
         #charlie-col .control-panel:not(.disabled) .setting-title::before { background-color: #478CEA !important; }
         .name-tag.red-text { background-color: #D32F2F; }
-        .theme-red .click-toggle .text-on { background-color: #D32F2F !important; }
+        .theme-red .click-toggle { --toggle-active: #D32F2F; }
         .theme-red .control-panel:not(.disabled) { border-color: #D32F2F !important; }
         .theme-red .control-panel:not(.disabled) .pill-radio span { border-color: #D32F2F !important; color: #D32F2F !important; }
         .theme-red .control-panel:not(.disabled) .pill-radio input:checked + span { background-color: #D32F2F !important; border-color: #D32F2F !important; color: white !important; }
@@ -143,6 +148,7 @@
         .eve-select { width: 100%; padding: 6px 10px; border-radius: 8px; font-weight: bold; outline: none; font-family: inherit; transition: all 0.3s ease; }
         .theme-red .control-panel:not(.disabled) .eve-select { border: 2px solid #D32F2F !important; color: #D32F2F !important; background: white !important; }
         .theme-red .control-panel.disabled .eve-select { border: 2px solid #b0b0b0 !important; color: #b0b0b0 !important; background: #f8f9fa !important; cursor: not-allowed; }
+        #settings-overlay input:disabled ~ .toggle-track { opacity: 0.45; cursor: not-allowed; filter: grayscale(0.35); }
         .apply-btn { background-color: #28a745; color: white; border: none; padding: 12px 50px; border-radius: 25px; font-size: 20px; font-weight: bold; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 10px rgba(219, 165, 225, 0.3); }
         .apply-btn:hover { background-color: #218838; transform: scale(1.05); }
 
@@ -186,7 +192,13 @@
             <div class="character-col" id="bob-col">
                 <img src="pictures/cat_bob.svg" class="character-img" alt="Bob">
                 <div class="name-tag">1. Bob</div>
-                <div class="click-toggle"><span class="text-on status-toggle-static">ON</span></div>
+                <div class="click-toggle status-toggle-static" aria-label="Bob status on">
+                    <div class="toggle-track">
+                        <span class="toggle-text text-left">OFF</span>
+                        <span class="toggle-text text-right">ON</span>
+                        <div class="toggle-thumb"></div>
+                    </div>
+                </div>
                 <div class="control-panel">
                     <div class="setting-title">Particle Selection</div>
                     <div class="flex-row" style="margin-bottom: 15px; gap: 4px;">
@@ -205,7 +217,13 @@
             <div class="character-col" id="charlie-col">
                 <img src="pictures/cat_charlie.svg" class="character-img" alt="Charlie">
                 <div class="name-tag">2. Charlie</div>
-                <div class="click-toggle"><span class="text-on status-toggle-static">ON</span></div>
+                <div class="click-toggle status-toggle-static" aria-label="Charlie status on">
+                    <div class="toggle-track">
+                        <span class="toggle-text text-left">OFF</span>
+                        <span class="toggle-text text-right">ON</span>
+                        <div class="toggle-thumb"></div>
+                    </div>
+                </div>
                 <div class="control-panel">
                     <div class="setting-title">Particle Selection</div>
                     <div class="flex-row" style="margin-bottom: 15px; gap: 4px;">
@@ -226,7 +244,13 @@
             <div class="character-col" id="alice-col">
                 <img src="pictures/cat_alice.svg" class="character-img" alt="Alice">
                 <div class="name-tag">3. Alice</div>
-                <div class="click-toggle"><span class="text-on status-toggle-static">ON</span></div>
+                <div class="click-toggle status-toggle-static" aria-label="Alice status on">
+                    <div class="toggle-track">
+                        <span class="toggle-text text-left">OFF</span>
+                        <span class="toggle-text text-right">ON</span>
+                        <div class="toggle-thumb"></div>
+                    </div>
+                </div>
                 <div class="control-panel">
                     <div class="setting-title">Particle Selection</div>
                     <div class="flex-row" style="margin-bottom: 15px; gap: 4px;">
@@ -260,7 +284,14 @@
             <div class="character-col theme-red">
                 <img src="pictures/Eavesdropper.svg" class="character-img" alt="Eavesdropper">
                 <div class="name-tag red-text" data-role="eavesdropper">Eavesdropper</div>
-                <label class="click-toggle"><input type="checkbox" class="status-toggle" id="eve-status-toggle"><span class="text-on">ON</span><span class="text-off">OFF</span></label>
+                <label class="click-toggle">
+                    <input type="checkbox" class="status-toggle" id="eve-status-toggle">
+                    <div class="toggle-track">
+                        <span class="toggle-text text-left">OFF</span>
+                        <span class="toggle-text text-right">ON</span>
+                        <div class="toggle-thumb"></div>
+                    </div>
+                </label>
                 <div class="control-panel">
                     <div class="setting-title">Attack Selection</div>
                     <div style="display:flex; flex-direction:column; gap:10px; align-items: flex-start; margin-top: 15px;">
