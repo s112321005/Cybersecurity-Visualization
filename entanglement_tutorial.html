@@ -1,0 +1,1022 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<base href="https://s112321005.github.io/Cybersecurity-Visualization/">
+<title>Entanglement Swapping</title>
+<style>
+:root { --primary-blue: #549FD0; --deep-blue: #2f7eaf; --soft-blue: #eef8ff; --dark-text: #263746; --muted: #6b7c8f; --bg-color: #f8f9fa; --purple: #7b61ff; --orange: #f2a93b; --green: #27a36a; --border: #d8edf8; --shadow: 0 12px 30px rgba(44,62,80,0.10); }
+* { box-sizing: border-box; }
+body { margin: 0; min-height: 100vh; font-family: "Segoe UI", Arial, sans-serif; background: radial-gradient(circle at top, #e9f6ff 0, var(--bg-color) 46%); color: var(--dark-text); padding: 28px 16px 42px; }
+.header { width: min(1140px, 96vw); margin: 0 auto 18px; display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 16px; }
+.header-left { display: flex; align-items: center; gap: 14px; }
+.btn-back { width: 40px; height: 40px; background: var(--primary-blue); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; text-decoration: none; border: none; box-shadow: 0 4px 12px rgba(84,159,208,0.28); transition: 0.2s; }
+.btn-back:hover { transform: scale(1.08); background: var(--deep-blue); }
+.page-title { border: 2px solid var(--primary-blue); background: white; color: #111827; padding: 10px 24px; border-radius: 12px; font-size: 19px; font-weight: 900; }
+.header-center { text-align: center; font-size: 25px; font-weight: 1000; letter-spacing: 0.2px; }
+.header-right { display: flex; gap: 10px; flex-wrap: wrap; justify-content: flex-end; }
+.nav-btn { border: 2px solid var(--primary-blue); background: white; color: var(--dark-text); padding: 10px 18px; border-radius: 999px; font-weight: 900; cursor: pointer; transition: 0.2s; }
+.nav-btn:hover { background: var(--primary-blue); color: white; transform: translateY(-1px); }
+
+.page { width: min(1140px, 96vw); margin: 0 auto; display: grid; gap: 16px; }
+.intro { display: block; }
+.panel { background: white; border: 2px solid var(--border); border-radius: 26px; box-shadow: var(--shadow); }
+.bell-grid { padding: 14px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+.bell-card { border: 2px solid #e1f1f9; border-radius: 16px; padding: 12px 14px; background: #fbfdff; color: #334155; display: flex; align-items: center; gap: 7px; min-height: 72px; overflow: hidden; box-shadow: none; }
+.bell-name { font-size: 22px; font-weight: 1000; white-space: nowrap; }
+.bell-formula { font-size: 21px; white-space: nowrap; }
+.bell-equals { font-size: 22px; font-weight: 900; }
+.state-symbol { font-style: normal; }
+mjx-mi.mjx-i { display: inline-block; font-family: "Cambria Math", "Times New Roman", serif; font-style: normal; line-height: 1; }
+mjx-c { display: inline-block; font-style: normal; }
+mjx-c.mjx-c1D719.TEX-I::before { content: "ϕ"; }
+mjx-c.mjx-c1D713.TEX-I::before { content: "ψ"; }
+
+.controls { padding: 16px; display: grid; gap: 14px; }
+.control-top { display: grid; grid-template-columns: 1fr 1fr auto; gap: 12px; align-items: stretch; }
+.control-block { border: 2px solid #e1f1f9; background: #fbfdff; border-radius: 22px; padding: 14px; display: grid; gap: 10px; align-content: start; }
+.control-title { font-size: 12px; color: #466f88; font-weight: 1000; letter-spacing: 0.07em; text-transform: uppercase; }
+.option-row { display: flex; flex-wrap: wrap; gap: 8px; }
+.option-btn { border: 2px solid #d8edf8; background: #fff; color: #334155; border-radius: 999px; padding: 8px 12px; font-weight: 900; cursor: pointer; transition: 0.18s; min-height: 38px; }
+.option-btn:hover { border-color: var(--primary-blue); background: var(--soft-blue); transform: translateY(-1px); }
+.option-btn.active { border-color: var(--primary-blue); background: var(--primary-blue); color: #fff; box-shadow: 0 7px 16px rgba(84,159,208,0.22); }
+.option-btn:disabled { opacity: 0.42; cursor: not-allowed; transform: none; }
+.bell-row .option-btn { font-family: "Cambria Math", "Times New Roman", serif; font-size: 16px; padding-inline: 13px; }
+.fixed-box { border: 2px solid #e2eef5; border-radius: 16px; background: white; color: #334155; padding: 10px 12px; min-height: 42px; display: flex; align-items: center; font-weight: 1000; font-family: "Cambria Math", "Times New Roman", serif; }
+.auto-row { display: grid; grid-template-columns: 1.4fr 1fr 1fr; gap: 10px; }
+.auto-box { border: 2px solid #e2eef5; border-radius: 18px; background: white; padding: 11px 13px; min-height: 58px; }
+.auto-label { display: block; font-size: 11px; color: #64748b; font-weight: 1000; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 4px; }
+.auto-value { display: block; color: #17202a; font-weight: 1000; font-family: "Cambria Math", "Times New Roman", serif; font-size: 16px; }
+.order-circles { display: flex; gap: 7px; flex-wrap: wrap; align-items: center; min-height: 32px; }
+.order-circle { width: 30px; height: 30px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; border: 2px solid #cfe8f6; background: var(--soft-blue); color: var(--deep-blue); font-weight: 1000; font-size: 14px; user-select: none; }
+.result-order-circle { width: 26px; height: 26px; margin: 0 2px; vertical-align: middle; }
+.order-circle.draggable { cursor: grab; background: #fff; }
+.order-circle.draggable:active { cursor: grabbing; }
+.order-circle.dragging { opacity: 0.45; transform: scale(0.94); }
+.primary-btn { align-self: center; border: none; background: var(--primary-blue); color: white; padding: 13px 24px; border-radius: 999px; font-weight: 1000; cursor: pointer; box-shadow: 0 8px 18px rgba(84,159,208,0.25); transition: 0.2s; white-space: nowrap; }
+.primary-btn:hover { background: var(--deep-blue); transform: translateY(-1px); }
+
+.stage { height: 1180px; border: 3px solid var(--primary-blue); position: relative; overflow: hidden; background: white; border-radius: 30px; box-shadow: var(--shadow); }
+.stage-bg { position: absolute; inset: 0; background: radial-gradient(circle at 50% 28%, rgba(84,159,208,0.16), transparent 28%), linear-gradient(180deg, #fff, #f9fcff); }
+.result-strip { position: absolute; left: 26px; right: 26px; top: 22px; min-height: 158px; border: 2px solid var(--border); background: rgba(255,255,255,0.96); border-radius: 22px; padding: 14px 18px; display: grid; grid-template-columns: 1fr; gap: 12px; align-items: stretch; z-index: 30; box-shadow: 0 8px 20px rgba(44,62,80,0.08); }
+.stage-actions { display: flex; gap: 12px; align-items: center; justify-content: center; flex-wrap: wrap; }
+
+.arrow-group { display: inline-flex; align-items: center; filter: drop-shadow(0 7px 14px rgba(84,159,208,0.16)); }
+.arrow-btn { width: 58px; height: 42px; border: 2px solid var(--primary-blue); background: white; color: var(--deep-blue); font-weight: 1000; cursor: pointer; transition: 0.2s; display: inline-flex; align-items: center; justify-content: center; position: relative; }
+.arrow-btn:hover { background: var(--primary-blue); color: white; }
+.arrow-back { border-radius: 999px 0 0 999px; border-right: 0; clip-path: polygon(18% 0, 100% 0, 82% 50%, 100% 100%, 18% 100%, 0 50%); padding-left: 4px; }
+.arrow-step { border-radius: 0 999px 999px 0; clip-path: polygon(0 0, 82% 0, 100% 50%, 82% 100%, 0 100%, 18% 50%); padding-right: 4px; margin-left: -7px; }
+.arrow-icon { font-size: 18px; line-height: 1; }
+.icon-btn { width: 46px; height: 42px; border: 2px solid var(--primary-blue); background: white; color: var(--deep-blue); border-radius: 999px; font-size: 18px; font-weight: 1000; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s; box-shadow: 0 7px 14px rgba(84,159,208,0.16); }
+.icon-btn:hover { background: var(--primary-blue); color: white; transform: translateY(-1px); }
+.icon-btn.playing { background: var(--primary-blue); color: white; }
+.play-icon { font-size: 40px; line-height: 1; transform: translateX(2px); font-weight: 1000; }
+.pause-icon { display: inline-flex; gap: 9px; align-items: center; justify-content: center; width: 48px; height: 48px; }
+.pause-icon::before, .pause-icon::after { content: ""; display: block; width: 10px; height: 42px; border-radius: 4px; background: currentColor; }
+.reset-icon-btn { font-size: 22px; }
+
+.state-actions { gap: 20px; }
+.media-btn { width: 56px; height: 48px; border: none; background: transparent; color: #0f172a; display: inline-flex; align-items: center; justify-content: center; gap: 3px; cursor: pointer; padding: 0; transition: 0.18s; }
+.media-btn:hover { transform: translateY(-1px) scale(1.04); color: var(--deep-blue); }
+.media-btn:active { transform: scale(0.96); }
+.media-play { width: 86px; height: 64px; }
+.media-tri { display: inline-block; width: 0; height: 0; border-top: 15px solid transparent; border-bottom: 15px solid transparent; }
+.media-tri.right { border-left: 22px solid currentColor; }
+.media-tri.left { border-right: 22px solid currentColor; }
+.media-tri.big { border-top-width: 30px; border-bottom-width: 30px; border-left-width: 44px; }
+.pause-bars { display: inline-flex; gap: 8px; align-items: center; justify-content: center; }
+.pause-bars::before, .pause-bars::after { content: ""; display: block; width: 9px; height: 34px; border-radius: 3px; background: currentColor; }
+.reset-text-btn { border: 2px solid var(--primary-blue); background: white; color: var(--deep-blue); padding: 9px 16px; border-radius: 999px; font-weight: 1000; cursor: pointer; transition: 0.18s; }
+.reset-text-btn:hover { background: var(--primary-blue); color: white; transform: translateY(-1px); }
+
+
+.compact-controls .nav-btn { min-width: 110px; }
+.result-title { font-size: 18px; font-weight: 1000; color: #17202a; margin-bottom: 4px; }
+.result-desc { color: var(--muted); font-size: 14px; line-height: 1.35; }
+.result-ket { border: 2px solid #cfe8f6; background: var(--soft-blue); color: var(--deep-blue); border-radius: 18px; padding: 11px 14px; font-weight: 1000; font-family: "Cambria Math", "Times New Roman", serif; white-space: nowrap; }
+
+svg { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 6; }
+.entangle { fill: none; stroke: var(--primary-blue); stroke-width: 4; stroke-linecap: round; stroke-dasharray: 9 10; filter: drop-shadow(0 0 5px rgba(84,159,208,0.26)); opacity: 0; transition: opacity 0.45s; }
+.flow { fill: none; stroke: var(--purple); stroke-width: 2.2; stroke-linecap: round; stroke-dasharray: 7 13; opacity: 0; animation: dashFlow 1.1s linear infinite; transition: opacity 0.45s; }
+.measure-line { stroke: var(--orange); }
+.final-line { stroke: var(--green); }
+.idle-line { stroke: #94a3b8; }
+.entangle.idle-link { stroke: #94a3b8; filter: drop-shadow(0 0 5px rgba(148,163,184,0.20)); }
+.flow.idle-link { stroke: #94a3b8; opacity: 0; }
+.entangle.show, .flow.show { opacity: 1; }
+@keyframes dashFlow { to { stroke-dashoffset: -44; } }
+
+.qubit { position: absolute; width: 76px; height: 76px; transform: translate(-50%, -50%); z-index: 12; transition: left 0.9s cubic-bezier(.2,.8,.2,1), top 0.9s cubic-bezier(.2,.8,.2,1), opacity 0.25s; opacity: 1; }
+.qubit.hide { opacity: 0; pointer-events: none; }
+.qubit-ball { width: 76px; height: 76px; border-radius: 50%; border: 3px solid #b9e0f3; background: white; display: flex; justify-content: center; align-items: center; box-shadow: 0 12px 24px rgba(44,62,80,0.13); }
+.qubit-core { width: 48px; height: 48px; border-radius: 50%; border: 2px solid var(--primary-blue); background: linear-gradient(145deg, #eaf7ff, #fff); color: var(--deep-blue); display: flex; align-items: center; justify-content: center; font-size: 22px; font-weight: 1000; }
+.qubit-label { display: none; }
+.qubit.pair .qubit-ball { border-color: var(--purple); box-shadow: 0 0 0 7px rgba(123,97,255,0.12), 0 12px 24px rgba(44,62,80,0.13); }
+.qubit.measure .qubit-ball { border-color: var(--orange); box-shadow: 0 0 0 7px rgba(242,169,59,0.16), 0 12px 24px rgba(44,62,80,0.13); }
+.qubit.final .qubit-ball { border-color: var(--green); box-shadow: 0 0 0 7px rgba(39,163,106,0.15), 0 12px 24px rgba(44,62,80,0.13); }
+
+.measure-box { position: absolute; left: 50%; top: 308px; transform: translateX(-50%) scale(0.92); width: 172px; height: 90px; border: 2.5px solid #f2bd65; background: #fff7e7; border-radius: 24px; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 6px; color: #8a5a07; font-weight: 1000; z-index: 10; opacity: 0; transition: 0.45s; }
+.measure-box.show { opacity: 1; transform: translateX(-50%) scale(1); }
+.measure-symbol { width: 40px; height: 40px; border-radius: 50%; background: white; border: 2px solid #f2bd65; display: flex; align-items: center; justify-content: center; font-size: 22px; animation: pulseMeasure 1.1s infinite; }
+@keyframes pulseMeasure { 0% { box-shadow: 0 0 0 0 rgba(242,169,59,0.32); } 70% { box-shadow: 0 0 0 12px rgba(242,169,59,0); } 100% { box-shadow: 0 0 0 0 rgba(242,169,59,0); } }
+
+.calc-area { position: absolute; left: 26px; right: 78px; top: 420px; bottom: 142px; overflow-y: hidden; padding-right: 8px; z-index: 24; scroll-snap-type: y mandatory; scroll-behavior: smooth; scrollbar-width: none; }
+.calc-area::-webkit-scrollbar { display: none; }
+.calc-step-scroll { position: absolute; right: 28px; top: 420px; bottom: 142px; width: 34px; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; gap: 13px; z-index: 26; }
+
+.calc-track { width: 16px; height: 98%; border: 3px solid var(--deep-blue); border-radius: 22px; background: white; position: relative; overflow: hidden; box-shadow: 3px 3px 0 rgba(84,159,208,0.32); cursor: pointer; }
+.calc-thumb { position: absolute; left: 0; top: 0; width: 100%; height: 25%; background: var(--primary-blue); border-radius: 14px; transform: translateY(0); transition: top 0.28s cubic-bezier(0.25,0.8,0.25,1), height 0.28s cubic-bezier(0.25,0.8,0.25,1); }
+.calc-card { scroll-snap-align: start; scroll-margin-top: 8px; border: 1.8px solid #cfddea; background: #f3f5f8; border-radius: 18px; margin-bottom: 12px; padding: 14px 16px; transition: 0.28s; display: block; opacity: 1; transform: translateY(0); min-height: 150px; }
+#card2 { min-height: 110px; padding: 12px 14px; }
+#card3 { min-height: 110px; padding: 12px 14px; }
+#card4 { min-height: 80px; padding: 12px 14px; }
+.calc-card.focus { border-color: var(--primary-blue); background: #eef8ff; box-shadow: 0 8px 18px rgba(84,159,208,0.16); }
+.calc-head { color: #0f52b4; font-size: 17px; font-weight: 1000; margin-bottom: 10px; }
+.calc-line { font-family: "Cambria Math", "Times New Roman", serif; color: #1f3f67; font-size: 18px; line-height: 1.62; margin: 4px 0; word-break: break-word; overflow-x: auto; }
+.calc-line.small { font-size: 17px; }
+.calc-line.indent { padding-left: 8px; }
+.math { font-family: "Cambria Math", "Times New Roman", serif; }
+.ket sub, .bell sub { font-size: 70%; vertical-align: -0.35em; }
+.sup { font-size: 70%; vertical-align: 0.55em; }
+.frac { display: inline-flex; flex-direction: column; align-items: center; justify-content: center; vertical-align: middle; font-size: 0.92em; line-height: 1; margin: 0 0.15em; }
+.frac .top { border-bottom: 1.8px solid currentColor; padding: 0 0.18em 0.08em; }
+.frac .bottom { padding: 0.08em 0.18em 0; }
+
+.all-results { position: absolute; left: 26px; right: 26px; bottom: 28px; min-height: 96px; border: 2px solid var(--border); border-radius: 24px; background: rgba(255,255,255,0.96); display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; padding: 12px; z-index: 25; opacity: 0; transform: translateY(12px); pointer-events: none; transition: 0.35s; }
+.all-results.show { opacity: 1; transform: translateY(0); pointer-events: auto; }
+.result-card { border: 1.5px solid #e3f1f9; border-radius: 17px; background: #fff; padding: 10px; display: grid; gap: 5px; }
+.result-card .r-label, .result-card .r-value { font-family: "Cambria Math", "Times New Roman", serif; color: #17202a; font-size: 16px; font-weight: 1000; letter-spacing: 0; text-transform: none; display: inline-flex; align-items: center; gap: 3px; flex-wrap: wrap; }
+
+.progress { border: 0; border-radius: 18px; background: transparent; display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; padding: 0; }
+.step-chip { border: 1.5px solid #e3f1f9; border-radius: 17px; background: white; padding: 10px; transition: 0.25s; text-align: left; font-family: inherit; }
+.step-chip.active { background: var(--soft-blue); border-color: var(--primary-blue); transform: translateY(-3px); }
+
+.step-chip { cursor: pointer; user-select: none; }
+.step-chip:hover { border-color: var(--primary-blue); background: #f7fcff; transform: translateY(-2px); }
+.step-chip:focus-visible { outline: 3px solid rgba(84,159,208,0.32); outline-offset: 2px; }
+
+.step-name { display: block; font-size: 13px; font-weight: 1000; color: #17202a; }
+.step-text { display: block; margin-top: 4px; font-size: 12px; color: var(--muted); line-height: 1.25; }
+
+@media (max-width: 1100px) {
+.control-top { grid-template-columns: 1fr 1fr; }
+.auto-row { grid-template-columns: repeat(2, 1fr); }
+.bell-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 760px) {
+body { padding: 18px 10px 34px; }
+.header { grid-template-columns: 1fr; justify-items: center; }
+.header-right { justify-content: center; }
+.intro { grid-template-columns: 1fr; }
+.control-top { grid-template-columns: 1fr; }
+.auto-row { grid-template-columns: 1fr; }
+.stage { height: 1540px; }
+.calc-area { top: 620px; right: 66px; bottom: 250px; overflow-y: hidden; }
+.calc-step-scroll { top: 620px; bottom: 250px; right: 24px; }
+.all-results { grid-template-columns: 1fr 1fr; bottom: 26px; }
+.progress { grid-template-columns: 1fr 1fr; }
+.bell-grid { grid-template-columns: 1fr; }
+.calc-line { font-size: 16px; }
+}
+</style>
+</head>
+<body>
+<header class="header">
+<div class="header-left">
+<a href="QuantumCybersecurityEducationPlatform.html" class="btn-back" title="back home">◀</a>
+<div class="page-title">Quantum Tutorial</div>
+</div>
+<div class="header-center">Entanglement Swapping</div>
+<div class="header-right">
+
+</div>
+</header>
+
+<main class="page">
+<section class="intro">
+<div class="panel bell-grid">
+<div class="bell-card"><span class="bell-name math">|<mjx-mi class="mjx-i"><mjx-c class="mjx-c1D719 TEX-I"></mjx-c></mjx-mi><span class="sup">+</span>⟩</span><span class="bell-equals">=</span><span class="math"><span class="frac"><span class="top">1</span><span class="bottom">√2</span></span></span><span class="bell-formula math">(|00⟩ + |11⟩)<sub>12</sub></span></div>
+<div class="bell-card"><span class="bell-name math">|<mjx-mi class="mjx-i"><mjx-c class="mjx-c1D719 TEX-I"></mjx-c></mjx-mi><span class="sup">−</span>⟩</span><span class="bell-equals">=</span><span class="math"><span class="frac"><span class="top">1</span><span class="bottom">√2</span></span></span><span class="bell-formula math">(|00⟩ − |11⟩)<sub>12</sub></span></div>
+<div class="bell-card"><span class="bell-name math">|<mjx-mi class="mjx-i"><mjx-c class="mjx-c1D713 TEX-I"></mjx-c></mjx-mi><span class="sup">+</span>⟩</span><span class="bell-equals">=</span><span class="math"><span class="frac"><span class="top">1</span><span class="bottom">√2</span></span></span><span class="bell-formula math">(|01⟩ + |10⟩)<sub>12</sub></span></div>
+<div class="bell-card"><span class="bell-name math">|<mjx-mi class="mjx-i"><mjx-c class="mjx-c1D713 TEX-I"></mjx-c></mjx-mi><span class="sup">−</span>⟩</span><span class="bell-equals">=</span><span class="math"><span class="frac"><span class="top">1</span><span class="bottom">√2</span></span></span><span class="bell-formula math">(|01⟩ − |10⟩)<sub>12</sub></span></div>
+</div>
+</section>
+
+<section class="panel controls">
+<div class="control-top">
+<div class="control-block">
+<div class="control-title">Initial q1–q2</div>
+<div class="option-row bell-row" data-choice="state12">
+<button class="option-btn active" data-value="Φ⁺">|<mjx-mi class="mjx-i"><mjx-c class="mjx-c1D719 TEX-I"></mjx-c></mjx-mi>⁺⟩</button>
+<button class="option-btn" data-value="Φ⁻">|<mjx-mi class="mjx-i"><mjx-c class="mjx-c1D719 TEX-I"></mjx-c></mjx-mi>⁻⟩</button>
+<button class="option-btn" data-value="Ψ⁺">|<mjx-mi class="mjx-i"><mjx-c class="mjx-c1D713 TEX-I"></mjx-c></mjx-mi>⁺⟩</button>
+<button class="option-btn" data-value="Ψ⁻">|<mjx-mi class="mjx-i"><mjx-c class="mjx-c1D713 TEX-I"></mjx-c></mjx-mi>⁻⟩</button>
+</div>
+</div>
+
+<div class="control-block">
+<div class="control-title">Initial q3–q4</div>
+<div class="option-row bell-row" data-choice="state34">
+<button class="option-btn" data-value="Φ⁺">|<mjx-mi class="mjx-i"><mjx-c class="mjx-c1D719 TEX-I"></mjx-c></mjx-mi>⁺⟩</button>
+<button class="option-btn active" data-value="Φ⁻">|<mjx-mi class="mjx-i"><mjx-c class="mjx-c1D719 TEX-I"></mjx-c></mjx-mi>⁻⟩</button>
+<button class="option-btn" data-value="Ψ⁺">|<mjx-mi class="mjx-i"><mjx-c class="mjx-c1D713 TEX-I"></mjx-c></mjx-mi>⁺⟩</button>
+<button class="option-btn" data-value="Ψ⁻">|<mjx-mi class="mjx-i"><mjx-c class="mjx-c1D713 TEX-I"></mjx-c></mjx-mi>⁻⟩</button>
+</div>
+</div>
+
+<button class="primary-btn" onclick="startFromBeginning()">Start</button>
+</div>
+
+<div class="auto-row">
+<div class="auto-box"><span class="auto-label">Initial</span><span class="auto-value" id="autoInitial">|Φ⁺⟩₁₂ ⊗ |Φ⁻⟩₃₄</span></div>
+<div class="auto-box"><span class="auto-label">Initial order</span><span class="order-circles" id="initialOrder"></span></div>
+<div class="auto-box"><span class="auto-label">Final order</span><span class="order-circles" id="finalOrder"></span></div>
+</div>
+</section>
+
+<section class="stage" id="stage">
+<div class="stage-bg"></div>
+<div class="result-strip compact-controls">
+<div class="stage-actions state-actions">
+<button class="media-btn media-back" onclick="prevStep()" title="Back" aria-label="Back">
+<span class="media-tri left"></span><span class="media-tri left"></span>
+</button>
+<button class="media-btn media-play" id="stageAutoBtn" onclick="toggleAutoPlay()" title="Auto Play" aria-label="Auto Play">
+<span class="media-tri right big"></span>
+</button>
+<button class="media-btn media-step" onclick="nextStep()" title="Step" aria-label="Step">
+<span class="media-tri right"></span><span class="media-tri right"></span>
+</button>
+<button class="reset-text-btn" onclick="resetScene()" title="Reset">Reset</button>
+</div>
+<div class="progress">
+<button class="step-chip" id="s1" onclick="jumpToStep(1)" type="button"><span class="step-name">1 Prepare Entangled Pairs</span><span class="step-text">Bell states → basis form</span></button>
+<button class="step-chip" id="s2" onclick="jumpToStep(2)" type="button"><span class="step-name">2 Expand</span><span class="step-text">four-qubit state</span></button>
+<button class="step-chip" id="s3" onclick="jumpToStep(3)" type="button"><span class="step-name">3 Bell-State Measurement</span><span class="step-text">measure 23 → connect 14</span></button>
+<button class="step-chip" id="s4" onclick="jumpToStep(4)" type="button"><span class="step-name">4 Entanglement Swapping</span><span class="step-text">q1–q4 and q2–q3</span></button>
+</div>
+</div>
+<svg viewBox="0 0 1140 1040" preserveAspectRatio="none">
+<path id="line12" class="entangle"></path>
+<path id="flow12" class="flow"></path>
+<path id="line34" class="entangle"></path>
+<path id="flow34" class="flow"></path>
+<path id="line23" class="entangle measure-line"></path>
+<path id="flow23" class="flow measure-line"></path>
+<path id="line14" class="entangle final-line"></path>
+<path id="flow14" class="flow final-line"></path>
+</svg>
+
+
+<div class="measure-box" id="measureBox">
+<div class="measure-symbol">⊗</div>
+<div>Bell Measure</div>
+</div>
+
+<div class="qubit" id="q1"><div class="qubit-ball"><div class="qubit-core">1</div></div></div>
+<div class="qubit" id="q2"><div class="qubit-ball"><div class="qubit-core">2</div></div></div>
+<div class="qubit" id="q3"><div class="qubit-ball"><div class="qubit-core">3</div></div></div>
+<div class="qubit" id="q4"><div class="qubit-ball"><div class="qubit-core">4</div></div></div>
+
+<div class="calc-area" id="calcArea">
+<div class="calc-card" id="card1">
+<div class="calc-head">1. Bell state to computational basis</div>
+<div class="calc-line" id="card1l1"></div>
+<div class="calc-line" id="card1l2"></div>
+<div class="calc-line" id="card1l3"></div>
+</div>
+
+<div class="calc-card" id="card2">
+<div class="calc-head">2. Expanded four-qubit state</div>
+<div class="calc-line" id="card2l1"></div>
+<div class="calc-line small" id="card2l2"></div>
+</div>
+
+<div class="calc-card" id="card3">
+<div class="calc-head">3. Reorder particle positions</div>
+<div class="calc-line" id="card3l1"></div>
+<div class="calc-line small" id="card3l2"></div>
+</div>
+
+<div class="calc-card" id="card4">
+<div class="calc-head">4. Final collected Bell terms</div>
+<div class="calc-line small" id="card4l1"></div>
+<div class="calc-line small" id="card4l2"></div>
+</div>
+</div>
+<div class="calc-step-scroll" aria-label="Calculation step switcher">
+<div class="calc-track" id="calcTrack" onclick="jumpCalcByTrack(event)"><div class="calc-thumb" id="calcThumb"></div></div>
+</div>
+
+<div class="all-results" id="allResults">
+<div class="result-card"><span class="r-label">q<sub>2</sub>-q<sub>3</sub> = |<mjx-mi class="mjx-i"><mjx-c class="mjx-c1D719 TEX-I"></mjx-c></mjx-mi>⁺⟩<sub>23</sub></span><span class="r-value" id="resPhiPlus"><span class="order-circle result-order-circle">1</span><span class="order-circle result-order-circle">4</span> = ?</span></div>
+<div class="result-card"><span class="r-label">q<sub>2</sub>-q<sub>3</sub> = |<mjx-mi class="mjx-i"><mjx-c class="mjx-c1D719 TEX-I"></mjx-c></mjx-mi>⁻⟩<sub>23</sub></span><span class="r-value" id="resPhiMinus"><span class="order-circle result-order-circle">1</span><span class="order-circle result-order-circle">4</span> = ?</span></div>
+<div class="result-card"><span class="r-label">q<sub>2</sub>-q<sub>3</sub> = |<mjx-mi class="mjx-i"><mjx-c class="mjx-c1D713 TEX-I"></mjx-c></mjx-mi>⁺⟩<sub>23</sub></span><span class="r-value" id="resPsiPlus"><span class="order-circle result-order-circle">1</span><span class="order-circle result-order-circle">4</span> = ?</span></div>
+<div class="result-card"><span class="r-label">q<sub>2</sub>-q<sub>3</sub> = |<mjx-mi class="mjx-i"><mjx-c class="mjx-c1D713 TEX-I"></mjx-c></mjx-mi>⁻⟩<sub>23</sub></span><span class="r-value" id="resPsiMinus"><span class="order-circle result-order-circle">1</span><span class="order-circle result-order-circle">4</span> = ?</span></div>
+</div>
+
+</section>
+</main>
+
+<script>
+const uiState = { state12: "Φ⁺", state34: "Φ⁻", finalOrder: [1, 4, 2, 3] };
+const bellDefs = {
+  "Φ⁺": [["00", 1], ["11", 1]],
+  "Φ⁻": [["00", 1], ["11", -1]],
+  "Ψ⁺": [["01", 1], ["10", 1]],
+  "Ψ⁻": [["01", 1], ["10", -1]]
+};
+const bellOrder = ["Φ⁺", "Φ⁻", "Ψ⁺", "Ψ⁻"];
+let currentStep = 0;
+let autoPlaying = false;
+let autoTimer = null;
+
+function stateKet(state) { return `|${state}⟩`; }
+function pairLabel(a, b) { return `q${a}–q${b}`; }
+
+function getChoice() {
+  return { count: 4, state12: uiState.state12, state34: uiState.state34 };
+}
+
+function activeQubits() {
+  return [1, 2, 3, 4];
+}
+
+function defaultFinalOrder() {
+  return [1, 4, 2, 3];
+}
+
+function isInitialOrder(order) {
+  return Array.isArray(order) && order.join("") === activeQubits().join("");
+}
+
+function getSafeFinalOrder(order = uiState.finalOrder) {
+  const active = activeQubits();
+  const activeSet = new Set(active);
+  const cleaned = order.filter(q => activeSet.has(q));
+  const missing = active.filter(q => !cleaned.includes(q));
+  const safe = cleaned.concat(missing);
+  return isInitialOrder(safe) ? defaultFinalOrder() : safe;
+}
+
+function finalPairA() {
+  const order = getSafeFinalOrder();
+  return [order[0], order[1]];
+}
+
+function finalPairB() {
+  const order = getSafeFinalOrder();
+  return [order[2], order[3]];
+}
+
+function pairSub(pair) {
+  return pair.join("");
+}
+
+function pairText(pair) {
+  return `q<sub>${pair[0]}</sub>–q<sub>${pair[1]}</sub>`;
+}
+
+function syncFinalOrderToCount() {
+  uiState.finalOrder = getSafeFinalOrder();
+}
+
+function stageSize() {
+  const stage = document.getElementById("stage");
+  return { w: stage.clientWidth, h: stage.clientHeight };
+}
+
+function syncSvgViewBox() {
+  const stage = document.getElementById("stage");
+  const svg = stage ? stage.querySelector("svg") : null;
+  if (!stage || !svg) return;
+  svg.setAttribute("viewBox", `0 0 ${stage.clientWidth} ${stage.clientHeight}`);
+}
+
+function getBasePositions() {
+  const { w } = stageSize();
+  const xs = [0.14, 0.38, 0.62, 0.86].map(r => Math.round(w * r));
+  const pos = {};
+  for (let i = 1; i <= 4; i++) pos["q" + i] = { x: xs[i - 1], y: 300 };
+  return pos;
+}
+
+function getMeasurePositions(base) {
+  const { w } = stageSize();
+  const pos = JSON.parse(JSON.stringify(base));
+  pos.q2.x = Math.round(w * 0.44); pos.q3.x = Math.round(w * 0.56); pos.q2.y = 300; pos.q3.y = 300;
+  return pos;
+}
+
+function getFinalPositions(base) {
+  const { w } = stageSize();
+  const pos = JSON.parse(JSON.stringify(base));
+  const order = getSafeFinalOrder();
+  const xs = [0.14, 0.38, 0.62, 0.86].map(r => Math.round(w * r));
+  order.forEach((q, index) => {
+    pos["q" + q].x = xs[index];
+    pos["q" + q].y = 300;
+  });
+  return pos;
+}
+
+function moveQubits(pos) {
+  for (let i = 1; i <= 4; i++) {
+    const el = document.getElementById("q" + i);
+    el.style.left = pos["q" + i].x + "px";
+    el.style.top = pos["q" + i].y + "px";
+  }
+}
+
+function curve(a, b, lift) {
+  const mid = (a.x + b.x) / 2;
+  const cy = Math.min(a.y, b.y) - lift;
+  return `M ${a.x} ${a.y} C ${mid} ${cy}, ${mid} ${cy}, ${b.x} ${b.y}`;
+}
+
+function setLine(id, d, show) {
+  const el = document.getElementById(id);
+  el.setAttribute("d", d);
+  el.classList.toggle("show", show);
+}
+
+function centerOfPair(pos, a, b) {
+  return { x: (pos["q" + a].x + pos["q" + b].x) / 2, y: Math.min(pos["q" + a].y, pos["q" + b].y) - 66 };
+}
+
+function setTag(id, text, pos, a, b) {
+  const p = centerOfPair(pos, a, b);
+  const el = document.getElementById(id);
+  el.textContent = text;
+  el.style.left = p.x + "px";
+  el.style.top = p.y + "px";
+}
+
+function clearMarks() {
+  for (let i = 1; i <= 4; i++) document.getElementById("q" + i).classList.remove("pair", "measure", "final");
+  document.getElementById("measureBox").classList.remove("show");
+  document.getElementById("allResults").classList.remove("show");
+}
+
+function markPair(a, b, cls) {
+  document.getElementById("q" + a).classList.add(cls);
+  document.getElementById("q" + b).classList.add(cls);
+}
+
+function visibleStep(step) {
+  if (step > 3 && step < 4) return 3;
+  return Math.max(0, Math.min(4, Math.floor(step || 0)));
+}
+
+function setStepChip(n) {
+  const active = visibleStep(n);
+  for (let i = 1; i <= 4; i++) document.getElementById("s" + i).classList.toggle("active", i === active);
+}
+
+function updateAutoButton() {
+  const btn = document.getElementById("stageAutoBtn");
+  if (!btn) return;
+  btn.classList.toggle("playing", autoPlaying);
+  btn.title = autoPlaying ? "Pause" : "Auto Play";
+  btn.innerHTML = autoPlaying ? '<span class="pause-icon"></span>' : '<span class="play-icon">▶</span>';
+}
+
+function stopAutoPlay() {
+  if (autoTimer) clearInterval(autoTimer);
+  autoTimer = null;
+  autoPlaying = false;
+  updateAutoButton();
+}
+
+function updateInfoBoxes() {
+  const c = getChoice();
+  let init = `${bellHTML(c.state12, "12")} ⊗ ${bellHTML(c.state34, "34")}`;
+  document.getElementById("autoInitial").innerHTML = init;
+  renderOrderCircles();
+}
+
+function expandInitialStates() {
+  const c = getChoice();
+  const pairs = [[c.state12, "12"], [c.state34, "34"]];
+  let terms = [{ bits: "", sign: 1 }];
+  pairs.forEach(([state]) => {
+    const next = [];
+    terms.forEach(term => {
+      bellDefs[state].forEach(([pairBits, pairSign]) => {
+        next.push({ bits: term.bits + pairBits, sign: term.sign * pairSign });
+      });
+    });
+    terms = next;
+  });
+  return terms;
+}
+
+function reorderTerms(terms, finalOrder) {
+  return terms.map(t => {
+    return { bits: finalOrder.map(q => t.bits[q - 1]).join(""), sign: t.sign };
+  });
+}
+
+function reorder1423(terms) {
+  return reorderTerms(terms, uiState.finalOrder);
+}
+
+function bellProductExpansion(state14, state23) {
+  const map = {};
+  bellDefs[state14].forEach(([pair14, s1]) => {
+    bellDefs[state23].forEach(([pair23, s2]) => {
+      const bits = pair14[0] + pair14[1] + pair23[0] + pair23[1];
+      map[bits] = (map[bits] || 0) + s1 * s2;
+    });
+  });
+  return map;
+}
+
+function collectBellTerms(reorderedTerms) {
+  const origMap = {};
+  reorderedTerms.forEach(t => {
+    const key = t.bits.slice(0, 4);
+    origMap[key] = (origMap[key] || 0) + t.sign;
+  });
+  const collected = [];
+  bellOrder.forEach(state14 => {
+    bellOrder.forEach(state23 => {
+      const bmap = bellProductExpansion(state14, state23);
+      let sum = 0;
+      Object.keys(bmap).forEach(bits => { sum += (origMap[bits] || 0) * bmap[bits]; });
+      if (sum !== 0) {
+        // sum / 4 = coefficient ; only keep nonzero
+        collected.push({ state14, state23, sign: sum > 0 ? 1 : -1 });
+      }
+    });
+  });
+  return collected;
+}
+
+function basisSumString(terms, subscript) {
+  return terms.map((t, i) => `${i === 0 ? (t.sign < 0 ? "- " : "") : (t.sign < 0 ? " − " : " + ")}|${t.bits}⟩_${subscript}`).join("");
+}
+
+function collectedString(collected) {
+  return collected.map((t, i) => {
+    const core = `${stateKet(t.state14)}₁₄ ${stateKet(t.state23)}₂₃`;
+    if (i === 0) return `${t.sign < 0 ? "- " : ""}${core}`;
+    return `${t.sign < 0 ? " − " : " + "}${core}`;
+  }).join("");
+}
+
+function resultMap(collected) {
+  const map = {};
+  collected.forEach(t => { map[t.state23] = t.state14; });
+  return map;
+}
+
+function superscriptSign(state) {
+  return state.includes("⁻") ? "−" : "+";
+}
+
+function stateSymbol(state) {
+  return state.includes("Φ") ? "Φ" : "Ψ";
+}
+
+function mjxSymbol(state) {
+  const cls = state.includes("Φ") ? "mjx-c1D719" : "mjx-c1D713";
+  return `<mjx-mi class="mjx-i"><mjx-c class="${cls} TEX-I"></mjx-c></mjx-mi>`;
+}
+
+function bellHTML(state, sub = "") {
+  return `<span class="bell">|${mjxSymbol(state)}<span class="sup">${superscriptSign(state)}</span>⟩${sub ? `<sub>${sub}</sub>` : ""}</span>`;
+}
+
+function circlePairHTML(a, b) {
+  return `<span class="order-circle result-order-circle">${a}</span><span class="order-circle result-order-circle">${b}</span>`;
+}
+
+function ketHTML(bits, sub) {
+  return `<span class="ket">|${bits}⟩<sub>${sub}</sub></span>`;
+}
+
+function fracHTML(top, bottom) {
+  return `<span class="frac"><span class="top">${top}</span><span class="bottom">${bottom}</span></span>`;
+}
+
+function coefficientDenominator(count) {
+  const pairCount = count / 2;
+  const power = Math.floor(pairCount / 2);
+  const base = power === 0 ? "" : String(2 ** power);
+  return pairCount % 2 === 0 ? base : `${base || "1"}√2`;
+}
+
+function signHTML(sign, isFirst) {
+  if (isFirst) return sign < 0 ? "− " : "";
+  return sign < 0 ? " − " : " + ";
+}
+
+function basisSumHTML(terms, subscript) {
+  return terms.map((t, i) => `${signHTML(t.sign, i === 0)}${ketHTML(t.bits, subscript)}`).join("");
+}
+
+function extraBellProductHTML(count) {
+  return "";
+}
+
+function collectedHTML(collected) {
+  const suffix = extraBellProductHTML(getChoice().count);
+  const pairASubscript = pairSub(finalPairA());
+  const pairBSubscript = pairSub(finalPairB());
+  const sorted = collected.slice().sort((a, b) => bellOrder.indexOf(a.state23) - bellOrder.indexOf(b.state23));
+  return sorted.map((t, i) => {
+    const core = `${bellHTML(t.state23, pairBSubscript)} ${bellHTML(t.state14, pairASubscript)}${suffix}`;
+    return `${signHTML(t.sign, i === 0)}${core}`;
+  }).join("");
+}
+
+function updateCalculationCards() {
+  const c = getChoice();
+  const expanded = expandInitialStates();
+  const reordered = reorder1423(expanded);
+  const collected = collectBellTerms(reordered);
+  const results = resultMap(collected);
+  const safeOrder = getSafeFinalOrder();
+  uiState.finalOrder = safeOrder;
+  const pairA = finalPairA();
+  const pairB = finalPairB();
+  const pairASubscript = pairSub(pairA);
+  const pairBSubscript = pairSub(pairB);
+  const initialOrder = activeQubits().join("");
+  const finalOrder = safeOrder.join("");
+  const state12Def = bellDefs[c.state12];
+  const state34Def = bellDefs[c.state34];
+  const s12a = state12Def[0][1] < 0 ? "−" : "";
+  const s12b = state12Def[1][1] < 0 ? "−" : "+";
+  const s34a = state34Def[0][1] < 0 ? "−" : "";
+  const s34b = state34Def[1][1] < 0 ? "−" : "+";
+
+  document.getElementById("card1l1").innerHTML = `${bellHTML(c.state12, "12")} ⊗ ${bellHTML(c.state34, "34")}`;
+  document.getElementById("card1l2").innerHTML = `${bellHTML(c.state12, "12")} = ${fracHTML("1", "√2")} (${s12a}${ketHTML(state12Def[0][0], "12")} ${s12b} ${ketHTML(state12Def[1][0], "12")})`;
+  document.getElementById("card1l3").innerHTML = `${bellHTML(c.state34, "34")} = ${fracHTML("1", "√2")} (${s34a}${ketHTML(state34Def[0][0], "34")} ${s34b} ${ketHTML(state34Def[1][0], "34")})`;
+
+  document.getElementById("card2l1").innerHTML = `${bellHTML(c.state12, "12")} ⊗ ${bellHTML(c.state34, "34")}`;
+  document.getElementById("card2l2").innerHTML = `= ${fracHTML("1", coefficientDenominator(c.count))} (${basisSumHTML(expanded, initialOrder)})`;
+
+  document.getElementById("card3l1").innerHTML = `Initial order ${initialOrder} → Final order ${finalOrder}`;
+  document.getElementById("card3l2").innerHTML = `= ${fracHTML("1", coefficientDenominator(c.count))} (${basisSumHTML(reordered, finalOrder)})`;
+
+  document.getElementById("card4l1").innerHTML = `= ${fracHTML("1", "2")} (${collectedHTML(collected)})`;
+/*   document.getElementById("card4l2").innerHTML = `BSM<sub>${pairBSubscript}</sub>: ${bellHTML("Φ⁺")} → ${bellHTML(results["Φ⁺"], pairASubscript)}, ${bellHTML("Φ⁻")} → ${bellHTML(results["Φ⁻"], pairASubscript)}, ${bellHTML("Ψ⁺")} → ${bellHTML(results["Ψ⁺"], pairASubscript)}, ${bellHTML("Ψ⁻")} → ${bellHTML(results["Ψ⁻"], pairASubscript)}`;
+ */
+  const resultLabels = document.querySelectorAll(".result-card .r-label");
+  const resultStates = ["Φ⁺", "Φ⁻", "Ψ⁺", "Ψ⁻"];
+  resultLabels.forEach((label, index) => {
+    label.innerHTML = `${pairText(pairB)} = ${bellHTML(resultStates[index], pairBSubscript)}`;
+  });
+  document.getElementById("resPhiPlus").innerHTML = `${pairText(pairA)} = ${bellHTML(results["Φ⁺"], pairASubscript)}`;
+  document.getElementById("resPhiMinus").innerHTML = `${pairText(pairA)} = ${bellHTML(results["Φ⁻"], pairASubscript)}`;
+  document.getElementById("resPsiPlus").innerHTML = `${pairText(pairA)} = ${bellHTML(results["Ψ⁺"], pairASubscript)}`;
+  document.getElementById("resPsiMinus").innerHTML = `${pairText(pairA)} = ${bellHTML(results["Ψ⁻"], pairASubscript)}`;
+}
+
+function showCards(step) {
+  const focusStep = Math.max(1, Math.min(4, visibleStep(step || 1)));
+  for (let i = 1; i <= 4; i++) {
+    const card = document.getElementById("card" + i);
+    if (!card) continue;
+    card.classList.add("show");
+    card.classList.toggle("focus", i === focusStep);
+  }
+  updateCalcSwitcher(focusStep);
+}
+
+function getCalcSegments() {
+  const cards = [1, 2, 3, 4].map(i => document.getElementById("card" + i)).filter(Boolean);
+  if (cards.length !== 4) return [];
+  const firstTop = cards[0].offsetTop;
+  const last = cards[cards.length - 1];
+  const total = Math.max(1, last.offsetTop + last.offsetHeight - firstTop);
+  return cards.map((card, index) => {
+    const start = card.offsetTop - firstTop;
+    const end = index < cards.length - 1 ? cards[index + 1].offsetTop - firstTop : card.offsetTop + card.offsetHeight - firstTop;
+    return { step: index + 1, startRatio: start / total, endRatio: end / total };
+  });
+}
+
+function updateCalcSwitcher(step) {
+  const thumb = document.getElementById("calcThumb");
+  if (!thumb) return;
+  const activeStep = Math.max(1, Math.min(4, visibleStep(step || 1)));
+  const segments = getCalcSegments();
+  const segment = segments.find(item => item.step === activeStep);
+  if (!segment) return;
+  thumb.style.top = `${segment.startRatio * 100}%`;
+  thumb.style.height = `${Math.max(8, (segment.endRatio - segment.startRatio) * 100)}%`;
+  thumb.style.transform = "translateY(0)";
+}
+
+function changeCalcFocus(dir) {
+  const base = currentStep > 0 ? currentStep : 1;
+  const next = Math.max(1, Math.min(4, base + dir));
+  jumpToStep(next);
+}
+
+function jumpCalcByTrack(event) {
+  const track = document.getElementById("calcTrack");
+  if (!track) return;
+  const rect = track.getBoundingClientRect();
+  const ratio = Math.max(0, Math.min(1, (event.clientY - rect.top) / rect.height));
+  const segments = getCalcSegments();
+  const hit = segments.find(item => ratio >= item.startRatio && ratio < item.endRatio);
+  jumpToStep(hit ? hit.step : 4);
+}
+
+function drawScene(pos, mode) {
+  syncSvgViewBox();
+  const d12 = curve(pos.q1, pos.q2, 76);
+  const d34 = curve(pos.q3, pos.q4, 76);
+  const d23 = curve(pos.q2, pos.q3, mode === "step4" ? 76 : 60);
+  const d14 = curve(pos.q1, pos.q4, mode === "step4" ? 76 : 142);
+  const pairA = finalPairA();
+  const pairB = finalPairB();
+  const dA = curve(pos["q" + pairA[0]], pos["q" + pairA[1]], 76);
+  const dB = curve(pos["q" + pairB[0]], pos["q" + pairB[1]], 76);
+  const idleInitialLinks = mode === "step3Measure";
+
+  setLine("line12", d12, mode === "step1" || mode === "step2" || mode === "step3Measure");
+  setLine("flow12", d12, mode === "step1" || mode === "step2");
+  setLine("line34", d34, mode === "step1" || mode === "step2" || mode === "step3Measure");
+  setLine("flow34", d34, mode === "step1" || mode === "step2");
+  setLine("line23", mode === "step4" ? dB : d23, mode === "step3Measure" || mode === "step3Connect" || mode === "step4");
+  setLine("flow23", mode === "step4" ? dB : d23, mode === "step3Measure" || mode === "step3Connect" || mode === "step4");
+  setLine("line14", mode === "step4" ? dA : d14, mode === "step3Connect" || mode === "step4");
+  setLine("flow14", mode === "step4" ? dA : d14, mode === "step3Connect" || mode === "step4");
+
+  ["line12", "line34"].forEach(id => document.getElementById(id).classList.toggle("idle-link", idleInitialLinks));
+  ["flow12", "flow34"].forEach(id => document.getElementById(id).classList.toggle("idle-link", idleInitialLinks));
+}
+function showStep(step, preserveAuto = false) {
+  if (!preserveAuto) stopAutoPlay();
+  currentStep = Math.max(0, Math.min(4, Number(step)));
+  updateInfoBoxes();
+  updateCalculationCards();
+  clearMarks();
+  showCards(currentStep);
+  focusCalcCard(visibleStep(currentStep));
+
+  const c = getChoice();
+  const base = getBasePositions();
+  const measurePos = getMeasurePositions(base);
+  const finalPos = getFinalPositions(base);
+
+  if (currentStep === 0) {
+    setStepChip(0);
+    moveQubits(base);
+    drawScene(base, "step1");
+    if (document.getElementById("resultTitle")) document.getElementById("resultTitle").textContent = "Choose states, then press Step or Auto Play.";
+    if (document.getElementById("resultDesc")) document.getElementById("resultDesc").textContent = "Each step reveals one new algebra expansion.";
+    if (document.getElementById("resultKet")) document.getElementById("resultKet").textContent = "Step-by-step derivation";
+    return;
+  }
+
+  if (currentStep === 1) {
+    setStepChip(1);
+    moveQubits(base);
+    drawScene(base, "step1");
+    markPair(1,2,"pair");
+    markPair(3,4,"pair");
+    if (document.getElementById("resultTitle")) document.getElementById("resultTitle").textContent = "Step 1: Bell states in computational basis.";
+    if (document.getElementById("resultDesc")) document.getElementById("resultDesc").textContent = "Start from the selected Bell states of q1–q2 and q3–q4.";
+    if (document.getElementById("resultKet")) document.getElementById("resultKet").textContent = document.getElementById("autoInitial").textContent;
+    return;
+  }
+
+  if (currentStep === 2) {
+    setStepChip(2);
+    moveQubits(base);
+    drawScene(base, "step2");
+    markPair(1,2,"pair");
+    markPair(3,4,"pair");
+    if (document.getElementById("resultTitle")) document.getElementById("resultTitle").textContent = "Step 2: Expand the four-qubit state.";
+    if (document.getElementById("resultDesc")) document.getElementById("resultDesc").textContent = "The product state is expanded in the 1234 computational basis.";
+    if (document.getElementById("resultKet")) document.getElementById("resultKet").textContent = "1/2 × four basis terms";
+    return;
+  }
+
+  if (currentStep === 3) {
+    setStepChip(3);
+    moveQubits(measurePos);
+    drawScene(measurePos, "step3Measure");
+    markPair(2,3,"measure");
+    document.getElementById("measureBox").classList.add("show");
+    if (document.getElementById("resultTitle")) document.getElementById("resultTitle").textContent = "Step 3-1: Bell-state measurement on q2 and q3.";
+    if (document.getElementById("resultDesc")) document.getElementById("resultDesc").textContent = "q2–q3 is measured while the original q1–q2 and q3–q4 links remain as gray reference links.";
+    if (document.getElementById("resultKet")) document.getElementById("resultKet").textContent = "Bell State Measurement on q2–q3";
+    return;
+  }
+
+  if (currentStep === 3.5) {
+    setStepChip(3);
+    moveQubits(measurePos);
+    drawScene(measurePos, "step3Connect");
+    markPair(1,4,"final");
+    markPair(2,3,"measure");
+    document.getElementById("measureBox").classList.add("show");
+    if (document.getElementById("resultTitle")) document.getElementById("resultTitle").textContent = "Step 3-2: Remove old links and connect q1–q4.";
+    if (document.getElementById("resultDesc")) document.getElementById("resultDesc").textContent = "The q1–q2 and q3–q4 gray links disappear, then the q1–q4 green link is shown.";
+    if (document.getElementById("resultKet")) document.getElementById("resultKet").textContent = "(12)(34) → (14)(23)";
+    return;
+  }
+
+  if (currentStep === 4) {
+    setStepChip(4);
+    moveQubits(finalPos);
+    drawScene(finalPos, "step4");
+    const pairA = finalPairA();
+    const pairB = finalPairB();
+    markPair(pairA[0], pairA[1], "final");
+    markPair(pairB[0], pairB[1], "measure");
+    document.getElementById("allResults").classList.add("show");
+    if (document.getElementById("resultTitle")) document.getElementById("resultTitle").textContent = "Step 4: Final collected Bell terms.";
+    if (document.getElementById("resultDesc")) document.getElementById("resultDesc").textContent = `Collect the q${pairA[0]}–q${pairA[1]} and q${pairB[0]}–q${pairB[1]} Bell terms, then read off all possible results.`;
+    if (document.getElementById("resultKet")) document.getElementById("resultKet").textContent = `q${pairA[0]}–q${pairA[1]} result table`;
+  }
+}
+
+
+function focusCalcCard(step) {
+  const area = document.getElementById("calcArea");
+  const card = document.getElementById("card" + visibleStep(step));
+  if (!area || !card || step <= 0) return;
+  requestAnimationFrame(() => {
+    const isFinalStep = visibleStep(step) === 4;
+    const top = isFinalStep
+      ? Math.max(0, card.offsetTop - area.offsetTop - (area.clientHeight - card.offsetHeight - 12))
+      : card.offsetTop - area.offsetTop;
+    area.scrollTo({ top, behavior: "smooth" });
+  });
+}
+
+function jumpToStep(step) {
+  showStep(step);
+  focusCalcCard(step);
+}
+
+function nextStep() {
+  if (currentStep < 3) showStep(currentStep + 1);
+  else if (currentStep === 3) showStep(3.5);
+  else if (currentStep === 3.5) showStep(4);
+  else showStep(4);
+}
+
+function prevStep() {
+  if (currentStep === 4) showStep(3.5);
+  else if (currentStep === 3.5) showStep(3);
+  else if (currentStep > 0) showStep(currentStep - 1);
+  else showStep(0);
+}
+
+function refreshForCurrentFinalOrder() {
+  syncFinalOrderToCount();
+  updateInfoBoxes();
+  updateCalculationCards();
+  showCards(currentStep);
+}
+
+function startFromBeginning() {
+  stopAutoPlay();
+  refreshForCurrentFinalOrder();
+  currentStep = 0;
+  showStep(1);
+}
+
+function queueAutoAdvance() {
+  if (autoTimer) clearTimeout(autoTimer);
+  autoTimer = setTimeout(() => {
+    if (!autoPlaying) return;
+    if (currentStep >= 4) {
+      stopAutoPlay();
+      return;
+    }
+    if (currentStep < 3) showStep(currentStep + 1, true);
+    else if (currentStep === 3) showStep(3.5, true);
+    else showStep(4, true);
+    queueAutoAdvance();
+  }, 1800);
+}
+
+function toggleAutoPlay() {
+  if (autoPlaying) {
+    stopAutoPlay();
+    return;
+  }
+  autoPlaying = true;
+  updateAutoButton();
+  if (currentStep >= 4) currentStep = 0;
+  if (currentStep === 0) showStep(1, true);
+  queueAutoAdvance();
+}
+
+function resetScene() {
+  stopAutoPlay();
+  syncFinalOrderToCount();
+  currentStep = 0;
+  updateInfoBoxes();
+  updateCalculationCards();
+  showCards(0);
+  clearMarks();
+  const base = getBasePositions();
+  moveQubits(base);
+  drawScene(base, "step1");
+  if (document.getElementById("resultTitle")) document.getElementById("resultTitle").textContent = "Choose states, then press Step or Auto Play.";
+  if (document.getElementById("resultDesc")) document.getElementById("resultDesc").textContent = "Each step reveals one new algebra expansion.";
+  if (document.getElementById("resultKet")) document.getElementById("resultKet").textContent = "Step-by-step derivation";
+  setStepChip(0);
+}
+
+function nextBellState(current) {
+  const index = bellOrder.indexOf(current);
+  return bellOrder[(index + 1) % bellOrder.length];
+}
+
+function enforceDistinctStates(changedKey) {
+  if (uiState.state12 !== uiState.state34) return;
+  const otherKey = changedKey === "state12" ? "state34" : "state12";
+  uiState[otherKey] = nextBellState(uiState[changedKey]);
+}
+
+function syncChoiceButtons() {
+  document.querySelectorAll("[data-choice]").forEach(group => {
+    const key = group.dataset.choice;
+    group.querySelectorAll(".option-btn").forEach(btn => {
+      btn.classList.toggle("active", btn.dataset.value === uiState[key]);
+      if (key === "state12") btn.disabled = btn.dataset.value === uiState.state34;
+      if (key === "state34") btn.disabled = btn.dataset.value === uiState.state12;
+    });
+  });
+}
+
+function renderOrderCircles() {
+  const initial = document.getElementById("initialOrder");
+  const final = document.getElementById("finalOrder");
+  if (!initial || !final) return;
+  const active = activeQubits();
+  initial.innerHTML = active.map(q => `<span class="order-circle">${q}</span>`).join("");
+  final.innerHTML = uiState.finalOrder.map(q => `<span class="order-circle draggable" draggable="true" data-qubit="${q}">${q}</span>`).join("");
+  bindFinalOrderDrag();
+}
+
+function bindFinalOrderDrag() {
+  const final = document.getElementById("finalOrder");
+  if (!final) return;
+  final.querySelectorAll(".order-circle").forEach(circle => {
+    circle.addEventListener("dragstart", event => {
+      circle.classList.add("dragging");
+      event.dataTransfer.setData("text/plain", circle.dataset.qubit);
+      event.dataTransfer.effectAllowed = "move";
+    });
+    circle.addEventListener("dragend", () => circle.classList.remove("dragging"));
+    circle.addEventListener("dragover", event => event.preventDefault());
+    circle.addEventListener("drop", event => {
+      event.preventDefault();
+      const from = Number(event.dataTransfer.getData("text/plain"));
+      const to = Number(circle.dataset.qubit);
+      const order = uiState.finalOrder.slice();
+      const fromIndex = order.indexOf(from);
+      const toIndex = order.indexOf(to);
+      if (fromIndex < 0 || toIndex < 0 || fromIndex === toIndex) return;
+      order.splice(fromIndex, 1);
+      order.splice(fromIndex < toIndex ? toIndex - 1 : toIndex, 0, from);
+      if (isInitialOrder(order)) {
+        renderOrderCircles();
+        return;
+      }
+      uiState.finalOrder = getSafeFinalOrder(order);
+      refreshForCurrentFinalOrder();
+      resetScene();
+    });
+  });
+}
+
+function bindOptionButtons() {
+  document.querySelectorAll("[data-choice]").forEach(group => {
+    const key = group.dataset.choice;
+    group.querySelectorAll(".option-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        if (btn.disabled) return;
+        uiState[key] = btn.dataset.value;
+        if (key === "state12" || key === "state34") {
+          enforceDistinctStates(key);
+        }
+        syncChoiceButtons();
+        resetScene();
+      });
+    });
+  });
+  syncChoiceButtons();
+}
+
+bindOptionButtons();
+window.addEventListener("load", resetScene);
+window.addEventListener("resize", resetScene);
+</script>
+</body>
+</html>
