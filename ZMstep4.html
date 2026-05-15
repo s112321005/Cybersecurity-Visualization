@@ -4,12 +4,10 @@
     <meta charset="UTF-8">
     <base href="https://s112321005.github.io/Cybersecurity-Visualization/">
     <title>Quantum Secret Sharing : Zhang-Man Protocol - Step 4</title>
-    <script>window.MathJax={tex:{inlineMath:[["\\(","\\)"]],displayMath:[["$$","$$"]]}};</script>
-    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <style>
         :root{--primary-blue:#549FD0;--alice-color:#004aad;--bob-color:#4C80C5;--charlie-color:#478CEA;--dark-text:#333333;--bg-gradient:linear-gradient(135deg,#EAF5FE 0%,#F7FBFF 55%,#EEF8F6 100%);--soft-border:#D8EBF7;--hint-bg:#F8FCFF;--qubit-fill:#F8FCFF;--detect:#549FD0;--message:#549FD0}
         *{box-sizing:border-box}
-        body{font-family:'Segoe UI',system-ui,sans-serif;display:flex;flex-direction:column;align-items:center;padding:40px 20px;background:var(--bg-gradient);margin:0;overflow-y:scroll;color:var(--dark-text)}
+        body{font-family:'Segoe UI','Cambria Math','STIX Two Math','Noto Sans Math',system-ui,sans-serif;display:flex;flex-direction:column;align-items:center;padding:40px 20px;background:var(--bg-gradient);margin:0;overflow-y:scroll;color:var(--dark-text)}
         .header{width:min(1000px,95vw);display:flex;align-items:center;justify-content:space-between;margin-bottom:25px}
         .header-left{display:flex;align-items:center;gap:15px}
         .btn-back{width:40px;height:40px;background-color:var(--primary-blue);color:white;border-radius:50%;display:flex;justify-content:center;align-items:center;text-decoration:none;font-size:0;transition:transform .2s;cursor:pointer;border:none;box-shadow:0 2px 5px rgba(0,0,0,.1)}
@@ -23,8 +21,8 @@
         .nav-btn:disabled,.action-btn:disabled{border-color:#ccc;color:#ccc;cursor:not-allowed;box-shadow:none;background:white}
 
         .main-card{width:min(1000px,95vw);height:730px;border:3px solid var(--primary-blue);border-radius:35px;position:relative;background:white;overflow:hidden;padding:22px}
-        .mode-badge{position:absolute;left:853px;top:18px;transform:translateX(-50%);border:2px solid var(--primary-blue);background:#fff;border-radius:999px;padding:8px 20px;color:var(--primary-blue);font-weight:900;box-shadow:0 6px 18px rgba(84,159,208,.12);z-index:10;white-space:nowrap;min-width:max-content}
-        .mode-badge.corner{left:24px;top:80px;transform:none;box-shadow:none}
+        #mode-badge{position:absolute;left:30px;top:30px;transform:none;border:2px solid var(--primary-blue);background:#fff;border-radius:999px;padding:8px 20px;color:var(--primary-blue);font-weight:900;box-shadow:0 6px 18px rgba(84,159,208,.12);z-index:10;white-space:nowrap;min-width:max-content}
+        #mode-badge.corner{left:30px;top:30px;transform:none;box-shadow:none}
         .party{position:absolute;display:flex;flex-direction:column;align-items:center;gap:8px;z-index:4}
         .party img{width:124px;height:auto;display:block}
         .party-name{font-weight:900;color:#667085;margin:0}
@@ -34,13 +32,13 @@
         #stage.message-layout .party-alice{left:calc(35.1% + 155px);top:14px;transform:translateX(-50%)}
         #stage.message-layout .party-bob{left:172px;top:226px}
         #stage.message-layout .party-charlie{right:160px;top:226px}
-        #stage.message-layout .mode-badge{left:853px;top:18px;transform:translateX(-50%)}
+        #stage.message-layout #mode-badge{left:30px;top:30px;transform:none}
         #stage.message-layout .floating-announcement{left:85px;top:92px;transform:none}
         #stage.message-layout .party-bob img,#stage.message-layout .party-charlie img{transform:translateY(-10px)}
         #stage.message-layout.message-post-eye .party-bob .qubit-row,#stage.message-layout.message-post-eye .party-charlie .qubit-row,#stage.message-layout.message-post-eye .party-bob .measurement-result,#stage.message-layout.message-post-eye .party-charlie .measurement-result{transform:translateY(-20px)}
         #stage.message-layout.message-post-eye .party-alice .measurement-result{min-width:250px}
         #stage.message-layout.message-post-eye .party-bob .measurement-result{min-width:210px}
-        #stage.message-layout.message-post-eye .party-charlie .measurement-result{min-width:160px}
+        #stage.message-layout.message-post-eye .party-charlie .measurement-result{min-width:190px}
         .qubit-row{display:flex;align-items:center;justify-content:center;gap:10px}
         .qubit{width:42px;height:42px;border-radius:50%;background:var(--qubit-fill);display:flex;align-items:center;justify-content:center;font-weight:900;color:#1f2937;box-shadow:0 0 16px rgba(84,159,208,.18);border:4px solid var(--alice-color);transition:all .25s ease}
         .party-bob .qubit{border-color:var(--bob-color)}
@@ -51,7 +49,7 @@
         .party-alice .qubit.measured{background:#EAF5FE;border-color:#004aad;box-shadow:0 0 18px rgba(0,74,173,.28)}
         .qubit.encode-target{position:relative;z-index:20;background:#EAF5FE;border-color:var(--primary-blue);box-shadow:0 0 0 6px rgba(84,159,208,.30),0 0 34px rgba(84,159,208,.85),0 0 58px rgba(84,159,208,.48);animation:q1Pulse 1.15s infinite}
         @keyframes q1Pulse{0%,100%{transform:scale(1);box-shadow:0 0 0 6px rgba(84,159,208,.24),0 0 28px rgba(84,159,208,.72),0 0 48px rgba(84,159,208,.42)}50%{transform:scale(1.16);box-shadow:0 0 0 10px rgba(84,159,208,.34),0 0 44px rgba(84,159,208,.95),0 0 72px rgba(84,159,208,.56)}}
-        .measurement-result{min-height:28px;color:#6B7280;font-weight:900;font-size:.9rem;display:flex;flex-direction:column;gap:6px;align-items:flex-start}
+        .measurement-result{min-height:28px;color:#6B7280;font-weight:900;font-size:.9rem;display:flex;flex-direction:column;gap:6px;align-items:flex-start;white-space:nowrap;flex-wrap:nowrap}
         .result-item{display:flex;align-items:center;gap:8px;line-height:1.2;white-space:nowrap}
         .result-dot{width:12px;height:12px;border-radius:50%;display:inline-block;flex:0 0 12px;box-shadow:0 0 0 3px rgba(84,159,208,.12)}
         .result-dot.alice{background:var(--alice-color)}
@@ -76,12 +74,11 @@
         #next-step-btn{position:absolute;left:-210px;top:-414px;min-width:150px}
         .detecting-controls .action-btn{min-width:150px}
         .measure-eye{position:absolute;display:flex;align-items:center;justify-content:center;width:70px;height:70px;border-radius:50%;background:rgba(255,255,255,.92);box-shadow:0 8px 20px rgba(84,159,208,.18);border:3px solid #BFDDF3;opacity:0;transform:translate(-50%,-50%) scale(.78);pointer-events:none;z-index:28}
-        .measure-eye img{width:50px;height:50px;display:block}
+        .measure-eye img{width:50px;height:auto;max-height:50px;display:block;object-fit:contain}
         .measure-eye.show{opacity:1;animation:eyePop .95s ease forwards}
         .measure-eye.alice-eye{border-color:#004aad;box-shadow:0 8px 20px rgba(0,74,173,.18)}
         .measure-eye.bob-eye{border-color:#4C80C5;box-shadow:0 8px 20px rgba(76,128,197,.18)}
         .measure-eye.charlie-eye{border-color:#478CEA;box-shadow:0 8px 20px rgba(71,140,234,.18)}
-        .measure-eye.charlie-eye img{filter:brightness(0) saturate(100%) invert(54%) sepia(60%) saturate(1541%) hue-rotate(186deg) brightness(99%) contrast(88%)}
         @keyframes eyePop{0%{opacity:0;transform:translate(-50%,-50%) scale(.7)}20%{opacity:1}60%{opacity:1;transform:translate(-50%,-50%) scale(1.08)}100%{opacity:0;transform:translate(-50%,-50%) scale(1)}}
         .operation-grid{display:grid;grid-template-columns:1fr;gap:8px;width:100%}
         .op-btn{border:2px solid #D8EBF7;background:white;border-radius:16px;padding:8px 8px;cursor:pointer;box-shadow:0 4px 10px rgba(0,0,0,.05);transition:all .2s ease;text-align:center;color:#566172;font-weight:900;min-height:58px;overflow:hidden;display:flex;align-items:center;justify-content:flex-start;gap:8px}
@@ -123,8 +120,9 @@
         .final-card{background:white;border:2px solid #D8EBF7;border-radius:16px;padding:10px 12px;box-shadow:0 6px 14px rgba(84,159,208,.08);font-weight:900;color:#556070;text-align:center}
         .final-card b{color:var(--primary-blue)}
         .final-card.pass{border-color:#16A34A;color:#166534;background:#F0FDF4}
-        .final-card.clickable{cursor:pointer;transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease}
-        .final-card.clickable:hover{transform:translateY(-2px);box-shadow:0 8px 18px rgba(84,159,208,.18);border-color:var(--primary-blue)}
+        .final-card.clickable{cursor:pointer;transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease;animation:finalCardPulse 1.45s ease-in-out infinite}
+        .final-card.clickable:hover{transform:translateY(-2px);box-shadow:0 8px 18px rgba(84,159,208,.18);border-color:var(--primary-blue);animation:none}
+        @keyframes finalCardPulse{0%,100%{box-shadow:0 0 0 0 rgba(84,159,208,.16),0 6px 14px rgba(84,159,208,.08)}50%{box-shadow:0 0 0 7px rgba(84,159,208,.18),0 10px 24px rgba(84,159,208,.22)}}
         .result-item.active,.measurement-result.active-result{background:#EAF5FE;border:2px solid var(--primary-blue);border-radius:999px;padding:3px 10px;box-shadow:0 0 0 4px rgba(84,159,208,.16),0 0 18px rgba(84,159,208,.28);animation:resultPulse 1.35s ease-in-out infinite}
         @keyframes resultPulse{0%,100%{box-shadow:0 0 0 3px rgba(84,159,208,.14),0 0 12px rgba(84,159,208,.22)}50%{box-shadow:0 0 0 7px rgba(84,159,208,.18),0 0 24px rgba(84,159,208,.38)}}
         .decode-line{background:white;border:1px solid #DBEAFE;border-radius:12px;padding:8px 10px;margin-top:8px;overflow-x:auto;white-space:nowrap}
@@ -136,8 +134,8 @@
         .decode-card-top{position:absolute;right:14px;top:10px;display:flex;align-items:flex-start;justify-content:flex-end;gap:12px;margin:0;z-index:12}
         .decode-back-btn{border:2px solid var(--primary-blue);background:#fff;color:var(--primary-blue);border-radius:999px;padding:5px 11px;font-weight:900;cursor:pointer;white-space:nowrap}
         .decode-back-btn:hover{background:var(--primary-blue);color:#fff}
-        .decode-detail-formula{background:white;border:1px solid #DBEAFE;border-radius:12px;padding:5px 9px;margin-top:5px;overflow-x:auto;white-space:nowrap;font-weight:900;line-height:1.25;-webkit-user-select:text;user-select:text}
-        .decode-long-formula{background:white;border:1px solid #DBEAFE;border-radius:12px;padding:6px 10px;margin-top:5px;overflow-x:auto;overflow-y:hidden;font-weight:900;line-height:1.3;-webkit-user-select:text;user-select:text;white-space:nowrap}
+        .decode-detail-formula{background:white;border:1px solid #DBEAFE;border-radius:12px;padding:7px 9px;margin-top:5px;overflow-x:auto;white-space:nowrap;font-weight:900;line-height:1.65;-webkit-user-select:text;user-select:text}
+        .decode-long-formula{background:white;border:1px solid #DBEAFE;border-radius:12px;padding:8px 10px;margin-top:5px;overflow-x:auto;overflow-y:hidden;font-weight:900;line-height:1.7;-webkit-user-select:text;user-select:text;white-space:nowrap}
         .decode-long-formula mjx-container{font-size:110%!important}
         .decode-focus{border-color:var(--primary-blue);background:white;box-shadow:0 0 0 3px rgba(84,159,208,.12)}
         .swap-hint{margin-top:5px;color:#667085;font-weight:900;font-size:.9rem}
@@ -146,12 +144,16 @@
         .unitary-compare-table{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:6px}
         .unitary-compare-cell{background:white;border:1px solid #DBEAFE;border-radius:12px;padding:5px 8px;text-align:center;font-weight:900;color:#556070;white-space:nowrap;min-height:34px;display:flex;align-items:center;justify-content:center;gap:8px;line-height:1.1}
         .unitary-compare-cell.active{border:2px solid var(--primary-blue);box-shadow:0 0 0 3px rgba(84,159,208,.12);color:#1E4F86}
-        .decode-detail-body{padding-top:10px}
-        .decode-detail-text{font-weight:900;color:#556070;line-height:1.45}
-        .decode-measure-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:5px}
+        .decode-detail-body{padding-top:12px;display:flex;flex-direction:column;gap:10px}
+        .decode-detail-text{font-weight:900;color:#556070;line-height:1.65}
+        .decode-measure-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:5px}
         .decode-measure-card{background:white;border:2px solid #D8EBF7;border-radius:14px;padding:5px 9px;box-shadow:0 4px 10px rgba(84,159,208,.07);font-weight:900;color:#556070;text-align:center;white-space:nowrap;line-height:1.2;display:flex;align-items:center;justify-content:center;gap:6px;flex-wrap:nowrap}
         .q-chip-pair{display:inline-flex;align-items:center;gap:4px;vertical-align:middle;white-space:nowrap}
         .q-chip{width:26px;height:26px;border-radius:50%;background:var(--qubit-fill);display:inline-flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:900;color:#1f2937;border:3px solid var(--bob-color);box-shadow:0 0 10px rgba(84,159,208,.16)}
+        .shares-inline{display:none}
+        .bell-state{font-family:'Cambria Math','STIX Two Math','Noto Sans Math','Segoe UI Symbol',serif;font-weight:900;white-space:nowrap}
+        .q-chip.alice{border-color:var(--alice-color)}
+        .q-chip.bob{border-color:var(--bob-color)}
         .q-chip.charlie{border-color:var(--charlie-color)}
         .q-chip.alice{border-color:var(--alice-color)}
         .decode-measure-card b{color:var(--primary-blue)}
@@ -188,7 +190,7 @@
         .pingpong-image-card.is-current img{max-width:318px;max-height:320px;opacity:1;transform:scale(1)}
 
         @media (min-width:1180px){body{padding-right:450px!important}}
-        @media (max-width:1179px){body{padding-right:20px!important}.pingpong-image-dock{position:relative;right:auto;top:auto;width:min(94vw,840px);height:320px;margin:18px auto 10px}.pingpong-image-viewport{width:100%;height:320px}.pingpong-image-viewport::before,.pingpong-image-viewport::after{height:320px;width:10px;z-index:0}.pingpong-image-window{width:100%;height:320px;margin-left:0}.pingpong-image-list{flex-direction:row;align-items:center;gap:14px;width:max-content;height:320px;padding:0 24px}.pingpong-image-card{width:270px;min-height:52px}.pingpong-image-card.is-current{width:305px;min-height:250px;margin:0 10px}.pingpong-image-card.is-current img{max-width:275px;max-height:220px}.main-card{height:760px}.party-alice{left:calc(35% + 90px);top:34px}.party-bob{left:109px;top:268px}.party-charlie{right:85px;top:268px}#stage.message-layout .party-alice{left:calc(35% + 155px);top:14px}#stage.message-layout .party-bob{left:159px;top:238px}#stage.message-layout .party-charlie{right:55px;top:238px}.party img{width:112px}.center-panel{top:340px;width:min(430px,82vw)}.center-panel.message-panel{left:calc(54% + 20px);top:175px;transform:translateX(-50%);width:min(210px,82vw);align-items:center}.center-panel.detecting-panel{left:50%;top:510px;transform:translateX(-50%);width:min(420px,92vw);align-items:center}.mode-badge{left:calc(54% + 20px);top:110px}.mode-badge.corner{left:18px;top:80px;transform:none}.floating-announcement{left:calc(35% + 90px);top:32px;transform:translateX(-50%);max-width:220px}#replay-btn,#step-btn{left:-15px}
+        @media (max-width:1179px){body{padding-right:20px!important}.pingpong-image-dock{position:relative;right:auto;top:auto;width:min(94vw,840px);height:320px;margin:18px auto 10px}.pingpong-image-viewport{width:100%;height:320px}.pingpong-image-viewport::before,.pingpong-image-viewport::after{height:320px;width:10px;z-index:0}.pingpong-image-window{width:100%;height:320px;margin-left:0}.pingpong-image-list{flex-direction:row;align-items:center;gap:14px;width:max-content;height:320px;padding:0 24px}.pingpong-image-card{width:270px;min-height:52px}.pingpong-image-card.is-current{width:305px;min-height:250px;margin:0 10px}.pingpong-image-card.is-current img{max-width:275px;max-height:220px}.main-card{height:760px}.party-alice{left:calc(35% + 90px);top:34px}.party-bob{left:109px;top:268px}.party-charlie{right:85px;top:268px}#stage.message-layout .party-alice{left:calc(35% + 155px);top:14px}#stage.message-layout .party-bob{left:159px;top:238px}#stage.message-layout .party-charlie{right:55px;top:238px}.party img{width:112px}.center-panel{top:340px;width:min(430px,82vw)}.center-panel.message-panel{left:calc(54% + 20px);top:175px;transform:translateX(-50%);width:min(210px,82vw);align-items:center}.center-panel.detecting-panel{left:50%;top:510px;transform:translateX(-50%);width:min(420px,92vw);align-items:center}#mode-badge{left:30px;top:30px;transform:none}#mode-badge.corner{left:30px;top:30px;transform:none}.floating-announcement{left:calc(35% + 90px);top:32px;transform:translateX(-50%);max-width:220px}#replay-btn,#step-btn{left:-15px}
         #next-step-btn{left:-15px;top:-414px}#replay-btn{top:-470px}#step-btn{top:-414px}
         #next-step-btn{position:absolute;left:-210px;top:-414px;min-width:150px}.operation-grid{grid-template-columns:1fr}.qubit{width:38px;height:38px}.hint-box{width:86%}}
     </style>
@@ -226,9 +228,9 @@
     <div class="ent-line" id="line12"></div>
     <div class="ent-line" id="line34"></div>
     <div class="ent-line" id="line56"></div>
-    <div class="ent-tag" id="etag12">\( |\Psi^-\rangle_{12} \)</div>
-    <div class="ent-tag" id="etag34">\( |\Psi^-\rangle_{34} \)</div>
-    <div class="ent-tag" id="etag56">\( |\Psi^-\rangle_{56} \)</div>
+    <div class="ent-tag" id="etag12"><span class="bell-state">|𝜓⁻⟩</span>₁₂</div>
+    <div class="ent-tag" id="etag34"><span class="bell-state"><span class="bell-state">|𝜓⁻⟩</span>₃₄</span></div>
+    <div class="ent-tag" id="etag56"><span class="bell-state"><span class="bell-state">|𝜓⁻⟩</span>₅₆</span></div>
 
     <div class="party party-alice" id="party-alice">
         <img src="pictures/cat_alice.svg" alt="Alice">
@@ -261,9 +263,9 @@
     const selectedMode = localStorage.getItem('zhangManMode') || 'detecting';
 
     const initialEntanglementPairs = [
-        { line: 'line12', tag: 'etag12', a: 'q1', b: 'q2', label: '\( |\Psi^-\rangle_{12} \)', tagOffsetY: 10 },
-        { line: 'line34', tag: 'etag34', a: 'q3', b: 'q4', label: '\( |\Psi^-\rangle_{34} \)', tagOffsetY: 10 },
-        { line: 'line56', tag: 'etag56', a: 'q5', b: 'q6', label: '\( |\Psi^-\rangle_{56} \)', tagOffsetY: 10 }
+        { line: 'line12', tag: 'etag12', a: 'q1', b: 'q2', label: '<span class="bell-state">|𝜓⁻⟩</span>₁₂', tagOffsetY: 10 },
+        { line: 'line34', tag: 'etag34', a: 'q3', b: 'q4', label: '<span class="bell-state"><span class="bell-state">|𝜓⁻⟩</span>₃₄</span>', tagOffsetY: 10 },
+        { line: 'line56', tag: 'etag56', a: 'q5', b: 'q6', label: '<span class="bell-state"><span class="bell-state">|𝜓⁻⟩</span>₅₆</span>', tagOffsetY: 10 }
     ];
 
     let linePairs = [...initialEntanglementPairs];
@@ -351,9 +353,9 @@
     function showDetectingInitialEntanglement() {
         if (stage) stage.classList.remove('message-layout');
         linePairs = [
-            { line: 'line12', tag: 'etag12', a: 'q1', b: 'q2', label: '\\( |\\Psi^-\\rangle_{12} \\)', shape: 'straight', tagOffsetY: 10 },
-            { line: 'line34', tag: 'etag34', a: 'q3', b: 'q4', label: '\\( |\\Psi^-\\rangle_{34} \\)', shape: 'straight', tagOffsetY: 10 },
-            { line: 'line56', tag: 'etag56', a: 'q5', b: 'q6', label: '\\( |\\Psi^-\\rangle_{56} \\)', shape: 'straight', tagOffsetY: 10 }
+            { line: 'line12', tag: 'etag12', a: 'q1', b: 'q2', label: '<span class="bell-state">|𝜓⁻⟩</span>₁₂', shape: 'straight', tagOffsetY: 10 },
+            { line: 'line34', tag: 'etag34', a: 'q3', b: 'q4', label: '<span class="bell-state"><span class="bell-state">|𝜓⁻⟩</span>₃₄</span>', shape: 'straight', tagOffsetY: 10 },
+            { line: 'line56', tag: 'etag56', a: 'q5', b: 'q6', label: '<span class="bell-state"><span class="bell-state">|𝜓⁻⟩</span>₅₆</span>', shape: 'straight', tagOffsetY: 10 }
         ];
 
         ['line12','etag12','line34','etag34','line56','etag56'].forEach(id => {
@@ -388,12 +390,12 @@
 
     function showOnlyQ34Entanglement() {
         linePairs = [
-            { line: 'line34', tag: 'etag34', a: 'q3', b: 'q4', label: '\\( |\\Psi^-\\rangle_{34} \\)', shape: 'straight', tagOffsetY: 4 }
+            { line: 'line34', tag: 'etag34', a: 'q3', b: 'q4', label: '<span class="bell-state"><span class="bell-state">|𝜓⁻⟩</span>₃₄</span>', shape: 'straight', tagOffsetY: 4 }
         ];
 
         const line34 = document.getElementById('line34');
         const tag34 = document.getElementById('etag34');
-        if (tag34) tag34.innerHTML = '\\( |\\Psi^-\\rangle_{34} \\)';
+        if (tag34) tag34.innerHTML = '<span class="bell-state"><span class="bell-state">|𝜓⁻⟩</span>₃₄</span>';
 
         ['line12','etag12','line56','etag56'].forEach(id => {
             const el = document.getElementById(id);
@@ -435,7 +437,7 @@
         linePairs = [
             { line: 'line12', tag: 'etag12', a: 'q1', b: 'q6', label: label16, shape: 'straight', tagOffsetY: 50 },
             { line: 'line56', tag: 'etag56', a: 'q2', b: 'q5', label: label25, shape: 'arc', tagOffsetY: 6, arcHeight: 52 },
-            { line: 'line34', tag: 'etag34', a: 'q3', b: 'q4', label: '\\( |\\Psi^-\\rangle_{34} \\)', shape: 'straight', tagOffsetY: 4 }
+            { line: 'line34', tag: 'etag34', a: 'q3', b: 'q4', label: '<span class="bell-state"><span class="bell-state">|𝜓⁻⟩</span>₃₄</span>', shape: 'straight', tagOffsetY: 4 }
         ];
 
         ['line12','etag12','line34','etag34','line56','etag56'].forEach(id => {
@@ -513,14 +515,14 @@
 
     function showPostEyeMessageEntanglement() {
         const stage = document.getElementById('stage');
-        const aliceBell = localStorage.getItem('zhangManAliceBell16') || '|Ψ⁻⟩₁₆';
+        const aliceBell = localStorage.getItem('zhangManAliceBell16') || '<span class="bell-state"><span class="bell-state">|𝜓⁻⟩</span>₁₆</span>';
 
         if (stage) stage.classList.add('message-post-eye');
 
         linePairs = [
             { line: 'line12', tag: 'etag12', a: 'q1', b: 'q6', label: bellLatexFromText(aliceBell, '16'), shape: 'straight', tagOffsetY: 50 },
-            { line: 'line34', tag: 'etag34', a: 'q2', b: 'q3', label: '\\( |\\Psi^-\\rangle_{23} \\)', shape: 'straight', tagOffsetY: 63 },
-            { line: 'line56', tag: 'etag56', a: 'q4', b: 'q5', label: '\\( |\\Phi^+\\rangle_{45} \\)', shape: 'straight', tagOffsetY: 63 }
+            { line: 'line34', tag: 'etag34', a: 'q2', b: 'q3', label: '<span class="bell-state"><span class="bell-state">|𝜓⁻⟩</span>₂₃</span>', shape: 'straight', tagOffsetY: 63 },
+            { line: 'line56', tag: 'etag56', a: 'q4', b: 'q5', label: '<span class="bell-state"><span class="bell-state">|𝜙⁺⟩</span>₄₅</span>', shape: 'straight', tagOffsetY: 63 }
         ];
 
         ['line12','etag12','line34','etag34','line56','etag56'].forEach(id => {
@@ -558,22 +560,22 @@
         document.getElementById('bob-result').innerHTML = '';
         document.getElementById('charlie-result').innerHTML = '';
 
-        const publicAlice16 = localStorage.getItem('zhangManAliceBell16') || '|Ψ⁻⟩₁₆';
+        const publicAlice16 = localStorage.getItem('zhangManAliceBell16') || '<span class="bell-state"><span class="bell-state">|𝜓⁻⟩</span>₁₆</span>';
         const opBits = localStorage.getItem('zhangManOperation') || '00';
         const op = operationFromBits(opBits);
 
         if (kind === 'alice') {
             showMeasureEye('bob', 'X');
             showMeasureEye('charlie', 'X');
-            setMessageResult('bob-result', '<span class="result-dot bob"></span><span>Bell(23) = |Ψ⁻⟩</span>');
-            setMessageResult('charlie-result', '<span class="result-dot charlie"></span><span>Bell(45) = |Φ⁺⟩</span>');
+            setMessageResult('bob-result', '<span class="result-dot bob"></span><span>Bell(23) = <span class="bell-state">|𝜓⁻⟩</span></span>');
+            setMessageResult('charlie-result', '<span class="result-dot charlie"></span><span>Bell(45) = <span class="bell-state">|𝜙⁺⟩</span></span>');
         } else if (kind === 'bc') {
             showMeasureEye('alice', 'X');
-            setMessageResult('alice-result', '<span class="result-dot alice"></span><span>Original Bell(16) = |Φ⁺⟩</span>');
-            setMessageResult('bob-result', '<span class="result-dot bob"></span><span>Inferred Bell(25) = |Φ⁺⟩</span>');
+            setMessageResult('alice-result', '<span class="result-dot alice"></span><span>Original Bell(16) = <span class="bell-state">|𝜙⁺⟩</span></span>');
+            setMessageResult('bob-result', '<span class="result-dot bob"></span><span>Inferred Bell(25) = <span class="bell-state">|𝜙⁺⟩</span></span>');
         } else {
             showMeasureEye('alice', 'X');
-            setMessageResult('alice-result', '<span class="result-dot alice"></span><span>Announced Bell(16) = ' + publicAlice16.replace(/[₀-₉]/g, '') + '</span>');
+            setMessageResult('alice-result', '<span class="result-dot alice"></span><span>Announced Bell(16) = ' + bellTextWithPair(publicAlice16, '') + '</span>');
             setMessageResult('bob-result', '<span class="result-dot bob"></span><span>Recovered operation = ' + op + '</span>');
             setMessageResult('charlie-result', '<span class="result-dot charlie"></span><span>Secret bits = ' + opBits + '</span>');
         }
@@ -593,17 +595,18 @@
         return value === '|+⟩' ? '|−⟩' : '|+⟩';
     }
 
+    function toSubscripts(pair) {
+        return String(pair || '').split('').map(n => '₀₁₂₃₄₅₆₇₈₉'[Number(n)] || n).join('');
+    }
+
     function bellLatexFromText(textValue, pair) {
-        const match = String(textValue || '').match(/[ΦΨ][⁺⁻]/);
-        if (!match) return '\\( |Bell\\rangle_{' + pair + '} \\)';
-        const state = match[0].replace('Φ','\\Phi').replace('Ψ','\\Psi').replace('⁺','^+').replace('⁻','^-');
-        return '\\( |' + state + '\\rangle_{' + pair + '} \\)';
+        return bellTextWithPair(textValue, pair);
     }
 
     function setPlainResult(targetId, rows) {
         const host = document.getElementById(targetId);
         if (!host) return;
-        host.innerHTML = rows.map(row => `<div class="result-item" data-qubit="${row.qubit}"><span>${row.qubit}=${row.value}</span></div>`).join('');
+        host.innerHTML = rows.map(row => `<div class="result-item" data-qubit="${row.qubit}"><span>${qChipHTML(row.qubit)}=${row.value}</span></div>`).join('');
     }
 
     function highlightResultPair(firstQubit, secondQubit) {
@@ -615,11 +618,11 @@
     }
 
     const bcInferenceExample = {
-        bob23: '|Ψ⁻⟩₂₃',
-        charlie45: '|Φ⁺⟩₄₅',
-        initial34: '|Ψ⁻⟩₃₄',
-        inferred25: '|Φ⁺⟩₂₅',
-        alice16: '|Φ⁺⟩₁₆',
+        bob23: '<span class="bell-state"><span class="bell-state">|𝜓⁻⟩</span>₂₃</span>',
+        charlie45: '<span class="bell-state"><span class="bell-state">|𝜙⁺⟩</span>₄₅</span>',
+        initial34: '<span class="bell-state"><span class="bell-state">|𝜓⁻⟩</span>₃₄</span>',
+        inferred25: '<span class="bell-state"><span class="bell-state">|𝜙⁺⟩</span>₂₅</span>',
+        alice16: '<span class="bell-state"><span class="bell-state">|𝜙⁺⟩</span>₁₆</span>',
         operation: 'u₄',
         secret: '11'
     };
@@ -647,30 +650,42 @@
         return `<span class="q-chip-pair">${items.map(([q, cls]) => `<span class="q-chip ${cls === 'bob' ? '' : cls}">${q}</span>`).join('')}</span>`;
     }
 
+    function qChipHTML(qubit) {
+        const ownerMap = { q1: 'alice', q2: 'bob', q3: 'bob', q4: 'charlie', q5: 'charlie', q6: 'bob' };
+        const owner = ownerMap[qubit] || 'bob';
+        return `<span class="q-chip ${owner === 'bob' ? '' : owner}">${qubit}</span>`;
+    }
+
     function renderMeasurementCards() {
         return String.raw`
             <div class="decode-measure-grid">
-                <div class="decode-measure-card focus"><b>Bob measures</b><span class="q-chip-pair"><span class="q-chip">q2</span><span class="q-chip">q3</span></span>\( |\Psi^-\rangle_{23} \)</div>
-                <div class="decode-measure-card focus"><b>Charlie measures</b><span class="q-chip-pair"><span class="q-chip charlie">q4</span><span class="q-chip charlie">q5</span></span>\( |\Phi^+\rangle_{45} \)</div>
-                <div class="decode-measure-card focus"><b>Initial</b><span class="q-chip-pair"><span class="q-chip">q3</span><span class="q-chip charlie">q4</span></span><span class="state-box">\( |\Psi^-\rangle_{34} \)</span></div>
+                <div class="decode-measure-card focus"><b>Bob measures</b><span class="q-chip-pair"><span class="q-chip">q2</span><span class="q-chip">q3</span></span><span class="bell-state"><span class="bell-state">|𝜓⁻⟩</span>₂₃</span></div>
+                <div class="decode-measure-card focus"><b>Charlie measures</b><span class="q-chip-pair"><span class="q-chip charlie">q4</span><span class="q-chip charlie">q5</span></span><span class="bell-state"><span class="bell-state">|𝜙⁺⟩</span>₄₅</span></div>
+                <div class="decode-measure-card focus"><b>Initial</b><span class="q-chip-pair"><span class="q-chip">q3</span><span class="q-chip charlie">q4</span></span><span class="state-box"><span class="bell-state"><span class="bell-state">|𝜓⁻⟩</span>₃₄</span></span></div>
             </div>`;
     }
 
     function bellCore(textValue) {
-        const m = String(textValue || '').match(/[ΦΨ][⁺⁻]/);
-        return m ? m[0] : 'Ψ⁻';
+        let s = String(textValue || '');
+        s = s.replace(/\\rangle|\\ket|\\left|\\right|[{}()_{}\\|]/g, ' ');
+        const stateMatch = s.match(/(𝜙|φ|ϕ|Φ|Phi|\\Phi|𝜓|ψ|Ψ|Psi|\\Psi)/i);
+        const signMatch = s.match(/(⁺|\^\+|\+|plus|⁻|\^-|-|minus)/i);
+        const symbol = stateMatch && /𝜙|φ|ϕ|Φ|Phi|\\Phi/i.test(stateMatch[0]) ? '𝜙' : '𝜓';
+        const sign = signMatch && /⁺|\^\+|\+|plus/i.test(signMatch[0]) ? '⁺' : '⁻';
+        return symbol + sign;
     }
 
     function bellLatexCore(core) {
-        return core.replace('Φ','\\Phi').replace('Ψ','\\Psi').replace('⁺','^+').replace('⁻','^-');
+        return core;
     }
 
     function bellTextWithPair(textValue, pair) {
-        return '|' + bellCore(textValue) + '⟩' + pair.split('').map(n => '₀₁₂₃₄₅₆₇₈₉'[Number(n)]).join('');
+        const sub = String(pair || '').split('').map(n => '₀₁₂₃₄₅₆₇₈₉'[Number(n)] || n).join('');
+        return '<span class="bell-state">|' + bellCore(textValue) + '⟩' + sub + '</span>';
     }
 
     function bellLatexWithPair(textValue, pair) {
-        return '\\( |' + bellLatexCore(bellCore(textValue)) + '\\rangle_{' + pair + '} \\)';
+        return bellTextWithPair(textValue, pair);
     }
 
     function operationFromBits(bits) {
@@ -678,7 +693,7 @@
     }
 
     function original16FromInferred25(bcBell) {
-        return bellTextWithPair(bcBell || '|Ψ⁻⟩₂₅', '16');
+        return bellTextWithPair(bcBell || '<span class="bell-state">|𝜓⁻⟩</span>₂₅', '16');
     }
 
     function renderDecodeChoices() {
@@ -699,7 +714,6 @@
                     <button class="decode-choice-btn" data-kind="secret" onclick="showDecodeExplain('secret')">3. Recover secret<br><span class="secret-badge">${opBits}</span></button>
                 </div>
             </div>`;
-        if (window.MathJax) MathJax.typesetPromise([hintText]);
     }
 
     function showDecodeExplain(kind) {
@@ -709,9 +723,9 @@
         const hintBox = document.getElementById('hint-box');
         if (hintBox) hintBox.classList.add('expanded');
 
-        const publicAlice16 = localStorage.getItem('zhangManAliceBell16') || '|Ψ⁻⟩₁₆';
-        const inferred25 = '|Φ⁺⟩₂₅';
-        const original16 = '|Φ⁺⟩₁₆';
+        const publicAlice16 = localStorage.getItem('zhangManAliceBell16') || '<span class="bell-state"><span class="bell-state">|𝜓⁻⟩</span>₁₆</span>';
+        const inferred25 = '<span class="bell-state"><span class="bell-state">|𝜙⁺⟩</span>₂₅</span>';
+        const original16 = '<span class="bell-state"><span class="bell-state">|𝜙⁺⟩</span>₁₆</span>';
         const opBits = localStorage.getItem('zhangManOperation') || '00';
         const op = operationFromBits(opBits);
 
@@ -727,58 +741,58 @@
                 ${renderMeasurementCards()}
                 <div class="swap-hint">Direct entanglement swapping: ${qChipPairHTML('23')}${qChipPairHTML('45')} → ${qChipPairHTML('25')}${qChipPairHTML('34')}.</div>
                 <div class="decode-long-formula">
-                    <span>\( |\Psi^{-}\rangle_{23}|\Phi^{+}\rangle_{45}= \)</span>
-                    <span class="state-box">\( -\frac{1}{2}|\Phi^{+}\rangle_{25}|\Psi^{-}\rangle_{34} \)</span>
-                    <span>\( +\frac{1}{2}|\Phi^{-}\rangle_{25}|\Psi^{+}\rangle_{34} \)</span>
-                    <span>\( -\frac{1}{2}|\Psi^{+}\rangle_{25}|\Phi^{-}\rangle_{34} \)</span>
-                    <span>\( +\frac{1}{2}|\Psi^{-}\rangle_{25}|\Phi^{+}\rangle_{34} \)</span>
+                    <span><span class="bell-state"><span class="bell-state">|𝜓⁻⟩</span>₂₃</span><span class="bell-state"><span class="bell-state">|𝜙⁺⟩</span>₄₅</span> =</span>
+                    <span class="state-box">−1/2 <span class="bell-state"><span class="bell-state">|𝜙⁺⟩</span>₂₅</span><span class="bell-state"><span class="bell-state">|𝜓⁻⟩</span>₃₄</span></span>
+                    <span>+1/2 <span class="bell-state"><span class="bell-state">|𝜙⁻⟩</span>₂₅</span><span class="bell-state"><span class="bell-state">|𝜓⁺⟩</span>₃₄</span></span>
+                    <span>−1/2 <span class="bell-state"><span class="bell-state">|𝜓⁺⟩</span>₂₅</span><span class="bell-state"><span class="bell-state">|𝜙⁻⟩</span>₃₄</span></span>
+                    <span>+1/2 <span class="bell-state">|𝜓⁻⟩</span>₂₅<span class="bell-state"><span class="bell-state">|𝜙⁺⟩</span>₃₄</span></span>
                 </div>
                 <div class="decode-detail-formula decode-focus">
-                    Match <span class="match-result">\( |\Psi^{-}\rangle_{34} \)</span>
-                    \( \Rightarrow |\Phi^{+}\rangle_{25} \)
+                    Match <span class="match-result"><span class="bell-state"><span class="bell-state">|𝜓⁻⟩</span>₃₄</span></span>
+                    ⇒ <span class="bell-state"><span class="bell-state">|𝜙⁺⟩</span>₂₅</span>
                 </div>`;
             setTimeout(() => setQ25Highlight(true), 0);
         } else if (kind === 'bc') {
             title = 'Use Alice Public ' + qChipPairHTML('16') + ' Result';
             body = String.raw`
                 <div class="decode-measure-grid">
-                    <div class="decode-measure-card focus"><b>Original</b>${qChipPairHTML('12')} \( |\Psi^{-}\rangle_{12} \)</div>
-                    <div class="decode-measure-card focus"><b>Original</b>${qChipPairHTML('56')} \( |\Psi^{-}\rangle_{56} \)</div>
-                    <div class="decode-measure-card focus"><b>Inferred</b>${qChipPairHTML('25')}<span class="state-box">\( |\Phi^{+}\rangle_{25} \)</span></div>
+                    <div class="decode-measure-card focus"><b>Original</b>${qChipPairHTML('12')} <span class="bell-state">|𝜓⁻⟩</span>₁₂</div>
+                    <div class="decode-measure-card focus"><b>Original</b>${qChipPairHTML('56')} <span class="bell-state"><span class="bell-state">|𝜓⁻⟩</span>₅₆</span></div>
+                    <div class="decode-measure-card focus"><b>Inferred</b>${qChipPairHTML('25')}<span class="state-box"><span class="bell-state"><span class="bell-state">|𝜙⁺⟩</span>₂₅</span></span></div>
                 </div>
                 <div class="swap-hint">Direct entanglement swapping with no operation: ${qChipPairHTML('12')}${qChipPairHTML('56')} → ${qChipPairHTML('16')}${qChipPairHTML('25')}.</div>
                 <div class="decode-long-formula">
-                    <span>\( |\Psi^{-}\rangle_{12}|\Psi^{-}\rangle_{56}= \)</span>
-                    <span class="state-box">\( -\frac{1}{2}|\Phi^{+}\rangle_{16}|\Phi^{+}\rangle_{25} \)</span>
-                    <span>\( +\frac{1}{2}|\Phi^{-}\rangle_{16}|\Phi^{-}\rangle_{25} \)</span>
-                    <span>\( +\frac{1}{2}|\Psi^{+}\rangle_{16}|\Psi^{+}\rangle_{25} \)</span>
-                    <span>\( -\frac{1}{2}|\Psi^{-}\rangle_{16}|\Psi^{-}\rangle_{25} \)</span>
+                    <span><span class="bell-state">|𝜓⁻⟩</span>₁₂<span class="bell-state"><span class="bell-state">|𝜓⁻⟩</span>₅₆</span> =</span>
+                    <span class="state-box">−1/2 <span class="bell-state"><span class="bell-state">|𝜙⁺⟩</span>₁₆</span><span class="bell-state"><span class="bell-state">|𝜙⁺⟩</span>₂₅</span></span>
+                    <span>+1/2 <span class="bell-state"><span class="bell-state">|𝜙⁻⟩</span>₁₆</span><span class="bell-state"><span class="bell-state">|𝜙⁻⟩</span>₂₅</span></span>
+                    <span>+1/2 <span class="bell-state"><span class="bell-state">|𝜓⁺⟩</span>₁₆</span><span class="bell-state"><span class="bell-state">|𝜓⁺⟩</span>₂₅</span></span>
+                    <span>−1/2 <span class="bell-state"><span class="bell-state">|𝜓⁻⟩</span>₁₆</span><span class="bell-state">|𝜓⁻⟩</span>₂₅</span>
                 </div>
                 <div class="decode-detail-formula decode-focus">
-                    Match <span class="match-result">\( |\Phi^{+}\rangle_{25} \)</span>
-                    \( \Rightarrow |\Phi^{+}\rangle_{16}\ \text{before Alice's operation} \)
+                    Match <span class="match-result"><span class="bell-state"><span class="bell-state">|𝜙⁺⟩</span>₂₅</span></span>
+                    <span>→ <span class="bell-state"><span class="bell-state">|𝜙⁺⟩</span>₁₆</span> before Alice's operation</span>
                 </div>`;
             setTimeout(() => setQ25Highlight(true), 0);
         } else {
             title = 'Recover Secret Bits';
             body = String.raw`
-                <div class="decode-detail-text">Only this final comparison uses Alice's selected operation. Compare the original ${qChipPairHTML('16')} state from direct swapping with Alice's public ${qChipPairHTML('16')} result from Step 3.</div>
+                <div class="decode-detail-text">Compare the direct-swapping ${qChipPairHTML('16')} state with Alice's public Step 3 result.</div>
                 <div class="decode-measure-grid">
-                    <div class="decode-measure-card focus"><b>Original</b>${qChipPairHTML('16')} \( |\Phi^{+}\rangle_{16} \)</div>
+                    <div class="decode-measure-card focus"><b>Original</b>${qChipPairHTML('16')} <span class="bell-state"><span class="bell-state">|𝜙⁺⟩</span>₁₆</span></div>
                     <div class="decode-measure-card focus"><b>Alice public</b>${qChipPairHTML('16')} ${bellLatexWithPair(publicAlice16, '16')}</div>
-                    <div class="decode-measure-card focus"><b>Recovered operation</b> \( ${op} \)</div>
+                    <div class="decode-measure-card focus"><b>Recovered operation</b> ${op}</div>
                 </div>
                 <div class="unitary-compare-table">
-                    <div class="unitary-compare-cell ${opBits === '00' ? 'active' : ''}"><span>00</span><span>\(I\)</span></div>
-                    <div class="unitary-compare-cell ${opBits === '01' ? 'active' : ''}"><span>01</span><span>\(Z\)</span></div>
-                    <div class="unitary-compare-cell ${opBits === '10' ? 'active' : ''}"><span>10</span><span>\(Y\)</span></div>
-                    <div class="unitary-compare-cell ${opBits === '11' ? 'active' : ''}"><span>11</span><span>\(X\)</span></div>
+                    <div class="unitary-compare-cell ${opBits === '00' ? 'active' : ''}"><span>00</span><span>I</span></div>
+                    <div class="unitary-compare-cell ${opBits === '01' ? 'active' : ''}"><span>01</span><span>Z</span></div>
+                    <div class="unitary-compare-cell ${opBits === '10' ? 'active' : ''}"><span>10</span><span>Y</span></div>
+                    <div class="unitary-compare-cell ${opBits === '11' ? 'active' : ''}"><span>11</span><span>X</span></div>
                 </div>
                 <div class="decode-detail-formula decode-focus">
-                    \( |\Phi^{+}\rangle_{16} \)
-                    \( \xrightarrow{${op}} \)
+                    <span class="bell-state"><span class="bell-state">|𝜙⁺⟩</span>₁₆</span>
+                    → ${op} →
                     ${bellLatexWithPair(publicAlice16, '16')}
-                    \( \Rightarrow \text{secret bits}=${opBits} \)
+                    <span>→ secret bits=${opBits}</span>
                 </div>`;
             setTimeout(() => setQ25Highlight(false), 0);
         }
@@ -789,7 +803,6 @@
                 <button class="decode-back-btn" onclick="setQ25Highlight(false); renderDecodeChoices()">Choose again</button>
             </div>
             <div class="decode-detail-body">${body}</div>`;
-        if (window.MathJax) MathJax.typesetPromise([hintText, hintTitle]);
     }
 
     function configureStep4UI() {
@@ -841,10 +854,10 @@
                     <div class="detecting-note">Everyone publishes the checking results. If paired outcomes are opposite in the same basis, this run passes the security check.</div>
                     <div class="final-grid">
                         <div class="final-card"><b>Basis</b><br>${basis}</div>
-                        <div class="final-card clickable ${pass12 ? 'pass' : ''}" onclick="highlightResultPair('q1','q2')"><b>q1 / q2</b><br>${aliceQ1} vs ${bobQ2}</div>
-                        <div class="final-card clickable ${pass56 ? 'pass' : ''}" onclick="highlightResultPair('q6','q5')"><b>q6 / q5</b><br>${aliceQ6} vs ${charlieQ5}</div>
+                        <div class="final-card clickable ${pass12 ? 'pass' : ''}" onclick="highlightResultPair('q1','q2')"><b>${qChipHTML('q1')} / ${qChipHTML('q2')}</b><br>${aliceQ1} vs ${bobQ2}</div>
+                        <div class="final-card clickable ${pass56 ? 'pass' : ''}" onclick="highlightResultPair('q6','q5')"><b>${qChipHTML('q6')} / ${qChipHTML('q5')}</b><br>${aliceQ6} vs ${charlieQ5}</div>
                     </div>
-                    <div class="decode-line">\\( |\\Psi^-\\rangle=\\frac{1}{\\sqrt{2}}(|01\\rangle-|10\\rangle) \\Rightarrow \\text{opposite outcomes in the same basis} \\)</div>
+                    <div class="decode-line"><span class="bell-state">|𝜓⁻⟩</span> = 1/√2(|01⟩ − |10⟩) → opposite outcomes in the same basis</div>
                 </div>`;
 
             panel.classList.add('detecting-panel');
@@ -860,8 +873,8 @@
             header.innerText = 'STEP 5 : COLLABORATIVE DECODE';
 
             const op = localStorage.getItem('zhangManOperation') || '00';
-            const aliceBell = localStorage.getItem('zhangManAliceBell16') || '|Ψ⁻⟩₁₆';
-            const bcBell = localStorage.getItem('zhangManBobCharlieBell25') || '|Ψ⁻⟩₂₅';
+            const aliceBell = localStorage.getItem('zhangManAliceBell16') || '<span class="bell-state"><span class="bell-state">|𝜓⁻⟩</span>₁₆</span>';
+            const bcBell = localStorage.getItem('zhangManBobCharlieBell25') || '<span class="bell-state">|𝜓⁻⟩</span>₂₅';
             const decoded = { '00': 'I', '01': 'Z', '10': 'Y', '11': 'X' }[op] || 'I';
 
             showMessageEntanglement(aliceBell, bcBell);
@@ -869,8 +882,8 @@
             markMeasured(['q1','q6']);
 
             document.getElementById('alice-result').innerText = `Announced ${aliceBell}`;
-            document.getElementById('bob-result').innerText = 'shares q2,q3';
-            document.getElementById('charlie-result').innerText = 'shares q4,q5';
+            document.getElementById('bob-result').innerHTML = '';
+            document.getElementById('charlie-result').innerHTML = '';
 
             renderDecodeChoices();
 
@@ -879,7 +892,6 @@
         }
 
         document.getElementById('next-btn').disabled = false;
-        if (window.MathJax) MathJax.typesetPromise();
         setTimeout(updateEntangleLines, 0);
         setTimeout(updateEntangleLines, 80);
     }

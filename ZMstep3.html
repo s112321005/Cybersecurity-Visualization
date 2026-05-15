@@ -23,8 +23,8 @@
         .nav-btn:disabled,.action-btn:disabled{border-color:#ccc;color:#ccc;cursor:not-allowed;box-shadow:none;background:white}
 
         .main-card{width:min(1000px,95vw);height:730px;border:3px solid var(--primary-blue);border-radius:35px;position:relative;background:white;overflow:hidden;padding:22px}
-        .mode-badge{position:absolute;left:853px;top:18px;transform:translateX(-50%);border:2px solid var(--primary-blue);background:#fff;border-radius:999px;padding:8px 20px;color:var(--primary-blue);font-weight:900;box-shadow:0 6px 18px rgba(84,159,208,.12);z-index:10;white-space:nowrap;min-width:max-content}
-        .mode-badge.corner{left:24px;top:160px;transform:none;box-shadow:none}
+        #mode-badge{position:absolute;left:30px;top:30px;transform:none;border:2px solid var(--primary-blue);background:#fff;border-radius:999px;padding:8px 20px;color:var(--primary-blue);font-weight:900;box-shadow:none;z-index:10;white-space:nowrap;min-width:max-content}
+        #mode-badge.corner{left:30px;top:30px;transform:none;box-shadow:none}
         .party{position:absolute;display:flex;flex-direction:column;align-items:center;gap:8px;z-index:4}
         .party img{width:124px;height:auto;display:block}
         .party-name{font-weight:900;color:#667085;margin:0}
@@ -34,8 +34,8 @@
         #stage.message-layout .party-alice{left:calc(35.1% + 20px);top:26px;transform:translateX(-50%)}
         #stage.message-layout .party-bob{left:37px;top:248px}
         #stage.message-layout .party-charlie{right:295px;top:248px}
-        #stage.message-layout .mode-badge{left:853px;top:18px;transform:translateX(-50%)}
-        #stage.message-layout .floating-announcement{left:85px;top:92px;transform:none}
+        #stage.message-layout #mode-badge{left:30px;top:30px;transform:none}
+        #stage.message-layout .floating-announcement{left:30px;top:152px;transform:none}
         .qubit-row{display:flex;align-items:center;justify-content:center;gap:10px}
         .qubit{width:42px;height:42px;border-radius:50%;background:var(--qubit-fill);display:flex;align-items:center;justify-content:center;font-weight:900;color:#1f2937;box-shadow:0 0 16px rgba(84,159,208,.18);border:4px solid var(--alice-color);transition:all .25s ease}
         .party-bob .qubit{border-color:var(--bob-color)}
@@ -65,18 +65,17 @@
         #stage.message-layout .center-panel.message-panel{left:755px;top:66px;transform:none;width:195px;align-items:flex-start;gap:8px}
         .center-panel.detecting-panel{left:50%;top:510px;transform:translateX(-50%);width:420px;align-items:center;gap:12px;text-align:center}
         .detecting-controls{display:flex;gap:10px;justify-content:center;align-items:center;flex-wrap:wrap;width:100%;position:relative;min-height:52px}
-        #replay-btn,#step-btn{position:absolute;left:-210px;min-width:150px}
+        #replay-btn,#step-btn{position:absolute;left:510px;min-width:150px}
         #replay-btn{top:-470px}
         #step-btn{top:-414px}
         #next-step-btn{position:absolute;left:-210px;top:-414px;min-width:150px}
         .detecting-controls .action-btn{min-width:150px}
         .measure-eye{position:absolute;display:flex;align-items:center;justify-content:center;width:70px;height:70px;border-radius:50%;background:rgba(255,255,255,.92);box-shadow:0 8px 20px rgba(84,159,208,.18);border:3px solid #BFDDF3;opacity:0;transform:translate(-50%,-50%) scale(.78);pointer-events:none;z-index:28}
-        .measure-eye img{width:50px;height:50px;display:block}
+        .measure-eye img{width:50px;height:auto;max-height:50px;display:block;object-fit:contain}
         .measure-eye.show{opacity:1;animation:eyePop .95s ease forwards}
         .measure-eye.alice-eye{border-color:#004aad;box-shadow:0 8px 20px rgba(0,74,173,.18)}
         .measure-eye.bob-eye{border-color:#4C80C5;box-shadow:0 8px 20px rgba(76,128,197,.18)}
         .measure-eye.charlie-eye{border-color:#478CEA;box-shadow:0 8px 20px rgba(71,140,234,.18)}
-        .measure-eye.charlie-eye img{filter:brightness(0) saturate(100%) invert(54%) sepia(60%) saturate(1541%) hue-rotate(186deg) brightness(99%) contrast(88%)}
         @keyframes eyePop{0%{opacity:0;transform:translate(-50%,-50%) scale(.7)}20%{opacity:1}60%{opacity:1;transform:translate(-50%,-50%) scale(1.08)}100%{opacity:0;transform:translate(-50%,-50%) scale(1)}}
         .operation-grid{display:grid;grid-template-columns:1fr;gap:8px;width:100%}
         .op-btn{border:2px solid #D8EBF7;background:white;border-radius:16px;padding:8px 8px;cursor:pointer;box-shadow:0 4px 10px rgba(0,0,0,.05);transition:all .2s ease;text-align:center;color:#566172;font-weight:900;min-height:58px;overflow:hidden;display:flex;align-items:center;justify-content:flex-start;gap:8px}
@@ -91,13 +90,13 @@
         .op-sub{display:inline-flex;align-items:center;justify-content:center;font-size:.9rem;color:#7A8799;line-height:1;max-width:100%;white-space:nowrap;overflow:visible}
         .op-sub mjx-container{font-size:122%!important;white-space:nowrap!important;display:inline-block!important;vertical-align:middle!important}
         .action-btn.primary{background:var(--primary-blue);color:white}
-        .detecting-controls .action-btn.primary{animation:detectPulse 1.5s ease-in-out infinite}
+        .detecting-controls .action-btn.primary{animation:none}
         .detecting-controls .action-btn.primary:disabled{animation:none}
         @keyframes detectPulse{0%,100%{box-shadow:0 0 0 0 rgba(84,159,208,.18),0 4px 15px rgba(84,159,208,.20)}50%{box-shadow:0 0 0 10px rgba(84,159,208,0),0 8px 24px rgba(84,159,208,.42)}}
         #measure16-btn{display:block;align-self:center;margin:4px auto 0;width:195px;max-width:100%;line-height:1.25;white-space:normal}
         .announcement{display:none;margin-top:4px;background:#fff;border:2px solid #D8EBF7;border-left:6px solid var(--alice-color);border-radius:16px;padding:12px 16px;width:100%;box-shadow:0 8px 20px rgba(84,159,208,.09);font-weight:900;color:#556070;text-align:center}
         .announcement.show{display:block;animation:fadeIn .35s ease}
-        .floating-announcement{position:absolute;left:calc(35.1% + 130px);top:22px;transform:translateX(-50%);display:none;width:max-content;max-width:260px;min-width:150px;z-index:22;padding:9px 14px;white-space:nowrap}
+        .floating-announcement{position:absolute;left:30px;top:82px;transform:none;display:none;width:max-content;max-width:260px;min-width:150px;z-index:22;padding:9px 14px;white-space:nowrap}
         .floating-announcement.show{display:block;animation:none}
         @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 
@@ -108,9 +107,13 @@
         .detecting-hint{display:flex;flex-direction:column;gap:8px}
         .detecting-formula{background:white;border:1px solid #DBEAFE;border-radius:12px;padding:8px 10px;overflow-x:auto}
         .detecting-note{font-size:.98rem}
-        .detecting-highlight{display:inline-block;background:#EAF5FE;border:2px solid var(--primary-blue);border-radius:999px;padding:2px 10px;color:#1E4F86;font-weight:900;box-shadow:0 0 0 4px rgba(84,159,208,.12)}
+        .detecting-highlight{display:inline-block;background:#EAF5FE;border:2px solid var(--primary-blue);border-radius:999px;padding:2px 10px;color:#1E4F86;font-weight:900;box-shadow:none}
         .detecting-bottom-formula{margin-top:8px;background:white;border:1px solid #DBEAFE;border-radius:12px;padding:8px 10px;min-height:54px;overflow-x:auto;white-space:nowrap}
-        .formula-hit{display:inline-block;border:2px solid var(--primary-blue);border-radius:999px;background:#EAF5FE;padding:1px 8px;box-shadow:0 0 0 4px rgba(84,159,208,.16),0 0 18px rgba(84,159,208,.32);animation:formulaPulse 1.4s ease-in-out infinite}
+        .formula-hit{display:inline-block;border:2px solid var(--primary-blue);border-radius:999px;background:#EAF5FE;padding:1px 8px;box-shadow:none;animation:none}
+        .hint-q-chip{width:24px;height:24px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;background:var(--qubit-fill);border:3px solid var(--alice-color);color:#1f2937;font-size:.68rem;font-weight:900;line-height:1;vertical-align:middle;margin:0 1px}
+        .hint-q-chip.owner-bob{border-color:var(--bob-color)}
+        .hint-q-chip.owner-charlie{border-color:var(--charlie-color)}
+        #replay-btn:not(:disabled),#step-btn:not(:disabled){animation:detectPulse 1.5s ease-in-out infinite}
         @keyframes formulaPulse{0%,100%{box-shadow:0 0 0 3px rgba(84,159,208,.16),0 0 12px rgba(84,159,208,.24)}50%{box-shadow:0 0 0 7px rgba(84,159,208,.20),0 0 24px rgba(84,159,208,.42)}}
         .hint-box,.hint-box *{-webkit-user-select:text;-moz-user-select:text;-ms-user-select:text;user-select:text}
         .swap-formula{display:flex;flex-direction:column;gap:6px;font-weight:900;color:#556070;line-height:1.35;max-height:122px;overflow:auto}
@@ -144,7 +147,7 @@
         .pingpong-image-card.is-current img{max-width:318px;max-height:320px;opacity:1;transform:scale(1)}
 
         @media (min-width:1180px){body{padding-right:450px!important}}
-        @media (max-width:1179px){body{padding-right:20px!important}.pingpong-image-dock{position:relative;right:auto;top:auto;width:min(94vw,840px);height:320px;margin:18px auto 10px}.pingpong-image-viewport{width:100%;height:320px}.pingpong-image-viewport::before,.pingpong-image-viewport::after{height:320px;width:10px;z-index:0}.pingpong-image-window{width:100%;height:320px;margin-left:0}.pingpong-image-list{flex-direction:row;align-items:center;gap:14px;width:max-content;height:320px;padding:0 24px}.pingpong-image-card{width:270px;min-height:52px}.pingpong-image-card.is-current{width:305px;min-height:250px;margin:0 10px}.pingpong-image-card.is-current img{max-width:275px;max-height:220px}.main-card{height:760px}.party-alice{left:calc(35% + 90px);top:74px}.party-bob{left:109px;top:308px}.party-charlie{right:85px;top:308px}#stage.message-layout .party-alice{left:calc(35% + 20px);top:26px}#stage.message-layout .party-bob{left:24px;top:260px}#stage.message-layout .party-charlie{right:190px;top:260px}.party img{width:112px}.center-panel{top:340px;width:min(430px,82vw)}.center-panel.message-panel{left:calc(54% + 20px);top:175px;transform:translateX(-50%);width:min(210px,82vw);align-items:center}.center-panel.detecting-panel{left:50%;top:510px;transform:translateX(-50%);width:min(420px,92vw);align-items:center}.mode-badge{left:calc(54% + 20px);top:110px}.mode-badge.corner{left:18px;top:160px;transform:none}.floating-announcement{left:calc(35% + 90px);top:32px;transform:translateX(-50%);max-width:220px}#replay-btn,#step-btn{left:-15px}
+        @media (max-width:1179px){body{padding-right:20px!important}.pingpong-image-dock{position:relative;right:auto;top:auto;width:min(94vw,840px);height:320px;margin:18px auto 10px}.pingpong-image-viewport{width:100%;height:320px}.pingpong-image-viewport::before,.pingpong-image-viewport::after{height:320px;width:10px;z-index:0}.pingpong-image-window{width:100%;height:320px;margin-left:0}.pingpong-image-list{flex-direction:row;align-items:center;gap:14px;width:max-content;height:320px;padding:0 24px}.pingpong-image-card{width:270px;min-height:52px}.pingpong-image-card.is-current{width:305px;min-height:250px;margin:0 10px}.pingpong-image-card.is-current img{max-width:275px;max-height:220px}.main-card{height:760px}.party-alice{left:calc(35% + 90px);top:74px}.party-bob{left:109px;top:308px}.party-charlie{right:85px;top:308px}#stage.message-layout .party-alice{left:calc(35% + 20px);top:26px}#stage.message-layout .party-bob{left:24px;top:260px}#stage.message-layout .party-charlie{right:190px;top:260px}.party img{width:112px}.center-panel{top:340px;width:min(430px,82vw)}.center-panel.message-panel{left:calc(54% + 20px);top:175px;transform:translateX(-50%);width:min(210px,82vw);align-items:center}.center-panel.detecting-panel{left:50%;top:510px;transform:translateX(-50%);width:min(420px,92vw);align-items:center}#mode-badge{left:30px;top:30px;transform:none}#mode-badge.corner{left:30px;top:30px;transform:none}.floating-announcement{left:30px;top:92px;transform:none;max-width:220px}#replay-btn,#step-btn{left:410px}
         #next-step-btn{left:-15px;top:-414px}#replay-btn{top:-470px}#step-btn{top:-414px}
         #next-step-btn{position:absolute;left:-210px;top:-414px;min-width:150px}.operation-grid{grid-template-columns:1fr}.qubit{width:38px;height:38px}.hint-box{width:86%}}
     </style>
@@ -182,9 +185,9 @@
     <div class="ent-line" id="line12"></div>
     <div class="ent-line" id="line34"></div>
     <div class="ent-line" id="line56"></div>
-    <div class="ent-tag" id="etag12">\( |\Psi^-\rangle_{12} \)</div>
-    <div class="ent-tag" id="etag34">\( |\Psi^-\rangle_{34} \)</div>
-    <div class="ent-tag" id="etag56">\( |\Psi^-\rangle_{56} \)</div>
+    <div class="ent-tag" id="etag12">\( |𝜓^-\rangle_{12} \)</div>
+    <div class="ent-tag" id="etag34">\( |𝜓^-\rangle_{34} \)</div>
+    <div class="ent-tag" id="etag56">\( |𝜓^-\rangle_{56} \)</div>
 
     <div class="party party-alice" id="party-alice">
         <img src="pictures/cat_alice.svg" alt="Alice">
@@ -226,62 +229,62 @@
     let detectingStepMode = false;
 
     const swapResults = [
-        { index: 0, sign: '-', bell16: '|Φ⁺⟩₁₆', bell25: '|Φ⁺⟩₂₅', latex16: '\\Phi^+', latex25: '\\Phi^+' },
-        { index: 1, sign: '+', bell16: '|Φ⁻⟩₁₆', bell25: '|Φ⁻⟩₂₅', latex16: '\\Phi^-', latex25: '\\Phi^-' },
-        { index: 2, sign: '+', bell16: '|Ψ⁺⟩₁₆', bell25: '|Ψ⁺⟩₂₅', latex16: '\\Psi^+', latex25: '\\Psi^+' },
-        { index: 3, sign: '-', bell16: '|Ψ⁻⟩₁₆', bell25: '|Ψ⁻⟩₂₅', latex16: '\\Psi^-', latex25: '\\Psi^-' }
+        { index: 0, sign: '-', bell16: '|𝜙⁺⟩₁₆', bell25: '|𝜙⁺⟩₂₅', latex16: '𝜙^+', latex25: '𝜙^+' },
+        { index: 1, sign: '+', bell16: '|𝜙⁻⟩₁₆', bell25: '|𝜙⁻⟩₂₅', latex16: '𝜙^-', latex25: '𝜙^-' },
+        { index: 2, sign: '+', bell16: '|𝜓⁺⟩₁₆', bell25: '|𝜓⁺⟩₂₅', latex16: '𝜓^+', latex25: '𝜓^+' },
+        { index: 3, sign: '-', bell16: '|𝜓⁻⟩₁₆', bell25: '|𝜓⁻⟩₂₅', latex16: '𝜓^-', latex25: '𝜓^-' }
     ];
     const operationMap = {
-        '00': { op: 'I', resultLatex: '\\Psi^-', resultText: '|Ψ⁻⟩₁₂', encodedKey: 'psi-minus' },
-        '01': { op: 'Z', resultLatex: '\\Psi^+', resultText: '|Ψ⁺⟩₁₂', encodedKey: 'psi-plus' },
-        '10': { op: 'Y', resultLatex: '\\Phi^+', resultText: '|Φ⁺⟩₁₂', encodedKey: 'phi-plus' },
-        '11': { op: 'X', resultLatex: '\\Phi^-', resultText: '-|Φ⁻⟩₁₂', encodedKey: 'phi-minus', phase: '-' }
+        '00': { op: 'I', resultLatex: '𝜓^-', resultText: '|𝜓⁻⟩₁₂', encodedKey: 'psi-minus' },
+        '01': { op: 'Z', resultLatex: '𝜓^+', resultText: '|𝜓⁺⟩₁₂', encodedKey: 'psi-plus' },
+        '10': { op: 'Y', resultLatex: '𝜙^+', resultText: '|𝜙⁺⟩₁₂', encodedKey: 'phi-plus' },
+        '11': { op: 'X', resultLatex: '𝜙^-', resultText: '-|𝜙⁻⟩₁₂', encodedKey: 'phi-minus', phase: '-' }
     };
 
     const operationSwapTables = {
         '00': {
-            encodedLatex: '\\Psi^-',
+            encodedLatex: '𝜓^-',
             terms: [
-                { sign: '-', bell16: '|Φ⁺⟩₁₆', bell25: '|Φ⁺⟩₂₅', latex16: '\\Phi^+', latex25: '\\Phi^+' },
-                { sign: '+', bell16: '|Φ⁻⟩₁₆', bell25: '|Φ⁻⟩₂₅', latex16: '\\Phi^-', latex25: '\\Phi^-' },
-                { sign: '+', bell16: '|Ψ⁺⟩₁₆', bell25: '|Ψ⁺⟩₂₅', latex16: '\\Psi^+', latex25: '\\Psi^+' },
-                { sign: '-', bell16: '|Ψ⁻⟩₁₆', bell25: '|Ψ⁻⟩₂₅', latex16: '\\Psi^-', latex25: '\\Psi^-' }
+                { sign: '-', bell16: '|𝜙⁺⟩₁₆', bell25: '|𝜙⁺⟩₂₅', latex16: '𝜙^+', latex25: '𝜙^+' },
+                { sign: '+', bell16: '|𝜙⁻⟩₁₆', bell25: '|𝜙⁻⟩₂₅', latex16: '𝜙^-', latex25: '𝜙^-' },
+                { sign: '+', bell16: '|𝜓⁺⟩₁₆', bell25: '|𝜓⁺⟩₂₅', latex16: '𝜓^+', latex25: '𝜓^+' },
+                { sign: '-', bell16: '|𝜓⁻⟩₁₆', bell25: '|𝜓⁻⟩₂₅', latex16: '𝜓^-', latex25: '𝜓^-' }
             ]
         },
         '01': {
-            encodedLatex: '\\Psi^+',
+            encodedLatex: '𝜓^+',
             terms: [
-                { sign: '+', bell16: '|Φ⁺⟩₁₆', bell25: '|Φ⁻⟩₂₅', latex16: '\\Phi^+', latex25: '\\Phi^-' },
-                { sign: '-', bell16: '|Φ⁻⟩₁₆', bell25: '|Φ⁺⟩₂₅', latex16: '\\Phi^-', latex25: '\\Phi^+' },
-                { sign: '-', bell16: '|Ψ⁺⟩₁₆', bell25: '|Ψ⁻⟩₂₅', latex16: '\\Psi^+', latex25: '\\Psi^-' },
-                { sign: '+', bell16: '|Ψ⁻⟩₁₆', bell25: '|Ψ⁺⟩₂₅', latex16: '\\Psi^-', latex25: '\\Psi^+' }
+                { sign: '+', bell16: '|𝜙⁺⟩₁₆', bell25: '|𝜙⁻⟩₂₅', latex16: '𝜙^+', latex25: '𝜙^-' },
+                { sign: '-', bell16: '|𝜙⁻⟩₁₆', bell25: '|𝜙⁺⟩₂₅', latex16: '𝜙^-', latex25: '𝜙^+' },
+                { sign: '-', bell16: '|𝜓⁺⟩₁₆', bell25: '|𝜓⁻⟩₂₅', latex16: '𝜓^+', latex25: '𝜓^-' },
+                { sign: '+', bell16: '|𝜓⁻⟩₁₆', bell25: '|𝜓⁺⟩₂₅', latex16: '𝜓^-', latex25: '𝜓^+' }
             ]
         },
         '10': {
-            encodedLatex: '\\Phi^+',
+            encodedLatex: '𝜙^+',
             terms: [
-                { sign: '-', bell16: '|Φ⁺⟩₁₆', bell25: '|Ψ⁻⟩₂₅', latex16: '\\Phi^+', latex25: '\\Psi^-' },
-                { sign: '-', bell16: '|Φ⁻⟩₁₆', bell25: '|Ψ⁺⟩₂₅', latex16: '\\Phi^-', latex25: '\\Psi^+' },
-                { sign: '+', bell16: '|Ψ⁺⟩₁₆', bell25: '|Φ⁻⟩₂₅', latex16: '\\Psi^+', latex25: '\\Phi^-' },
-                { sign: '+', bell16: '|Ψ⁻⟩₁₆', bell25: '|Φ⁺⟩₂₅', latex16: '\\Psi^-', latex25: '\\Phi^+' }
+                { sign: '-', bell16: '|𝜙⁺⟩₁₆', bell25: '|𝜓⁻⟩₂₅', latex16: '𝜙^+', latex25: '𝜓^-' },
+                { sign: '-', bell16: '|𝜙⁻⟩₁₆', bell25: '|𝜓⁺⟩₂₅', latex16: '𝜙^-', latex25: '𝜓^+' },
+                { sign: '+', bell16: '|𝜓⁺⟩₁₆', bell25: '|𝜙⁻⟩₂₅', latex16: '𝜓^+', latex25: '𝜙^-' },
+                { sign: '+', bell16: '|𝜓⁻⟩₁₆', bell25: '|𝜙⁺⟩₂₅', latex16: '𝜓^-', latex25: '𝜙^+' }
             ]
         },
         '11': {
-            encodedLatex: '\\Phi^-',
+            encodedLatex: '𝜙^-',
             encodedPhase: '-',
             terms: [
-                { sign: '+', bell16: '|Φ⁺⟩₁₆', bell25: '|Ψ⁺⟩₂₅', latex16: '\\Phi^+', latex25: '\\Psi^+' },
-                { sign: '+', bell16: '|Φ⁻⟩₁₆', bell25: '|Ψ⁻⟩₂₅', latex16: '\\Phi^-', latex25: '\\Psi^-' },
-                { sign: '-', bell16: '|Ψ⁺⟩₁₆', bell25: '|Φ⁺⟩₂₅', latex16: '\\Psi^+', latex25: '\\Phi^+' },
-                { sign: '-', bell16: '|Ψ⁻⟩₁₆', bell25: '|Φ⁻⟩₂₅', latex16: '\\Psi^-', latex25: '\\Phi^-' }
+                { sign: '+', bell16: '|𝜙⁺⟩₁₆', bell25: '|𝜓⁺⟩₂₅', latex16: '𝜙^+', latex25: '𝜓^+' },
+                { sign: '+', bell16: '|𝜙⁻⟩₁₆', bell25: '|𝜓⁻⟩₂₅', latex16: '𝜙^-', latex25: '𝜓^-' },
+                { sign: '-', bell16: '|𝜓⁺⟩₁₆', bell25: '|𝜙⁺⟩₂₅', latex16: '𝜓^+', latex25: '𝜙^+' },
+                { sign: '-', bell16: '|𝜓⁻⟩₁₆', bell25: '|𝜙⁻⟩₂₅', latex16: '𝜓^-', latex25: '𝜙^-' }
             ]
         }
     };
 
     const initialEntanglementPairs = [
-        { line: 'line12', tag: 'etag12', a: 'q1', b: 'q2', label: '\\( |\\Psi^-\\rangle_{12} \\)', tagOffsetY: 10 },
-        { line: 'line34', tag: 'etag34', a: 'q3', b: 'q4', label: '\\( |\\Psi^-\\rangle_{34} \\)', tagOffsetY: 10 },
-        { line: 'line56', tag: 'etag56', a: 'q5', b: 'q6', label: '\\( |\\Psi^-\\rangle_{56} \\)', tagOffsetY: 10 }
+        { line: 'line12', tag: 'etag12', a: 'q1', b: 'q2', label: '\\( |𝜓^-\\rangle_{12} \\)', tagOffsetY: 10 },
+        { line: 'line34', tag: 'etag34', a: 'q3', b: 'q4', label: '\\( |𝜓^-\\rangle_{34} \\)', tagOffsetY: 10 },
+        { line: 'line56', tag: 'etag56', a: 'q5', b: 'q6', label: '\\( |𝜓^-\\rangle_{56} \\)', tagOffsetY: 10 }
     ];
 
     let linePairs = [...initialEntanglementPairs];
@@ -306,7 +309,7 @@
         hintTitle.innerText = 'Entanglement Swapping: 1256 → 1625';
         hintText.innerHTML = String.raw`
             <div class="swap-formula">
-                <div class="swap-line">\( ${encodedState}|\Psi^-\rangle_{56} \)</div>
+                <div class="swap-line">\( ${encodedState}|𝜓^-\rangle_{56} \)</div>
                 <div class="swap-line swap-inline">
                     <span class="swap-prefix">\( =\frac{1}{2}( \)</span>
                     <span class="swap-terms">
@@ -317,7 +320,7 @@
                     </span>
                     <span class="swap-suffix">\( ) \)</span>
                 </div>
-                <div class="swap-line">\( ${encodedState}|\Psi^-\rangle_{34}|\Psi^-\rangle_{56}\Rightarrow |Bell\rangle_{16}|\Psi^-\rangle_{34}|Bell\rangle_{25} \)</div>
+                <div class="swap-line">\( ${encodedState}|𝜓^-\rangle_{34}|𝜓^-\rangle_{56}\Rightarrow |Bell\rangle_{16}|𝜓^-\rangle_{34}|Bell\rangle_{25} \)</div>
             </div>`;
 
         if (window.MathJax) {
@@ -355,8 +358,8 @@
         hintText.innerHTML = String.raw`
             <div class="encode-formula">
                 <div class="swap-line"><b>Target Particle:</b> 1　<b>Operation:</b> ${operation} (${cfg.op})</div>
-                <div class="swap-line">\( ${cfg.op}_1|\Psi^-\rangle_{12}=${encodedState} \)</div>
-                <div class="swap-line">\( |\psi_{\text{encoded}}\rangle=${encodedState}\otimes|\Psi^-\rangle_{34} \)</div>
+                <div class="swap-line">\( ${cfg.op}_1|𝜓^-\rangle_{12}=${encodedState} \)</div>
+                <div class="swap-line">\( |𝜓_{\text{encoded}}\rangle=${encodedState}\otimes|𝜓^-\rangle_{34} \)</div>
             </div>`;
         if (window.MathJax) MathJax.typesetPromise([hintText]);
     }
@@ -475,9 +478,9 @@
 
     function forceInitialEntanglement() {
         setEntanglementPairs([
-            { line: 'line12', tag: 'etag12', a: 'q1', b: 'q2', label: '\\( |\\Psi^-\\rangle_{12} \\)', tagOffsetY: 10 },
-            { line: 'line34', tag: 'etag34', a: 'q3', b: 'q4', label: '\\( |\\Psi^-\\rangle_{34} \\)', tagOffsetY: 10 },
-            { line: 'line56', tag: 'etag56', a: 'q5', b: 'q6', label: '\\( |\\Psi^-\\rangle_{56} \\)', tagOffsetY: 10 }
+            { line: 'line12', tag: 'etag12', a: 'q1', b: 'q2', label: '\\( |𝜓^-\\rangle_{12} \\)', tagOffsetY: 10 },
+            { line: 'line34', tag: 'etag34', a: 'q3', b: 'q4', label: '\\( |𝜓^-\\rangle_{34} \\)', tagOffsetY: 10 },
+            { line: 'line56', tag: 'etag56', a: 'q5', b: 'q6', label: '\\( |𝜓^-\\rangle_{56} \\)', tagOffsetY: 10 }
         ]);
         resetPairVisibility();
         updateEntangleLines();
@@ -520,11 +523,12 @@
             forceInitialDetectingEntanglement();
             if (step4Img) step4Img.src = 'pictures/zm-4-d.png';
             badge.innerText = 'Detecting Mode';
+            badge.classList.add('corner');
             badge.style.borderColor = 'var(--detect)';
             badge.style.color = 'var(--detect)';
             header.innerText = 'STEP 4 : MEASURE';
             hintTitle.innerText = 'Detecting Measurement';
-            hintText.innerText = 'Alice chooses Z/X basis and measures q1,q6. Bob measures q2 and Charlie measures q5 with the same basis.';
+            hintText.innerHTML = `Alice chooses Z/X basis and measures ${qChip('q1')},${qChip('q6')}. Bob measures ${qChip('q2')} and Charlie measures ${qChip('q5')} with the same basis.`;
 
             panel.classList.add('detecting-panel');
             panel.innerHTML = `
@@ -545,6 +549,7 @@
             forceInitialEntanglement();
             if (step4Img) step4Img.src = 'pictures/zm-4-m.png';
             badge.innerText = 'Message Mode';
+            badge.classList.remove('corner');
             badge.style.borderColor = 'var(--message)';
             badge.style.color = 'var(--message)';
             header.innerText = 'STEP 4 : ENCODE + ANNOUNCE';
@@ -720,12 +725,17 @@
 
         return String.raw`
             <div class="detecting-bottom-formula">
-                \( |\Psi^-\rangle_{${pairLabel}}=\frac{1}{\sqrt{2}}( \)
+                \( |𝜓^-\rangle_{${pairLabel}}=\frac{1}{\sqrt{2}}( \)
                 ${firstTerm}
                 \( - \)
                 ${secondTerm}
                 \( ) \)
             </div>`;
+    }
+
+    function qChip(id) {
+        const owner = (id === 'q2') ? ' owner-bob' : (id === 'q5' ? ' owner-charlie' : '');
+        return `<span class="hint-q-chip${owner}">${id}</span>`;
     }
 
     function renderDetectingHint(stage, d = detectingPrepared) {
@@ -741,55 +751,55 @@
         if (stage === 'initial') {
             html = String.raw`
                 <div class="detecting-hint">
-                    <div class="detecting-note">Alice chooses <b>${d.basis}</b> basis and will measure q1 and q6. Bob measures q2 and Charlie measures q5 with the same basis.</div>
+                    <div class="detecting-note">Alice chooses <b>${d.basis}</b> basis and will measure ${qChip('q1')} and ${qChip('q6')}. Bob measures ${qChip('q2')} and Charlie measures ${qChip('q5')} with the same basis.</div>
                     ${renderPsiFormula('12')}
                 </div>`;
         } else if (stage === 'q1') {
             html = String.raw`
                 <div class="detecting-hint">
-                    <div class="detecting-note">Alice measures <b>q1</b> using <b>${d.basis}</b> basis and gets <span class="detecting-highlight">${d.aliceQ1}</span>.</div>
+                    <div class="detecting-note">Alice measures ${qChip('q1')} using <b>${d.basis}</b> basis and gets <span class="detecting-highlight">${d.aliceQ1}</span>.</div>
                     ${renderPsiFormula('12', d.aliceQ1, d.bobQ2)}
                 </div>`;
         } else if (stage === 'announce-bob') {
             html = String.raw`
                 <div class="detecting-hint">
-                    <div class="detecting-note">Alice sends the <b>${d.basis}</b> basis to Bob so he can measure q2 with the same basis.</div>
+                    <div class="detecting-note">Alice sends the <b>${d.basis}</b> basis to Bob so he can measure ${qChip('q2')} with the same basis.</div>
                     ${renderPsiFormula('12', d.aliceQ1, d.bobQ2)}
                 </div>`;
         } else if (stage === 'q2') {
             html = String.raw`
                 <div class="detecting-hint">
-                    <div class="detecting-note">Bob measures <b>q2</b> using <b>${d.basis}</b> basis and gets <span class="detecting-highlight">${d.bobQ2}</span>.</div>
+                    <div class="detecting-note">Bob measures ${qChip('q2')} using <b>${d.basis}</b> basis and gets <span class="detecting-highlight">${d.bobQ2}</span>.</div>
                     ${renderPsiFormula('12', d.aliceQ1, d.bobQ2)}
                 </div>`;
         } else if (stage === 'report-bob') {
             html = String.raw`
                 <div class="detecting-hint">
-                    <div class="detecting-note">Bob reports his result to Alice. q1 and q2 should be opposite in \( |\Psi^-\rangle_{12} \).</div>
+                    <div class="detecting-note">Bob reports his result to Alice. ${qChip('q1')} and ${qChip('q2')} should be opposite in \( |𝜓^-\rangle_{12} \).</div>
                     ${renderPsiFormula('12', d.aliceQ1, d.bobQ2)}
                 </div>`;
         } else if (stage === 'q6') {
             html = String.raw`
                 <div class="detecting-hint">
-                    <div class="detecting-note">Alice measures <b>q6</b> using <b>${d.basis}</b> basis and gets <span class="detecting-highlight">${d.aliceQ6}</span>.</div>
+                    <div class="detecting-note">Alice measures ${qChip('q6')} using <b>${d.basis}</b> basis and gets <span class="detecting-highlight">${d.aliceQ6}</span>.</div>
                     ${renderPsiFormula('56', d.charlieQ5, d.aliceQ6)}
                 </div>`;
         } else if (stage === 'announce-charlie') {
             html = String.raw`
                 <div class="detecting-hint">
-                    <div class="detecting-note">Alice sends the <b>${d.basis}</b> basis to Charlie so he can measure q5.</div>
+                    <div class="detecting-note">Alice sends the <b>${d.basis}</b> basis to Charlie so he can measure ${qChip('q5')}.</div>
                     ${renderPsiFormula('56', d.charlieQ5, d.aliceQ6)}
                 </div>`;
         } else if (stage === 'q5') {
             html = String.raw`
                 <div class="detecting-hint">
-                    <div class="detecting-note">Charlie measures <b>q5</b> using <b>${d.basis}</b> basis and gets <span class="detecting-highlight">${d.charlieQ5}</span>.</div>
+                    <div class="detecting-note">Charlie measures ${qChip('q5')} using <b>${d.basis}</b> basis and gets <span class="detecting-highlight">${d.charlieQ5}</span>.</div>
                     ${renderPsiFormula('56', d.charlieQ5, d.aliceQ6)}
                 </div>`;
         } else if (stage === 'report-charlie') {
             html = String.raw`
                 <div class="detecting-hint">
-                    <div class="detecting-note">Charlie reports his result to Alice. q5 and q6 should be opposite in \( |\Psi^-\rangle_{56} \).</div>
+                    <div class="detecting-note">Charlie reports his result to Alice. ${qChip('q5')} and ${qChip('q6')} should be opposite in \( |𝜓^-\rangle_{56} \).</div>
                     ${renderPsiFormula('56', d.charlieQ5, d.aliceQ6)}
                 </div>`;
         } else if (stage === 'done') {
@@ -969,7 +979,7 @@
         markMeasured(['q1','q6']);
         setEntanglementPairs([
             { line: 'line12', tag: 'etag12', a: 'q1', b: 'q6', label: '\\( |' + selectedSwap.latex16 + '\\rangle_{16} \\)', shape: 'straight', tagOffsetY: 50 },
-            { line: 'line34', tag: 'etag34', a: 'q3', b: 'q4', label: '\\( |\\Psi^-\\rangle_{34} \\)', shape: 'straight', tagOffsetY: 4 },
+            { line: 'line34', tag: 'etag34', a: 'q3', b: 'q4', label: '\\( |𝜓^-\\rangle_{34} \\)', shape: 'straight', tagOffsetY: 4 },
             { line: 'line56', tag: 'etag56', a: 'q2', b: 'q5', label: '\\( |' + selectedSwap.latex25 + '\\rangle_{25} \\)', shape: 'arc', tagOffsetY: 4 }
         ]);
 
@@ -998,8 +1008,8 @@
         document.getElementById('next-btn').disabled = false;
     }
 
-    function prevStep() { window.location.href = 'ZMstep2.html'; }
-    function nextStep() { window.location.href = 'ZMstep4.html'; }
+    function prevStep() { window.location.href = '20260407/ZMstep2.html'; }
+    function nextStep() { window.location.href = '20260407/ZMstep4.html'; }
 </script>
 
 <script>

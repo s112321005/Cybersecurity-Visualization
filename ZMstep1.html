@@ -24,9 +24,9 @@
         
         .party-head{position:absolute;display:flex;align-items:center;justify-content:center;z-index:5}
         .party-head img{width:128px;height:auto;display:block}
-        .party-alice{left:50%;top:66px;transform:translateX(-50%)}
-        .party-bob{left:125px;top:296px}
-        .party-charlie{right:125px;top:296px}
+        .party-alice{left:50%;top:86px;transform:translateX(-50%)}
+        .party-bob{left:125px;top:316px}
+        .party-charlie{right:125px;top:316px}
 
         .distribute-wrap{position:absolute;left:50%;top:18px;transform:translateX(-50%);z-index:6}
         .action-btn{padding:10px 26px}
@@ -36,28 +36,28 @@
 
         .qubit{position:absolute;z-index:4;width:44px;height:44px;border-radius:50%;background:var(--qubit-fill);border:4px solid var(--qubit-border);display:flex;align-items:center;justify-content:center;font-weight:900;color:#1f2937;box-shadow:0 0 18px rgba(84,159,208,.20);transition:left 1.35s cubic-bezier(.22,.8,.22,1),top 1.35s cubic-bezier(.22,.8,.22,1),transform .25s ease,background .25s ease,color .25s ease,border-color .25s ease,box-shadow .25s ease}
         .qubit:hover{transform:scale(1.06)}
-        .qubit.q1{left:303px;top:212px}
-        .qubit.q2{left:357px;top:212px}
-        .qubit.q3{left:451px;top:212px}
-        .qubit.q4{left:505px;top:212px}
-        .qubit.q5{left:599px;top:212px}
-        .qubit.q6{left:653px;top:212px}
-        .qubit.keep-alice-q1{left:449px;top:184px}
-        .qubit.keep-alice-q6{left:507px;top:184px}
-        .qubit.to-bob-q2{left:138px;top:412px}
-        .qubit.to-bob-q3{left:196px;top:412px}
-        .qubit.to-charlie-q4{left:748px;top:412px}
-        .qubit.to-charlie-q5{left:806px;top:412px}
+        .qubit.q1{left:303px;top:232px}
+        .qubit.q2{left:357px;top:232px}
+        .qubit.q3{left:451px;top:232px}
+        .qubit.q4{left:505px;top:232px}
+        .qubit.q5{left:599px;top:232px}
+        .qubit.q6{left:653px;top:232px}
+        .qubit.keep-alice-q1{left:449px;top:204px}
+        .qubit.keep-alice-q6{left:507px;top:204px}
+        .qubit.to-bob-q2{left:138px;top:432px}
+        .qubit.to-bob-q3{left:196px;top:432px}
+        .qubit.to-charlie-q4{left:748px;top:432px}
+        .qubit.to-charlie-q5{left:806px;top:432px}
         .qubit.owner-alice{background:var(--qubit-fill);border-color:var(--alice-color);box-shadow:0 0 18px rgba(0,74,173,.28)}
         .qubit.owner-bob{background:var(--qubit-fill);border-color:var(--bob-color);box-shadow:0 0 18px rgba(76,128,197,.28)}
         .qubit.owner-charlie{background:var(--qubit-fill);border-color:var(--charlie-color);box-shadow:0 0 18px rgba(71,140,234,.28)}
 
-        .pair-oval{position:absolute;z-index:3;pointer-events:none;top:202px;width:112px;height:60px;border:3px dashed var(--primary-blue);border-radius:999px;background:rgba(84,159,208,.05);transition:opacity .35s ease,transform .35s ease}
+        .pair-oval{position:absolute;z-index:3;pointer-events:none;top:222px;width:112px;height:60px;border:3px dashed var(--primary-blue);border-radius:999px;background:rgba(84,159,208,.05);transition:opacity .35s ease,transform .35s ease}
         .pair-oval.p12{left:295px}.pair-oval.p34{left:443px}.pair-oval.p56{left:591px}
         .pair-oval.hide{opacity:0;transform:scale(.95)}
 
         .pair-tag{position:absolute;z-index:3;pointer-events:none;padding:5px 12px;border-radius:999px;background:white;border:2px solid #D7E9F7;color:#667085;font-weight:900;font-size:.86rem;white-space:nowrap;box-shadow:0 4px 10px rgba(0,0,0,.04);transition:opacity .35s ease,transform .35s ease}.pair-tag.hide{opacity:0;transform:scale(.95)}
-        .tag12{left:307px;top:270px}.tag34{left:455px;top:270px}.tag56{left:603px;top:270px}
+        .tag12{left:307px;top:290px}.tag34{left:455px;top:290px}.tag56{left:603px;top:290px}
 
         .ent-line{position:absolute;height:0;border-top:4px dashed var(--primary-blue);opacity:0;transform-origin:left center;transition:opacity .35s ease;z-index:2;pointer-events:none}
         .ent-line.show{opacity:1}
@@ -73,16 +73,18 @@
         .legend-line{display:flex;align-items:center;justify-content:center;gap:14px;flex-wrap:wrap;width:100%}
         .legend-title{margin:0;color:var(--primary-blue);font-size:.94rem;font-weight:900;flex:0 0 auto;white-space:nowrap}
         .legend-row{display:flex;align-items:center;gap:8px;margin:0;color:#556070;font-weight:700;font-size:.86rem;line-height:1.2;flex:0 0 auto;white-space:nowrap}
-        .legend-owner-dots{display:flex;gap:6px;align-items:center;flex:0 0 auto}
-        .legend-owner-dots span{width:16px;height:16px;border-radius:50%;display:inline-block;background:var(--qubit-fill);border:3px solid var(--alice-color)}
-        .legend-owner-dots span:nth-child(2){border-color:var(--bob-color)}
-        .legend-owner-dots span:nth-child(3){border-color:var(--charlie-color)}
+        .legend-owner-list{display:flex;gap:12px;align-items:center;justify-content:center;flex-wrap:wrap}
+        .legend-owner-group{display:inline-flex;align-items:center;gap:5px;color:#556070;font-weight:800}
+        .legend-q-chip,.hint-q-chip{width:24px;height:24px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;background:var(--qubit-fill);border:3px solid var(--alice-color);color:#1f2937;font-size:.68rem;font-weight:900;line-height:1;vertical-align:middle}
+        .legend-q-chip.owner-bob,.hint-q-chip.owner-bob{border-color:var(--bob-color)}
+        .legend-q-chip.owner-charlie,.hint-q-chip.owner-charlie{border-color:var(--charlie-color)}
+        .hint-q-chip{margin:0 1px}
         .legend-sample-line{width:34px;border-top:4px dashed var(--primary-blue);flex:0 0 auto}
         .legend-note{margin:0;color:#7A8799;font-size:.82rem;font-weight:700;line-height:1.2;white-space:nowrap}
 
         .party-note{position:absolute;width:170px;text-align:center;color:#6B7280;font-size:.88rem;font-weight:800;line-height:1.35;z-index:5}
-        .note-bob{left:102px;top:434px}
-        .note-charlie{right:102px;top:434px}
+        .note-bob{left:102px;top:454px}
+        .note-charlie{right:102px;top:454px}
         .party-note.hide{display:none}
 
         .pingpong-image-dock{position:fixed;right:16px;top:0;width:430px;height:100vh;z-index:900;pointer-events:none;display:flex;justify-content:center;overflow:visible;isolation:isolate;font-family:'Arial Rounded MT Bold','Arial Rounded MT','Arial',sans-serif}
@@ -104,7 +106,7 @@
         .mini-flow{display:flex;flex-direction:column;gap:8px;margin-top:4px}.mini-flow-row{display:flex;align-items:center;gap:8px;background:#f8fbff;border:1px solid #dbeafe;border-radius:12px;padding:8px 10px;font-weight:900;color:#444}
 
         @media (min-width:1180px){body{padding-right:450px!important}}
-        @media (max-width:1179px){body{padding-right:20px!important}.pingpong-image-dock{position:relative;right:auto;top:auto;width:min(94vw,840px);height:320px;margin:18px auto 10px}.pingpong-image-viewport{width:100%;height:320px}.pingpong-image-viewport::before,.pingpong-image-viewport::after{height:320px;width:10px;z-index:0}.pingpong-image-window{width:100%;height:320px;margin-left:0}.pingpong-image-list{flex-direction:row;align-items:center;gap:14px;width:max-content;height:320px;padding:0 24px}.pingpong-image-card{width:270px;min-height:52px}.pingpong-image-card.is-current{width:305px;min-height:250px;margin:0 10px}.main-card{height:760px}.party-alice{top:66px}.party-bob{left:70px;top:310px}.party-charlie{right:70px;top:310px}.distribute-wrap{left:50%;top:18px;transform:translateX(-50%)}.qubit.q1{left:201px;top:202px}.qubit.q2{left:255px;top:202px}.qubit.q3{left:341px;top:202px}.qubit.q4{left:395px;top:202px}.qubit.q5{left:481px;top:202px}.qubit.q6{left:535px;top:202px}.pair-oval.p12{left:193px;top:192px}.pair-oval.p34{left:333px;top:192px}.pair-oval.p56{left:473px;top:192px}.tag12{left:205px;top:260px}.tag34{left:345px;top:260px}.tag56{left:485px;top:260px}.qubit.keep-alice-q1{left:336px;top:188px}.qubit.keep-alice-q6{left:394px;top:188px}.qubit.to-bob-q2{left:84px;top:432px}.qubit.to-bob-q3{left:140px;top:432px}.qubit.to-charlie-q4{left:594px;top:432px}.qubit.to-charlie-q5{left:652px;top:432px}.legend-box{position:absolute;left:50%;top:575px;transform:translateX(-50%);width:82%;max-width:none;border-radius:18px;margin:0;padding:8px 12px}.legend-line{justify-content:flex-start;gap:10px}.distribute-wrap{top:18px}.party-note{width:150px;font-size:.8rem}.note-bob{left:42px;top:448px}.note-charlie{right:42px;top:448px}}
+        @media (max-width:1179px){body{padding-right:20px!important}.pingpong-image-dock{position:relative;right:auto;top:auto;width:min(94vw,840px);height:320px;margin:18px auto 10px}.pingpong-image-viewport{width:100%;height:320px}.pingpong-image-viewport::before,.pingpong-image-viewport::after{height:320px;width:10px;z-index:0}.pingpong-image-window{width:100%;height:320px;margin-left:0}.pingpong-image-list{flex-direction:row;align-items:center;gap:14px;width:max-content;height:320px;padding:0 24px}.pingpong-image-card{width:270px;min-height:52px}.pingpong-image-card.is-current{width:305px;min-height:250px;margin:0 10px}.main-card{height:760px}.party-alice{top:86px}.party-bob{left:70px;top:330px}.party-charlie{right:70px;top:330px}.distribute-wrap{left:50%;top:18px;transform:translateX(-50%)}.qubit.q1{left:201px;top:222px}.qubit.q2{left:255px;top:222px}.qubit.q3{left:341px;top:222px}.qubit.q4{left:395px;top:222px}.qubit.q5{left:481px;top:222px}.qubit.q6{left:535px;top:222px}.pair-oval.p12{left:193px;top:212px}.pair-oval.p34{left:333px;top:212px}.pair-oval.p56{left:473px;top:212px}.tag12{left:205px;top:280px}.tag34{left:345px;top:280px}.tag56{left:485px;top:280px}.qubit.keep-alice-q1{left:336px;top:208px}.qubit.keep-alice-q6{left:394px;top:208px}.qubit.to-bob-q2{left:84px;top:452px}.qubit.to-bob-q3{left:140px;top:452px}.qubit.to-charlie-q4{left:594px;top:452px}.qubit.to-charlie-q5{left:652px;top:452px}.legend-box{position:absolute;left:50%;top:575px;transform:translateX(-50%);width:82%;max-width:none;border-radius:18px;margin:0;padding:8px 12px}.legend-line{justify-content:flex-start;gap:10px}.distribute-wrap{top:18px}.party-note{width:150px;font-size:.8rem}.note-bob{left:42px;top:468px}.note-charlie{right:42px;top:468px}}
     </style>
 </head>
 <body>
@@ -164,7 +166,7 @@
         <div class="legend-box" aria-label="legend">
             <div class="legend-line">
                 <p class="legend-title">Legend</p>
-                <div class="legend-row"><div class="legend-owner-dots" aria-hidden="true"><span></span><span></span><span></span></div><div>Border color = owner</div></div>
+                <div class="legend-row"><div class="legend-owner-list" id="legend-owner-list"></div></div>
             </div>
             <div class="legend-line">
                 <div class="legend-row"><div class="legend-sample-line" aria-hidden="true"></div><div>Dashed line = entanglement</div></div>
@@ -173,7 +175,7 @@
 
         <div class="hint-box">
             <p class="hint-title" id="hint-title">Preparation</p>
-            <p class="hint-text" id="hint-text">Alice prepares three Bell pairs: (q1,q2), (q3,q4), and (q5,q6). Then she distributes q2,q3 to Bob and q4,q5 to Charlie.</p>
+            <p class="hint-text" id="hint-text">Alice prepares three Bell pairs: (<span class="hint-q-chip">q1</span>,<span class="hint-q-chip">q2</span>), (<span class="hint-q-chip">q3</span>,<span class="hint-q-chip">q4</span>), and (<span class="hint-q-chip">q5</span>,<span class="hint-q-chip">q6</span>). Then she distributes <span class="hint-q-chip">q2</span>,<span class="hint-q-chip">q3</span> to Bob and <span class="hint-q-chip">q4</span>,<span class="hint-q-chip">q5</span> to Charlie.</p>
     </div>
 </div>
 
@@ -184,7 +186,31 @@
         { line: 'line56', tag: 'etag56', a: 'q5', b: 'q6' }
     ];
 
+    function qChip(id, owner = 'alice') {
+        const ownerClass = owner === 'alice' ? '' : ' owner-' + owner;
+        return `<span class="hint-q-chip${ownerClass}">${id}</span>`;
+    }
+
+    function legendGroup(owner, label, ids) {
+        const ownerClass = owner === 'alice' ? '' : ' owner-' + owner;
+        const chips = ids.map(id => `<span class="legend-q-chip${ownerClass}">${id}</span>`).join('');
+        return `<div class="legend-owner-group"><b>${label}</b>${chips}</div>`;
+    }
+
+    function setLegend(distributed = false) {
+        const legend = document.getElementById('legend-owner-list');
+        if (!legend) return;
+        legend.innerHTML = distributed
+            ? [
+                legendGroup('alice', 'Alice', ['q1','q6']),
+                legendGroup('bob', 'Bob', ['q2','q3']),
+                legendGroup('charlie', 'Charlie', ['q4','q5'])
+            ].join('')
+            : legendGroup('alice', 'Alice', ['q1','q2','q3','q4','q5','q6']);
+    }
+
     document.addEventListener('DOMContentLoaded', () => {
+        setLegend(false);
         if (window.MathJax) MathJax.typesetPromise();
         window.addEventListener('resize', updateEntangleLines);
     });
@@ -241,9 +267,10 @@
         document.getElementById('q5').classList.add('to-charlie-q5','owner-charlie');
         ['oval12','oval34','oval56','tag12init','tag34init','tag56init'].forEach(id => document.getElementById(id).classList.add('hide'));
         ['line12','line34','line56','etag12','etag34','etag56'].forEach(id => document.getElementById(id).classList.add('show'));
+        setLegend(true);
         document.getElementById('step-title').innerText = 'STEP 2 : DISTRIBUTE';
         document.getElementById('hint-title').innerText = 'Distribution';
-        document.getElementById('hint-text').innerText = 'Distribution complete. Alice keeps q1,q6. Bob receives q2,q3. Charlie receives q4,q5. Dashed lines show the original entanglement remains.';
+        document.getElementById('hint-text').innerHTML = `Distribution complete. Alice keeps ${qChip('q1')},${qChip('q6')}. Bob receives ${qChip('q2','bob')},${qChip('q3','bob')}. Charlie receives ${qChip('q4','charlie')},${qChip('q5','charlie')}. Dashed lines show the original entanglement remains.`;
         animateLineTracking(1450);
         setTimeout(() => {
             updateEntangleLines();
