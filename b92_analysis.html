@@ -234,7 +234,7 @@
                 <div class="character-avatar avatar-eve" style="left: 38%; width: 350px;"><img src="pictures/Eavesdropper.svg" alt="Eve" style="width:60px;"></div>
                 <div class="character-avatar avatar-bob" style="left: 72%; width: 228px;"><img src="pictures/cat_bob.svg" alt="Bob"></div>
 
-                <div class="result-header" style="position: absolute; top: 20px; left: 89%; z-index: 10; height: 80px; display: flex; align-items: center; justify-content: center; text-align: center; font-size: 1.2rem; font-weight: bold; margin: 0; line-height: 1.2;">Bob's<br>Measure</div>
+                <div class="result-header" style="position: absolute; top: 20px; left: 89%; z-index: 10; height: 80px; display: flex; align-items: center; justify-content: center; text-align: center; font-size: 1.2rem; font-weight: bold; margin: 0; line-height: 1.2;">Result</div>
                 <div style="position: absolute; top: 120px; left: 0; width: 100%; height: calc(100% - 120px);">
                     <svg class="arrows" style="width: 100%; height: 100%; position: absolute; z-index: 1;">
                         <defs>
@@ -601,15 +601,16 @@
             keyImg.src = isAliceZ ? "pictures/vertical.svg" : "pictures/diagonal.svg"; 
         }
         
-        let topDir = isAliceZ ? 'vertical' : 'diagonal';
-        let botDir = isAliceZ ? 'diagonal' : 'vertical';
 
         // 顏色判斷
-        let topColor = ((topDir === 'vertical' && isBobZ) || (topDir === 'diagonal' && !isBobZ)) ? 'b_' : 'gray_';
-        let botColor = ((botDir === 'vertical' && isBobZ) || (botDir === 'diagonal' && !isBobZ)) ? 'b_' : 'gray_';
 
-        if (bobSame) bobSame.src = `pictures/${topColor}${topDir}.svg`;
-        if (bobUnsame) bobUnsame.src = `pictures/${botColor}${botDir}.svg`;
+        if (isAliceZ) {
+            if (bobSame) bobSame.src = isSameBasis ? "pictures/b_vertical.svg" : "pictures/gray_vertical.svg";
+            if (bobUnsame) bobUnsame.src = !isSameBasis ? "pictures/b_diagonal.svg" : "pictures/gray_diagonal.svg";
+        } else {
+            if (bobSame) bobSame.src = isSameBasis ? "pictures/b_diagonal.svg" : "pictures/gray_diagonal.svg";
+            if (bobUnsame) bobUnsame.src = !isSameBasis ? "pictures/b_vertical.svg" : "pictures/gray_vertical.svg";
+        }
         
         // 更新線條與結果圓圈亮起狀態
         const aliceBasis = isAliceZ ? 'Z' : 'X';
@@ -647,6 +648,11 @@
         }
 
         // 2. 更新 Bob 的 6 個偏振器 (1, 3, 5 是上路；2, 4, 6 是下路)
+        function bobPolarizerName(direction) {
+            const colorPrefix = ((direction === 'vertical' && isBobZ) || (direction === 'diagonal' && !isBobZ)) ? 'b_' : 'gray_';
+            return `${colorPrefix}${direction}`;
+        }
+
         for (let i = 1; i <= 6; i++) {
             const img = document.querySelector(`#view-b92-eve-resend #bob-pol-${i}`);
             if (!img) continue;
@@ -662,9 +668,7 @@
             }
 
             // ▼▼▼ 根據 Bob 的選擇決定顏色：偏振方向與 Bob 選擇的 Basis 吻合則亮藍色，否則灰色 ▼▼▼
-            let colorPrefix = ((targetDir === 'vertical' && isBobZ) || (targetDir === 'diagonal' && !isBobZ)) ? 'b_' : 'gray_';
-
-            img.src = `pictures/${colorPrefix}${targetDir}.svg`;
+            img.src = `pictures/${bobPolarizerName(targetDir)}.svg`;
         }
 
         // --- 以下為原本的線條路徑與文字邏輯，保持不變 ---
@@ -863,11 +867,11 @@
 
         if (isAliceZ) {
             bobGroups.filter(group => group.eveState === '|→⟩').forEach(group => {
-                configureLowerBranchGroup(group, 'gray_vertical', 'b_diagonal', '|↖⟩', '|↗⟩');
+                configureLowerBranchGroup(group, bobPolarizerName('vertical'), bobPolarizerName('diagonal'), '|↖⟩', '|↗⟩');
             });
         } else {
             bobGroups.filter(group => group.eveState === '|↗⟩').forEach(group => {
-                configureLowerBranchGroup(group, 'gray_diagonal', 'b_vertical', '| ↑ ⟩', '|→⟩');
+                configureLowerBranchGroup(group, bobPolarizerName('diagonal'), bobPolarizerName('vertical'), '| ↑ ⟩', '|→⟩');
             });
         }
 
@@ -883,8 +887,8 @@
             const line9 = document.querySelector(bottomGroup.lines[2]);
 
             if (isAliceZ) {
-                if (topPol) { topPol.src = 'pictures/b_vertical.svg'; setInactiveState(topPol, false); }
-                if (bottomPol) { bottomPol.src = 'pictures/gray_diagonal.svg'; setInactiveState(bottomPol, true); }
+                if (topPol) { topPol.src = `pictures/${bobPolarizerName('vertical')}.svg`; setInactiveState(topPol, false); }
+                if (bottomPol) { bottomPol.src = `pictures/${bobPolarizerName('diagonal')}.svg`; setInactiveState(bottomPol, true); }
                 if (line7) line7.classList.remove('line-inactive');
                 if (line8) line8.classList.remove('line-inactive');
                 if (line9) line9.classList.add('line-inactive');
@@ -895,8 +899,8 @@
                 if (res8) setInactiveState(res8, false);
                 if (res9) setInactiveState(res9, true);
             } else {
-                if (topPol) { topPol.src = 'pictures/b_diagonal.svg'; setInactiveState(topPol, false); }
-                if (bottomPol) { bottomPol.src = 'pictures/gray_vertical.svg'; setInactiveState(bottomPol, true); }
+                if (topPol) { topPol.src = `pictures/${bobPolarizerName('diagonal')}.svg`; setInactiveState(topPol, false); }
+                if (bottomPol) { bottomPol.src = `pictures/${bobPolarizerName('vertical')}.svg`; setInactiveState(bottomPol, true); }
                 if (line7) line7.classList.remove('line-inactive');
                 if (line8) line8.classList.remove('line-inactive');
                 if (line9) line9.classList.add('line-inactive');
@@ -905,6 +909,38 @@
                 if (res9) setInactiveState(res9, true);
             }
         }
+
+        function setLineActiveByBobPath(lineNode, isActive) {
+            if (!lineNode) return;
+            if (isActive) {
+                lineNode.classList.remove('line-inactive');
+                lineNode.setAttribute('stroke-width', '3');
+            } else {
+                lineNode.classList.add('line-inactive');
+                lineNode.setAttribute('stroke-width', '3');
+            }
+        }
+
+        const targetBasisKeyword = isBobZ ? 'vertical' : 'diagonal';
+        const eveToBobLines = Array.from(document.querySelectorAll('#view-b92-eve-resend .eve-bob-line')).slice(0, 6);
+        const polarizerLineMap = [
+            { polarizer: '#view-b92-eve-resend #bob-pol-1', eveLineIndex: 0, resultLines: ['#view-b92-eve-resend #bob-result-line-1'] },
+            { polarizer: '#view-b92-eve-resend #bob-pol-2', eveLineIndex: 1, resultLines: ['#view-b92-eve-resend #bob-result-line-2', '#view-b92-eve-resend #bob-result-line-3'] },
+            { polarizer: '#view-b92-eve-resend #bob-pol-3', eveLineIndex: 2, resultLines: ['#view-b92-eve-resend #bob-result-line-4'] },
+            { polarizer: '#view-b92-eve-resend #bob-pol-4', eveLineIndex: 3, resultLines: ['#view-b92-eve-resend #bob-result-line-5', '#view-b92-eve-resend #bob-result-line-6'] },
+            { polarizer: '#view-b92-eve-resend #bob-pol-5', eveLineIndex: 4, resultLines: ['#view-b92-eve-resend #bob-result-line-7', '#view-b92-eve-resend #bob-result-line-8'] },
+            { polarizer: '#view-b92-eve-resend #bob-pol-6', eveLineIndex: 5, resultLines: ['#view-b92-eve-resend #bob-result-line-9'] }
+        ];
+
+        polarizerLineMap.forEach(({ polarizer, eveLineIndex, resultLines }) => {
+            const polarizerNode = document.querySelector(polarizer);
+            const isBobChosenPath = !!(polarizerNode && polarizerNode.src.includes(targetBasisKeyword));
+            setLineActiveByBobPath(eveToBobLines[eveLineIndex], isBobChosenPath);
+            resultLines.forEach(lineSelector => {
+                const lineNode = document.querySelector(lineSelector);
+                setLineActiveByBobPath(lineNode, isBobChosenPath);
+            });
+        });
     }
 </script>
 </body>
