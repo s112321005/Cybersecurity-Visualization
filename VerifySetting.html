@@ -160,7 +160,7 @@
         const quantumData = [
             { mode: "QKD", fullName: "Quantum Key Distribution", description: "QKD：Jointly Establish a Secure Key", protocols: [{ name: "BB84", link: "bb84_analysis.html" }, { name: "B92", link: "b92_analysis.html" }]},
             { mode: "QSS", fullName: "Quantum Secret Sharing", description: "QSS：Secret Sharing, Cooperative Recovery", protocols: [ { name: "ZhangLiMan", link: "zlm_analysis.html" }, { name: "ZhangMan", link: "zm_analysis.html" }]},
-            { mode: "QSDC", fullName: "Quantum Security Direct Communication", description: "QSDC：Secure Quantum Message Transmission", protocols: [ { name: "pingpong", link: "pingpong_analysis.html" }, { name: "im_pingpong", link: "im_pingpong_analysis.html" }]}
+            { mode: "QSDC", fullName: "Quantum Security Direct Communication", description: "QSDC：Secure Quantum Message Transmission", protocols: [ { name: "pingpong", link: "pingpong_analysis.html" }]}
         ];
         
         let modeIdx = 0, protoIdx = 0, isThrottled = false;
@@ -179,7 +179,6 @@
             ZhangLiMan: "Zhang Li-Man",
             ZhangMan: "Zhang-Man",
             pingpong: "Ping-Pong",
-            im_pingpong: "Improved Ping-Pong"
         };
         
         const visitedModes = new Set();
