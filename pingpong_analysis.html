@@ -106,6 +106,17 @@
         .theme-red .control-panel:not(.disabled) .pill-radio input:checked + span { background-color: #D32F2F !important; border-color: #D32F2F !important; color: white !important; }
         .theme-red .control-panel:not(.disabled) .setting-title::before { background-color: #e57373 !important; }
         #settings-overlay input:disabled + span { opacity: 0.45; cursor: not-allowed; filter: grayscale(0.35); }
+
+        .settings-mode-row { display: flex; justify-content: center; align-items: center; width: 100%; margin: 0 0 24px; padding: 0; box-sizing: border-box; }
+        .modern-toggle { cursor: pointer; display: inline-block; user-select: none; -webkit-tap-highlight-color: transparent; }
+        .modern-toggle input { display: none; }
+        .toggle-track { position: relative; display: grid; grid-template-columns: 1fr 1fr; align-items: center; width: 330px; height: 52px; background-color: #eef7ff; border: 2px solid var(--primary-blue); border-radius: 99px; padding: 4px; box-shadow: inset 0 2px 5px rgba(0,0,0,0.05); overflow: hidden; }
+        .toggle-text { position: relative; z-index: 2; display: flex; align-items: center; justify-content: center; height: 100%; padding: 0 12px; font-size: 0.9rem; font-weight: 800; color: var(--primary-blue); transition: color 0.3s cubic-bezier(0.4,0.0,0.2,1); text-align: center; letter-spacing: 0.02em; white-space: nowrap; }
+        .modern-toggle input:not(:checked) ~ .toggle-track .text-left { color: white; }
+        .modern-toggle input:checked ~ .toggle-track .text-right { color: white; }
+        .toggle-thumb { position: absolute; top: 4px; left: 4px; width: calc((100% - 8px) / 2); height: calc(100% - 8px); background-color: var(--primary-blue); border-radius: 99px; transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1); box-shadow: 0 3px 8px rgba(84,159,208,0.3); z-index: 1; }
+        .modern-toggle input:checked ~ .toggle-track .toggle-thumb { transform: translateX(100%); }
+        #settings-overlay select:disabled { opacity: 0.45; cursor: not-allowed; filter: grayscale(0.35); }
         .apply-btn { background-color: #28a745; color: white; border: none; padding: 12px 50px; border-radius: 25px; font-size: 20px; font-weight: bold; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 10px rgba(40, 167, 69, 0.3); }
         .apply-btn:hover { background-color: #218838; transform: scale(1.05); }
     </style>
@@ -119,6 +130,18 @@
 </div> 
 <div id="settings-overlay" class="settings-overlay">
     <div class="overlay-container">       
+        <div class="settings-mode-row">
+            <div>
+                <label class="modern-toggle" aria-label="Toggle paper or free mode">
+                    <input type="checkbox" id="paper-mode-toggle" checked onchange="handlePaperModeToggle(this.checked)">
+                    <div class="toggle-track">
+                        <span class="toggle-text text-left">Free Mode</span>
+                        <span class="toggle-text text-right">Paper Mode</span>
+                        <div class="toggle-thumb"></div>
+                    </div>
+                </label>
+            </div>
+        </div>
         <div class="main-grid" id="qsdc-interface">
             <div class="character-col" id="bob-col">
                 <img src="pictures/cat_bob.svg" class="character-img" alt="Bob">
@@ -158,7 +181,6 @@
                         <label class="pill-radio"><input type="radio" name="op_msg_0" value="X"><span>X</span></label>
                         <label class="pill-radio"><input type="radio" name="op_msg_0" value="Y"><span>Y</span></label>
                         <label class="pill-radio"><input type="radio" name="op_msg_0" value="Z"><span>Z</span></label>
-                        <label class="pill-radio"><input type="radio" name="op_msg_0" value="H"><span>H</span></label>
                     </div>
                     <div class="setting-title">Message:1 Operator</div>
                     <div class="flex-row" style="gap: 4px; flex-wrap: wrap;">
@@ -166,7 +188,6 @@
                         <label class="pill-radio"><input type="radio" name="op_msg_1" value="X" checked><span>X</span></label>
                         <label class="pill-radio"><input type="radio" name="op_msg_1" value="Y"><span>Y</span></label>
                         <label class="pill-radio"><input type="radio" name="op_msg_1" value="Z"><span>Z</span></label>
-                        <label class="pill-radio"><input type="radio" name="op_msg_1" value="H"><span>H</span></label>
                     </div>
                 </div>
             </div>
@@ -217,11 +238,17 @@
     </div>
 </div>
 <script>
-    let ppSettings = {
-        "bob": { "particle": "Bell", "state": "psi_plus", "basis": "Z" },
-        "alice": { "particle": "single", "basis": "Z", "msg0Op": "I", "msg1Op": "X" },
-        "eve": { "isOn": false, "attack": "Intercept-resend" }
-    };
+    function getDefaultPPSettings() {
+        return {
+            bob: { particle: "Bell", state: "psi_plus", basis: "Z" },
+            alice: { particle: "single", basis: "Z", msg0Op: "I", msg1Op: "X" },
+            eve: { isOn: false, attack: "Intercept-resend" }
+        };
+    }
+    function cloneSettings(obj) { return JSON.parse(JSON.stringify(obj)); }
+    let paperMode = true;
+    let draftPaperMode = true;
+    let ppSettings = getDefaultPPSettings();
     let currentMode = 'control';
     function showTooltip(evt, text) {
         const tooltip = document.getElementById("prob-tooltip");
@@ -231,67 +258,133 @@
         tooltip.style.top = (evt.pageY + 15) + 'px';
     }
     function hideTooltip() { document.getElementById("prob-tooltip").style.opacity = '0'; }
-    document.getElementById('eve-status-toggle').addEventListener('change', function() {
+    function persistCurrentSettings() {
+        localStorage.setItem('qsdcSettings', JSON.stringify(ppSettings));
+        localStorage.setItem('pingpongPaperMode', paperMode ? 'paper' : 'free');
+    }
+    function setRadioValue(name, value) {
+        const target = document.querySelector(`input[name="${name}"][value="${value}"]`);
+        if (target) target.checked = true;
+    }
+    function sanitizeSettings(settings) {
+        const clean = cloneSettings(settings || getDefaultPPSettings());
+        const allowedOps = ['I', 'X', 'Y', 'Z'];
+        if (!allowedOps.includes(clean.alice.msg0Op)) clean.alice.msg0Op = 'I';
+        if (!allowedOps.includes(clean.alice.msg1Op) || clean.alice.msg1Op === clean.alice.msg0Op) clean.alice.msg1Op = clean.alice.msg0Op === 'X' ? 'I' : 'X';
+        if (!['psi_plus', 'psi_minus'].includes(clean.bob.state)) clean.bob.state = 'psi_plus';
+        if (!clean.eve) clean.eve = { isOn: false, attack: 'Intercept-resend' };
+        if (!clean.eve.attack || clean.eve.attack === 'None') clean.eve.attack = 'Intercept-resend';
+        return clean;
+    }
+    function handlePaperModeToggle(isPaper) {
+        draftPaperMode = isPaper;
+        if (draftPaperMode) syncUIToSettings(getDefaultPPSettings(), true);
+        updateModeLock(draftPaperMode);
+    }
+    function resetNonEveCharacterCardVisuals() {
+        document.querySelectorAll('.character-col').forEach(col => {
+            const nameTag = col.querySelector('.name-tag');
+            if (nameTag && nameTag.dataset.role === 'eavesdropper') return;
+            const img = col.querySelector('img');
+            const panel = col.querySelector('.control-panel');
+            if (img) img.classList.remove('disabled-img');
+            if (panel) panel.classList.remove('disabled');
+            if (nameTag) nameTag.classList.remove('gray');
+        });
+    }
+    function updatePanelState(toggleElement) {
         const panel = document.getElementById('eve-panel');
         const img = document.getElementById('eve-img');
         const tag = document.getElementById('eve-tag');
-        if (this.checked) {
-            panel.classList.remove('disabled');
-            img.classList.remove('disabled-img');
-            tag.classList.add('red-text');
-            tag.classList.remove('gray');
-            panel.querySelectorAll('input').forEach(el => el.disabled = false);
+        const inputs = panel ? panel.querySelectorAll('input') : [];
+        if (toggleElement.checked) {
+            if (panel) panel.classList.remove('disabled');
+            if (img) img.classList.remove('disabled-img');
+            if (tag) {
+                tag.classList.add('red-text');
+                tag.classList.remove('gray');
+            }
+            inputs.forEach(input => {
+                input.disabled = draftPaperMode ? !input.checked : false;
+            });
         } else {
-            panel.classList.add('disabled');
-            img.classList.add('disabled-img');
-            tag.classList.remove('red-text');
-            tag.classList.add('gray');
-            panel.querySelectorAll('input').forEach(el => el.disabled = true);
+            if (panel) panel.classList.add('disabled');
+            if (img) img.classList.add('disabled-img');
+            if (tag) {
+                tag.classList.remove('red-text');
+                tag.classList.add('gray');
+            }
+            inputs.forEach(input => input.disabled = true);
         }
-    });
-    function init() {
-        syncUIToSettings();
+    }
+    function updateModeLock(isPaper = draftPaperMode) {
+        const overlay = document.getElementById('settings-overlay');
+        if (!overlay) return;
+        const eveToggle = document.getElementById('eve-status-toggle');
+        const controls = overlay.querySelectorAll('input, select');
+        controls.forEach(input => {
+            if (input.id === 'paper-mode-toggle' || input.id === 'eve-status-toggle') return;
+            if (isPaper) {
+                if (input.type === 'radio' || input.type === 'checkbox') input.disabled = !input.checked;
+                else input.disabled = true;
+            } else {
+                input.disabled = false;
+            }
+        });
+        resetNonEveCharacterCardVisuals();
+        if (eveToggle) updatePanelState(eveToggle);
         syncExclusion();
+    }
+    function init() {
+        ppSettings = sanitizeSettings(getDefaultPPSettings());
+        paperMode = true;
+        draftPaperMode = true;
+        syncUIToSettings();
         if (ppSettings.eve.isOn) { currentMode = 'control'; }
         updateSettingsDisplay();
         renderSidebar();
         renderTree();
+        persistCurrentSettings();
     }
-    function syncUIToSettings() {
-        document.querySelector(`input[name="ent_b_particle"][value="${ppSettings.bob.particle}"]`).checked = true;
-        document.getElementById('bob-state-select').value = ppSettings.bob.state;
-        document.querySelector(`input[name="ent_b_basis"][value="${ppSettings.bob.basis}"]`).checked = true;
-        document.querySelector(`input[name="ent_a_particle"][value="${ppSettings.alice.particle}"]`).checked = true;
-        document.querySelector(`input[name="ent_a_basis"][value="${ppSettings.alice.basis}"]`).checked = true;
-        document.querySelector(`input[name="op_msg_0"][value="${ppSettings.alice.msg0Op}"]`).checked = true;
-        document.querySelector(`input[name="op_msg_1"][value="${ppSettings.alice.msg1Op}"]`).checked = true;
+    function syncUIToSettings(sourceSettings = ppSettings, keepDraftMode = false) {
+        const settings = sanitizeSettings(sourceSettings);
+        setRadioValue('ent_b_particle', settings.bob.particle);
+        document.getElementById('bob-state-select').value = settings.bob.state;
+        setRadioValue('ent_b_basis', settings.bob.basis);
+        setRadioValue('ent_a_particle', settings.alice.particle);
+        setRadioValue('ent_a_basis', settings.alice.basis);
+        setRadioValue('op_msg_0', settings.alice.msg0Op);
+        setRadioValue('op_msg_1', settings.alice.msg1Op);
         const eveToggle = document.getElementById('eve-status-toggle');
-        eveToggle.checked = ppSettings.eve.isOn;
-        eveToggle.dispatchEvent(new Event('change')); 
-        if (ppSettings.eve.attack) {
-            let atkNode = document.querySelector(`input[name="ent_e_attack"][value="${ppSettings.eve.attack}"]`);
-            if(atkNode) atkNode.checked = true;
-        }
+        if (eveToggle) eveToggle.checked = settings.eve.isOn;
+        const atkNode = document.querySelector(`input[name="ent_e_attack"][value="${settings.eve.attack}"]`);
+        if (atkNode) atkNode.checked = true;
+        if (!keepDraftMode) draftPaperMode = paperMode;
+        const paperToggle = document.getElementById('paper-mode-toggle');
+        if (paperToggle) paperToggle.checked = draftPaperMode;
+        if (eveToggle) updatePanelState(eveToggle);
+        syncExclusion();
+        updateModeLock(draftPaperMode);
     }
     function syncExclusion() {
         const msg0Radios = document.querySelectorAll('input[name="op_msg_0"]');
         const msg1Radios = document.querySelectorAll('input[name="op_msg_1"]');
         const val0 = document.querySelector('input[name="op_msg_0"]:checked')?.value;
         const val1 = document.querySelector('input[name="op_msg_1"]:checked')?.value;
-        msg1Radios.forEach(r => r.disabled = (r.value === val0));
-        msg0Radios.forEach(r => r.disabled = (r.value === val1));
+        msg1Radios.forEach(r => r.disabled = draftPaperMode ? !r.checked : (r.value === val0));
+        msg0Radios.forEach(r => r.disabled = draftPaperMode ? !r.checked : (r.value === val1));
     }
 
     function toggleSettings() {
         const overlay = document.getElementById('settings-overlay');
         const icon = document.getElementById('tab-icon');
         const text = document.getElementById('tab-text');
-        
         if (overlay.classList.contains('show')) {
             overlay.classList.remove('show');
             icon.innerText = '▼';
             text.innerText = ' Settings ⚙️';
         } else {
+            syncUIToSettings();
             overlay.classList.add('show');
             icon.innerText = '▲';
             text.innerText = ' Close Settings';
@@ -299,36 +392,40 @@
     }
 
     function applySettings() {
+        paperMode = draftPaperMode;
         const isEveOn = document.getElementById('eve-status-toggle').checked;
         const eveAttackNode = document.querySelector('input[name="ent_e_attack"]:checked');
-        
-        ppSettings = {
-            bob: {
-                particle: document.querySelector('input[name="ent_b_particle"]:checked').value,
-                state: document.getElementById('bob-state-select').value,
-                basis: document.querySelector('input[name="ent_b_basis"]:checked').value
-            },
-            alice: {
-                particle: document.querySelector('input[name="ent_a_particle"]:checked').value,
-                basis: document.querySelector('input[name="ent_a_basis"]:checked').value,
-                msg0Op: document.querySelector('input[name="op_msg_0"]:checked').value,
-                msg1Op: document.querySelector('input[name="op_msg_1"]:checked').value
-            },
-            eve: {
-                isOn: isEveOn,
-                attack: isEveOn && eveAttackNode ? eveAttackNode.value : "None"
-            }
+        const eveSettings = {
+            isOn: isEveOn,
+            attack: isEveOn && eveAttackNode ? eveAttackNode.value : "None"
         };
-
-        localStorage.setItem('qsdcSettings', JSON.stringify(ppSettings));
-
-        if (ppSettings.eve.isOn) {
-            currentMode = 'control';
+        if (paperMode) {
+            ppSettings = getDefaultPPSettings();
+            ppSettings.eve = eveSettings;
+        } else {
+            ppSettings = {
+                bob: {
+                    particle: document.querySelector('input[name="ent_b_particle"]:checked').value,
+                    state: document.getElementById('bob-state-select').value,
+                    basis: document.querySelector('input[name="ent_b_basis"]:checked').value
+                },
+                alice: {
+                    particle: document.querySelector('input[name="ent_a_particle"]:checked').value,
+                    basis: document.querySelector('input[name="ent_a_basis"]:checked').value,
+                    msg0Op: document.querySelector('input[name="op_msg_0"]:checked').value,
+                    msg1Op: document.querySelector('input[name="op_msg_1"]:checked').value
+                },
+                eve: eveSettings
+            };
         }
-
+        ppSettings = sanitizeSettings(ppSettings);
+        draftPaperMode = paperMode;
+        persistCurrentSettings();
+        if (ppSettings.eve.isOn) currentMode = 'control';
         updateSettingsDisplay();
         renderSidebar();
         renderTree();
+        syncUIToSettings();
         toggleSettings();
     }
 
@@ -374,6 +471,7 @@
 
     function updateSettingsDisplay() {
         document.getElementById('settings-display').innerHTML = `
+            <div class="setting-item"><strong>Mode</strong><span>${paperMode ? 'Paper Mode' : 'Free Mode'}</span></div>
             ${formatSetting('Bob (Prepare & Measure)', ppSettings.bob)}
             ${formatSetting('Alice (Encode & Measure)', ppSettings.alice)}
             ${formatSetting('Eavesdropper', ppSettings.eve, true)}
@@ -675,13 +773,11 @@
             if (gate === 'Z') return { latex: '\\frac{1}{\\sqrt{2}}(|01\\rangle-|10\\rangle)_{12}', bell: '|\\psi^-\\rangle' };
             if (gate === 'X') return { latex: '\\frac{1}{\\sqrt{2}}(|11\\rangle+|00\\rangle)_{12}', bell: '|\\phi^+\\rangle' };
             if (gate === 'Y') return { latex: '\\frac{-1}{\\sqrt{2}}(|00\\rangle-|11\\rangle)_{12}', bell: '-|\\phi^-\\rangle' };
-            if (gate === 'H') return { latex: '\\frac{1}{2}(|01\\rangle+|11\\rangle+|00\\rangle-|10\\rangle)_{12}', bell: '\\text{Mixed}' };
         } else { 
             if (gate === 'I') return { latex: '\\frac{1}{\\sqrt{2}}(|01\\rangle-|10\\rangle)_{12}', bell: '|\\psi^-\\rangle' };
             if (gate === 'Z') return { latex: '\\frac{1}{\\sqrt{2}}(|01\\rangle+|10\\rangle)_{12}', bell: '|\\psi^+\\rangle' };
             if (gate === 'X') return { latex: '\\frac{1}{\\sqrt{2}}(|11\\rangle-|00\\rangle)_{12}', bell: '-|\\phi^-\\rangle' };
             if (gate === 'Y') return { latex: '\\frac{-1}{\\sqrt{2}}(|00\\rangle+|11\\rangle)_{12}', bell: '-|\\phi^+\\rangle' };
-            if (gate === 'H') return { latex: '\\frac{1}{2}(|01\\rangle+|11\\rangle-|00\\rangle+|10\\rangle)_{12}', bell: '\\text{Mixed}' };
         }
         return { latex: '?', bell: '?' };
     }
@@ -714,8 +810,18 @@
 
     document.addEventListener('DOMContentLoaded', () => {
         init();
+        const eveToggle = document.getElementById('eve-status-toggle');
+        if (eveToggle) {
+            eveToggle.addEventListener('change', function() {
+                updatePanelState(this);
+                updateModeLock(draftPaperMode);
+            });
+        }
         document.querySelectorAll('input[name="op_msg_0"], input[name="op_msg_1"]').forEach(r => r.addEventListener('change', syncExclusion));
+        const paperToggle = document.getElementById('paper-mode-toggle');
+        if (paperToggle) paperToggle.checked = draftPaperMode;
         syncExclusion();
+        updateModeLock(draftPaperMode);
     });
 </script>
 </body>
