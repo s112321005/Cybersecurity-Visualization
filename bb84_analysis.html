@@ -166,11 +166,11 @@
                         <line class="bb84-line FalseRoute" data-prob="25%" x1="47%" y1="75%" x2="67%" y2="95%" stroke="#333" stroke-width="3" marker-end="url(#arrow-bb84)" />
                     </svg>
                     <div class="node" style="left: 10%; top: 50%;">
-                        <img id="bb84-initial-key-img" src="pictures/vertical.svg" class="polarizer-img">
+                        <img id="bb84-initial-key-img" src="pictures/a_vertical.svg" class="polarizer-img">
                         <div class="state-circle" id="bb84-initial-state-text">|→⟩</div>
                     </div>
                     <div class="node" style="left: 41%; top: 25%;">
-                        <img id="bb84-bob-same" src="pictures/vertical.svg" class="polarizer-img">
+                        <img id="bb84-bob-same" src="pictures/a_vertical.svg" class="polarizer-img">
                     </div>
                     <div class="node" style="left: 41%; top: 75%;">
                         <img id="bb84-bob-unsame" src="pictures/gray_diagonal.svg" class="polarizer-img inactive">
@@ -259,7 +259,7 @@
                         <line class="eve-bob-line diff-path" data-prob="12.5%" x1="76%" y1="98%" x2="84%" y2="98%" stroke="#333" stroke-width="3" marker-end="url(#arrow-bb84-resend)" />
                     </svg>
                     <div class="node" style="left: 8%; top: 50%;">
-                        <img id="eve-alice-key" src="pictures/vertical.svg" class="polarizer-img">
+                        <img id="eve-alice-key" src="pictures/a_vertical.svg" class="polarizer-img">
                         <div class="state-circle" id="eve-alice-state">|→⟩</div>
                     </div>
                     <div class="node" style="left: 32%; top: 25%;"><img id="eve-pol-same" src="pictures/red_vertical.svg" class="polarizer-img"></div>
@@ -271,11 +271,11 @@
                     <div class="node" style="left: 50%; top: 90%;">
                         <div class="eve-state-circle" style="transform: rotate(45deg);"><span id="eve-state-diff2" style="transform: rotate(-45deg); display:block;">|↗⟩</span></div>
                     </div>
-                    <div class="node bob-same-node" style="left: 72%; top: 15%;"><img id="bob-pol-1" src="pictures/vertical.svg" class="polarizer-img"></div>
+                    <div class="node bob-same-node" style="left: 72%; top: 15%;"><img id="bob-pol-1" src="pictures/b_vertical.svg" class="polarizer-img"></div>
                     <div class="node bob-diff-node" style="left: 72%; top: 35%;"><img id="bob-pol-2" src="pictures/gray_diagonal.svg" class="polarizer-img inactive"></div>
-                    <div class="node bob-same-node" style="left: 72%; top: 52%;"><img id="bob-pol-3" src="pictures/vertical.svg" class="polarizer-img"></div>
+                    <div class="node bob-same-node" style="left: 72%; top: 52%;"><img id="bob-pol-3" src="pictures/b_vertical.svg" class="polarizer-img"></div>
                     <div class="node bob-diff-node" style="left: 72%; top: 68%;"><img id="bob-pol-4" src="pictures/gray_diagonal.svg" class="polarizer-img inactive"></div>
-                    <div class="node bob-same-node" style="left: 72%; top: 82%;"><img id="bob-pol-5" src="pictures/vertical.svg" class="polarizer-img"></div>
+                    <div class="node bob-same-node" style="left: 72%; top: 82%;"><img id="bob-pol-5" src="pictures/b_vertical.svg" class="polarizer-img"></div>
                     <div class="node bob-diff-node" style="left: 72%; top: 98%;"><img id="bob-pol-6" src="pictures/gray_diagonal.svg" class="polarizer-img inactive"></div>
                     <div class="node bob-same-node" style="left: 88%; top: 15%;"><div class="state-circle" id="bob-final-1">|→⟩</div></div>
                     <div class="node bob-diff-node" style="left: 88%; top: 30%;"><div class="state-circle inactive" id="bob-final-2" style="transform: rotate(-45deg);"><span style="transform: rotate(45deg); display:block;">|↖⟩</span></div></div>
@@ -486,11 +486,11 @@
         const isBobZ = (globalBobBasis === 'Z');
         const isSameBasis = (isAliceZ === isBobZ);
         if (isAliceZ) {
-            keyImg.src = "pictures/vertical.svg";
+            keyImg.src = "pictures/a_vertical.svg";
             bobSame.src = isSameBasis ? "pictures/b_vertical.svg" : "pictures/gray_vertical.svg";
             bobUnsame.src = !isSameBasis ? "pictures/b_diagonal.svg" : "pictures/gray_diagonal.svg";
         } else {
-            keyImg.src = "pictures/diagonal.svg"; 
+            keyImg.src = "pictures/a_diagonal.svg"; 
             bobSame.src = isSameBasis ? "pictures/b_diagonal.svg" : "pictures/gray_diagonal.svg";
             bobUnsame.src = !isSameBasis ? "pictures/b_vertical.svg" : "pictures/gray_vertical.svg";
         }
@@ -533,11 +533,11 @@
         const eveSameImg = document.getElementById('eve-pol-same');
         const eveDiffImg = document.getElementById('eve-pol-diff');
         if (isAliceZ) {
-            aliceImg.src = "pictures/vertical.svg";
+            aliceImg.src = "pictures/a_vertical.svg";
             eveSameImg.src = "pictures/red_vertical.svg";
             eveDiffImg.src = "pictures/red_diagonal.svg";
         } else {
-            aliceImg.src = "pictures/diagonal.svg";
+            aliceImg.src = "pictures/a_diagonal.svg";
             eveSameImg.src = "pictures/red_diagonal.svg";
             eveDiffImg.src = "pictures/red_vertical.svg";
         }
