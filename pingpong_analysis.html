@@ -246,8 +246,8 @@
 <div class="container">
     <div class="top-bar">            
         <a href="javascript:history.back()" class="btn-back">◀</a>
-        <div class="page-title">QSDC Ping-Pong Protocol Analysis</div>
-        <div id="eve-detected-indicator" class="page-title" style="display: none; margin-left: 39%; border-color: #D32F2F; color: #D32F2F;">Eve detected probability： 0%</div>
+        <div class="page-title">Quantum Security Direct Communication : Ping-Pong Protocol</div>
+        <div id="eve-detected-indicator" class="page-title" style="display: none; margin-left: 20%; border-color: #D32F2F; color: #D32F2F;">Eve detected probability： 0%</div>
     </div>
     <div class="main-content">
         <div class="sidebar">
@@ -577,6 +577,18 @@
         g.appendChild(visLine);
         container.appendChild(g);
     }
+    function toFraction(dec) {
+        for (let den = 1; den <= 64; den++) {
+            const num = Math.round(dec * den);
+            if (Math.abs(dec - num / den) < 0.000001) return { num, den };
+        }
+        return { num: Math.round(dec * 100), den: 100 };
+    }
+    function createFinalProbCircle(x, y, prob) {
+        const frac = toFraction(prob);
+        const content = frac.den === 1 ? `${frac.num}` : `<div style="border-bottom: 1px solid var(--primary-blue); width: 100%; text-align: center; line-height: 1;">${frac.num}</div><div style="text-align: center; line-height: 1;">${frac.den}</div>`;
+        return `<div style="position: absolute; left: calc(${x}% + 38px); top: ${y}px; transform: translateY(-50%); background: var(--light-blue); color: var(--primary-blue); width: 30px; height: 30px; border-radius: 50%; font-size: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; font-weight: bold; z-index: 4; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">${content}</div>`;
+    }
     function renderTree() {
         const svg = document.getElementById('svg-lines');
         const nodes = document.getElementById('diagram-nodes');
@@ -645,6 +657,7 @@
                      </div>`;
             html += `<div class="node" style="left: ${xEnd}%; top: ${yStart - yOffset}px;"> 
             <div class="circle-node" style="background-color: #D0E0FF; color: #333; font-size: 26px;">✖</div></div>`;
+            html += createFinalProbCircle(xEnd - 3, yStart - yOffset, 0.5);
 
 
             drawArrowedLine(svg, xAliceMeas, yStart, xAliceOut, yStart + yOffset, 0.5);//下支線
@@ -672,6 +685,7 @@
                      </div>`;
             html += `<div class="node" style="left: ${xEnd}%; top: ${yStart + yOffset}px;">
                         <div class="circle-node" style="background-color: #D0E0FF; color: #333; font-size: 26px;">✖</div></div>`;
+            html += createFinalProbCircle(xEnd - 3, yStart + yOffset, 0.5);
 
         } else if (currentMode === 'control' && !ppSettings.eve.isOn) {
             avatars.innerHTML = `
@@ -711,6 +725,7 @@
             html += `<div class="node" style="left: ${xBobOut}%; top: ${yStart - yOffset}px;">
                         <div class="circle-node bg-bob">${bobBit0}</div>
                      </div>`;
+            html += createFinalProbCircle(xBobOut, yStart - yOffset, 0.5);
 
             // Branch 1
             drawArrowedLine(svg, xAliceMeas, yStart, xAliceOut, yStart + yOffset, 0.5);
@@ -727,6 +742,7 @@
             html += `<div class="node" style="left: ${xBobOut}%; top: ${yStart + yOffset}px;">
                         <div class="circle-node bg-bob">${bobBit1}</div>
                      </div>`;
+            html += createFinalProbCircle(xBobOut, yStart + yOffset, 0.5);
                      
         } else if (currentMode === 'message') {
             avatars.innerHTML = `
@@ -767,6 +783,7 @@
             drawArrowedLine(svg, xBobMeas -2, yStart - yOffset, xBobOut-6, yStart - yOffset, 1.0); //Bob測量線+節點(上)
             html += `<div class="node" style="left: ${xBobOut +2}%; top: ${yStart - yOffset}px;">
                         <div class="math-box">\\(${state0.bell} = ${state0.latex}\\)</div></div>`;
+            html += createFinalProbCircle(xBobOut + 5, yStart - yOffset, 1.0);
 
             // Msg 1 Branch
             drawArrowedLine(svg, xBob1+9, yStart, xAliceOp - 2, yStart + yOffset, 1.0);//Bob傳給Alice運算(下)
@@ -791,6 +808,7 @@
             html += `<div class="node" style="left: ${xBobOut +2}%; top: ${yStart + yOffset}px;">
                         <div class="math-box">\\(${state1.bell} = ${state1.latex}\\)</div>
                      </div>`;
+            html += createFinalProbCircle(xBobOut + 5, yStart + yOffset, 1.0);
         }
 
         nodes.innerHTML = html;
