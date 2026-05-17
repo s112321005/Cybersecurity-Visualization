@@ -337,13 +337,6 @@
         }
 
         if (skipAnimation) {
-            // 直接顯示箭頭與結果面板
-            if (isMatch) {
-                document.getElementById("arrow-match").classList.add("active");
-            } else {
-                document.getElementById("arrow-mis-up").classList.add("active");
-                document.getElementById("arrow-mis-down").classList.add("active");
-            }
             displayFinalResult(isMatch);
         } else {
             animateMeasurement(isMatch);
@@ -376,13 +369,6 @@
         particle.style.setProperty('--ty-out', (toOutY - startY) + 'px');
         stage.appendChild(particle);
         requestAnimationFrame(() => { particle.style.animation = 'shoot-to-bob 1.5s forwards cubic-bezier(0.4, 0, 0.2, 1)'; });
-        setTimeout(() => {
-            if (isMatch) { document.getElementById("arrow-match").classList.add("active"); } 
-            else {
-                document.getElementById("arrow-mis-up").classList.add("active");
-                document.getElementById("arrow-mis-down").classList.add("active");
-            }
-        }, 1500);
         setTimeout(() => {
             if (isMatch) {
                 particle.style.animation = 'shoot-bob-to-outcome 0.8s forwards ease-out';
@@ -423,7 +409,6 @@
             announcer.classList.add("show");
         }
         if (isMatch) {
-            document.getElementById("output-match").style.opacity = "1"; 
             explainBox.style.borderLeftColor = "var(--match-green)";
             explainBox.style.backgroundColor = "#f0fdf4";
             explainTitle.style.color = "var(--match-green)";
@@ -455,8 +440,17 @@
         };
         localStorage.setItem('qkdStepData', JSON.stringify(qkdData));
 
-        resultsArea.classList.add("show-result");
-        explainBox.classList.add("show");
+        setTimeout(() => {
+            if (isMatch) {
+                document.getElementById("arrow-match").classList.add("active");
+                document.getElementById("output-match").style.opacity = "1";
+            } else {
+                document.getElementById("arrow-mis-up").classList.add("active");
+                document.getElementById("arrow-mis-down").classList.add("active");
+            }
+            resultsArea.classList.add("show-result");
+            explainBox.classList.add("show");
+        }, 1650);
     }
     function resetBob() {
         if (window.showBb84ImageStep) window.showBb84ImageStep(2);
