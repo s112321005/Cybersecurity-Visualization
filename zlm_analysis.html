@@ -164,6 +164,12 @@
         .eve-calc-main-row > math { flex: 0 0 auto; }
         .eve-fraction-stack { display: inline-flex; flex-direction: column; align-items: stretch; justify-content: center; gap: 11px; min-width: max-content; }
         .eve-fraction-stack math { display: block; text-align: center; margin: 0; }
+        .eve-fraction-stack .eve-fraction-numerator,
+        .eve-fraction-stack .eve-fraction-denominator { width: 100%; text-align: center; }
+        .eve-fraction-stack mjx-container.eve-fraction-numerator,
+        .eve-fraction-stack mjx-container.eve-fraction-denominator { display: block !important; width: 100%; text-align: center; }
+        .eve-fraction-stack .eve-fraction-numerator mjx-container,
+        .eve-fraction-stack .eve-fraction-denominator mjx-container { display: inline-block !important; }
         .eve-fraction-line { width: 100%; height: 2px; background: #333; flex: 0 0 auto; }
         .eve-final-row { margin-top: 4px; }
     </style>
@@ -848,13 +854,17 @@
                         </mrow>
                     </math>
                     <div class="eve-fraction-stack">
-                        <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML">
-                            <mrow>${detectedTermsMathML}</mrow>
-                        </math>
+                        <div class="eve-fraction-numerator">
+                            <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML">
+                                <mrow>${detectedTermsMathML}</mrow>
+                            </math>
+                        </div>
                         <div class="eve-fraction-line"></div>
-                        <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML">
-                            <mrow>${allTermsMathML}</mrow>
-                        </math>
+                        <div class="eve-fraction-denominator">
+                            <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML">
+                                <mrow>${allTermsMathML}</mrow>
+                            </math>
+                        </div>
                     </div>
                 </div>
                 <math class="eve-final-row" display="block" xmlns="http://www.w3.org/1998/Math/MathML">

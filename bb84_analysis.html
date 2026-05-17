@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <base href="https://s112321005.github.io/Cybersecurity-Visualization/">
-    <title>Security Analysis Visualization：BB84 Protocol</title>
+    <title>Security Analysis Visualization - BB84 Protocol</title>
     <style>
         :root { --primary-blue: #549FD0; --alice-blue: #004aad; --light-blue: #D0E0FF; --inactive-gray: #e0e0e0; --bg-color: #f8f9fa; --bg-gradient: linear-gradient(135deg, #E0F2FE 0%, #F5F3FF 50%, #ECFDF5 100%); --eve-red: #D32F2F; --bob-blue: #4C80C5; --charlie-blue: #478CEA; }
         body { margin: 0; background: var(--bg-gradient); font-family: sans-serif; overflow-x: hidden; display: flex; flex-direction: column; align-items: center; padding: 20px 0; color: #333; min-width: 1450px !important; }
@@ -34,9 +34,22 @@
         .eve-state-circle { background: var(--eve-red); color: white; }
         .state-circle.eve-error { background-color: var(--eve-red); color: white; border: 2px solid var(--eve-red); }
         .state-circle.eve-error.inactive { background-color: var(--inactive-gray); color: #666; border: 2px solid var(--eve-red); }
+        #bb84-symbol-bobsame,
+        .state-circle:has(#bb84-symbol-bobunsame-1),
+        .state-circle:has(#bb84-symbol-bobunsame-2),
+        #view-bb84-eve-resend [id^="bob-final-"] { background-color: var(--bob-blue); color: #ffffff; border-color: var(--bob-blue); }
+        #bb84-symbol-bobsame.inactive,
+        .state-circle.inactive:has(#bb84-symbol-bobunsame-1),
+        .state-circle.inactive:has(#bb84-symbol-bobunsame-2),
+        #view-bb84-eve-resend [id^="bob-final-"].inactive { background-color: var(--inactive-gray); color: #666; border-color: var(--inactive-gray); }
+        #view-bb84-eve-resend [id^="bob-final-"].eve-error:not(.inactive) { background-color: var(--eve-red); color: #ffffff; border-color: var(--eve-red); }
         .prob-circle, .result-circle { position: absolute; width: 40px; height: 40px; border-radius: 50%; font-size: 18px; z-index: 3; transform: translate(-50%, -50%); }
-        .prob-circle { background: var(--light-blue); }
-        .prob-circle.inactive { background-color: var(--inactive-gray); color: #333; }
+        .prob-circle { background: var(--light-blue); color: var(--bob-blue); border: 2px solid var(--light-blue); }
+        .prob-circle.inactive { background-color: var(--inactive-gray); color: #666; border-color: var(--inactive-gray); }
+        .prob-circle.eve-error { background-color: #ffe6e6; color: var(--eve-red); border-color: #ffe6e6; }
+        .prob-fraction { width: 30px; height: 30px; font-size: 12px; flex-direction: column; box-shadow: 0 2px 4px rgba(0,0,0,0.1); transform: translateY(-50%); }
+        .prob-fraction .fraction-num { border-bottom: 1px solid currentColor; width: 100%; text-align: center; line-height: 1; }
+        .prob-fraction .fraction-den { text-align: center; line-height: 1; }
         .result-circle { background: var(--light-blue); color: #28a745; &.inactive { color: #000; } }
         .character-avatar img { width: 70px; height: 70px; object-fit: contain; }
         .result-header { position: absolute; top: -10px; left: 90%; transform: translateX(-50%); background: var(--light-blue); padding: 10px 25px; border-radius: 15px; font-weight: bold; text-align: center; z-index: 10; white-space: nowrap; }
@@ -123,19 +136,26 @@
         .apply-btn:hover { background-color: #218838; transform: scale(1.05); }
         #eve-detected-indicator { cursor: pointer; user-select: none; margin-left: auto; border-color: var(--eve-red); color: var(--eve-red); }
         #eve-detected-indicator:hover { background: #fff1f1; box-shadow: 0 4px 10px rgba(211,47,47,0.18); }
-        .eve-calculation-panel { background: white; border-radius: 12px; padding: 20px; margin-top: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.08); display: none; }
+        .eve-calculation-panel { background: white; border-radius: 12px; padding: 20px; margin-top: 20px; margin-left: 250px; width: calc(100% - 250px); box-sizing: border-box; box-shadow: 0 4px 10px rgba(0,0,0,0.08); display: none; }
         .eve-calculation-panel h4 { margin-top: 0; margin-bottom: 15px; color: var(--primary-blue); border-bottom: 2px solid var(--light-blue); padding-bottom: 10px; }
         .eve-calc-red { color: var(--eve-red); font-weight: 900; }
         .eve-calc-blue { color: var(--primary-blue); font-weight: 900; }
+        .eve-calc-gray { color: #777; font-weight: 900; }
         #math-display { overflow-x: auto; user-select: none; padding: 26px 18px 30px; }
         #math-display math { font-family: "Times New Roman", serif; font-size: 21px; white-space: nowrap; }
         #math-display .eve-calc-note { margin-top: 16px; font-size: 14px; font-weight: 800; color: #667085; text-align: center; }
         .eve-calc-wrapper { display: inline-flex; flex-direction: column; align-items: center; gap: 18px; min-width: max-content; padding: 8px 22px 12px; }
         .eve-calc-main-row { display: inline-flex; align-items: center; justify-content: flex-start; gap: 16px; min-width: max-content; }
         .eve-calc-main-row > math { flex: 0 0 auto; }
-        .eve-fraction-stack { display: inline-flex; flex-direction: column; align-items: stretch; justify-content: center; gap: 11px; min-width: max-content; }
+        .eve-fraction-stack { display: inline-grid; grid-template-columns: max-content; justify-items: stretch; align-items: center; gap: 11px; min-width: max-content; }
         .eve-fraction-stack math { display: block; text-align: center; margin: 0; }
-        .eve-fraction-line { width: 100%; height: 2px; background: #333; flex: 0 0 auto; }
+        .eve-fraction-stack .eve-fraction-numerator,
+        .eve-fraction-stack .eve-fraction-denominator { grid-column: 1; justify-self: stretch; width: 100%; text-align: center; }
+        .eve-fraction-stack mjx-container.eve-fraction-numerator,
+        .eve-fraction-stack mjx-container.eve-fraction-denominator { display: block !important; width: 100%; text-align: center; }
+        .eve-fraction-stack .eve-fraction-numerator mjx-container,
+        .eve-fraction-stack .eve-fraction-denominator mjx-container { display: inline-block !important; }
+        .eve-fraction-line { grid-column: 1; justify-self: stretch; width: 100%; height: 2px; background: #333; }
         .eve-final-row { margin-top: 4px; }
         @media (max-width: 760px) {
             body { min-width: 0 !important; padding: 0; align-items: stretch; overflow-x: auto; }
@@ -154,7 +174,7 @@
 <body>
 
 <div class="pull-tab" onclick="toggleSettings()">
-    <span id="tab-icon">▼</span> <span id="tab-text"> Settings ⚙️</span>
+    <span id="tab-text">▲ Settings</span>
 </div>
 
 <div id="settings-overlay" class="settings-overlay">
@@ -234,17 +254,17 @@
 <div id="view-bb84" class="page-view active-view" style="padding-top: 60px;">
     <div class="container">
         <div class="top-bar" style="display: flex; align-items: center; justify-content: flex-start; gap: 20px; margin-bottom: 20px;">            
-            <a href="VerifySetting.html" class="btn-back">◀&#xFE0E</a>
+            <a href="VerifySetting.html" class="btn-back">◀</a>
             <div class="page-title">Quantum Key Distribution : BB84 Protocol</div>
         </div>
         <div class="main-content">
             <div class="sidebar">
                 <div class="selection-box" id="bb84-options">
                     <h4>Alice Selects Message</h4>
-                    <div class="option-row basis-z" onclick="selectStateBB84(this, '|→⟩', 'rectilinear')"><div class="state-btn">| 0 ⟩</div><div class="arrow-icon">➔</div><div class="state-btn">|→⟩</div></div>
-                    <div class="option-row basis-z" onclick="selectStateBB84(this, '| ↑ ⟩', 'rectilinear')"><div class="state-btn">| 1 ⟩</div><div class="arrow-icon">➔</div><div class="state-btn">| ↑ ⟩</div></div>
-                    <div class="option-row basis-x" onclick="selectStateBB84(this, '|↗⟩', 'diagonal')"><div class="state-btn">|十⟩</div><div class="arrow-icon">➔</div><div class="state-btn">|↗⟩</div></div>
-                    <div class="option-row basis-x" onclick="selectStateBB84(this, '|↖⟩', 'diagonal')"><div class="state-btn">|一⟩</div><div class="arrow-icon">➔</div><div class="state-btn">|↖⟩</div></div>
+                    <div class="option-row basis-z" onclick="selectStateBB84(this, '|\u2192\u27E9', 'rectilinear')"><div class="state-btn">|0&#10217;</div><div class="arrow-icon">&rarr;</div><div class="state-btn">|&rarr;&#10217;</div></div>
+                    <div class="option-row basis-z" onclick="selectStateBB84(this, '|\u2191\u27E9', 'rectilinear')"><div class="state-btn">|1&#10217;</div><div class="arrow-icon">&rarr;</div><div class="state-btn">|&uarr;&#10217;</div></div>
+                    <div class="option-row basis-x" onclick="selectStateBB84(this, '|\u2197\u27E9', 'diagonal')"><div class="state-btn">|+&#10217;</div><div class="arrow-icon">&rarr;</div><div class="state-btn">|&#8599;&#10217;</div></div>
+                    <div class="option-row basis-x" onclick="selectStateBB84(this, '|\u2196\u27E9', 'diagonal')"><div class="state-btn">|-&#10217;</div><div class="arrow-icon">&rarr;</div><div class="state-btn">|&#8598;&#10217;</div></div>
                 </div>                
                 <div class="settings-panel" style="margin-top: 20px;">
                     <h4>Current Settings</h4>
@@ -266,7 +286,7 @@
                     </svg>
                     <div class="node" style="left: 10%; top: 50%;">
                         <img id="bb84-initial-key-img" src="pictures/a_vertical.svg" class="polarizer-img">
-                        <div class="state-circle" id="bb84-initial-state-text">|→⟩</div>
+                        <div class="state-circle" id="bb84-initial-state-text">|&rarr;&#10217;</div>
                     </div>
                     <div class="node" style="left: 41%; top: 25%;">
                         <img id="bb84-bob-same" src="pictures/a_vertical.svg" class="polarizer-img">
@@ -275,24 +295,24 @@
                         <img id="bb84-bob-unsame" src="pictures/gray_diagonal.svg" class="polarizer-img inactive">
                     </div>
                     <div class="node" style="left: 75%; top: 25%;">
-                        <div id="bb84-symbol-bobsame" class="state-circle">|→⟩</div>
+                        <div id="bb84-symbol-bobsame" class="state-circle">|&rarr;&#10217;</div>
                     </div>
                     <div class="node" style="left: 75%; top: 55%;">
                         <div class="state-circle inactive" style="transform: rotate(-45deg); display: flex; align-items: center; justify-content: center;">
-                             <span id="bb84-symbol-bobunsame-1" style="transform: rotate(45deg);">|↖⟩</span>
+                             <span id="bb84-symbol-bobunsame-1" style="transform: rotate(45deg);">|&#8598;&#10217;</span>
                         </div>
                     </div>
                     <div class="node" style="left: 75%; top: 85%;">
                          <div class="state-circle inactive" style="transform: rotate(45deg); display: flex; align-items: center; justify-content: center;">
-                             <span id="bb84-symbol-bobunsame-2" style="transform: rotate(-45deg);">|↗⟩</span>
+                             <span id="bb84-symbol-bobunsame-2" style="transform: rotate(-45deg);">|&#8599;&#10217;</span>
                         </div>
                     </div>
-                    <div class="result-circle" style="left: 90%; top: 25%; width: 50px; height: 50px;">✔</div>
-                    <div style="position: absolute; left: calc(90% + 38px); top: 25%; transform: translateY(-50%); background: var(--light-blue); color: var(--primary-blue); width: 30px; height: 30px; border-radius: 50%; font-size: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; font-weight: bold; z-index: 4; box-shadow: 0 2px 4px rgba(0,0,0,0.1);"><div style="border-bottom: 1px solid var(--primary-blue); width: 100%; text-align: center; line-height: 1;">1</div><div style="text-align: center; line-height: 1;">2</div></div>
-                    <div class="result-circle inactive" style="left: 90%; top: 56%; width: 50px; height: 50px;">✖</div>
-                    <div style="position: absolute; left: calc(90% + 38px); top: 56%; transform: translateY(-50%); background: var(--light-blue); color: var(--primary-blue); width: 30px; height: 30px; border-radius: 50%; font-size: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; font-weight: bold; z-index: 4; box-shadow: 0 2px 4px rgba(0,0,0,0.1);"><div style="border-bottom: 1px solid var(--primary-blue); width: 100%; text-align: center; line-height: 1;">1</div><div style="text-align: center; line-height: 1;">4</div></div>
-                    <div class="result-circle inactive" style="left: 90%; top: 85%; width: 50px; height: 50px;">✖</div>
-                    <div style="position: absolute; left: calc(90% + 38px); top: 85%; transform: translateY(-50%); background: var(--light-blue); color: var(--primary-blue); width: 30px; height: 30px; border-radius: 50%; font-size: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; font-weight: bold; z-index: 4; box-shadow: 0 2px 4px rgba(0,0,0,0.1);"><div style="border-bottom: 1px solid var(--primary-blue); width: 100%; text-align: center; line-height: 1;">1</div><div style="text-align: center; line-height: 1;">4</div></div>
+                    <div class="result-circle" style="left: 90%; top: 25%; width: 50px; height: 50px;">&#10004;</div>
+                    <div class="prob-circle prob-fraction" style="left: calc(90% + 38px); top: 25%;" data-prob-for="bb84-symbol-bobsame"><div class="fraction-num">1</div><div class="fraction-den">2</div></div>
+                    <div class="result-circle inactive" style="left: 90%; top: 56%; width: 50px; height: 50px;">&#10006;</div>
+                    <div class="prob-circle prob-fraction inactive" style="left: calc(90% + 38px); top: 56%;" data-prob-for="bb84-symbol-bobunsame-1"><div class="fraction-num">1</div><div class="fraction-den">4</div></div>
+                    <div class="result-circle inactive" style="left: 90%; top: 85%; width: 50px; height: 50px;">&#10006;</div>
+                    <div class="prob-circle prob-fraction inactive" style="left: calc(90% + 38px); top: 85%;" data-prob-for="bb84-symbol-bobunsame-2"><div class="fraction-num">1</div><div class="fraction-den">4</div></div>
                 </div>
             </div>
         </div>
@@ -302,25 +322,25 @@
 <div id="view-bb84-eve-resend" class="page-view" style="padding-top: 60px;">
     <div class="container">
         <div class="top-bar" style="display: flex; align-items: center; justify-content: flex-start; gap: 20px; margin-bottom: 20px;">            
-            <a href="VerifySetting.html" class="btn-back">◀&#xFE0E</a>
-            <div class="page-title">Quantum Key Distribution：BB84</div>
-            <div id="eve-detected-indicator" class="page-title" onclick="showEveDetectedCalculation()" title="Click to show Eve detection calculation">Eve detected probability： 12.5%</div>
+            <a href="VerifySetting.html" class="btn-back">&larr;</a>
+            <div class="page-title">Quantum Key Distribution : BB84 Protocol</div>
+            <div id="eve-detected-indicator" class="page-title" onclick="showEveDetectedCalculation()" title="Click to show Eve detection calculation">Eve detected probability: 12.5%</div>
         </div>
         <div class="main-content">
             <div class="sidebar">
                 <div class="selection-box" id="bb84-eve-options">
                     <h4>Alice Selects Message</h4>
-                    <div class="option-row basis-z" onclick="selectStateBB84Eve(this, '|→⟩', 'rectilinear')">
-                        <div class="state-btn">| 0 ⟩</div><div class="arrow-icon">➔</div><div class="state-btn">|→⟩</div>
+                    <div class="option-row basis-z" onclick="selectStateBB84Eve(this, '|\u2192\u27E9', 'rectilinear')">
+                        <div class="state-btn">|0&#10217;</div><div class="arrow-icon">&rarr;</div><div class="state-btn">|&rarr;&#10217;</div>
                     </div>
-                    <div class="option-row basis-z" onclick="selectStateBB84Eve(this, '| ↑ ⟩', 'rectilinear')">
-                        <div class="state-btn">| 1 ⟩</div><div class="arrow-icon">➔</div><div class="state-btn">| ↑ ⟩</div>
+                    <div class="option-row basis-z" onclick="selectStateBB84Eve(this, '|\u2191\u27E9', 'rectilinear')">
+                        <div class="state-btn">|1&#10217;</div><div class="arrow-icon">&rarr;</div><div class="state-btn">|&uarr;&#10217;</div>
                     </div>
-                    <div class="option-row basis-x" onclick="selectStateBB84Eve(this, '|↗⟩', 'diagonal')">
-                        <div class="state-btn">|十⟩</div><div class="arrow-icon">➔</div><div class="state-btn">|↗⟩</div>
+                    <div class="option-row basis-x" onclick="selectStateBB84Eve(this, '|\u2197\u27E9', 'diagonal')">
+                        <div class="state-btn">|+&#10217;</div><div class="arrow-icon">&rarr;</div><div class="state-btn">|&#8599;&#10217;</div>
                     </div>
-                    <div class="option-row basis-x" onclick="selectStateBB84Eve(this, '|↖⟩', 'diagonal')">
-                        <div class="state-btn">|一⟩</div><div class="arrow-icon">➔</div><div class="state-btn">|↖⟩</div>
+                    <div class="option-row basis-x" onclick="selectStateBB84Eve(this, '|\u2196\u27E9', 'diagonal')">
+                        <div class="state-btn">|-&#10217;</div><div class="arrow-icon">&rarr;</div><div class="state-btn">|&#8598;&#10217;</div>
                     </div>
                 </div>                
                 <div class="settings-panel" style="margin-top: 20px;">
@@ -328,7 +348,7 @@
                     <div class="settings-content"></div>
                 </div>
             </div>
-            <div class="diagram-area eve-layout" style="height: 900px;">
+            <div class="diagram-area eve-layout" style="height: 1100px;">
                 <div class="character-avatar avatar-alice" style="left: 8%; width: 130px;"><img src="pictures/cat_alice.svg" alt="Alice"></div>
                 <div class="character-avatar avatar-eve" style="left: 38%; width: 350px;"><img src="pictures/Eavesdropper.svg" alt="Eve" style="width:60px;"></div>
                 <div class="character-avatar avatar-bob" style="left: 72%; width: 235px;"><img src="pictures/cat_bob.svg" alt="Bob"></div>
@@ -363,16 +383,16 @@
                     </svg>
                     <div class="node" style="left: 8%; top: 50%;">
                         <img id="eve-alice-key" src="pictures/a_vertical.svg" class="polarizer-img">
-                        <div class="state-circle" id="eve-alice-state">|→⟩</div>
+                        <div class="state-circle" id="eve-alice-state">|&rarr;&#10217;</div>
                     </div>
                     <div class="node" style="left: 32%; top: 25%;"><img id="eve-pol-same" src="pictures/red_vertical.svg" class="polarizer-img"></div>
                     <div class="node" style="left: 32%; top: 75%;"><img id="eve-pol-diff" src="pictures/red_diagonal.svg" class="polarizer-img"></div>
-                    <div class="node" style="left: 50%; top: 25%;"><div class="eve-state-circle" id="eve-state-same">|→⟩</div></div>
+                    <div class="node" style="left: 50%; top: 25%;"><div class="eve-state-circle" id="eve-state-same">|&rarr;&#10217;</div></div>
                     <div class="node" style="left: 50%; top: 60%;">
-                        <div class="eve-state-circle" style="transform: rotate(-45deg);"><span id="eve-state-diff1" style="transform: rotate(45deg); display:block;">|↖⟩</span></div>
+                        <div class="eve-state-circle" style="transform: rotate(-45deg);"><span id="eve-state-diff1" style="transform: rotate(45deg); display:block;">|&#8598;&#10217;</span></div>
                     </div>
                     <div class="node" style="left: 50%; top: 90%;">
-                        <div class="eve-state-circle" style="transform: rotate(45deg);"><span id="eve-state-diff2" style="transform: rotate(-45deg); display:block;">|↗⟩</span></div>
+                        <div class="eve-state-circle" style="transform: rotate(45deg);"><span id="eve-state-diff2" style="transform: rotate(-45deg); display:block;">|&#8599;&#10217;</span></div>
                     </div>
                     <div class="node bob-same-node" style="left: 72%; top: 15%;"><img id="bob-pol-1" src="pictures/b_vertical.svg" class="polarizer-img"></div>
                     <div class="node bob-diff-node" style="left: 72%; top: 35%;"><img id="bob-pol-2" src="pictures/gray_diagonal.svg" class="polarizer-img inactive"></div>
@@ -380,24 +400,24 @@
                     <div class="node bob-diff-node" style="left: 72%; top: 68%;"><img id="bob-pol-4" src="pictures/gray_diagonal.svg" class="polarizer-img inactive"></div>
                     <div class="node bob-same-node" style="left: 72%; top: 82%;"><img id="bob-pol-5" src="pictures/b_vertical.svg" class="polarizer-img"></div>
                     <div class="node bob-diff-node" style="left: 72%; top: 94%;"><img id="bob-pol-6" src="pictures/gray_diagonal.svg" class="polarizer-img inactive"></div>
-                    <div class="node bob-same-node" style="left: 88%; top: 15%;"><div class="state-circle" id="bob-final-1">|→⟩</div></div>
-                    <div style="position: absolute; left: calc(88% + 38px); top: 15%; transform: translateY(-50%); background: var(--light-blue); color: var(--primary-blue); width: 30px; height: 30px; border-radius: 50%; font-size: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; font-weight: bold; z-index: 4; box-shadow: 0 2px 4px rgba(0,0,0,0.1);"><div style="border-bottom: 1px solid var(--primary-blue); width: 100%; text-align: center; line-height: 1;">1</div><div style="text-align: center; line-height: 1;">4</div></div>
-                    <div class="node bob-diff-node" style="left: 88%; top: 30%;"><div class="state-circle inactive" id="bob-final-2" style="transform: rotate(-45deg);"><span style="transform: rotate(45deg); display:block;">|↖⟩</span></div></div>
-                    <div style="position: absolute; left: calc(88% + 38px); top: 30%; transform: translateY(-50%); background: var(--light-blue); color: var(--primary-blue); width: 30px; height: 30px; border-radius: 50%; font-size: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; font-weight: bold; z-index: 4; box-shadow: 0 2px 4px rgba(0,0,0,0.1);"><div style="border-bottom: 1px solid var(--primary-blue); width: 100%; text-align: center; line-height: 1;">1</div><div style="text-align: center; line-height: 1;">8</div></div>
-                    <div class="node bob-diff-node" style="left: 88%; top: 40%;"><div class="state-circle inactive" id="bob-final-3" style="transform: rotate(45deg);"><span style="transform: rotate(-45deg); display:block;">|↗⟩</span></div></div>
-                    <div style="position: absolute; left: calc(88% + 38px); top: 40%; transform: translateY(-50%); background: var(--light-blue); color: var(--primary-blue); width: 30px; height: 30px; border-radius: 50%; font-size: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; font-weight: bold; z-index: 4; box-shadow: 0 2px 4px rgba(0,0,0,0.1);"><div style="border-bottom: 1px solid var(--primary-blue); width: 100%; text-align: center; line-height: 1;">1</div><div style="text-align: center; line-height: 1;">8</div></div>
-                    <div class="node bob-same-node" style="left: 88%; top: 48%;"><div class="state-circle" id="bob-final-4">|→⟩</div></div>
-                    <div style="position: absolute; left: calc(88% + 38px); top: 48%; transform: translateY(-50%); background: var(--light-blue); color: var(--primary-blue); width: 30px; height: 30px; border-radius: 50%; font-size: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; font-weight: bold; z-index: 4; box-shadow: 0 2px 4px rgba(0,0,0,0.1);"><div style="border-bottom: 1px solid var(--primary-blue); width: 100%; text-align: center; line-height: 1;">1</div><div style="text-align: center; line-height: 1;">16</div></div>
-                    <div class="node bob-same-node" style="left: 88%; top: 56%;"><div class="state-circle eve-error" id="bob-final-5">|↑⟩</div></div>
-                    <div style="position: absolute; left: calc(88% + 38px); top: 56%; transform: translateY(-50%); background: #ffe6e6; color: var(--eve-red); width: 30px; height: 30px; border-radius: 50%; font-size: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; font-weight: bold; z-index: 4; box-shadow: 0 2px 4px rgba(0,0,0,0.1);"><div style="border-bottom: 1px solid var(--eve-red); width: 100%; text-align: center; line-height: 1;">1</div><div style="text-align: center; line-height: 1;">16</div></div>
-                    <div class="node bob-diff-node" style="left: 88%; top: 68%;"><div class="state-circle inactive" id="bob-final-6" style="transform: rotate(-45deg);"><span style="transform: rotate(45deg); display:block;">|↖⟩</span></div></div>
-                    <div style="position: absolute; left: calc(88% + 38px); top: 68%; transform: translateY(-50%); background: var(--light-blue); color: var(--primary-blue); width: 30px; height: 30px; border-radius: 50%; font-size: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; font-weight: bold; z-index: 4; box-shadow: 0 2px 4px rgba(0,0,0,0.1);"><div style="border-bottom: 1px solid var(--primary-blue); width: 100%; text-align: center; line-height: 1;">1</div><div style="text-align: center; line-height: 1;">8</div></div>
-                    <div class="node bob-same-node" style="left: 88%; top: 78%;"><div class="state-circle" id="bob-final-7">|→⟩</div></div>
-                    <div style="position: absolute; left: calc(88% + 38px); top: 78%; transform: translateY(-50%); background: var(--light-blue); color: var(--primary-blue); width: 30px; height: 30px; border-radius: 50%; font-size: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; font-weight: bold; z-index: 4; box-shadow: 0 2px 4px rgba(0,0,0,0.1);"><div style="border-bottom: 1px solid var(--primary-blue); width: 100%; text-align: center; line-height: 1;">1</div><div style="text-align: center; line-height: 1;">16</div></div>
-                    <div class="node bob-same-node" style="left: 88%; top: 86%;"><div class="state-circle eve-error" id="bob-final-8">|↑⟩</div></div>
-                    <div style="position: absolute; left: calc(88% + 38px); top: 86%; transform: translateY(-50%); background: #ffe6e6; color: var(--eve-red); width: 30px; height: 30px; border-radius: 50%; font-size: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; font-weight: bold; z-index: 4; box-shadow: 0 2px 4px rgba(0,0,0,0.1);"><div style="border-bottom: 1px solid var(--eve-red); width: 100%; text-align: center; line-height: 1;">1</div><div style="text-align: center; line-height: 1;">16</div></div>
-                    <div class="node bob-diff-node" style="left: 88%; top: 94%;"><div class="state-circle inactive" id="bob-final-9" style="transform: rotate(45deg);"><span style="transform: rotate(-45deg); display:block;">|↗⟩</span></div></div>
-                    <div style="position: absolute; left: calc(88% + 38px); top: 94%; transform: translateY(-50%); background: var(--light-blue); color: var(--primary-blue); width: 30px; height: 30px; border-radius: 50%; font-size: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; font-weight: bold; z-index: 4; box-shadow: 0 2px 4px rgba(0,0,0,0.1);"><div style="border-bottom: 1px solid var(--primary-blue); width: 100%; text-align: center; line-height: 1;">1</div><div style="text-align: center; line-height: 1;">8</div></div>
+                    <div class="node bob-same-node" style="left: 88%; top: 15%;"><div class="state-circle" id="bob-final-1">|&rarr;&#10217;</div></div>
+                    <div class="prob-circle prob-fraction" style="left: calc(88% + 38px); top: 15%;" data-prob-for="bob-final-1"><div class="fraction-num">1</div><div class="fraction-den">4</div></div>
+                    <div class="node bob-diff-node" style="left: 88%; top: 30%;"><div class="state-circle inactive" id="bob-final-2" style="transform: rotate(-45deg);"><span style="transform: rotate(45deg); display:block;">|&#8598;&#10217;</span></div></div>
+                    <div class="prob-circle prob-fraction inactive" style="left: calc(88% + 38px); top: 30%;" data-prob-for="bob-final-2"><div class="fraction-num">1</div><div class="fraction-den">8</div></div>
+                    <div class="node bob-diff-node" style="left: 88%; top: 40%;"><div class="state-circle inactive" id="bob-final-3" style="transform: rotate(45deg);"><span style="transform: rotate(-45deg); display:block;">|&#8599;&#10217;</span></div></div>
+                    <div class="prob-circle prob-fraction inactive" style="left: calc(88% + 38px); top: 40%;" data-prob-for="bob-final-3"><div class="fraction-num">1</div><div class="fraction-den">8</div></div>
+                    <div class="node bob-same-node" style="left: 88%; top: 48%;"><div class="state-circle" id="bob-final-4">|&rarr;&#10217;</div></div>
+                    <div class="prob-circle prob-fraction" style="left: calc(88% + 38px); top: 48%;" data-prob-for="bob-final-4"><div class="fraction-num">1</div><div class="fraction-den">16</div></div>
+                    <div class="node bob-same-node" style="left: 88%; top: 56%;"><div class="state-circle eve-error" id="bob-final-5">|&uarr;&#10217;</div></div>
+                    <div class="prob-circle prob-fraction eve-error" style="left: calc(88% + 38px); top: 56%;" data-prob-for="bob-final-5"><div class="fraction-num">1</div><div class="fraction-den">16</div></div>
+                    <div class="node bob-diff-node" style="left: 88%; top: 68%;"><div class="state-circle inactive" id="bob-final-6" style="transform: rotate(-45deg);"><span style="transform: rotate(45deg); display:block;">|&#8598;&#10217;</span></div></div>
+                    <div class="prob-circle prob-fraction inactive" style="left: calc(88% + 38px); top: 68%;" data-prob-for="bob-final-6"><div class="fraction-num">1</div><div class="fraction-den">8</div></div>
+                    <div class="node bob-same-node" style="left: 88%; top: 78%;"><div class="state-circle" id="bob-final-7">|&rarr;&#10217;</div></div>
+                    <div class="prob-circle prob-fraction" style="left: calc(88% + 38px); top: 78%;" data-prob-for="bob-final-7"><div class="fraction-num">1</div><div class="fraction-den">16</div></div>
+                    <div class="node bob-same-node" style="left: 88%; top: 86%;"><div class="state-circle eve-error" id="bob-final-8">|&uarr;&#10217;</div></div>
+                    <div class="prob-circle prob-fraction eve-error" style="left: calc(88% + 38px); top: 86%;" data-prob-for="bob-final-8"><div class="fraction-num">1</div><div class="fraction-den">16</div></div>
+                    <div class="node bob-diff-node" style="left: 88%; top: 94%;"><div class="state-circle inactive" id="bob-final-9" style="transform: rotate(45deg);"><span style="transform: rotate(-45deg); display:block;">|&#8599;&#10217;</span></div></div>
+                    <div class="prob-circle prob-fraction inactive" style="left: calc(88% + 38px); top: 94%;" data-prob-for="bob-final-9"><div class="fraction-num">1</div><div class="fraction-den">8</div></div>
                 </div>
             </div>
         </div>
@@ -411,9 +431,9 @@
 <script>
     let globalBobBasis = 'X';
     let isEveInterceptResend = false; 
-    const symbols = { Stype: ['| ↑ ⟩', '|→⟩'],  Dtype: ['|↗⟩', '|↖⟩']};
+    const symbols = { Stype: ['|\u2191\u27E9', '|\u2192\u27E9'], Dtype: ['|\u2197\u27E9', '|\u2196\u27E9']};
 
-    // 預設的設定值 (不依賴上一頁)
+        // Keeps the visualization state in sync with the selected settings.
     let currentSettings = {
         alice: { isOn: true, particle: 'single', basis: 'X' },
         bob:   { isOn: true, particle: 'single', basis: 'X' },
@@ -422,15 +442,15 @@
     };
 
     const eveDetectedTerms = [
-        { num: 1, den: 4, detected: false },
-        { num: 1, den: 8, detected: false },
-        { num: 1, den: 8, detected: false },
-        { num: 1, den: 16, detected: false },
-        { num: 1, den: 16, detected: true },
-        { num: 1, den: 8, detected: false },
-        { num: 1, den: 16, detected: false },
-        { num: 1, den: 16, detected: true },
-        { num: 1, den: 8, detected: false }
+        { num: 1, den: 4, detected: false, targetId: 'bob-final-1' },
+        { num: 1, den: 8, detected: false, targetId: 'bob-final-2' },
+        { num: 1, den: 8, detected: false, targetId: 'bob-final-3' },
+        { num: 1, den: 16, detected: false, targetId: 'bob-final-4' },
+        { num: 1, den: 16, detected: true, targetId: 'bob-final-5' },
+        { num: 1, den: 8, detected: false, targetId: 'bob-final-6' },
+        { num: 1, den: 16, detected: false, targetId: 'bob-final-7' },
+        { num: 1, den: 16, detected: true, targetId: 'bob-final-8' },
+        { num: 1, den: 8, detected: false, targetId: 'bob-final-9' }
     ];
 
     function probabilityToFraction(prob) {
@@ -439,6 +459,10 @@
             if (Math.abs(prob - num / den) < 0.000001) return { num, den };
         }
         return { num: Math.round(prob * 1000), den: 1000 };
+    }
+
+    function formatPercent(prob) {
+        return (prob * 100).toFixed(3).replace(/\.?0+$/, '');
     }
 
     function showEveDetectedCalculation() {
@@ -451,25 +475,36 @@
         panel.oncontextmenu = () => false;
         display.oncontextmenu = () => false;
 
-        const terms = eveDetectedTerms.map(term => ({ prob: term.num / term.den, isError: term.detected }));
+        const terms = eveDetectedTerms.map(term => {
+            const target = document.getElementById(term.targetId);
+            const isInactive = target ? target.classList.contains('inactive') : false;
+            const isError = term.detected && !isInactive;
+            return {
+                prob: term.num / term.den,
+                isError,
+                colorClass: isError ? 'eve-calc-red' : (isInactive ? 'eve-calc-gray' : 'eve-calc-blue')
+            };
+        });
         const total = terms.filter(term => term.isError).reduce((sum, term) => sum + term.prob, 0);
 
         function termToMathML(term, visibleIndex) {
             const frac = probabilityToFraction(term.prob);
-            const colorClass = term.isError ? 'eve-calc-red' : 'eve-calc-blue';
             const sign = visibleIndex === 0 ? '' : '+';
             return `
                 ${sign ? `<mo>${sign}</mo>` : ''}
-                <mstyle class="${colorClass}">
+                <mstyle class="${term.colorClass}">
                     <mfrac><mn>${frac.num}</mn><mn>${frac.den}</mn></mfrac>
                 </mstyle>
             `;
         }
 
         const allTermsMathML = terms.map((term, index) => termToMathML(term, index)).join('');
-        const detectedTermsMathML = terms.filter(term => term.isError).map((term, index) => termToMathML(term, index)).join('');
+        const detectedTerms = terms.filter(term => term.isError);
+        const detectedTermsMathML = detectedTerms.length
+            ? detectedTerms.map((term, index) => termToMathML(term, index)).join('')
+            : '<mstyle class="eve-calc-gray"><mn>0</mn></mstyle>';
         const totalFrac = probabilityToFraction(total);
-        const totalPercent = (total * 100).toFixed(1).replace('.0', '');
+        const totalPercent = formatPercent(total);
 
         display.innerHTML = `
             <div class="eve-calc-wrapper" oncontextmenu="return false;">
@@ -478,9 +513,9 @@
                         <mrow><msub><mi>P</mi><mtext>detected</mtext></msub><mo>=</mo></mrow>
                     </math>
                     <div class="eve-fraction-stack">
-                        <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><mrow>${detectedTermsMathML}</mrow></math>
+                        <div class="eve-fraction-numerator"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><mrow>${detectedTermsMathML}</mrow></math></div>
                         <div class="eve-fraction-line"></div>
-                        <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><mrow>${allTermsMathML}</mrow></math>
+                        <div class="eve-fraction-denominator"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><mrow>${allTermsMathML}</mrow></math></div>
                     </div>
                 </div>
                 <math class="eve-final-row" display="block" xmlns="http://www.w3.org/1998/Math/MathML">
@@ -498,7 +533,7 @@
         }
     }
 
-    // ▼▼▼ Overlay Settings JavaScript ▼▼▼
+        // Keeps the visualization state in sync with the selected settings.
     function toggleSettings() {
         const overlay = document.getElementById('settings-overlay');
         const icon = document.getElementById('tab-icon');
@@ -507,12 +542,12 @@
         if (overlay.classList.contains('show')) {
             overlay.classList.remove('show');
             icon.innerText = '▼';
-            text.innerText = ' Settings ⚙️';
+            text.innerText = ' Settings⚙️ ';
         } else {
             overlay.classList.add('show');
             icon.innerText = '▲';
             text.innerText = 'Close Settings';
-            // 面板拉下來時不需要再去 localStorage 讀，因為我們都在同一頁了
+        // Keeps the visualization state in sync with the selected settings.
         }
     }
 
@@ -542,24 +577,24 @@
         updatePanelState(this);
     });
 
-    // 動態套用設定且不重新整理
+        // Keeps the visualization state in sync with the selected settings.
     function applySettings() {
         const isEveOn = document.getElementById('eve-status-toggle').checked;
         const eveAttackNode = document.querySelector('input[name="e_attack"]:checked');
         const eveAttack = eveAttackNode ? eveAttackNode.value : "Intercept-resend";
-        // 更新全域設定變數
+        // Keeps the visualization state in sync with the selected settings.
         currentSettings = {
             alice: { isOn: true, particle: document.querySelector('input[name="a_particle"]:checked').value, basis: document.querySelector('input[name="a_basis"]:checked').value },
             bob: { isOn: true, particle: document.querySelector('input[name="b_particle"]:checked').value, basis: document.querySelector('input[name="b_basis"]:checked').value },
             eve: { isOn: isEveOn, attack: isEveOn ? eveAttack : "None" },
             subProtocol: 'bb84'
         };
-        updatePageState();        // 1. 在遮罩還沒收起前，瞬間在背景把狀態更新完畢       
-        toggleSettings();        // 2. 立刻收起下拉網，不再強制等待
+        updatePageState();
+        toggleSettings();
 
     }
 
-    // 核心的「頁面狀態更新」函式
+        // Keeps the visualization state in sync with the selected settings.
     function updatePageState() {
         const contentAreas = document.querySelectorAll('.settings-content');
         
@@ -572,7 +607,7 @@
             isEveInterceptResend = true;
         }
         
-        // 視圖切換
+        // Keeps the visualization state in sync with the selected settings.
         if (isEveInterceptResend) {
             document.getElementById('view-bb84').classList.remove('active-view');
             document.getElementById('view-bb84-eve-resend').classList.add('active-view');
@@ -581,7 +616,7 @@
             document.getElementById('view-bb84-eve-resend').classList.remove('active-view');
         }
         
-        // 左側按鈕根據 Alice Basis 的過濾
+        // Keeps the visualization state in sync with the selected settings.
         const showZ = aliceBasis.includes('Z') || aliceBasis.toLowerCase().includes('rectilinear') || !aliceBasis.includes('X');
         const showX = aliceBasis.includes('X') || aliceBasis.toLowerCase().includes('diagonal') || !aliceBasis.includes('Z');
         const allOptionRows = document.querySelectorAll('#bb84-options .option-row, #bb84-eve-options .option-row');            
@@ -592,7 +627,7 @@
             else if (row.classList.contains('basis-x')) row.style.display = showX ? 'flex' : 'none';
         });
         
-        // 更新左側的 Current Settings 小視窗
+        // Keeps the visualization state in sync with the selected settings.
         function formatRole(name, data) {
             if (!data) return ''; 
             if (name === 'Eavesdropper' && (!data.isOn || String(data.isOn).toLowerCase() === 'false')) {
@@ -617,7 +652,7 @@
         `;
         contentAreas.forEach(area => { area.innerHTML = htmlContent; });
         
-        // 自動點擊畫面中第一個顯示的按鈕
+        // Keeps the visualization state in sync with the selected settings.
         if (isEveInterceptResend) {
             const defaultEve = Array.from(document.querySelectorAll('#bb84-eve-options .option-row')).find(row => row.style.display !== 'none');
             if(defaultEve) {
@@ -636,12 +671,12 @@
     }
 
     document.addEventListener('DOMContentLoaded', () => {
-        // 初始化面網開關狀態 (一進來 Eve 預設為 OFF)
+        // Keeps the visualization state in sync with the selected settings.
         const eveToggle = document.getElementById('eve-status-toggle');
         eveToggle.checked = false;
         updatePanelState(eveToggle);
 
-        // Tooltip 功能綁定
+        // Keeps the visualization state in sync with the selected settings.
         const tooltip = document.createElement('div');
         tooltip.className = 'line-tooltip';
         document.body.appendChild(tooltip);
@@ -660,7 +695,7 @@
             line.addEventListener('mouseleave', () => { tooltip.style.opacity = '0';});
         });
 
-        // 第一次進來時直接執行狀態更新 (套用 currentSettings 預設值)
+        // Keeps the visualization state in sync with the selected settings.
         updatePageState();
     });
 
@@ -706,6 +741,35 @@
             line.classList.remove('line-inactive');
             line.setAttribute('stroke-width', '4'); 
         });
+        syncProbabilityNodes('#view-bb84');
+    }
+
+    function getProbabilityTarget(probNode) {
+        const targetId = probNode.dataset.probFor;
+        const target = targetId ? document.getElementById(targetId) : null;
+        if (!target) return null;
+        return target.classList.contains('state-circle') ? target : target.closest('.state-circle');
+    }
+
+    function syncProbabilityNodes(containerSelector) {
+        document.querySelectorAll(`${containerSelector} .prob-circle[data-prob-for]`).forEach(probNode => {
+            const target = getProbabilityTarget(probNode);
+            if (!target) return;
+            probNode.classList.toggle('inactive', target.classList.contains('inactive'));
+            probNode.classList.toggle('eve-error', target.classList.contains('eve-error') && !target.classList.contains('inactive'));
+        });
+    }
+
+    function updateEveDetectedIndicator() {
+        const indicator = document.getElementById('eve-detected-indicator');
+        if (!indicator) return;
+        const total = eveDetectedTerms.reduce((sum, term) => {
+            const target = document.getElementById(term.targetId);
+            const isActiveError = target && term.detected && target.classList.contains('eve-error') && !target.classList.contains('inactive');
+            return sum + (isActiveError ? term.num / term.den : 0);
+        }, 0);
+        const totalPercent = formatPercent(total);
+        indicator.innerText = `Eve detected probability: ${totalPercent}%`;
     }
 
     function selectStateBB84Eve(element, stateSymbol, basisType) {
@@ -719,8 +783,8 @@
         const symbolsZ = symbols['Stype']; 
         const symbolsX = symbols['Dtype']; 
         let aliceOppoState = "";
-        if (isAliceZ) { aliceOppoState = (stateSymbol.includes('→')) ? '|↑⟩' : '|→⟩';}
-        else { aliceOppoState = (stateSymbol.includes('↗')) ? '|↖⟩' : '|↗⟩';}
+        if (isAliceZ) { aliceOppoState = (stateSymbol === '|\u2192\u27E9') ? '|\u2191\u27E9' : '|\u2192\u27E9';}
+        else { aliceOppoState = (stateSymbol === '|\u2197\u27E9') ? '|\u2196\u27E9' : '|\u2197\u27E9';}
         const eveDiffStates = isAliceZ ? symbolsX : symbolsZ;
         document.getElementById('eve-alice-state').innerText = stateSymbol;
         const aliceImg = document.getElementById('eve-alice-key');
@@ -777,6 +841,10 @@
             sameLines.forEach(l => { l.classList.add('line-inactive');});
             diffLines.forEach(l => { l.classList.remove('line-inactive');});
         }
+        syncProbabilityNodes('#view-bb84-eve-resend');
+        updateEveDetectedIndicator();
+        const calculationPanel = document.getElementById('calculation-panel');
+        if (calculationPanel && calculationPanel.style.display === 'block') showEveDetectedCalculation();
         document.getElementById('bob-final-1').innerText = stateSymbol;
         document.querySelector('#bob-final-2 span').innerText = eveDiffStates[0];
         document.querySelector('#bob-final-3 span').innerText = eveDiffStates[1];
@@ -790,3 +858,4 @@
 </script>
 </body>
 </html>
+

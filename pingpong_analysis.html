@@ -68,6 +68,12 @@
         .eve-calc-main-row > math { flex: 0 0 auto; }
         .eve-fraction-stack { display: inline-flex; flex-direction: column; align-items: stretch; justify-content: center; gap: 11px; min-width: max-content; }
         .eve-fraction-stack math { display: block; text-align: center; margin: 0; }
+        .eve-fraction-stack .eve-fraction-numerator,
+        .eve-fraction-stack .eve-fraction-denominator { width: 100%; text-align: center; }
+        .eve-fraction-stack mjx-container.eve-fraction-numerator,
+        .eve-fraction-stack mjx-container.eve-fraction-denominator { display: block !important; width: 100%; text-align: center; }
+        .eve-fraction-stack .eve-fraction-numerator mjx-container,
+        .eve-fraction-stack .eve-fraction-denominator mjx-container { display: inline-block !important; }
         .eve-fraction-line { width: 100%; height: 2px; background: #333; flex: 0 0 auto; }
         .eve-final-row { margin-top: 4px; }
         .pull-tab { position: absolute; top: 0; left: 50%; transform: translateX(-50%); background-color: var(--primary-blue); color: white; padding: 10px 40px 15px 40px; border-bottom-left-radius: 20px; border-bottom-right-radius: 20px; cursor: pointer; font-size: 16px; font-weight: bold; z-index: 10001; box-shadow: 0 4px 15px rgba(0,0,0,0.3); transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1); display: flex; gap: 10px; align-items: center; }
@@ -282,7 +288,7 @@
             </div>
             <div id="calculation-panel" style="background: white; border-radius: 12px; padding: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.08); display: none;">
                 <h4 style="margin-top: 0; margin-bottom: 15px; color: var(--primary-blue); border-bottom: 2px solid var(--light-blue); padding-bottom: 10px;">Quantum State Transformation</h4>
-                <div id="math-display" style="font-size: 18px; text-align: center; overflow-x: auto; padding: 10px;"></div>
+                <div id="math-display" style="font-size: 18px; text-align: center; overflow-x: auto; padding: 26px 18px 30px;"></div>
             </div>
         </div>
     </div>
@@ -902,9 +908,9 @@
                         <mrow><msub><mi>P</mi><mtext>detected</mtext></msub><mo>=</mo></mrow>
                     </math>
                     <div class="eve-fraction-stack">
-                        <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><mrow>${detectedTermsMathML}</mrow></math>
+                        <div class="eve-fraction-numerator"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><mrow>${detectedTermsMathML}</mrow></math></div>
                         <div class="eve-fraction-line"></div>
-                        <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><mrow>${allTermsMathML}</mrow></math>
+                        <div class="eve-fraction-denominator"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><mrow>${allTermsMathML}</mrow></math></div>
                     </div>
                 </div>
                 <math class="eve-final-row" display="block" xmlns="http://www.w3.org/1998/Math/MathML">

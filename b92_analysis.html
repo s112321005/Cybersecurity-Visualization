@@ -88,24 +88,46 @@
         .selection-box .state-btn { border-color: var(--alice-blue); color: var(--alice-blue); }
         .option-row.active .state-btn { background-color: var(--alice-blue); border-color: var(--alice-blue); color: #ffffff; }
         .state-circle { background: var(--alice-blue); color: #ffffff; }
+        #b92-symbol-bobsame,
+        .state-circle:has(#b92-symbol-bobunsame-1),
+        .state-circle:has(#b92-symbol-bobunsame-2),
+        #view-b92-eve-resend [id^="bob-final-"] { background-color: var(--bob-blue); color: #ffffff; border-color: var(--bob-blue); }
+        #b92-symbol-bobsame.inactive,
+        .state-circle.inactive:has(#b92-symbol-bobunsame-1),
+        .state-circle.inactive:has(#b92-symbol-bobunsame-2),
+        #view-b92-eve-resend [id^="bob-final-"].inactive { background-color: var(--inactive-gray); color: #666; border-color: var(--inactive-gray); }
+        #view-b92-eve-resend [id^="bob-final-"].eve-error:not(.inactive) { background-color: var(--eve-red); color: #ffffff; border-color: var(--eve-red); }
+        .prob-circle { background: var(--light-blue); color: var(--primary-blue); border: 2px solid var(--light-blue); }
+        .prob-circle.inactive { background-color: var(--inactive-gray); color: #666; border-color: var(--inactive-gray); }
+        .prob-circle.eve-error { background-color: #ffe6e6; color: var(--eve-red); border-color: #ffe6e6; }
+        .prob-fraction { width: 30px; height: 30px; font-size: 12px; flex-direction: column; box-shadow: 0 2px 4px rgba(0,0,0,0.1); transform: translateY(-50%); }
+        .prob-fraction .fraction-num { border-bottom: 1px solid currentColor; width: 100%; text-align: center; line-height: 1; }
+        .prob-fraction .fraction-den { text-align: center; line-height: 1; }
         .hint-text { color: var(--alice-blue); }
         .apply-btn { background-color: #28a745; color: white; border: none; padding: 12px 50px; border-radius: 25px; font-size: 20px; font-weight: bold; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 10px rgba(40,167,69,0.3); }
         .apply-btn:hover { background-color: #218838; transform: scale(1.05); }
         #eve-detected-indicator { cursor: pointer; user-select: none; margin-left: auto; border-color: var(--eve-red); color: var(--eve-red); }
         #eve-detected-indicator:hover { background: #fff1f1; box-shadow: 0 4px 10px rgba(211,47,47,0.18); }
-        .eve-calculation-panel { background: white; border-radius: 12px; padding: 20px; margin-top: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.08); display: none; }
+        .eve-calculation-panel { background: white; border-radius: 12px; padding: 20px; margin-top: 20px; margin-left: 250px; width: calc(100% - 250px); box-sizing: border-box; box-shadow: 0 4px 10px rgba(0,0,0,0.08); display: none; }
         .eve-calculation-panel h4 { margin-top: 0; margin-bottom: 15px; color: var(--primary-blue); border-bottom: 2px solid var(--light-blue); padding-bottom: 10px; }
         .eve-calc-red { color: var(--eve-red); font-weight: 900; }
         .eve-calc-blue { color: var(--primary-blue); font-weight: 900; }
+        .eve-calc-gray { color: #777; font-weight: 900; }
         #math-display { overflow-x: auto; user-select: none; padding: 26px 18px 30px; }
         #math-display math { font-family: "Times New Roman", serif; font-size: 21px; white-space: nowrap; }
         #math-display .eve-calc-note { margin-top: 16px; font-size: 14px; font-weight: 800; color: #667085; text-align: center; }
         .eve-calc-wrapper { display: inline-flex; flex-direction: column; align-items: center; gap: 18px; min-width: max-content; padding: 8px 22px 12px; }
         .eve-calc-main-row { display: inline-flex; align-items: center; justify-content: flex-start; gap: 16px; min-width: max-content; }
         .eve-calc-main-row > math { flex: 0 0 auto; }
-        .eve-fraction-stack { display: inline-flex; flex-direction: column; align-items: stretch; justify-content: center; gap: 11px; min-width: max-content; }
+        .eve-fraction-stack { display: inline-grid; grid-template-columns: max-content; justify-items: stretch; align-items: center; gap: 11px; min-width: max-content; }
         .eve-fraction-stack math { display: block; text-align: center; margin: 0; }
-        .eve-fraction-line { width: 100%; height: 2px; background: #333; flex: 0 0 auto; }
+        .eve-fraction-stack .eve-fraction-numerator,
+        .eve-fraction-stack .eve-fraction-denominator { grid-column: 1; justify-self: stretch; width: 100%; text-align: center; }
+        .eve-fraction-stack mjx-container.eve-fraction-numerator,
+        .eve-fraction-stack mjx-container.eve-fraction-denominator { display: block !important; width: 100%; text-align: center; }
+        .eve-fraction-stack .eve-fraction-numerator mjx-container,
+        .eve-fraction-stack .eve-fraction-denominator mjx-container { display: inline-block !important; }
+        .eve-fraction-line { grid-column: 1; justify-self: stretch; width: 100%; height: 2px; background: #333; }
         .eve-final-row { margin-top: 4px; }
     </style>
     <script>window.MathJax = { options: { enableMenu: false } };</script>
@@ -253,11 +275,11 @@
                         </div>
                     </div>
                     <div class="result-circle inactive" style="left: 90%; top: 25%; width: 50px; height: 50px;">✖</div>
-                    <div style="position: absolute; left: calc(90% + 38px); top: 25%; transform: translateY(-50%); background: var(--light-blue); color: var(--primary-blue); width: 30px; height: 30px; border-radius: 50%; font-size: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; font-weight: bold; z-index: 4; box-shadow: 0 2px 4px rgba(0,0,0,0.1);"><div style="border-bottom: 1px solid var(--primary-blue); width: 100%; text-align: center; line-height: 1;">1</div><div style="text-align: center; line-height: 1;">2</div></div>
+                    <div class="prob-circle prob-fraction inactive" style="left: calc(90% + 38px); top: 25%;" data-prob-for="b92-symbol-bobsame"><div class="fraction-num">1</div><div class="fraction-den">2</div></div>
                     <div class="result-circle" style="left: 90%; top: 56%; width: 50px; height: 50px;">✔</div>
-                    <div style="position: absolute; left: calc(90% + 38px); top: 56%; transform: translateY(-50%); background: var(--light-blue); color: var(--primary-blue); width: 30px; height: 30px; border-radius: 50%; font-size: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; font-weight: bold; z-index: 4; box-shadow: 0 2px 4px rgba(0,0,0,0.1);"><div style="border-bottom: 1px solid var(--primary-blue); width: 100%; text-align: center; line-height: 1;">1</div><div style="text-align: center; line-height: 1;">4</div></div>
+                    <div class="prob-circle prob-fraction" style="left: calc(90% + 38px); top: 56%;" data-prob-for="b92-symbol-bobunsame-1"><div class="fraction-num">1</div><div class="fraction-den">4</div></div>
                     <div class="result-circle inactive" style="left: 90%; top: 85%; width: 50px; height: 50px;">✖</div>
-                    <div style="position: absolute; left: calc(90% + 38px); top: 85%; transform: translateY(-50%); background: var(--light-blue); color: var(--primary-blue); width: 30px; height: 30px; border-radius: 50%; font-size: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; font-weight: bold; z-index: 4; box-shadow: 0 2px 4px rgba(0,0,0,0.1);"><div style="border-bottom: 1px solid var(--primary-blue); width: 100%; text-align: center; line-height: 1;">1</div><div style="text-align: center; line-height: 1;">4</div></div>
+                    <div class="prob-circle prob-fraction inactive" style="left: calc(90% + 38px); top: 85%;" data-prob-for="b92-symbol-bobunsame-2"><div class="fraction-num">1</div><div class="fraction-den">4</div></div>
                 </div>
             </div>
             </div>
@@ -288,7 +310,7 @@
                 </div>
             </div>
             
-            <div class="diagram-area eve-layout" style="height: 1020px;">
+            <div class="diagram-area eve-layout" style="height: 1150px;">
                 <div class="character-avatar avatar-alice" style="left: 8%; width: 130px;"><img src="pictures/cat_alice.svg" alt="Alice"></div>
                 <div class="character-avatar avatar-eve" style="left: 38%; width: 350px;"><img src="pictures/Eavesdropper.svg" alt="Eve" style="width:60px;"></div>
                 <div class="character-avatar avatar-bob" style="left: 72%; width: 228px;"><img src="pictures/cat_bob.svg" alt="Bob"></div>
@@ -345,23 +367,23 @@
                     <div class="node bob-diff-node" style="left: 72%; top: 94%;"><img id="bob-pol-6" src="pictures/gray_diagonal.svg" class="polarizer-img inactive"></div>
                     
                     <div class="node bob-same-node" style="left: 88%; top: 15%;"><div class="state-circle inactive" id="bob-final-1">|→⟩</div></div>
-                    <div style="position: absolute; left: calc(88% + 38px); top: 15%; transform: translateY(-50%); background: var(--light-blue); color: var(--primary-blue); width: 30px; height: 30px; border-radius: 50%; font-size: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; font-weight: bold; z-index: 4; box-shadow: 0 2px 4px rgba(0,0,0,0.1);"><div style="border-bottom: 1px solid var(--primary-blue); width: 100%; text-align: center; line-height: 1;">1</div><div style="text-align: center; line-height: 1;">4</div></div>
+                    <div class="prob-circle prob-fraction inactive" style="left: calc(88% + 38px); top: 15%;" data-prob-for="bob-final-1"><div class="fraction-num">1</div><div class="fraction-den">4</div></div>
                     <div class="node bob-diff-node" style="left: 88%; top: 30%;"><div class="state-circle" id="bob-final-2" style="transform: rotate(-45deg);"><span style="transform: rotate(45deg); display:block;">|↖⟩</span></div></div>
-                    <div style="position: absolute; left: calc(88% + 38px); top: 30%; transform: translateY(-50%); background: var(--light-blue); color: var(--primary-blue); width: 30px; height: 30px; border-radius: 50%; font-size: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; font-weight: bold; z-index: 4; box-shadow: 0 2px 4px rgba(0,0,0,0.1);"><div style="border-bottom: 1px solid var(--primary-blue); width: 100%; text-align: center; line-height: 1;">1</div><div style="text-align: center; line-height: 1;">8</div></div>
+                    <div class="prob-circle prob-fraction" style="left: calc(88% + 38px); top: 30%;" data-prob-for="bob-final-2"><div class="fraction-num">1</div><div class="fraction-den">8</div></div>
                     <div class="node bob-diff-node" style="left: 88%; top: 40%;"><div class="state-circle inactive" id="bob-final-3" style="transform: rotate(45deg);"><span style="transform: rotate(-45deg); display:block;">|↗⟩</span></div></div>
-                    <div style="position: absolute; left: calc(88% + 38px); top: 40%; transform: translateY(-50%); background: var(--light-blue); color: var(--primary-blue); width: 30px; height: 30px; border-radius: 50%; font-size: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; font-weight: bold; z-index: 4; box-shadow: 0 2px 4px rgba(0,0,0,0.1);"><div style="border-bottom: 1px solid var(--primary-blue); width: 100%; text-align: center; line-height: 1;">1</div><div style="text-align: center; line-height: 1;">8</div></div>
+                    <div class="prob-circle prob-fraction inactive" style="left: calc(88% + 38px); top: 40%;" data-prob-for="bob-final-3"><div class="fraction-num">1</div><div class="fraction-den">8</div></div>
                     <div class="node bob-same-node" style="left: 88%; top: 52%;"><div class="state-circle inactive" id="bob-final-4">|→⟩</div></div>
-                    <div style="position: absolute; left: calc(88% + 38px); top: 52%; transform: translateY(-50%); background: var(--light-blue); color: var(--primary-blue); width: 30px; height: 30px; border-radius: 50%; font-size: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; font-weight: bold; z-index: 4; box-shadow: 0 2px 4px rgba(0,0,0,0.1);"><div style="border-bottom: 1px solid var(--primary-blue); width: 100%; text-align: center; line-height: 1;">1</div><div style="text-align: center; line-height: 1;">16</div></div>
+                    <div class="prob-circle prob-fraction inactive" style="left: calc(88% + 38px); top: 52%;" data-prob-for="bob-final-4"><div class="fraction-num">1</div><div class="fraction-den">16</div></div>
                     <div class="node bob-same-node" style="left: 88%; top: 63%;"><div class="state-circle eve-error" id="bob-final-5">|→⟩</div></div>
-                    <div style="position: absolute; left: calc(88% + 38px); top: 63%; transform: translateY(-50%); background: var(--light-blue); color: var(--primary-blue); width: 30px; height: 30px; border-radius: 50%; font-size: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; font-weight: bold; z-index: 4; box-shadow: 0 2px 4px rgba(0,0,0,0.1);"><div style="border-bottom: 1px solid var(--primary-blue); width: 100%; text-align: center; line-height: 1;">1</div><div style="text-align: center; line-height: 1;">16</div></div>
+                    <div class="prob-circle prob-fraction eve-error" style="left: calc(88% + 38px); top: 63%;" data-prob-for="bob-final-5"><div class="fraction-num">1</div><div class="fraction-den">16</div></div>
                     <div class="node bob-diff-node" style="left: 88%; top: 73%;"><div class="state-circle" id="bob-final-6" style="transform: rotate(-45deg);"><span style="transform: rotate(45deg); display:block;">|↗⟩</span></div></div>
-                    <div style="position: absolute; left: calc(88% + 38px); top: 73%; transform: translateY(-50%); background: var(--light-blue); color: var(--primary-blue); width: 30px; height: 30px; border-radius: 50%; font-size: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; font-weight: bold; z-index: 4; box-shadow: 0 2px 4px rgba(0,0,0,0.1);"><div style="border-bottom: 1px solid var(--primary-blue); width: 100%; text-align: center; line-height: 1;">1</div><div style="text-align: center; line-height: 1;">8</div></div>
+                    <div class="prob-circle prob-fraction" style="left: calc(88% + 38px); top: 73%;" data-prob-for="bob-final-6"><div class="fraction-num">1</div><div class="fraction-den">8</div></div>
                     <div class="node bob-same-node" style="left: 88%; top: 78%;"><div class="state-circle inactive" id="bob-final-7">|→⟩</div></div>
-                    <div style="position: absolute; left: calc(88% + 38px); top: 78%; transform: translateY(-50%); background: var(--light-blue); color: var(--primary-blue); width: 30px; height: 30px; border-radius: 50%; font-size: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; font-weight: bold; z-index: 4; box-shadow: 0 2px 4px rgba(0,0,0,0.1);"><div style="border-bottom: 1px solid var(--primary-blue); width: 100%; text-align: center; line-height: 1;">1</div><div style="text-align: center; line-height: 1;">16</div></div>
+                    <div class="prob-circle prob-fraction inactive" style="left: calc(88% + 38px); top: 78%;" data-prob-for="bob-final-7"><div class="fraction-num">1</div><div class="fraction-den">16</div></div>
                     <div class="node bob-same-node" style="left: 88%; top: 86%;"><div class="state-circle eve-error" id="bob-final-8">|→⟩</div></div>
-                    <div style="position: absolute; left: calc(88% + 38px); top: 86%; transform: translateY(-50%); background: #ffe6e6; color: var(--eve-red); width: 30px; height: 30px; border-radius: 50%; font-size: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; font-weight: bold; z-index: 4; box-shadow: 0 2px 4px rgba(0,0,0,0.1);"><div style="border-bottom: 1px solid var(--eve-red); width: 100%; text-align: center; line-height: 1;">1</div><div style="text-align: center; line-height: 1;">16</div></div>
+                    <div class="prob-circle prob-fraction eve-error" style="left: calc(88% + 38px); top: 86%;" data-prob-for="bob-final-8"><div class="fraction-num">1</div><div class="fraction-den">16</div></div>
                     <div class="node bob-diff-node" style="left: 88%; top: 94%;"><div class="state-circle inactive" id="bob-final-9" style="transform: rotate(45deg);"><span style="transform: rotate(-45deg); display:block;">|↗⟩</span></div></div>
-                    <div style="position: absolute; left: calc(88% + 38px); top: 94%; transform: translateY(-50%); background: var(--light-blue); color: var(--primary-blue); width: 30px; height: 30px; border-radius: 50%; font-size: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; font-weight: bold; z-index: 4; box-shadow: 0 2px 4px rgba(0,0,0,0.1);"><div style="border-bottom: 1px solid var(--primary-blue); width: 100%; text-align: center; line-height: 1;">1</div><div style="text-align: center; line-height: 1;">8</div></div>
+                    <div class="prob-circle prob-fraction inactive" style="left: calc(88% + 38px); top: 94%;" data-prob-for="bob-final-9"><div class="fraction-num">1</div><div class="fraction-den">8</div></div>
                 </div>
             </div>
             </div>
@@ -386,15 +408,15 @@
     };
 
     const eveDetectedTerms = [
-        { num: 1, den: 4, detected: false },
-        { num: 1, den: 8, detected: false },
-        { num: 1, den: 8, detected: false },
-        { num: 1, den: 16, detected: false },
-        { num: 1, den: 16, detected: false },
-        { num: 1, den: 8, detected: false },
-        { num: 1, den: 16, detected: false },
-        { num: 1, den: 16, detected: true },
-        { num: 1, den: 8, detected: false }
+        { num: 1, den: 4, detected: false, targetId: 'bob-final-1' },
+        { num: 1, den: 8, detected: false, targetId: 'bob-final-2' },
+        { num: 1, den: 8, detected: false, targetId: 'bob-final-3' },
+        { num: 1, den: 16, detected: false, targetId: 'bob-final-4' },
+        { num: 1, den: 16, detected: false, targetId: 'bob-final-5' },
+        { num: 1, den: 8, detected: false, targetId: 'bob-final-6' },
+        { num: 1, den: 16, detected: false, targetId: 'bob-final-7' },
+        { num: 1, den: 16, detected: true, targetId: 'bob-final-8' },
+        { num: 1, den: 8, detected: false, targetId: 'bob-final-9' }
     ];
 
     function probabilityToFraction(prob) {
@@ -403,6 +425,10 @@
             if (Math.abs(prob - num / den) < 0.000001) return { num, den };
         }
         return { num: Math.round(prob * 1000), den: 1000 };
+    }
+
+    function formatPercent(prob) {
+        return (prob * 100).toFixed(3).replace(/\.?0+$/, '');
     }
 
     function showEveDetectedCalculation() {
@@ -415,25 +441,36 @@
         panel.oncontextmenu = () => false;
         display.oncontextmenu = () => false;
 
-        const terms = eveDetectedTerms.map(term => ({ prob: term.num / term.den, isError: term.detected }));
+        const terms = eveDetectedTerms.map(term => {
+            const target = document.getElementById(term.targetId);
+            const isInactive = target ? target.classList.contains('inactive') : false;
+            const isError = term.detected && !isInactive;
+            return {
+                prob: term.num / term.den,
+                isError,
+                colorClass: isError ? 'eve-calc-red' : (isInactive ? 'eve-calc-gray' : 'eve-calc-blue')
+            };
+        });
         const total = terms.filter(term => term.isError).reduce((sum, term) => sum + term.prob, 0);
 
         function termToMathML(term, visibleIndex) {
             const frac = probabilityToFraction(term.prob);
-            const colorClass = term.isError ? 'eve-calc-red' : 'eve-calc-blue';
             const sign = visibleIndex === 0 ? '' : '+';
             return `
                 ${sign ? `<mo>${sign}</mo>` : ''}
-                <mstyle class="${colorClass}">
+                <mstyle class="${term.colorClass}">
                     <mfrac><mn>${frac.num}</mn><mn>${frac.den}</mn></mfrac>
                 </mstyle>
             `;
         }
 
         const allTermsMathML = terms.map((term, index) => termToMathML(term, index)).join('');
-        const detectedTermsMathML = terms.filter(term => term.isError).map((term, index) => termToMathML(term, index)).join('');
+        const detectedTerms = terms.filter(term => term.isError);
+        const detectedTermsMathML = detectedTerms.length
+            ? detectedTerms.map((term, index) => termToMathML(term, index)).join('')
+            : '<mstyle class="eve-calc-gray"><mn>0</mn></mstyle>';
         const totalFrac = probabilityToFraction(total);
-        const totalPercent = (total * 100).toFixed(1).replace('.0', '');
+        const totalPercent = formatPercent(total);
 
         display.innerHTML = `
             <div class="eve-calc-wrapper" oncontextmenu="return false;">
@@ -442,9 +479,9 @@
                         <mrow><msub><mi>P</mi><mtext>detected</mtext></msub><mo>=</mo></mrow>
                     </math>
                     <div class="eve-fraction-stack">
-                        <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><mrow>${detectedTermsMathML}</mrow></math>
+                        <div class="eve-fraction-numerator"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><mrow>${detectedTermsMathML}</mrow></math></div>
                         <div class="eve-fraction-line"></div>
-                        <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><mrow>${allTermsMathML}</mrow></math>
+                        <div class="eve-fraction-denominator"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><mrow>${allTermsMathML}</mrow></math></div>
                     </div>
                 </div>
                 <math class="eve-final-row" display="block" xmlns="http://www.w3.org/1998/Math/MathML">
@@ -690,6 +727,35 @@
             line.classList.remove('line-inactive');
             line.setAttribute('stroke-width', '4'); 
         });
+        syncProbabilityNodes('#view-b92');
+    }
+
+    function getProbabilityTarget(probNode) {
+        const targetId = probNode.dataset.probFor;
+        const target = targetId ? document.getElementById(targetId) : null;
+        if (!target) return null;
+        return target.classList.contains('state-circle') ? target : target.closest('.state-circle');
+    }
+
+    function syncProbabilityNodes(containerSelector) {
+        document.querySelectorAll(`${containerSelector} .prob-circle[data-prob-for]`).forEach(probNode => {
+            const target = getProbabilityTarget(probNode);
+            if (!target) return;
+            probNode.classList.toggle('inactive', target.classList.contains('inactive'));
+            probNode.classList.toggle('eve-error', target.classList.contains('eve-error') && !target.classList.contains('inactive'));
+        });
+    }
+
+    function updateEveDetectedIndicator() {
+        const indicator = document.getElementById('eve-detected-indicator');
+        if (!indicator) return;
+        const total = eveDetectedTerms.reduce((sum, term) => {
+            const target = document.getElementById(term.targetId);
+            const isActiveError = target && term.detected && target.classList.contains('eve-error') && !target.classList.contains('inactive');
+            return sum + (isActiveError ? term.num / term.den : 0);
+        }, 0);
+        const totalPercent = formatPercent(total);
+        indicator.innerText = `Eve detected probability： ${totalPercent}%`;
     }
     function updateB92Visuals(isSameBasis) {
         const container = document.querySelector('#view-b92');
@@ -717,6 +783,7 @@
         if (bobSameNode) bobSameNode.classList.add('inactive');
         if (bobUnsameNode1) bobUnsameNode1.classList.remove('inactive');
         if (bobUnsameNode2) bobUnsameNode2.classList.add('inactive');
+        syncProbabilityNodes('#view-b92');
 }
 
     function selectStateB92(element, stateSymbol, basisType) {
@@ -1091,6 +1158,11 @@
                 setLineActiveByBobPath(lineNode, isBobChosenPath);
             });
         });
+
+        syncProbabilityNodes('#view-b92-eve-resend');
+        updateEveDetectedIndicator();
+        const calculationPanel = document.getElementById('calculation-panel');
+        if (calculationPanel && calculationPanel.style.display === 'block') showEveDetectedCalculation();
     }
 </script>
 </body>
