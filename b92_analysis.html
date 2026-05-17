@@ -110,13 +110,22 @@
         #eve-detected-indicator:hover { background: #fff1f1; box-shadow: 0 4px 10px rgba(211,47,47,0.18); }
         .eve-calculation-panel { background: white; border-radius: 12px; padding: 20px; margin-top: 20px; margin-left: 250px; width: calc(100% - 250px); box-sizing: border-box; box-shadow: 0 4px 10px rgba(0,0,0,0.08); display: none; }
         .eve-calculation-panel h4 { margin-top: 0; margin-bottom: 15px; color: var(--primary-blue); border-bottom: 2px solid var(--light-blue); padding-bottom: 10px; }
+        #calculation-panel { scroll-margin-top: 28px; transform-origin: center top; }
+        #calculation-panel.calc-panel-pop { animation: calcPanelPop 0.9s ease-out; }
+        @keyframes calcPanelPop {
+            0% { transform: scale(1); box-shadow: 0 4px 10px rgba(0,0,0,0.08); outline: 0 solid rgba(84,159,208,0); }
+            28% { transform: scale(1.018); box-shadow: 0 12px 28px rgba(84,159,208,0.32); outline: 4px solid rgba(84,159,208,0.28); }
+            100% { transform: scale(1); box-shadow: 0 4px 10px rgba(0,0,0,0.08); outline: 0 solid rgba(84,159,208,0); }
+        }
         .eve-calc-red { color: var(--eve-red); font-weight: 900; }
         .eve-calc-blue { color: var(--primary-blue); font-weight: 900; }
         .eve-calc-gray { color: #777; font-weight: 900; }
-        #math-display { overflow-x: auto; user-select: none; padding: 26px 18px 30px; }
+        #math-display { overflow-x: auto; user-select: none; padding: 26px 18px 30px; text-align: center; }
         #math-display math { font-family: "Times New Roman", serif; font-size: 21px; white-space: nowrap; }
+        #math-display > mjx-container { margin-left: auto !important; margin-right: auto !important; }
+        #math-display mjx-container[display="true"] { text-align: center !important; }
         #math-display .eve-calc-note { margin-top: 16px; font-size: 14px; font-weight: 800; color: #667085; text-align: center; }
-        .eve-calc-wrapper { display: inline-flex; flex-direction: column; align-items: center; gap: 18px; min-width: max-content; padding: 8px 22px 12px; }
+        .eve-calc-wrapper { display: inline-flex; flex-direction: column; align-items: center; gap: 18px; min-width: max-content; padding: 8px 22px 12px; margin: 0 auto; }
         .eve-calc-main-row { display: inline-flex; align-items: center; justify-content: flex-start; gap: 16px; min-width: max-content; }
         .eve-calc-main-row > math { flex: 0 0 auto; }
         .eve-fraction-stack { display: inline-grid; grid-template-columns: max-content; justify-items: stretch; align-items: center; gap: 11px; min-width: max-content; }
@@ -388,7 +397,7 @@
             </div>
             </div>
         <div id="calculation-panel" class="eve-calculation-panel">
-            <h4>Eve Detection Calculation</h4>
+            <h4>Calculation Process</h4>
             <div id="math-display" class="eve-calc-display"></div>
         </div>
     </div>
@@ -495,8 +504,19 @@
 
         if (window.MathJax) {
             MathJax.typesetClear([display]);
-            MathJax.typesetPromise([display]);
+            MathJax.typesetPromise([display]).then(() => focusCalculationPanel(panel));
+        } else {
+            focusCalculationPanel(panel);
         }
+    }
+
+    function focusCalculationPanel(panel = document.getElementById('calculation-panel')) {
+        if (!panel) return;
+        panel.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        panel.classList.remove('calc-panel-pop');
+        void panel.offsetWidth;
+        panel.classList.add('calc-panel-pop');
+        window.setTimeout(() => panel.classList.remove('calc-panel-pop'), 950);
     }
 
     // ▼▼▼ Overlay Settings JavaScript ▼▼▼
