@@ -295,11 +295,10 @@
                         <line class="bb84-line FalseRoute" data-prob="25%" x1="47%" y1="75%" x2="67%" y2="85%" stroke="#333" stroke-width="3" marker-end="url(#arrow-bb84)" />
                     </svg>
                     <div class="node" style="left: 10%; top: 50%;">
-                        <img id="bb84-initial-key-img" src="pictures/a_vertical.svg" class="polarizer-img">
                         <div class="state-circle" id="bb84-initial-state-text">|&rarr;&#10217;</div>
                     </div>
                     <div class="node" style="left: 41%; top: 25%;">
-                        <img id="bb84-bob-same" src="pictures/a_vertical.svg" class="polarizer-img">
+                        <img id="bb84-bob-same" src="pictures/b_vertical.svg" class="polarizer-img">
                     </div>
                     <div class="node" style="left: 41%; top: 75%;">
                         <img id="bb84-bob-unsame" src="pictures/gray_diagonal.svg" class="polarizer-img inactive">
@@ -392,7 +391,6 @@
                         <line class="eve-bob-line diff-path" data-prob="12.5%" x1="76%" y1="94%" x2="84%" y2="94%" stroke="#333" stroke-width="3" marker-end="url(#arrow-bb84-resend)" />
                     </svg>
                     <div class="node" style="left: 8%; top: 50%;">
-                        <img id="eve-alice-key" src="pictures/a_vertical.svg" class="polarizer-img">
                         <div class="state-circle" id="eve-alice-state">|&rarr;&#10217;</div>
                     </div>
                     <div class="node" style="left: 32%; top: 25%;"><img id="eve-pol-same" src="pictures/red_vertical.svg" class="polarizer-img"></div>
@@ -730,18 +728,15 @@
         const oppoSymbol = symbols[(basisType === 'rectilinear') ? 'Dtype' : 'Stype'];
         document.getElementById('bb84-symbol-bobunsame-1').innerText = oppoSymbol[0];
         document.getElementById('bb84-symbol-bobunsame-2').innerText = oppoSymbol[1];
-        const keyImg = document.getElementById('bb84-initial-key-img');
         const bobSame = document.getElementById('bb84-bob-same');
         const bobUnsame = document.getElementById('bb84-bob-unsame');
         const isAliceZ = (basisType === 'rectilinear');
         const isBobZ = (globalBobBasis === 'Z');
         const isSameBasis = (isAliceZ === isBobZ);
         if (isAliceZ) {
-            keyImg.src = "pictures/a_vertical.svg";
             bobSame.src = isSameBasis ? "pictures/b_vertical.svg" : "pictures/gray_vertical.svg";
             bobUnsame.src = !isSameBasis ? "pictures/b_diagonal.svg" : "pictures/gray_diagonal.svg";
         } else {
-            keyImg.src = "pictures/a_diagonal.svg"; 
             bobSame.src = isSameBasis ? "pictures/b_diagonal.svg" : "pictures/gray_diagonal.svg";
             bobUnsame.src = !isSameBasis ? "pictures/b_vertical.svg" : "pictures/gray_vertical.svg";
         }
@@ -809,15 +804,12 @@
         else { aliceOppoState = (stateSymbol === '|\u2197\u27E9') ? '|\u2196\u27E9' : '|\u2197\u27E9';}
         const eveDiffStates = isAliceZ ? symbolsX : symbolsZ;
         document.getElementById('eve-alice-state').innerText = stateSymbol;
-        const aliceImg = document.getElementById('eve-alice-key');
         const eveSameImg = document.getElementById('eve-pol-same');
         const eveDiffImg = document.getElementById('eve-pol-diff');
         if (isAliceZ) {
-            aliceImg.src = "pictures/a_vertical.svg";
             eveSameImg.src = "pictures/red_vertical.svg";
             eveDiffImg.src = "pictures/red_diagonal.svg";
         } else {
-            aliceImg.src = "pictures/a_diagonal.svg";
             eveSameImg.src = "pictures/red_diagonal.svg";
             eveDiffImg.src = "pictures/red_vertical.svg";
         }
