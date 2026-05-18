@@ -27,11 +27,12 @@
         .entanglement-zone{display:flex;align-items:flex-end;gap:120px;position:relative;flex-shrink:0}
         .particle-group{display:flex;flex-direction:column;align-items:center;z-index:10;gap:15px;width:110px}
         .avatar{width:90px;height:auto;pointer-events:none}
-        .svg-btn{background:#f0f7ff;border:2px solid #cce0ff;border-radius:50%;width:65px;height:65px;cursor:pointer;transition:all 0.2s;padding:5px;outline:none;display:flex;justify-content:center;align-items:center;box-shadow:0 4px 8px rgba(0,0,0,0.1)}
+        .svg-btn{background:#f0f7ff;border:2px solid #cce0ff;border-radius:50%;width:65px;height:65px;cursor:pointer;transition:all 0.2s;padding:5px;outline:none;display:flex;justify-content:center;align-items:center;box-shadow:0 0 0 0 rgba(84,159,208,0.35);animation:eyeBreath 1.8s ease-in-out infinite}
         .svg-btn:hover:not(:disabled){transform:scale(1.15);border-color:var(--primary-blue);background:white}
         .svg-btn:disabled{opacity:0.5;cursor:not-allowed}
         .eye-icon{width:100%;height:auto}
-        .photon-particle{width:65px;height:65px;background:var(--photon-yellow);border-radius:50%;box-shadow:0 0 35px rgba(255,235,59,0.8),inset -5px -5px 15px rgba(0,0,0,0.1);display:flex;justify-content:center;align-items:center;font-weight:bold;font-size:2.2rem;color:var(--dark-text);transition:all 0.3s cubic-bezier(0.175,0.885,0.32,1.275);z-index:15;position:relative}
+        @keyframes eyeBreath{0%,100%{box-shadow:0 0 0 0 rgba(84,159,208,0.36)}50%{box-shadow:0 0 0 12px rgba(84,159,208,0)}}
+        .photon-particle{width:65px;height:65px;background:var(--photon-yellow);border-radius:50%;box-shadow:inset -5px -5px 15px rgba(0,0,0,0.1);display:flex;justify-content:center;align-items:center;font-weight:bold;font-size:2.2rem;color:var(--dark-text);transition:all 0.3s cubic-bezier(0.175,0.885,0.32,1.275);z-index:15;position:relative}
         .photon-particle.measured-a{background:var(--alice-color);color:white;box-shadow:0 0 30px var(--alice-color);font-size:1.8rem}
         .photon-particle.measured-b{background:var(--bob-blue);color:white;box-shadow:0 0 30px var(--bob-blue);font-size:1.8rem}
         .entangle-link{position:absolute;bottom:30px;left:50%;transform:translateX(-50%);width:230px;height:6px;background:var(--photon-yellow);box-shadow:0 0 18px 6px rgba(255,235,59,0.6);z-index:1;border-radius:5px;overflow:hidden;transition:opacity 0.3s}
@@ -135,7 +136,7 @@
         <div class="state-badge" aria-label="Current entangled state">
             <p class="state-badge-title">Current Entangled State</p>
             <div class="state-badge-formula" id="state-badge-formula" aria-live="polite">
-                \( |\Psi^+\rangle = \frac{1}{\sqrt{2}}(|01\rangle + |10\rangle)_{12} \)
+                \( |𝜓^+\rangle = \frac{1}{\sqrt{2}}(|01\rangle + |10\rangle)_{12} \)
             </div>
         </div>
         
@@ -269,18 +270,18 @@
 
             if (mode === 'collapsed') {
                 const collapsedTerm = formatTerm(activeTerm, activeTerm, null);
-                setStateBadgeLatex(`|\\Psi^+\\rangle \\rightarrow ${collapsedTerm}_{12}`, true);
+                setStateBadgeLatex(`|𝜓^+\\rangle \\rightarrow ${collapsedTerm}_{12}`, true);
                 return;
             }
 
             if (!activeTerm && !fadingTerm) {
-                setStateBadgeLatex('|\\Psi^+\\rangle = \\frac{1}{\\sqrt{2}}(|01\\rangle + |10\\rangle)_{12}');
+                setStateBadgeLatex('|𝜓^+\\rangle = \\frac{1}{\\sqrt{2}}(|01\\rangle + |10\\rangle)_{12}');
                 return;
             }
 
             const term01 = formatTerm('01', activeTerm, fadingTerm);
             const term10 = formatTerm('10', activeTerm, fadingTerm);
-            setStateBadgeLatex(`|\\Psi^+\\rangle = \\frac{1}{\\sqrt{2}}(${term01} + ${term10})_{12}`, true);
+            setStateBadgeLatex(`|𝜓^+\\rangle = \\frac{1}{\\sqrt{2}}(${term01} + ${term10})_{12}`, true);
         }
 
         function resetStateBadgeColor() {
@@ -487,7 +488,7 @@
 
                 if (correctlyGuessed10 && correctlyGuessed01) {
                     phase = 3;
-                    document.getElementById('hint').innerHTML = "<b>Excellent!</b> Your observations perfectly match the definition of the <b>|Ψ+⟩</b> state (where particle 1 belongs to Alice and particle 2 to Bob): a <span style='display:inline-block;vertical-align:middle;text-align:center;font-size:0.85em;line-height:1.1;margin:0 4px;'><span style='border-bottom:1px solid currentColor;display:block;'>1</span><span style='display:block;'>2</span></span> probability of measuring |10⟩ and a <span style='display:inline-block;vertical-align:middle;text-align:center;font-size:0.85em;line-height:1.1;margin:0 4px;'><span style='border-bottom:1px solid currentColor;display:block;'>1</span><span style='display:block;'>2</span></span> probability of measuring |01⟩.";
+                    document.getElementById('hint').innerHTML = "<b>Excellent!</b> Your observations perfectly match the definition of the <b>|𝜓+⟩</b> state (where particle 1 belongs to Alice and particle 2 to Bob): a <span style='display:inline-block;vertical-align:middle;text-align:center;font-size:0.85em;line-height:1.1;margin:0 4px;'><span style='border-bottom:1px solid currentColor;display:block;'>1</span><span style='display:block;'>2</span></span> probability of measuring |10⟩ and a <span style='display:inline-block;vertical-align:middle;text-align:center;font-size:0.85em;line-height:1.1;margin:0 4px;'><span style='border-bottom:1px solid currentColor;display:block;'>1</span><span style='display:block;'>2</span></span> probability of measuring |01⟩.";
                 } else {
                     document.getElementById('hint').innerHTML = `Correct! Now, let's try the other scenario to confirm your understanding...`;
                     setTimeout(generatePair, 600);
