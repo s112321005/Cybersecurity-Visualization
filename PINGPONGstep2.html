@@ -117,6 +117,13 @@
         .gate-btn:hover { background: #f4f9ff; transform: translateY(-3px); }
         .measurement-label { background: white !important; color: var(--alice-color); box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
         .measurement-label:hover { background: white !important; transform: none; }
+        .svg-btn { background: #f0f7ff; border: 2px solid #cce0ff; border-radius: 50%; width: 65px; height: 65px; cursor: pointer; transition: all 0.2s; padding: 5px; outline: none; display: flex; justify-content: center; align-items: center; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        .svg-btn:hover:not(:disabled) { transform: scale(1.15); border-color: var(--alice-color); background: white; }
+        .svg-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .eye-icon { width: 100%; height: auto; display: block; }
+        .measure-control-box { display: flex; flex-direction: column; align-items: center; gap: 6px; color: var(--alice-color); font-weight: 900; }
+        .control-pending-result { border-color: var(--path-black) !important; color: var(--path-black) !important; background: white !important; }
+        .flying-eye { position: absolute; width: 52px; height: 52px; z-index: 150; pointer-events: none; filter: drop-shadow(0 5px 9px rgba(0,0,0,0.18)); }
         
         .pulse { animation: pulse-anim 1.5s infinite; }
         @keyframes pulse-anim {
@@ -137,8 +144,13 @@
         }
         .fork-up { transform: translateY(-50%) rotate(-25deg); }
         .fork-down { transform: translateY(-50%) rotate(25deg); }
+        .fork-prob-label { position: absolute; left: 58px; color: #555; font-weight: 900; font-size: 0.9rem; background: rgba(255,255,255,0.9); padding: 1px 7px; border-radius: 999px; z-index: 3; pointer-events: none; }
+        .fork-prob-up { top: 18px; }
+        .fork-prob-down { bottom: 18px; }
         .fork-active { background-color: var(--alice-color); }
         .fork-active::after { border-left-color: var(--alice-color); }
+        .fork-muted { background-color: #c9cfd8; opacity: 0.45; }
+        .fork-muted::after { border-left-color: #c9cfd8; }
 
         /* 結果區排版設計 */
         .final-states-title { position: absolute; top: -40px; font-weight: bold; color: #555; margin: 0; width: 120px; text-align: center; left: 20px;}
@@ -424,6 +436,8 @@
             <div class="fork-area" id="fork-container">
                 <div class="fork-line fork-up" id="arrow-0"></div>
                 <div class="fork-line fork-down" id="arrow-1"></div>
+                <span class="fork-prob-label fork-prob-up" data-control-only>50%</span>
+                <span class="fork-prob-label fork-prob-down" data-control-only>50%</span>
             </div>
         </div>
 
@@ -434,13 +448,13 @@
                 <div class="row-container">
                     <div class="result-capsule" id="final-state-0"><span id="label-0">|0⟩</span></div>
                     <div class="straight-arrow" id="straight-arrow-0"></div>
-                    <div class="psi-result" id="psi-0">|Ψ⁺⟩</div>
+                    <div class="psi-result" id="psi-0">|𝜓⁺⟩</div>
                 </div>
 
                 <div class="row-container">
                     <div class="result-capsule" id="final-state-1"><span id="label-1">|1⟩</span></div>
                     <div class="straight-arrow" id="straight-arrow-1"></div>
-                    <div class="psi-result" id="psi-1">|Ψ⁻⟩</div>
+                    <div class="psi-result" id="psi-1">|𝜓⁻⟩</div>
                 </div>
 
             </div>
@@ -479,12 +493,14 @@
 
         if (mode === 'control') {
             title.innerText = "Final States";
-            hint.innerText = "Select the final state after Z-basis measurement.";
-            bubble.innerText = "Security Check Mode: select result.";
+            hint.innerText = "Click Alice's eye to measure in the Z basis.";
+            bubble.innerText = "Security Check Mode: measure P1.";
             interactive.innerHTML = `
-                <div class="gate-btn measurement-label" style="min-width: 180px; cursor: default; pointer-events: none;">
+                <div class="measure-control-box">
+                    <button class="svg-btn pulse" id="alice-measure-eye" onclick="executeAction('measure')" title="Measure Alice's Particle">
+                        <img src="pictures/a_eyez.svg" class="eye-icon" alt="Alice measurement eye">
+                    </button>
                     <span>Z-Basis Measurement</span>
-                    <small style="font-weight: normal; font-size: 0.85rem; opacity: 0.8;">(Collapse into 0 or 1)</small>
                 </div>
             `;
             document.getElementById('label-0').innerText = "|0⟩";
@@ -492,15 +508,18 @@
 
             const state0 = document.getElementById('final-state-0');
             const state1 = document.getElementById('final-state-1');
-            state0.classList.add('pulse-clickable');
-            state1.classList.add('pulse-clickable');
-            state0.setAttribute('onclick', "executeAction('0')");
-            state1.setAttribute('onclick', "executeAction('1')");
+            state0.classList.add('control-pending-result');
+            state1.classList.add('control-pending-result');
+            state0.removeAttribute('onclick');
+            state1.removeAttribute('onclick');
         } else {
             title.innerText = "Encode";
             hint.innerText = "Select a bit to encode.";
             bubble.innerText = "Message Mode! Choose a bit to encode.";
             interactive.innerHTML = ""; 
+            document.querySelectorAll('[data-control-only]').forEach(label => {
+                label.style.display = 'none';
+            });
             
             document.getElementById('label-0').innerText = "Bit 0 (I)";
             document.getElementById('label-1').innerText = "Bit 1 (Z)";
@@ -516,23 +535,30 @@
 
     function executeAction(choice) {
         document.querySelectorAll('.pulse-clickable').forEach(el => el.classList.remove('pulse-clickable'));
-        document.querySelectorAll('.gate-btn').forEach(btn => btn.classList.remove('pulse'));
+        document.querySelectorAll('.gate-btn, .svg-btn').forEach(btn => btn.classList.remove('pulse'));
         document.getElementById('final-state-0').removeAttribute('onclick');
         document.getElementById('final-state-1').removeAttribute('onclick');
         interactive.style.pointerEvents = 'none';
 
         if (choice === 'measure') {
-            bubble.innerText = `Measuring... It could be 0 or 1!`;
-            animateParticle('0', false);
-            animateParticle('1', true);
+            const measuredBit = Math.random() < 0.5 ? '0' : '1';
+            const eyeButton = document.getElementById('alice-measure-eye');
+            if (eyeButton) eyeButton.disabled = true;
+            bubble.innerText = `Measuring... Alice may observe |${measuredBit}⟩.`;
+            document.getElementById(measuredBit === '0' ? 'arrow-0' : 'arrow-1').classList.add('fork-active');
+            document.getElementById(measuredBit === '0' ? 'arrow-1' : 'arrow-0').classList.add('fork-muted');
+            if (measuredBit === '0') { document.getElementById('final-state-1').style.opacity = '0.4'; }
+            else { document.getElementById('final-state-0').style.opacity = '0.4'; }
+            animateMeasurementEye(measuredBit);
         } else if (mode === 'control') {
             bubble.innerText = `Measuring... Alice may observe |${choice}⟩.`;
             document.getElementById(choice === '0' ? 'arrow-0' : 'arrow-1').classList.add('fork-active');
+            document.getElementById(choice === '0' ? 'arrow-1' : 'arrow-0').classList.add('fork-muted');
             
             if (choice === '0') { document.getElementById('final-state-1').style.opacity = '0.4'; }
             else { document.getElementById('final-state-0').style.opacity = '0.4'; }
 
-            animateParticle(choice, true);
+            animateMeasurementEye(choice);
         } else {
             bubble.innerText = `Applying ${choice === '0' ? 'I' : 'Z'} Gate...`;
             document.getElementById(choice === '0' ? 'arrow-0' : 'arrow-1').classList.add('fork-active');
@@ -603,6 +629,51 @@
         requestAnimationFrame(frame);
     }
 
+    function animateMeasurementEye(bit) {
+        const stage = document.getElementById('stage');
+        const sourceEl = document.getElementById('alice-measure-eye');
+        const targetId = bit === '0' ? 'final-state-0' : 'final-state-1';
+        const targetEl = document.getElementById(targetId);
+
+        if (!stage || !sourceEl || !targetEl) {
+            showResult(bit, targetId);
+            return;
+        }
+
+        const stageRect = stage.getBoundingClientRect();
+        const srcRect = sourceEl.getBoundingClientRect();
+        const targetRect = targetEl.getBoundingClientRect();
+        const eye = document.createElement('img');
+        eye.src = 'pictures/a_eyez.svg';
+        eye.alt = '';
+        eye.className = 'flying-eye';
+        stage.appendChild(eye);
+
+        const startX = srcRect.left - stageRect.left + srcRect.width / 2 - 26;
+        const startY = srcRect.top - stageRect.top + srcRect.height / 2 - 26;
+        const endX = targetRect.left - stageRect.left + targetRect.width / 2 - 26;
+        const endY = targetRect.top - stageRect.top + targetRect.height / 2 - 26;
+        const duration = 850;
+        const startT = performance.now();
+
+        function frame(now) {
+            const p = Math.min((now - startT) / duration, 1);
+            const eased = 1 - Math.pow(1 - p, 3);
+            eye.style.left = (startX + (endX - startX) * eased) + 'px';
+            eye.style.top = (startY + (endY - startY) * eased) + 'px';
+            eye.style.transform = `scale(${1 + 0.08 * Math.sin(p * Math.PI)})`;
+
+            if (p < 1) {
+                requestAnimationFrame(frame);
+            } else {
+                eye.remove();
+                showResult(bit, targetId);
+            }
+        }
+
+        requestAnimationFrame(frame);
+    }
+
     function activateFinalState(bit) {
         const targetId = bit === '0' ? 'final-state-0' : 'final-state-1';
         const finalState = document.getElementById(targetId);
@@ -625,6 +696,9 @@
             if (bit === '0') { state1.style.opacity = '0.4'; }
             else { state0.style.opacity = '0.4'; }
             document.getElementById(bit === '0' ? 'arrow-0' : 'arrow-1').classList.add('fork-active');
+            document.getElementById(bit === '0' ? 'arrow-1' : 'arrow-0').classList.add('fork-muted');
+            document.getElementById(targetId).classList.remove('control-pending-result');
+            document.getElementById(targetId).classList.add('capsule-active');
         }
 
         const expBox = document.getElementById('explain-box');
@@ -636,7 +710,7 @@
             bubble.innerText = `Ah! I observed |${bit}⟩ !`;
             expTitle.innerText = "Security Check: Measurement Complete";
             expDesc.innerHTML = `Alice measured her particle and observed it <b>collapse</b> into state <b>|${bit}⟩</b>. She will now announce this result to Bob over a public channel to verify the entanglement.`;
-            expMath.innerHTML = `$$ |\\Psi^+\\rangle \\xrightarrow{M_z} |${bit}\\rangle_A \\otimes |${bit === '0' ? '1' : '0'}\\rangle_B $$`;
+            expMath.innerHTML = `$$ |𝜓^+\\rangle \\xrightarrow{M_z} |${bit}\\rangle_A \\otimes |${bit === '0' ? '1' : '0'}\\rangle_B $$`;
         } else {
             bubble.innerText = `Encoded and ready to send!`;
             expTitle.innerText = `Calculation Process`;
@@ -648,9 +722,9 @@
             document.getElementById('psi-' + bit).style.display = 'block';
 
             if (bit === '0') {
-                expMath.innerHTML = `$$ (I \\otimes I)|\\Psi^+\\rangle = \\frac{1}{\\sqrt{2}}(I|0\\rangle_A|1\\rangle_B + I|1\\rangle_A|0\\rangle_B) = \\frac{1}{\\sqrt{2}}(|01\\rangle + |10\\rangle) = |\\Psi^+\\rangle $$`;
+                expMath.innerHTML = `$$ (I \\otimes I)|𝜓^+\\rangle = \\frac{1}{\\sqrt{2}}(I|0\\rangle_A|1\\rangle_B + I|1\\rangle_A|0\\rangle_B) = \\frac{1}{\\sqrt{2}}(|01\\rangle + |10\\rangle) = |𝜓^+\\rangle $$`;
             } else {
-                expMath.innerHTML = `$$ (Z \\otimes I)|\\Psi^+\\rangle = \\frac{1}{\\sqrt{2}}(Z|0\\rangle_A|1\\rangle_B + Z|1\\rangle_A|0\\rangle_B) = \\frac{1}{\\sqrt{2}}(|01\\rangle - |10\\rangle) = |\\Psi^-\\rangle $$`;
+                expMath.innerHTML = `$$ (Z \\otimes I)|𝜓^+\\rangle = \\frac{1}{\\sqrt{2}}(Z|0\\rangle_A|1\\rangle_B + Z|1\\rangle_A|0\\rangle_B) = \\frac{1}{\\sqrt{2}}(|01\\rangle - |10\\rangle) = |𝜓^-\\rangle $$`;
             }
         }
 

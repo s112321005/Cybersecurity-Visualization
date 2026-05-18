@@ -113,6 +113,14 @@
             transition: opacity 0.4s ease;
         }
         .compare-capsule { height: auto; min-height: 52px; line-height: 1.15; flex-direction: column; gap: 2px; padding: 8px 18px; }
+        .result-capsule.measure-result-card { min-width: 96px; min-height: 86px; padding: 0 8px; gap: 7px; flex-direction: column; background: transparent !important; border: 0 !important; box-shadow: none !important; color: #555 !important; }
+        .result-capsule.bob-bg.measure-result-card { background: transparent !important; border: 0 !important; color: #555 !important; box-shadow: none !important; }
+        .measure-result-label { font-size: 1.08rem; font-weight: 900; color: #555; white-space: nowrap; }
+        .measure-bit-circle { width: 56px; height: 56px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; color: white; font-weight: 900; font-size: 1.55rem; box-shadow: 0 0 12px currentColor; }
+        .measure-bit-circle.alice-bit { background: var(--alice-color); color: white; }
+        .measure-bit-circle.bob-bit { background: var(--bob-color); color: white; }
+        .announced-result { display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-size: 0.95rem; }
+        .announced-bit-circle { width: 30px; height: 30px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; background: var(--alice-color); color: white; font-weight: 900; font-size: 1rem; }
 
         /* 角色專屬樣式 */
         .bob-text { color: var(--bob-color) !important; }
@@ -133,13 +141,18 @@
         .bob-interactive.show { opacity: 1; pointer-events: auto; }
 
         .measure-btn {
-            background: white; color: var(--bob-color); border: 3px solid var(--bob-color);
-            padding: 15px 30px; border-radius: 20px; font-size: 1.2rem; font-weight: bold;
-            cursor: pointer; box-shadow: 0 5px 15px rgba(76, 128, 197, 0.2); transition: all 0.2s;
+            background: #f0f7ff; border: 2px solid #cce0ff; border-radius: 50%;
+            width: 65px; height: 65px; cursor: pointer; transition: all 0.2s; padding: 5px; outline: none;
+            display: flex; justify-content: center; align-items: center; box-shadow: 0 4px 8px rgba(0,0,0,0.1);
         }
-        .measure-btn:hover {
-            background: var(--bob-color); color: white; transform: scale(1.05);
+        .measure-btn:hover:not(:disabled) {
+            transform: scale(1.15); border-color: var(--bob-color); background: white;
         }
+        .measure-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .bob-measure-box { display: flex; flex-direction: column; align-items: center; gap: 7px; color: var(--bob-color); font-weight: 900; }
+        .bob-measure-box.lowered { transform: translateY(30px); }
+        .measure-eye-icon { width: 100%; height: auto; object-fit: contain; display: block; }
+        .measure-label { max-width: 210px; text-align: center; font-size: 1.05rem; line-height: 1.15; }
 
         /* 連接線條與反向箭頭 (Alice -> Bob) */
         .connector { 
@@ -239,9 +252,15 @@
             align-items: center;
             font-weight: 900; 
             font-size: 1.2rem; 
-            color: var(--classical-gray);
+            color: white;
             background: white;
             box-shadow: 0 0 10px rgba(119, 119, 119, 0.3);
+        }
+        .convoy-container .classical-bit {
+            border-color: var(--alice-color);
+            background: var(--alice-color);
+            color: white;
+            box-shadow: 0 0 10px rgba(0, 74, 173, 0.35);
         }
         /* ========================================================= */
 
@@ -447,7 +466,7 @@
     <div class="header-center" id="header-subtitle">STEP 5 : MEASURE</div>
     <div class="header-right">
         <button class="nav-btn" id="back-btn" onclick="prevStep()">Back</button>
-        <button class="nav-btn" id="next-btn" onclick="nextStep()" disabled>Start Security Analysis</button>
+        <button class="nav-btn" id="next-btn" onclick="nextStep()" disabled>View Other Mode</button>
     </div>
 </div>
 
@@ -462,14 +481,19 @@
             <div class="result-capsule bob-bg" id="bob-state" style="opacity: 0; position: absolute; top: 0; display: none;">Measured...</div>
 
             <div id="control-compare-area" style="position: absolute; top: 0; display: flex; gap: 10px; z-index: 5;">
-                <div class="result-capsule classical-bg compare-capsule" id="alice-msg-display" style="opacity: 0; display: none; min-width: 90px;">Alice<br>P1: -</div>
-                <div class="result-capsule bob-bg compare-capsule" id="bob-p2-display" style="opacity: 0; display: none; min-width: 90px;">Bob<br>P2: -</div>
+                <div class="result-capsule classical-bg compare-capsule measure-result-card" id="alice-msg-display" style="opacity: 0; display: none;">Alice P1: -</div>
+                <div class="result-capsule bob-bg compare-capsule measure-result-card" id="bob-p2-display" style="opacity: 0; display: none;">Bob P2: -</div>
             </div>
 
             <div id="photon-landing-spot" style="position: absolute; top: -10px; width: 40px; height: 40px; z-index: 5;"></div>
 
             <div class="bob-interactive" id="bob-interactive">
-                <button class="measure-btn" id="measure-btn" onclick="performMeasurement()">Bell-State Measurement</button>
+                <div class="bob-measure-box">
+                    <button class="measure-btn" id="measure-btn" onclick="performMeasurement()" title="Observe Bob's Particle">
+                        <img src="pictures/b_eyez.svg" class="measure-eye-icon" alt="Bob measurement eye">
+                    </button>
+                    <span class="measure-label" id="measure-label">Bell-State Measurement</span>
+                </div>
             </div>
         </div>
 
@@ -528,12 +552,16 @@
         const classicalLabel = document.getElementById('classical-label');
 
         if(savedMode === 'control') {
-            aliceMeasuredValue = Math.random() < 0.5 ? 0 : 1;
+            aliceMeasuredValue = savedMsg === '0' ? 0 : 1;
             bobMeasuredValue = aliceMeasuredValue === 0 ? 1 : 0;
 
             aliceTitle.innerText = "Alice Announces Result";
             actionDesc.innerText = "(Broadcast Result)"; 
-            aliceState.innerHTML = `Measured P1: ${aliceMeasuredValue}`;
+            aliceState.innerHTML = `
+                <span class="announced-result">Measured P1:
+                    <span class="announced-bit-circle">${aliceMeasuredValue}</span>
+                </span>
+            `;
             
             aliceState.classList.remove("alice-bg");
             aliceState.classList.add("classical-bg");
@@ -550,9 +578,9 @@
         } else {
             actionDesc.innerText = "(Message Encoded)";
             if (savedMsg === '0') {
-                aliceState.innerHTML = '\\( |\\Psi^+\\rangle \\)';
+                aliceState.innerHTML = '\\( |𝜓^+\\rangle \\)';
             } else {
-                aliceState.innerHTML = '\\( |\\Psi^-\\rangle \\)';
+                aliceState.innerHTML = '\\( |𝜓^-\\rangle \\)';
             }
             if (window.MathJax) {
                 MathJax.typesetPromise([aliceState]);
@@ -609,10 +637,14 @@
             
             const aliceMsgDisplay = document.getElementById("alice-msg-display");
             aliceMsgDisplay.style.display = "flex";
-            aliceMsgDisplay.innerHTML = `Alice<br>P1: ${aliceMeasuredValue}`;
+            aliceMsgDisplay.innerHTML = `
+                <span class="measure-result-label">Alice P1:</span>
+                <span class="measure-bit-circle alice-bit">${aliceMeasuredValue}</span>
+            `;
             setTimeout(() => aliceMsgDisplay.style.opacity = "1", 50);
 
-            document.getElementById("measure-btn").innerText = "Measure P2 & Compare";
+            document.getElementById("measure-label").innerText = "Measure P2 & Compare";
+            document.querySelector(".bob-measure-box")?.classList.add("lowered");
             document.getElementById("bob-interactive").classList.add("show");
             document.getElementById("hint-text").innerText = "Click the button to measure Bob's Particle 2 and check correlation.";
         });
@@ -656,13 +688,16 @@
             
             const bobP2Display = document.getElementById("bob-p2-display");
             bobP2Display.style.display = "flex";
-            bobP2Display.innerHTML = `Bob<br>P2: ${bobMeasuredValue}`;
+            bobP2Display.innerHTML = `
+                <span class="measure-result-label">Bob P2:</span>
+                <span class="measure-bit-circle bob-bit">${bobMeasuredValue}</span>
+            `;
             setTimeout(() => bobP2Display.style.opacity = "1", 50);
 
             htmlContent = `
                 <div><b>1. Alice's Broadcast:</b> <b style="color:var(--alice-color); font-size:1.2em;">${aliceMeasuredValue}</b></div>
                 <div><b>2. Bob's Measurement:</b> <b style="color:var(--bob-color); font-size:1.2em;">${bobMeasuredValue}</b></div>
-                <div style="margin-top: 5px;"><b>3. Verification:</b> Initial state \\( |\\Psi^+\\rangle = \\frac{1}{\\sqrt{2}}(|01\\rangle + |10\\rangle) \\) requires anti-correlation (0&1 or 1&0). Results match!</div>
+                <div style="margin-top: 5px;"><b>3. Verification:</b> Initial state \\( |𝜓^+\\rangle = \\frac{1}{\\sqrt{2}}(|01\\rangle + |10\\rangle) \\) requires anti-correlation (0&1 or 1&0). Results match!</div>
                 <div class="result-highlight" style="color: var(--match-green); border-color: var(--match-green); background: #eaffed;">
                     Channel is Secure! ✅
                 </div>
@@ -674,25 +709,25 @@
             bobStateBox.style.display = "flex";
 
             if (savedMsg === '0') {
-                bobStateBox.innerHTML = '\\( |\\Psi^+\\rangle \\)';
+                bobStateBox.innerHTML = '\\( |𝜓^+\\rangle \\)';
                 htmlContent = `
                     <div><b>1. Encoding:</b> Alice applied Identity (\\( I \\)) for message <b>'0'</b>.</div>
                     <div style="margin-top: 5px;"><b>2. State Change:</b> 
-                        <div style="text-align:center; margin-top: 5px;">\\( (I \\otimes I)|\\Psi^+\\rangle = \\frac{1}{\\sqrt{2}}(|01\\rangle + |10\\rangle) = |\\Psi^+\\rangle \\)</div>
+                        <div style="text-align:center; margin-top: 5px;">\\( (I \\otimes I)|𝜓^+\\rangle = \\frac{1}{\\sqrt{2}}(|01\\rangle + |10\\rangle) = |𝜓^+\\rangle \\)</div>
                     </div>
-                    <div style="margin-top: 5px;"><b>3. Bob's Measurement:</b> Detected \\( |\\Psi^+\\rangle \\).</div>
+                    <div style="margin-top: 5px;"><b>3. Bob's Measurement:</b> Detected \\( |𝜓^+\\rangle \\).</div>
                     <div class="result-highlight">
                         Decoded Message: 0
                     </div>
                 `;
             } else {
-                bobStateBox.innerHTML = '\\( |\\Psi^-\\rangle \\)';
+                bobStateBox.innerHTML = '\\( |𝜓^-\\rangle \\)';
                 htmlContent = `
                     <div><b>1. Encoding:</b> Alice applied Pauli-Z (\\( Z \\)) for message <b>'1'</b>.</div>
                     <div style="margin-top: 5px;"><b>2. State Change:</b> 
-                        <div style="text-align:center; margin-top: 5px;">\\( (Z \\otimes I)|\\Psi^+\\rangle = \\frac{1}{\\sqrt{2}}(|01\\rangle - |10\\rangle) = |\\Psi^-\\rangle \\)</div>
+                        <div style="text-align:center; margin-top: 5px;">\\( (Z \\otimes I)|𝜓^+\\rangle = \\frac{1}{\\sqrt{2}}(|01\\rangle - |10\\rangle) = |𝜓^-\\rangle \\)</div>
                     </div>
-                    <div style="margin-top: 5px;"><b>3. Bob's Measurement:</b> Detected \\( |\\Psi^-\\rangle \\).</div>
+                    <div style="margin-top: 5px;"><b>3. Bob's Measurement:</b> Detected \\( |𝜓^-\\rangle \\).</div>
                     <div class="result-highlight">
                         Decoded Message: 1
                     </div>
@@ -717,7 +752,7 @@
         window.location.href = 'PINGPONGstep2.html';
     }
     function nextStep() {
-        window.location.href = 'pingpong_analysis.html';
+        window.location.href = 'PINGPONGstep4.html';
     }
 </script>
 <script>
