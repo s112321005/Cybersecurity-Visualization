@@ -160,6 +160,7 @@
         .modern-toggle input:checked ~ .toggle-track .toggle-thumb { transform: translateX(100%); }
         .polarizer-img.inactive { filter: grayscale(100%); opacity: 0.45; }
         .polarizer-img.basis-eye-img { width: 70px; height: 70px; padding: 6px; border: 4px solid var(--bob-blue); border-radius: 50%; background: #ffffff; object-fit: contain; box-sizing: border-box; }
+        .polarizer-img.basis-eye-img.eve-basis-eye-img { border-color: var(--eve-red); }
         .prob-fraction { width: 30px; height: 30px; font-size: 12px; flex-direction: column; box-shadow: 0 2px 4px rgba(0,0,0,0.1); transform: translateY(-50%); }
         .prob-fraction .fraction-num { border-bottom: 1px solid currentColor; width: 100%; text-align: center; line-height: 1; }
         .prob-fraction .fraction-den { text-align: center; line-height: 1; }
@@ -507,21 +508,21 @@
                 <div style="position: absolute; top: 120px; left: 0; width: 100%; height: calc(100% - 120px);">
                     <svg class="arrows" style="width: 100%; height: 100%; position: absolute; z-index: 1;">
                         <defs><marker id="arrow-bb84-cnot" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#333" /></marker></defs>
-                        <line data-prob="100%" x1="18%" y1="38%" x2="72%" y2="38%" stroke="#333" stroke-width="3" marker-end="url(#arrow-bb84-cnot)" />
-                        <line data-prob="100%" x1="18%" y1="75%" x2="72%" y2="75%" stroke="#333" stroke-width="3" />
-                        <line x1="43%" y1="38%" x2="43%" y2="75%" stroke="#d40000" stroke-width="6" />
-                        <line id="cnot-branch-up" data-prob="50%" x1="83%" y1="38%" x2="90%" y2="27%" stroke="#333" stroke-width="3" marker-end="url(#arrow-bb84-cnot)" />
-                        <line id="cnot-branch-down" data-prob="50%" x1="83%" y1="38%" x2="90%" y2="49%" stroke="#333" stroke-width="3" marker-end="url(#arrow-bb84-cnot)" />
-                        <line id="cnot-branch-single" data-prob="100%" x1="83%" y1="38%" x2="90%" y2="38%" stroke="#333" stroke-width="3" marker-end="url(#arrow-bb84-cnot)" style="display:none;" />
+                        <line data-prob="100%" x1="18%" y1="38%" x2="68%" y2="38%" stroke="#333" stroke-width="3" marker-end="url(#arrow-bb84-cnot)" />
+                        <line data-prob="100%" x1="18%" y1="75%" x2="68%" y2="75%" stroke="#333" stroke-width="3" />
+                        <line x1="40%" y1="38%" x2="40%" y2="75%" stroke="#d40000" stroke-width="6" />
+                        <line id="cnot-branch-up" data-prob="50%" x1="77%" y1="38%" x2="84%" y2="27%" stroke="#333" stroke-width="3" marker-end="url(#arrow-bb84-cnot)" />
+                        <line id="cnot-branch-down" data-prob="50%" x1="77%" y1="38%" x2="84%" y2="49%" stroke="#333" stroke-width="3" marker-end="url(#arrow-bb84-cnot)" />
+                        <line id="cnot-branch-single" data-prob="100%" x1="76%" y1="38%" x2="83%" y2="38%" stroke="#333" stroke-width="3" marker-end="url(#arrow-bb84-cnot)" style="display:none;" />
                     </svg>
                     <div class="node" style="left: 9%; top: 38%;"><div class="state-circle" id="cnot-alice-state">|+⟩</div></div>
                     <div class="node" style="left: 9%; top: 75%;"><div class="eve-state-circle" id="cnot-eve-state">|0⟩</div></div>
-                    <div class="node" style="left: 43%; top: 38%;"><div class="cnot-gate-dot"></div></div>
-                    <div class="node" style="left: 43%; top: 75%;"><div class="cnot-gate-plus"></div></div>
-                    <div class="node" style="left: 58%; top: 56%;"><div id="cnot-operation-node" class="cnot-op-node" onclick="showCnotCalculation()" title="Click to view CNOT calculation">|𝜙<sup>+</sup>⟩<sub>AE</sub></div></div>
-                    <div class="node" style="left: 78%; top: 38%;"><img id="cnot-bob-measure" src="pictures/b_eyex.svg" class="polarizer-img basis-eye-img" alt="Bob basis measurement"></div>
-                    <div class="node" id="cnot-bob-top-node" style="left: 93%; top: 27%;"><div class="cnot-outcome-row"><div class="state-circle state-blue" id="cnot-bob-top">|+⟩</div><div class="prob-circle prob-fraction cnot-prob-node state-blue" id="cnot-prob-top" data-prob-for="cnot-bob-top"><div class="fraction-num">1</div><div class="fraction-den">2</div></div></div></div>
-                    <div class="node" id="cnot-bob-bottom-node" style="left: 93%; top: 49%;"><div class="cnot-outcome-row"><div class="state-circle state-red" id="cnot-bob-bottom">|-⟩</div><div class="prob-circle prob-fraction cnot-prob-node state-red" id="cnot-prob-bottom" data-prob-for="cnot-bob-bottom"><div class="fraction-num">1</div><div class="fraction-den">2</div></div></div></div>
+                    <div class="node" style="left: 40%; top: 38%;"><div class="cnot-gate-dot"></div></div>
+                    <div class="node" style="left: 40%; top: 75%;"><div class="cnot-gate-plus"></div></div>
+                    <div class="node" style="left: 53%; top: 56%;"><div id="cnot-operation-node" class="cnot-op-node" onclick="showCnotCalculation()" title="Click to view CNOT calculation">|𝜙<sup>+</sup>⟩<sub>AE</sub></div></div>
+                    <div class="node" style="left: 73%; top: 38%;"><img id="cnot-bob-measure" src="pictures/b_eyex.svg" class="polarizer-img basis-eye-img" alt="Bob basis measurement"></div>
+                    <div class="node" id="cnot-bob-top-node" style="left: 90%; top: 27%;"><div class="cnot-outcome-row"><div class="state-circle state-blue" id="cnot-bob-top">|+⟩</div><div class="prob-circle prob-fraction cnot-prob-node state-blue" id="cnot-prob-top" data-prob-for="cnot-bob-top"><div class="fraction-num">1</div><div class="fraction-den">2</div></div></div></div>
+                    <div class="node" id="cnot-bob-bottom-node" style="left: 90%; top: 49%;"><div class="cnot-outcome-row"><div class="state-circle state-red" id="cnot-bob-bottom">|-⟩</div><div class="prob-circle prob-fraction cnot-prob-node state-red" id="cnot-prob-bottom" data-prob-for="cnot-bob-bottom"><div class="fraction-num">1</div><div class="fraction-den">2</div></div></div></div>
                 </div>
             </div>
         </div>
@@ -556,6 +557,40 @@
         return map[compact] || symbol;
     }
     function basisEyeSrc(basis) { return basis === 'Z' ? 'pictures/b_eyez.svg' : 'pictures/b_eyex.svg'; }
+    function basisEyeSrcFromPolarizer(src) {
+        const file = String(src || '').split('/').pop().toLowerCase();
+        if (file.includes('b_diagonal') || file.includes('gray_diagonal')) return { src: 'pictures/b_eyex.svg', role: 'bob' };
+        if (file.includes('b_vertical') || file.includes('gray_vertical')) return { src: 'pictures/b_eyez.svg', role: 'bob' };
+        if (file.includes('e_diagonal') || file.includes('red_diagonal')) return { src: 'pictures/e_eyex.svg', role: 'eve' };
+        if (file.includes('e_vertical') || file.includes('red_vertical')) return { src: 'pictures/e_eyez.svg', role: 'eve' };
+        return null;
+    }
+    function applyRepresentationToPolarizerImages(scope = document) {
+        scope.querySelectorAll('img.polarizer-img').forEach(img => {
+            const currentSrc = img.getAttribute('src') || '';
+            if (!/eye[xyz]\.svg/i.test(currentSrc)) img.dataset.polarizationSrc = currentSrc;
+            const sourceSrc = img.dataset.polarizationSrc || currentSrc;
+            const mapped = basisEyeSrcFromPolarizer(sourceSrc);
+            img.classList.remove('basis-eye-img', 'eve-basis-eye-img');
+            if (representationMode === 'basis' && mapped) {
+                img.src = mapped.src;
+                img.classList.add('basis-eye-img');
+                if (mapped.role === 'eve') img.classList.add('eve-basis-eye-img');
+            } else if (sourceSrc) {
+                img.src = sourceSrc;
+            }
+        });
+    }
+    function setStateSymbolText(target, symbol, forceBasisMode = false) {
+        if (!target) return;
+        target.innerText = displayStateSymbol(symbol, forceBasisMode);
+    }
+    function setStateSymbolTextById(id, symbol, forceBasisMode = false) {
+        setStateSymbolText(document.getElementById(id), symbol, forceBasisMode);
+    }
+    function setStateSymbolTextInSelector(selector, symbol, forceBasisMode = false) {
+        setStateSymbolText(document.querySelector(selector), symbol, forceBasisMode);
+    }
     function getDraftEveAttack() { const eveAttackNode = document.querySelector('input[name="e_attack"]:checked'); return eveAttackNode ? eveAttackNode.value : 'Intercept-resend'; }
     function syncRepresentationModeLock() {
         const toggle = document.getElementById('representation-mode-toggle');
@@ -936,6 +971,7 @@
         }
         const aliceBasis = (basisType === 'rectilinear') ? 'Z' : 'X';
         updateLines(aliceBasis, globalBobBasis, 'bb84');
+        applyRepresentationToPolarizerImages(document.getElementById('view-bb84'));
         syncBB84OffProbabilityColors();
     }
 
@@ -995,7 +1031,7 @@
         const aliceBasisStates = isAliceZ ? symbolsZ : symbolsX;
         const aliceOppoState = aliceBasisStates.find(symbol => symbol !== stateSymbol) || aliceBasisStates[0];
         const eveDiffStates = isAliceZ ? symbolsX : symbolsZ;
-        document.getElementById('eve-alice-state').innerText = stateSymbol;
+        setStateSymbolTextById('eve-alice-state', stateSymbol);
         const aliceImg = document.getElementById('eve-alice-key');
         const eveSameImg = document.getElementById('eve-pol-same');
         const eveDiffImg = document.getElementById('eve-pol-diff');
@@ -1008,9 +1044,9 @@
             eveSameImg.src = "pictures/red_diagonal.svg";
             eveDiffImg.src = "pictures/red_vertical.svg";
         }
-        document.getElementById('eve-state-same').innerText = stateSymbol;
-        document.getElementById('eve-state-diff1').innerText = eveDiffStates[0];
-        document.getElementById('eve-state-diff2').innerText = eveDiffStates[1];
+        setStateSymbolTextById('eve-state-same', stateSymbol);
+        setStateSymbolTextById('eve-state-diff1', eveDiffStates[0]);
+        setStateSymbolTextById('eve-state-diff2', eveDiffStates[1]);
         const bobPols = [
             document.getElementById('bob-pol-1'), document.getElementById('bob-pol-2'),
             document.getElementById('bob-pol-3'), document.getElementById('bob-pol-4'),
@@ -1084,15 +1120,15 @@
             el.classList.add('inactive');
         }
 
-        document.getElementById('bob-final-1').innerText = stateSymbol;
-        document.querySelector('#bob-final-2 span').innerText = eveDiffStates[0];
-        document.querySelector('#bob-final-3 span').innerText = eveDiffStates[1];
-        document.getElementById('bob-final-4').innerText = stateSymbol;
-        document.getElementById('bob-final-5').innerText = aliceOppoState; 
-        document.querySelector('#bob-final-6 span').innerText = eveDiffStates[0];
-        document.getElementById('bob-final-7').innerText = stateSymbol;
-        document.getElementById('bob-final-8').innerText = aliceOppoState; 
-        document.querySelector('#bob-final-9 span').innerText = eveDiffStates[1];
+        setStateSymbolTextById('bob-final-1', stateSymbol);
+        setStateSymbolTextInSelector('#bob-final-2 span', eveDiffStates[0]);
+        setStateSymbolTextInSelector('#bob-final-3 span', eveDiffStates[1]);
+        setStateSymbolTextById('bob-final-4', stateSymbol);
+        setStateSymbolTextById('bob-final-5', aliceOppoState); 
+        setStateSymbolTextInSelector('#bob-final-6 span', eveDiffStates[0]);
+        setStateSymbolTextById('bob-final-7', stateSymbol);
+        setStateSymbolTextById('bob-final-8', aliceOppoState); 
+        setStateSymbolTextInSelector('#bob-final-9 span', eveDiffStates[1]);
 
         setBobFinalColor('bob-final-1', stateSymbol);
         setBobFinalColor('bob-final-2', eveDiffStates[0]);
@@ -1103,6 +1139,7 @@
         setBobFinalColor('bob-final-7', stateSymbol);
         setBobFinalColor('bob-final-8', aliceOppoState);
         setBobFinalColor('bob-final-9', eveDiffStates[1]);
+        applyRepresentationToPolarizerImages(document.getElementById('view-bb84-eve-resend'));
         syncBB84ResendProbabilityColors();
         const resendIndicator = document.getElementById('eve-detected-indicator');
         if (resendIndicator) resendIndicator.innerText = isBobBasisSameAsAlice ? 'Eve detected probability： 25%' : 'Eve detected probability： 0%';
@@ -1164,6 +1201,8 @@
         operationNode.innerHTML = `${stateData.label}<sub>AE</sub>`;
         operationNode.dataset.cnotLatex = stateData.latex;
         bobMeasure.src = basisEyeSrc(bobBasis);
+        bobMeasure.classList.add('basis-eye-img');
+        bobMeasure.classList.remove('eve-basis-eye-img');
         bobMeasure.alt = `Bob ${bobBasis} basis measurement`;
 
         if (stateData.isZ && bobBasis === 'Z') {
