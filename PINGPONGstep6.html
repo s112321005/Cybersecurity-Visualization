@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <base href="https://s112321005.github.io/Cybersecurity-Visualization/">
+    <title>Quantum Security Direct Communication : Ping-Pong Protocol</title>
+    <style>
+        :root { --primary-blue:#549FD0; --alice-blue:#004aad; --bob-blue:#4C80C5; --dark-text:#333333; --bg-gradient:linear-gradient(135deg,#E0F2FE 0%,#F5F3FF 50%,#ECFDF5 100%); --muted:#777; --line:#333; --soft-blue:#eef7ff; --inactive:#d9dee6; }
+        * { box-sizing: border-box; }
+        body { font-family:'Segoe UI',sans-serif; display:flex; flex-direction:column; align-items:center; padding:24px 20px; background:var(--bg-gradient); margin:0; overflow-y:scroll; color:var(--dark-text); }
+        @keyframes fadeIn { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+        .header { width:min(1000px,95vw); display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; animation:fadeIn .8s ease-out forwards; }
+        .header-left { display:flex; align-items:center; gap:15px; }
+        .btn-back { width:40px; height:40px; background-color:var(--primary-blue); color:white; border-radius:50%; display:flex; justify-content:center; align-items:center; text-decoration:none; font-size:0; transition:transform .2s; cursor:pointer; border:none; box-shadow:0 2px 5px rgba(0,0,0,.1); }
+        .btn-back::before { content:""; width:0; height:0; border-top:7px solid transparent; border-bottom:7px solid transparent; border-right:11px solid currentColor; margin-left:-2px; }
+        .btn-back:hover { transform:scale(1.1); }
+        .title-pill { border:2px solid var(--primary-blue); padding:8px 20px; border-radius:30px; font-weight:bold; background:white; color:var(--dark-text); white-space:nowrap; }
+        .header-center { flex-grow:1; margin-left:20px; font-weight:bold; font-size:1.2rem; color:var(--dark-text); text-align:center; white-space:nowrap; }
+        .header-right { display:flex; gap:15px; }
+        .nav-btn { border:2px solid var(--primary-blue); background:white; color:var(--dark-text); padding:10px 25px; border-radius:30px; font-weight:bold; font-size:1rem; cursor:pointer; transition:all .2s; white-space:nowrap; }
+        .nav-btn:hover { background:var(--primary-blue); color:white; }
+
+        .main-card { width:min(1000px,95vw); min-height:820px; border:3px solid var(--primary-blue); border-radius:35px; position:relative; background:white; overflow:hidden; padding:16px 32px 20px; animation:fadeIn .8s ease-out forwards; }
+        .stage-title { margin:0; color:var(--primary-blue); font-size:1.25rem; text-align:center; font-weight:900; }
+        .stage-subtitle { margin:4px 0 12px; color:#666; text-align:center; font-weight:700; font-size:.92rem; }
+        .mode-legend { display:grid; grid-template-columns:1fr; gap:14px; margin:0 34px 14px; }
+        .legend-box { min-height:48px; border:3px solid var(--primary-blue); border-radius:16px; background:#fff; display:flex; align-items:center; justify-content:center; gap:8px; color:var(--dark-text); font-weight:900; box-shadow:0 5px 14px rgba(84,159,208,.08); text-align:center; padding:6px 10px; }
+        .legend-box.message { border-color:var(--primary-blue); }
+        .legend-box.control { border-color:var(--primary-blue); }
+        .legend-box.status { background:#d9e8ff; border-color:#d9e8ff; }
+        .between-mode-label { width:100%; min-height:48px; margin:0; border:3px solid var(--primary-blue); border-radius:16px; background:#fff; display:flex; align-items:center; justify-content:center; color:var(--dark-text); font-weight:900; box-shadow:0 5px 14px rgba(84,159,208,.08); text-align:center; }
+
+        .mode-compare { display:flex; flex-direction:column; gap:12px; }
+        .scenario.control { order:1; }
+        .between-mode-label { order:2; }
+        .scenario.message { order:3; }
+        .scenario { position:relative; min-height:315px; padding-bottom:24px; border:2px solid #d7e5ff; border-radius:22px; background:transparent; overflow:hidden; }
+        .scenario.selected { box-shadow:inset 0 0 0 3px rgba(84,159,208,.16); }
+        .scenario.message.selected,
+        .scenario.control.selected { border-color:var(--primary-blue); }
+        .scenario-header { position:absolute; left:18px; right:18px; top:12px; z-index:5; display:grid; grid-template-columns:26% 44% 24%; align-items:center; gap:20px; font-weight:900; }
+        .mode-name { display:flex; align-items:center; gap:10px; min-width:0; }
+        .mode-badge { width:30px; height:30px; border-radius:50%; background:var(--primary-blue); color:white; display:inline-flex; align-items:center; justify-content:center; font-size:.95rem; flex:0 0 auto; }
+        .message .mode-badge,
+        .control .mode-badge { background:var(--primary-blue); }
+        .mode-note { color:#555; font-weight:800; font-size:.82rem; line-height:1.25; text-align:center; white-space:nowrap; }
+
+        .diagram { position:absolute; left:0; right:0; top:60px; bottom:24px; }
+        .arrows { position:absolute; inset:0; width:100%; height:100%; z-index:1; overflow:visible; }
+        .tree-line { stroke:var(--line); stroke-width:2.4; fill:none; }
+        .tree-line.soft { stroke:var(--line); }
+        .tree-line.message-line,
+        .tree-line.control-line { stroke:var(--line); stroke-width:2.4; }
+        .node { position:absolute; z-index:3; transform:translate(-50%,-50%); display:flex; flex-direction:column; align-items:center; gap:6px; font-weight:900; text-align:center; }
+        .node-title { font-size:.8rem; color:#666; white-space:nowrap; }
+        .state-circle { min-width:58px; height:58px; border-radius:50%; background:var(--primary-blue); color:white; display:flex; align-items:center; justify-content:center; padding:0 8px; font-size:.86rem; font-weight:900; border:3px solid white; box-shadow:0 0 0 2px rgba(84,159,208,.35),0 8px 18px rgba(0,0,0,.1); white-space:nowrap; }
+        .formula-ket { font-family:"Cambria Math","Times New Roman",serif; font-style:italic; font-size:1.06rem; line-height:1; letter-spacing:.01em; }
+        .formula-ket sup { font-size:.82em; line-height:0; vertical-align:super; font-weight:900; margin-left:1px; }
+        .state-circle.alice { background:var(--alice-blue); box-shadow:0 0 0 2px rgba(0,74,173,.28),0 8px 18px rgba(0,0,0,.1); }
+        .state-circle.bob { background:var(--bob-blue); box-shadow:0 0 0 2px rgba(76,128,197,.28),0 8px 18px rgba(0,0,0,.1); }
+        .state-circle.message,
+        .state-circle.control { background:var(--alice-blue); box-shadow:0 0 0 2px rgba(0,74,173,.28),0 8px 18px rgba(0,0,0,.1); }
+        .state-circle.inactive { background:#cfd6df; color:#6f7782; box-shadow:0 0 0 2px #e1e6ec; filter:grayscale(.75); opacity:.72; }
+        .choice-card { min-width:116px; min-height:48px; border-radius:16px; background:white; border:2px solid #d7e5ff; display:flex; align-items:center; justify-content:center; text-align:center; padding:6px 10px; font-size:.82rem; line-height:1.15; color:#555; box-shadow:0 6px 15px rgba(0,0,0,.06); }
+        .choice-card.keep,
+        .choice-card.check { border-color:var(--primary-blue); background:#f4faff; color:var(--primary-blue); font-weight:900; }
+        .choice-card.action-choice { min-width:92px; min-height:40px; padding:5px 8px; }
+        .choice-card.drop { background:#f6f7f8; color:#8b929c; border-color:var(--inactive); }
+        .outcome-row { display:flex; align-items:center; gap:8px; }
+        .channel-label { font-size:.78rem; font-weight:900; fill:#555; paint-order:stroke; stroke:#fff; stroke-width:4px; stroke-linejoin:round; }
+        .compare-callout { position:relative; margin:12px 0 0; border-left:7px solid var(--primary-blue); background:#f8fbff; border-radius:16px; padding:10px 16px; font-weight:800; color:#345; line-height:1.35; font-size:.9rem; }
+        .compare-callout b { color:var(--primary-blue); }
+
+        .pingpong-image-dock { position:fixed; right:16px; top:0; width:430px; height:100vh; z-index:900; pointer-events:none; display:flex; justify-content:center; overflow:visible; isolation:isolate; font-family:'Arial Rounded MT Bold','Arial Rounded MT','Arial',sans-serif; }
+        .pingpong-image-viewport { position:relative; width:330px; height:100vh; background:#ffffff; box-shadow:0 12px 26px rgba(0,0,0,.12); overflow:visible; z-index:1; }
+        .pingpong-image-viewport::before,.pingpong-image-viewport::after { content:""; position:absolute; top:0; width:14px; height:100vh; background:#d9d9d9; z-index:1; pointer-events:none; }
+        .pingpong-image-viewport::before { left:0; }
+        .pingpong-image-viewport::after { right:0; }
+        .pingpong-image-window { position:relative; width:500px; height:100vh; margin-left:-85px; overflow:hidden; z-index:10; }
+        .pingpong-image-list { position:relative; display:flex; flex-direction:column; align-items:center; gap:12px; padding:52px 0 42px; width:500px; transform:translateY(0); transition:transform .55s cubic-bezier(.22,.8,.22,1); z-index:20; }
+        .pingpong-image-card { position:relative; width:350px; min-height:52px; padding:0 18px; background:#ffffff; border:6px solid var(--primary-blue); border-radius:16px; display:flex; align-items:center; justify-content:center; flex:0 0 auto; transition:width .55s cubic-bezier(.22,.8,.22,1),min-height .55s cubic-bezier(.22,.8,.22,1),padding .55s cubic-bezier(.22,.8,.22,1),border-width .55s cubic-bezier(.22,.8,.22,1),border-radius .55s cubic-bezier(.22,.8,.22,1),box-shadow .55s cubic-bezier(.22,.8,.22,1); overflow:hidden; z-index:20; }
+        .pingpong-image-card.is-current { width:365px; min-height:365px; padding:14px; border:7px solid var(--primary-blue); border-radius:20px; box-shadow:0 12px 28px rgba(84,159,208,.28); margin:6px 0; z-index:100; }
+        .pingpong-step-summary { display:flex; align-items:center; justify-content:center; gap:10px; width:100%; height:100%; color:#111; font-weight:900; font-size:1rem; letter-spacing:.02em; white-space:nowrap; transition:opacity .22s ease,transform .22s ease; }
+        .pingpong-step-number { width:22px; height:22px; border-radius:50%; background:var(--primary-blue); color:#ffffff; display:inline-flex; align-items:center; justify-content:center; font-size:.86rem; line-height:1; flex:0 0 auto; }
+        .pingpong-step-title { display:inline-block; line-height:1; }
+        .pingpong-image-card img { position:relative; z-index:101; width:100%; height:100%; max-width:0; max-height:0; object-fit:contain; display:block; opacity:0; transform:scale(.92); transition:opacity .28s ease .2s,transform .45s cubic-bezier(.22,.8,.22,1) .12s,max-width .55s cubic-bezier(.22,.8,.22,1),max-height .55s cubic-bezier(.22,.8,.22,1); }
+        .pingpong-image-card.is-current .pingpong-step-summary { opacity:0; transform:translateY(-8px); position:absolute; pointer-events:none; }
+        .pingpong-image-card.is-current img { max-width:318px; max-height:320px; opacity:1; transform:scale(1); }
+
+        @media (min-width:1180px) { body { padding-right:450px !important; } }
+        @media (max-width:1179px) {
+            .header { flex-wrap:wrap; row-gap:12px; }
+            .header-center { order:3; width:100%; margin-left:0; }
+            .main-card { min-height:900px; padding:16px 16px 20px; }
+            .mode-legend { margin:0 8px 12px; }
+            .between-mode-label { width:100%; }
+            .scenario { min-height:350px; }
+            .scenario-header { grid-template-columns:1fr; gap:5px; }
+            .mode-note { text-align:left; }
+            .diagram { top:112px; bottom:26px; }
+            .state-circle { min-width:48px; height:48px; font-size:.78rem; }
+            .choice-card { min-width:88px; font-size:.74rem; padding:5px 7px; }
+            .pingpong-image-dock { position:relative; right:auto; top:auto; width:min(94vw,840px); height:320px; margin:18px auto 10px; overflow:visible; }
+            .pingpong-image-viewport { width:100%; height:320px; }
+            .pingpong-image-viewport::before,.pingpong-image-viewport::after { width:10px; height:320px; }
+            .pingpong-image-window { width:100%; height:320px; margin-left:0; }
+            .pingpong-image-list { flex-direction:row; align-items:center; gap:14px; width:max-content; height:320px; padding:0 24px; }
+            .pingpong-image-card { width:270px; min-height:52px; }
+            .pingpong-image-card.is-current { width:305px; min-height:250px; margin:0 10px; }
+            .pingpong-image-card.is-current img { max-width:275px; max-height:220px; }
+        }
+    </style>
+</head>
+<body>
+    <aside class="pingpong-image-dock" aria-label="Ping-Pong mode tree preview" data-current-step="3">
+        <div class="pingpong-image-viewport">
+            <div class="pingpong-image-window">
+                <div class="pingpong-image-list">
+                    <div class="pingpong-image-card" data-pingpong-step="1"><div class="pingpong-step-summary"><span class="pingpong-step-number">1</span><span class="pingpong-step-title">PREPARE</span></div><img src="pictures/pingpong-1.png" alt="Ping-Pong Step 1 Prepare"></div>
+                    <div class="pingpong-image-card" data-pingpong-step="2"><div class="pingpong-step-summary"><span class="pingpong-step-number">2</span><span class="pingpong-step-title">TRANSMIT</span></div><img src="pictures/pingpong-2.png" alt="Ping-Pong Step 2 Transmit"></div>
+                    <div class="pingpong-image-card is-current" data-pingpong-step="3" aria-current="step"><div class="pingpong-step-summary"><span class="pingpong-step-number">3</span><span class="pingpong-step-title">SELECTION</span></div><img src="pictures/pingpong-3.png" alt="Ping-Pong Step 3 Selection"></div>
+                    <div class="pingpong-image-card" data-pingpong-step="4"><div class="pingpong-step-summary"><span class="pingpong-step-number">4</span><span class="pingpong-step-title">OTHER OPERATION</span></div><img id="pingpong-step4-img" src="pictures/pingpong-4-m.png" alt="Ping-Pong Step 4 Other Operation"></div>
+                    <div class="pingpong-image-card" data-pingpong-step="5"><div class="pingpong-step-summary"><span class="pingpong-step-number">5</span><span class="pingpong-step-title">OTHER CHECK / DECODE</span></div><img id="pingpong-step5-img" src="pictures/pingpong-5-m.png" alt="Ping-Pong Step 5 Other Check or Decode"></div>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <div class="header">
+        <div class="header-left">
+            <a href="QuantumCybersecurityEducationPlatform.html?section=qsdc#quantum-security-applications" class="btn-back" title="back home">&#x25C0;&#xFE0E;</a>
+            <div class="title-pill">QSDC : Ping-Pong Protocol</div>
+        </div>
+        <div class="header-center" id="step-title">STEP 6 : COMPARE BOTH MODES</div>
+        <div class="header-right">
+            <button class="nav-btn" onclick="prevStep()">Back</button>
+            <button class="nav-btn" onclick="nextStep()">Start Security Analysis</button>
+        </div>
+    </div>
+
+    <main class="main-card">
+        <h1 class="stage-title">Ping-Pong branches into Message Mode and Control Mode.</h1>
+
+        <div class="mode-legend" aria-label="Mode comparison columns">
+            <div class="legend-box control">Control Mode</div>
+        </div>
+
+        <section class="mode-compare" aria-label="Ping-Pong mode tree comparison">
+            <article class="scenario message" id="message-scenario">
+                <div class="scenario-header">
+                    <div class="mode-name"><span class="mode-badge">M</span>Message Mode</div>
+                    <div class="mode-note">Used for sending a classical bit through Alice's operation.</div>
+                </div>
+                <div class="diagram">
+                    <svg class="arrows" aria-hidden="true">
+                        <defs>
+                            <marker id="arrow-message" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                                <path d="M 0 0 L 10 5 L 0 10 z" fill="#333"></path>
+                            </marker>
+                            <marker id="arrow-soft-message" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                                <path d="M 0 0 L 10 5 L 0 10 z" fill="#333"></path>
+                            </marker>
+                        </defs>
+                        <line class="tree-line soft" x1="17%" y1="54%" x2="24%" y2="54%" marker-end="url(#arrow-soft-message)"></line>
+                        <line class="tree-line message-line" x1="36%" y1="54%" x2="47%" y2="36%" marker-end="url(#arrow-message)"></line>
+                        <line class="tree-line message-line" x1="36%" y1="54%" x2="47%" y2="72%" marker-end="url(#arrow-message)"></line>
+                        <line class="tree-line message-line" x1="59%" y1="32%" x2="73%" y2="32%" marker-end="url(#arrow-message)"></line>
+                        <line class="tree-line message-line" x1="59%" y1="76%" x2="73%" y2="76%" marker-end="url(#arrow-message)"></line>
+                        <text class="channel-label" x="66%" y="28%" text-anchor="middle">Quantum Channel</text>
+                        <text class="channel-label" x="66%" y="72%" text-anchor="middle">Quantum Channel</text>
+                    </svg>
+                    <div class="node" style="left:12%;top:50%;"><div class="node-title">Bob sends <span class="formula-ket">|𝜓<sup>+</sup>⟩</span></div><div class="state-circle bob">P1</div></div>
+                    <div class="node" style="left:30%;top:50%;"><div class="node-title">Alice<br>Choose operation</div><div class="choice-card keep action-choice">I or Z</div></div>
+                    <div class="node" style="left:54%;top:28%;"><div class="node-title">Bit 0</div><div class="state-circle message">I</div></div>
+                    <div class="node" style="left:54%;top:72%;"><div class="node-title">Bit 1</div><div class="state-circle message">Z</div></div>
+                    <div class="node" style="left:79%;top:28%;"><div class="node-title">Bob measures</div><div class="state-circle bob"><span class="formula-ket">|𝜓<sup>+</sup>⟩</span></div></div>
+                    <div class="node" style="left:79%;top:72%;"><div class="node-title">Bob measures</div><div class="state-circle bob"><span class="formula-ket">|𝜓<sup>-</sup>⟩</span></div></div>
+                    <div class="node" style="left:91%;top:32%;"><div class="choice-card keep">Decode<br>message 0</div></div>
+                    <div class="node" style="left:91%;top:76%;"><div class="choice-card keep">Decode<br>message 1</div></div>
+                </div>
+            </article>
+
+            <div class="between-mode-label">Message Mode</div>
+
+            <article class="scenario control" id="control-scenario">
+                <div class="scenario-header">
+                    <div class="mode-name"><span class="mode-badge">C</span>Control Mode</div>
+                    <div class="mode-note">Used for checking whether the entangled channel was disturbed.</div>
+                </div>
+                <div class="diagram">
+                    <svg class="arrows" aria-hidden="true">
+                        <defs>
+                            <marker id="arrow-control" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                                <path d="M 0 0 L 10 5 L 0 10 z" fill="#333"></path>
+                            </marker>
+                            <marker id="arrow-soft-control" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                                <path d="M 0 0 L 10 5 L 0 10 z" fill="#333"></path>
+                            </marker>
+                        </defs>
+                        <line class="tree-line soft" x1="17%" y1="54%" x2="24%" y2="54%" marker-end="url(#arrow-soft-control)"></line>
+                        <line class="tree-line control-line" x1="36%" y1="54%" x2="47%" y2="36%" marker-end="url(#arrow-control)"></line>
+                        <line class="tree-line control-line" x1="36%" y1="54%" x2="47%" y2="72%" marker-end="url(#arrow-control)"></line>
+                        <line class="tree-line control-line" x1="59%" y1="32%" x2="73%" y2="32%" marker-end="url(#arrow-control)"></line>
+                        <line class="tree-line control-line" x1="59%" y1="76%" x2="73%" y2="76%" marker-end="url(#arrow-control)"></line>
+                        <text class="channel-label" x="66%" y="28%" text-anchor="middle">Classical Channel</text>
+                        <text class="channel-label" x="66%" y="72%" text-anchor="middle">Classical Channel</text>
+                    </svg>
+                    <div class="node" style="left:12%;top:50%;"><div class="node-title">Bob sends <span class="formula-ket">|𝜓<sup>+</sup>⟩</span></div><div class="state-circle bob">P1</div></div>
+                    <div class="node" style="left:30%;top:50%;"><div class="node-title">Alice<br>Measure Z basis</div><div class="choice-card check action-choice">0 or 1</div></div>
+                    <div class="node" style="left:54%;top:28%;"><div class="node-title">Alice P1</div><div class="state-circle control">0</div></div>
+                    <div class="node" style="left:54%;top:72%;"><div class="node-title">Alice P1</div><div class="state-circle control">1</div></div>
+                    <div class="node" style="left:79%;top:28%;"><div class="node-title">Bob measures P2</div><div class="state-circle bob">1</div></div>
+                    <div class="node" style="left:79%;top:72%;"><div class="node-title">Bob measures P2</div><div class="state-circle bob">0</div></div>
+                    <div class="node" style="left:91%;top:32%;"><div class="choice-card check">Different<br>Safe</div></div>
+                    <div class="node" style="left:91%;top:76%;"><div class="choice-card check">Different<br>Safe</div></div>
+                </div>
+            </article>
+        </section>
+
+        <div class="compare-callout">
+            <b>Message Mode carries data; Control Mode protects the channel.</b>
+            Message Mode changes the Bell state so Bob can decode a bit. Control Mode sacrifices that round to verify the expected anti-correlation between Alice and Bob.
+        </div>
+    </main>
+
+    <script>
+        const firstRunData = JSON.parse(localStorage.getItem('pingpongStep2Data') || '{}');
+        const secondRunData = JSON.parse(localStorage.getItem('pingpongStep4Data') || '{}');
+        const selectedMode = firstRunData.mode || localStorage.getItem('pingpongMode') || 'message';
+        const secondMode = secondRunData.mode || (selectedMode === 'message' ? 'control' : 'message');
+
+        document.addEventListener('DOMContentLoaded', function () {
+            markSelectedMode();
+            configurePreviewImages();
+            lockPingpongPreview();
+        });
+
+        function markSelectedMode() {
+            const messageScenario = document.getElementById('message-scenario');
+            const controlScenario = document.getElementById('control-scenario');
+            const subtitle = document.getElementById('stage-subtitle');
+
+            controlScenario.classList.add('selected');
+            messageScenario.classList.add('selected');
+        }
+
+        function configurePreviewImages() {
+            const step4Img = document.getElementById('pingpong-step4-img');
+            const step5Img = document.getElementById('pingpong-step5-img');
+            if (secondMode === 'control') {
+                step4Img.src = 'pictures/pingpong-4-c.png';
+                step5Img.src = 'pictures/pingpong-5-c.png';
+            } else {
+                step4Img.src = 'pictures/pingpong-4-m.png';
+                step5Img.src = 'pictures/pingpong-5-m.png';
+            }
+        }
+
+        function lockPingpongPreview() {
+            const dock = document.querySelector('.pingpong-image-dock');
+            const windowBox = document.querySelector('.pingpong-image-window');
+            const list = document.querySelector('.pingpong-image-list');
+            const currentCard = document.querySelector('.pingpong-image-card.is-current');
+
+            if (dock) {
+                dock.addEventListener('wheel', function (event) {
+                    event.preventDefault();
+                }, { passive: false });
+            }
+
+            function lockToCurrentStep() {
+                if (!windowBox || !list || !currentCard) return;
+                const isHorizontal = window.matchMedia('(max-width: 1179px)').matches;
+                const offset = isHorizontal
+                    ? (windowBox.clientWidth / 2) - currentCard.offsetLeft - (currentCard.offsetWidth / 2)
+                    : Math.max(0, (windowBox.clientHeight / 2) - currentCard.offsetTop - (currentCard.offsetHeight / 2));
+                list.style.transform = isHorizontal ? 'translateX(' + offset + 'px)' : 'translateY(' + offset + 'px)';
+            }
+
+            lockToCurrentStep();
+            window.addEventListener('resize', lockToCurrentStep);
+        }
+
+        function prevStep() {
+            window.location.href = 'PINGPONGstep5.html';
+        }
+
+        function nextStep() {
+            window.location.href = 'pingpong_analysis.html';
+        }
+    </script>
+</body>
+</html>

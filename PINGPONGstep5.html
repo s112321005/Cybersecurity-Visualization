@@ -467,7 +467,7 @@
     <div class="header-center" id="header-subtitle">STEP 5 : MEASURE</div>
     <div class="header-right">
         <button class="nav-btn" id="back-btn" onclick="prevStep()">Back</button>
-        <button class="nav-btn" id="next-btn" onclick="nextStep()" disabled>View Other Mode</button>
+        <button class="nav-btn" id="next-btn" onclick="nextStep()" disabled>View Compare Modes</button>
     </div>
 </div>
 
@@ -527,9 +527,9 @@
 </div>
 
 <script>
-    const step2Data = JSON.parse(localStorage.getItem('pingpongStep2Data') || '{}');
-    let savedMode = step2Data.mode || localStorage.getItem('pingpongMode') || 'message';
-    let savedMsg = step2Data.bit || localStorage.getItem('pingpongMessage') || '1'; 
+    const step2Data = JSON.parse(localStorage.getItem('pingpongStep4Data') || '{}');
+    let savedMode = step2Data.mode || ((localStorage.getItem('pingpongMode') || 'message') === 'message' ? 'control' : 'message');
+    let savedMsg = step2Data.bit || localStorage.getItem('pingpongSecondMessage') || '1'; 
 
     let aliceMeasuredValue = 0;
     let bobMeasuredValue = 1;
@@ -754,10 +754,10 @@
     }
 
     function prevStep() {
-        window.location.href = 'PINGPONGstep2.html';
+        window.location.href = 'PINGPONGstep4.html';
     }
     function nextStep() {
-        window.location.href = 'PINGPONGstep4.html';
+        window.location.href = 'PINGPONGstep6.html';
     }
 </script>
 <script>

@@ -55,6 +55,8 @@
             font-size: 1.2rem; color: var(--dark-text); text-align: center; 
             white-space: nowrap;
         }
+        .step-title-stack { display: inline-flex; flex-direction: column; align-items: center; justify-content: center; line-height: 1.15; white-space: normal; }
+        .mode-tag { display: inline-flex; align-items: center; justify-content: center; margin-top: 5px; padding: 5px 14px; border-radius: 999px; background: #549FD0; color: #fff; font-size: 0.95rem; font-weight: 900; line-height: 1; }
         .header-right { display: flex; gap: 15px; }
         .nav-btn {
             border: 2px solid var(--primary-blue); background: white; color: var(--dark-text);
@@ -479,7 +481,11 @@
 
     function configureModeUI() {
         const header = document.getElementById('header-subtitle');
-        if (header) header.innerText = mode === 'control' ? 'STEP 4 : MEASURE' : 'STEP 4 : ENCODE';
+        if (header) {
+            const title = mode === 'control' ? 'STEP 4 : MEASURE' : 'STEP 4 : ENCODE';
+            const modeLabel = mode === 'control' ? 'Control Mode' : 'Message Mode';
+            header.innerHTML = '<span class="step-title-stack"><span>' + title + '</span><span class="mode-tag">' + modeLabel + '</span></span>';
+        }
         const step4Img = document.getElementById('pingpong-step4-img');
         const step5Img = document.getElementById('pingpong-step5-img');
         if (step4Img) step4Img.src = mode === 'control' ? 'pictures/pingpong-4-c.png' : 'pictures/pingpong-4-m.png';
