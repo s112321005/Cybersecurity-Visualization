@@ -97,6 +97,7 @@
         #settings-overlay input:disabled + span { opacity: 0.45; cursor: not-allowed; filter: grayscale(0.35); }
         .polarizer-img.inactive { filter: grayscale(100%); opacity: 0.45; }
         .polarizer-img.basis-eye-img { width: 70px; height: 70px; padding: 6px; border: 4px solid var(--bob-blue); border-radius: 50%; background: #ffffff; object-fit: contain; box-sizing: border-box; }
+        .polarizer-img.eve-basis-eye-img { border-color: var(--eve-red); }
         .selection-box .state-btn { border-color: var(--alice-blue); color: var(--alice-blue); }
         .option-row.active .state-btn { background-color: var(--alice-blue); border-color: var(--alice-blue); color: #ffffff; }
         .state-circle { background: var(--alice-blue); color: #ffffff; }
@@ -109,19 +110,19 @@
         .state-circle.inactive:has(#b92-symbol-bobunsame-2),
         #view-b92-eve-resend [id^="bob-final-"].inactive { background-color: var(--inactive-gray); color: #666; border-color: var(--inactive-gray); }
         #view-b92-eve-resend [id^="bob-final-"].eve-error:not(.inactive) { background-color: var(--eve-red); color: #ffffff; border-color: var(--eve-red); }
+        #view-b92-eve-resend [id^="bob-final-"].eve-error.inactive { background-color: var(--inactive-gray); color: #666; border-color: var(--eve-red); }
         .prob-circle { background: var(--light-blue); color: var(--primary-blue); border: 2px solid var(--light-blue); }
         .prob-circle.inactive { background-color: var(--inactive-gray); color: #666; border-color: var(--inactive-gray); }
         .prob-circle.eve-error { background-color: #ffe6e6; color: var(--eve-red); border-color: #ffe6e6; }
+        .prob-circle.eve-error.inactive { background-color: var(--inactive-gray); color: var(--eve-red); border-color: var(--eve-red); }
         .prob-fraction { width: 30px; height: 30px; font-size: 12px; flex-direction: column; box-shadow: 0 2px 4px rgba(0,0,0,0.1); transform: translateY(-50%); }
         .prob-fraction .fraction-num { border-bottom: 1px solid currentColor; width: 100%; text-align: center; line-height: 1; }
         .prob-fraction .fraction-den { text-align: center; line-height: 1; }
         .hint-text { color: var(--alice-blue); }
         .apply-btn { background-color: #28a745; color: white; border: none; padding: 12px 50px; border-radius: 25px; font-size: 20px; font-weight: bold; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 10px rgba(40,167,69,0.3); }
         .apply-btn:hover { background-color: #218838; transform: scale(1.05); }
-        #eve-detected-indicator,
-        .eve-detected-indicator { cursor: pointer; user-select: none; margin-left: auto; border-color: var(--eve-red); color: var(--eve-red); }
-        #eve-detected-indicator:hover,
-        .eve-detected-indicator:hover { background: #fff1f1; box-shadow: 0 4px 10px rgba(211,47,47,0.18); }
+        #eve-detected-indicator, #cnot-eve-detected-indicator, .eve-detected-indicator { cursor: pointer; user-select: none; margin-left: auto; border-color: var(--eve-red); color: var(--eve-red); }
+        #eve-detected-indicator:hover, #cnot-eve-detected-indicator:hover, .eve-detected-indicator:hover { background: #fff1f1; box-shadow: 0 4px 10px rgba(211,47,47,0.18); }
         .eve-calculation-panel { background: white; border-radius: 12px; padding: 20px; margin-top: 20px; margin-left: 250px; width: calc(100% - 250px); box-sizing: border-box; box-shadow: 0 4px 10px rgba(0,0,0,0.08); display: none; }
         .eve-calculation-panel h4 { margin-top: 0; margin-bottom: 15px; color: var(--primary-blue); border-bottom: 2px solid var(--light-blue); padding-bottom: 10px; }
         #calculation-panel,
@@ -343,7 +344,7 @@
         <div class="top-bar" style="display: flex; align-items: center; justify-content: flex-start; gap: 20px; margin-bottom: 20px;">            
             <a href="VerifySetting.html" class="btn-back">◀</a>
             <div class="page-title">Quantum Key Distribution : B92 Protocol</div>
-            <div id="eve-detected-indicator" class="page-title" onclick="showEveDetectedCalculation()" title="Click to show Eve detection calculation">Eve detected probability： 12.5%</div>
+            <div id="eve-detected-indicator" class="page-title eve-detected-indicator" onclick="showEveDetectedCalculation()" title="Click to show Eve detection calculation">Eve detected probability： 12.5%</div>
         </div>
         <div class="main-content">
             <div class="sidebar">
@@ -514,13 +515,30 @@
     let representationMode = 'polarization';
     const symbols = { Stype: ['|↑⟩', '|→⟩'],  Dtype: ['|↖⟩', '|↗⟩']};
 
+    function normalizeKetSymbol(symbol) {
+        return String(symbol || '').replace(/\s+/g, '');
+    }
     function displayStateSymbol(symbol, forceBasisMode = false) {
         if (!forceBasisMode && representationMode !== 'basis') return symbol;
         const map = { '|→⟩': '|0⟩', '|↑⟩': '|1⟩', '|↗⟩': '|+⟩', '|↖⟩': '|-⟩' };
-        return map[symbol] || symbol;
+        const normalized = normalizeKetSymbol(symbol);
+        return map[normalized] || symbol;
     }
     function setStateTextById(id, symbol, forceBasisMode = false) { const target = document.getElementById(id); if (target) target.innerText = displayStateSymbol(symbol, forceBasisMode); }
     function setStateTextInSelector(selector, symbol, forceBasisMode = false) { const target = document.querySelector(selector); if (target) target.innerText = displayStateSymbol(symbol, forceBasisMode); }
+    function applyBasisModeStateSymbolMapping() {
+        if (representationMode !== 'basis' && !isEveCnot) return;
+        const mapTextNode = node => {
+            if (!node) return;
+            const mapped = displayStateSymbol(node.innerText, true);
+            if (mapped !== node.innerText) node.innerText = mapped;
+        };
+        document.querySelectorAll('.state-circle, .eve-state-circle, .state-btn.option-state').forEach(node => {
+            const spans = node.querySelectorAll('span');
+            if (spans.length) spans.forEach(mapTextNode);
+            else mapTextNode(node);
+        });
+    }
     function updateAliceOptionLabels() {
         document.querySelectorAll('#b92-options .option-row, #b92-eve-options .option-row, #b92-cnot-options .option-row').forEach(row => {
             const stateButton = row.querySelector('.option-state');
@@ -529,16 +547,43 @@
             stateButton.innerText = displayStateSymbol(row.dataset.stateSymbol, forceBasisMode);
         });
     }
-    function basisEyeSrc(basis) { return basis === 'Z' ? 'pictures/b_eyez.svg' : 'pictures/b_eyex.svg'; }
+    function basisEyeSrc(basis, role = 'bob') {
+        const prefix = role === 'eve' ? 'e' : 'b';
+        return basis === 'Z' ? `pictures/${prefix}_eyez.svg` : `pictures/${prefix}_eyex.svg`;
+    }
+    function getPolarizerRole(activeSrc = '', inactiveSrc = '') {
+        const src = `${activeSrc} ${inactiveSrc}`;
+        return (src.includes('/e_') || src.includes('/red_') || src.includes('e_') || src.includes('red_')) ? 'eve' : 'bob';
+    }
     function setPolarizerImage(img, basis, active, activeSrc, inactiveSrc) {
         if (!img) return;
+        const role = getPolarizerRole(activeSrc, inactiveSrc);
         if (representationMode === 'basis' || isEveCnot) {
-            img.src = basisEyeSrc(basis);
+            img.src = basisEyeSrc(basis, role);
             img.classList.add('basis-eye-img');
+            img.classList.toggle('eve-basis-eye-img', role === 'eve');
             img.classList.toggle('inactive', !active);
         } else {
             img.src = active ? activeSrc : inactiveSrc;
-            img.classList.remove('basis-eye-img');
+            img.classList.remove('basis-eye-img', 'eve-basis-eye-img');
+            img.classList.toggle('inactive', !active);
+        }
+    }
+    function setPolarizerImageFromSrc(img, srcName, active = true) {
+        if (!img) return;
+        const isEve = /^(e_|red_)/.test(srcName);
+        const role = isEve ? 'eve' : 'bob';
+        const isVertical = srcName.includes('vertical');
+        const isDiagonal = srcName.includes('diagonal');
+        const basis = isVertical ? 'Z' : (isDiagonal ? 'X' : 'Z');
+        if (representationMode === 'basis' || isEveCnot) {
+            img.src = basisEyeSrc(basis, role);
+            img.classList.add('basis-eye-img');
+            img.classList.toggle('eve-basis-eye-img', isEve);
+            img.classList.toggle('inactive', !active);
+        } else {
+            img.src = `pictures/${srcName}.svg`;
+            img.classList.remove('basis-eye-img', 'eve-basis-eye-img');
             img.classList.toggle('inactive', !active);
         }
     }
@@ -557,6 +602,8 @@
         else { representationMode = isPolarizationMode ? 'polarization' : 'basis'; }
         if (currentSettings.eve.isOn && currentSettings.eve.attack === 'CNOT' && !(eveToggle && eveToggle.checked && getDraftEveAttack() === 'CNOT')) { syncRepresentationModeLock(); updateAliceOptionLabels(); return; }
         updatePageState();
+        normalizeBasisModePolarizerImages();
+        applyBasisModeStateSymbolMapping();
     }
 
     // 預設的設定值 (不依賴上一頁)
@@ -604,7 +651,7 @@
         const terms = eveDetectedTerms.map(term => {
             const target = document.getElementById(term.targetId);
             const isInactive = target ? target.classList.contains('inactive') : false;
-            const isError = term.detected && !isInactive;
+            const isError = !!(target && target.classList.contains('eve-error') && !isInactive);
             return {
                 prob: term.num / term.den,
                 isError,
@@ -839,6 +886,8 @@
         
         // 第一次進來時直接執行狀態更新 (套用 currentSettings 預設值)
         updatePageState();
+        normalizeBasisModePolarizerImages();
+        applyBasisModeStateSymbolMapping();
     });
 
     function selectStateB92(element, stateSymbol, basisType) {
@@ -847,16 +896,16 @@
         element.classList.add('active');
         
         const stateText = document.getElementById('b92-initial-state-text');
-        if (stateText) stateText.innerText = stateSymbol;
+        if (stateText) stateText.innerText = displayStateSymbol(stateSymbol);
         
         const bobSameText = document.getElementById('b92-symbol-bobsame');
-        if (bobSameText) bobSameText.innerText = stateSymbol;
+        if (bobSameText) bobSameText.innerText = displayStateSymbol(stateSymbol);
         
         const oppoSymbol = symbols[(basisType === 'rectilinear') ? 'Dtype' : 'Stype'];
         const unsame1 = document.getElementById('b92-symbol-bobunsame-1');
         const unsame2 = document.getElementById('b92-symbol-bobunsame-2');
-        if (unsame1) unsame1.innerText = oppoSymbol[0];
-        if (unsame2) unsame2.innerText = oppoSymbol[1];
+        if (unsame1) unsame1.innerText = displayStateSymbol(oppoSymbol[0]);
+        if (unsame2) unsame2.innerText = displayStateSymbol(oppoSymbol[1]);
         
         const keyImg = document.getElementById('b92-initial-key-img');
         const bobSame = document.getElementById('b92-bob-same');
@@ -873,11 +922,11 @@
         
         // ▼▼▼ 修正：讓 Bob 的偏振片永遠如實反映他選擇的 Basis (Z 垂直, X 對角) ▼▼▼
         if (isBobZ) {
-            if (bobSame) bobSame.src = isSameBasis ? "pictures/b_vertical.svg" : "pictures/gray_vertical.svg";
-            if (bobUnsame) bobUnsame.src = !isSameBasis ? "pictures/b_diagonal.svg" : "pictures/gray_diagonal.svg";
+            setPolarizerImage(bobSame, 'Z', isSameBasis, "pictures/b_vertical.svg", "pictures/gray_vertical.svg");
+            setPolarizerImage(bobUnsame, 'X', !isSameBasis, "pictures/b_diagonal.svg", "pictures/gray_diagonal.svg");
         } else {
-            if (bobSame) bobSame.src = isSameBasis ? "pictures/b_diagonal.svg" : "pictures/gray_diagonal.svg";
-            if (bobUnsame) bobUnsame.src = !isSameBasis ? "pictures/b_vertical.svg" : "pictures/gray_vertical.svg";
+            setPolarizerImage(bobSame, 'X', isSameBasis, "pictures/b_diagonal.svg", "pictures/gray_diagonal.svg");
+            setPolarizerImage(bobUnsame, 'Z', !isSameBasis, "pictures/b_vertical.svg", "pictures/gray_vertical.svg");
         }   
         
         const aliceBasis = isAliceZ ? 'Z' : 'X';
@@ -912,8 +961,22 @@
         document.querySelectorAll(`${containerSelector} .prob-circle[data-prob-for]`).forEach(probNode => {
             const target = getProbabilityTarget(probNode);
             if (!target) return;
-            probNode.classList.toggle('inactive', target.classList.contains('inactive'));
-            probNode.classList.toggle('eve-error', target.classList.contains('eve-error') && !target.classList.contains('inactive'));
+            const isInactive = target.classList.contains('inactive');
+            const isActiveEveError = target.classList.contains('eve-error') && !isInactive;
+            probNode.classList.toggle('inactive', isInactive);
+            probNode.classList.toggle('eve-error', isActiveEveError);
+        });
+    }
+    function normalizeBasisModePolarizerImages() {
+        if (representationMode !== 'basis' && !isEveCnot) return;
+        document.querySelectorAll('img.polarizer-img').forEach(img => {
+            const src = img.getAttribute('src') || '';
+            if (src.includes('eyex.svg') || src.includes('eyez.svg')) return;
+            const isEve = /(?:red_|e_)/.test(src) || img.id.startsWith('eve-');
+            const basis = src.includes('diagonal') ? 'X' : 'Z';
+            img.src = basisEyeSrc(basis, isEve ? 'eve' : 'bob');
+            img.classList.add('basis-eye-img');
+            img.classList.toggle('eve-basis-eye-img', isEve);
         });
     }
 
@@ -922,7 +985,7 @@
         if (!indicator) return;
         const total = eveDetectedTerms.reduce((sum, term) => {
             const target = document.getElementById(term.targetId);
-            const isActiveError = target && term.detected && target.classList.contains('eve-error') && !target.classList.contains('inactive');
+            const isActiveError = target && target.classList.contains('eve-error') && !target.classList.contains('inactive');
             return sum + (isActiveError ? term.num / term.den : 0);
         }, 0);
         const totalPercent = formatPercent(total);
@@ -963,19 +1026,19 @@
         element.classList.add('active');
         
         const stateText = document.getElementById('b92-initial-state-text');
-        if (stateText) stateText.innerText = stateSymbol;
+        if (stateText) stateText.innerText = displayStateSymbol(stateSymbol);
         
         // 修正：Bob same node 顯示與 Alice 相同的符號
         const bobSameText = document.getElementById('b92-symbol-bobsame');
         if (bobSameText) {
-            bobSameText.innerText = stateSymbol;
+            bobSameText.innerText = displayStateSymbol(stateSymbol);
         }
         
         const oppoSymbol = symbols[(basisType === 'rectilinear') ? 'Dtype' : 'Stype'];
         const unsame1 = document.getElementById('b92-symbol-bobunsame-1');
         const unsame2 = document.getElementById('b92-symbol-bobunsame-2');
-        if (unsame1) unsame1.innerText = oppoSymbol[0];
-        if (unsame2) unsame2.innerText = oppoSymbol[1];
+        if (unsame1) unsame1.innerText = displayStateSymbol(oppoSymbol[0]);
+        if (unsame2) unsame2.innerText = displayStateSymbol(oppoSymbol[1]);
         
         const keyImg = document.getElementById('b92-initial-key-img');
         const bobSame = document.getElementById('b92-bob-same');
@@ -993,11 +1056,11 @@
         // 顏色判斷
 
         if (isAliceZ) {
-            if (bobSame) bobSame.src = isSameBasis ? "pictures/b_vertical.svg" : "pictures/gray_vertical.svg";
-            if (bobUnsame) bobUnsame.src = !isSameBasis ? "pictures/b_diagonal.svg" : "pictures/gray_diagonal.svg";
+            setPolarizerImage(bobSame, 'Z', isSameBasis, "pictures/b_vertical.svg", "pictures/gray_vertical.svg");
+            setPolarizerImage(bobUnsame, 'X', !isSameBasis, "pictures/b_diagonal.svg", "pictures/gray_diagonal.svg");
         } else {
-            if (bobSame) bobSame.src = isSameBasis ? "pictures/b_diagonal.svg" : "pictures/gray_diagonal.svg";
-            if (bobUnsame) bobUnsame.src = !isSameBasis ? "pictures/b_vertical.svg" : "pictures/gray_vertical.svg";
+            setPolarizerImage(bobSame, 'X', isSameBasis, "pictures/b_diagonal.svg", "pictures/gray_diagonal.svg");
+            setPolarizerImage(bobUnsame, 'Z', !isSameBasis, "pictures/b_vertical.svg", "pictures/gray_vertical.svg");
         }
         
         // 更新線條與結果圓圈亮起狀態
@@ -1030,6 +1093,8 @@
             setPolarizerImage(bobUnsame, 'Z', !isSameBasis, "pictures/b_vertical.svg", "pictures/gray_vertical.svg");
         }
         updateB92Visuals(isSameBasis);
+        normalizeBasisModePolarizerImages();
+        applyBasisModeStateSymbolMapping();
     }
 
     function selectStateB92Eve(element, stateSymbol, basisType) {
@@ -1271,8 +1336,8 @@
             const line1 = document.querySelector(group.lines[0]);
             const line2 = document.querySelector(group.lines[1]);
             const line3 = document.querySelector(group.lines[2]);
-            if (topPol) { topPol.src = `pictures/${topSrc}.svg`; setInactiveState(topPol, true); }
-            if (bottomPol) { bottomPol.src = `pictures/${bottomSrc}.svg`; setInactiveState(bottomPol, false); }
+            if (topPol) setPolarizerImageFromSrc(topPol, topSrc, false);
+            if (bottomPol) setPolarizerImageFromSrc(bottomPol, bottomSrc, true);
             if (line1) line1.classList.add('line-inactive');
             if (line2) line2.classList.remove('line-inactive');
             if (line3) line3.classList.remove('line-inactive');
@@ -1305,8 +1370,8 @@
             const line9 = document.querySelector(bottomGroup.lines[2]);
 
             if (isAliceZ) {
-                if (topPol) { topPol.src = `pictures/${bobPolarizerName('vertical')}.svg`; setInactiveState(topPol, false); }
-                if (bottomPol) { bottomPol.src = `pictures/${bobPolarizerName('diagonal')}.svg`; setInactiveState(bottomPol, true); }
+                if (topPol) setPolarizerImageFromSrc(topPol, bobPolarizerName('vertical'), true);
+                if (bottomPol) setPolarizerImageFromSrc(bottomPol, bobPolarizerName('diagonal'), false);
                 if (line7) line7.classList.remove('line-inactive');
                 if (line8) line8.classList.remove('line-inactive');
                 if (line9) line9.classList.add('line-inactive');
@@ -1317,8 +1382,8 @@
                 if (res8) setInactiveState(res8, false);
                 if (res9) setInactiveState(res9, true);
             } else {
-                if (topPol) { topPol.src = `pictures/${bobPolarizerName('diagonal')}.svg`; setInactiveState(topPol, false); }
-                if (bottomPol) { bottomPol.src = `pictures/${bobPolarizerName('vertical')}.svg`; setInactiveState(bottomPol, true); }
+                if (topPol) setPolarizerImageFromSrc(topPol, bobPolarizerName('diagonal'), true);
+                if (bottomPol) setPolarizerImageFromSrc(bottomPol, bobPolarizerName('vertical'), false);
                 if (line7) line7.classList.remove('line-inactive');
                 if (line8) line8.classList.remove('line-inactive');
                 if (line9) line9.classList.add('line-inactive');
@@ -1360,7 +1425,24 @@
             });
         });
 
+        const allBobFinalNodes = Array.from(document.querySelectorAll('#view-b92-eve-resend [id^="bob-final-"]'));
+        allBobFinalNodes.forEach(node => node.classList.remove('eve-error'));
+        const detectedSymbol = isAliceZ ? '|↑⟩' : '|↖⟩';
+        const normalizeSymbol = value => (value || '').replace(/\s+/g, '');
+        allBobFinalNodes.forEach(node => {
+            const textNode = node.querySelector('span');
+            const currentSymbol = normalizeSymbol(textNode ? textNode.innerText : node.innerText);
+            if (currentSymbol !== normalizeSymbol(detectedSymbol)) return;
+            if (isBobBasisSameAsAlice) {
+                if (!node.classList.contains('inactive')) node.classList.add('eve-error');
+            } else if (node.classList.contains('inactive')) {
+                node.classList.add('eve-error');
+            }
+        });
+
         syncProbabilityNodes('#view-b92-eve-resend');
+        normalizeBasisModePolarizerImages();
+        applyBasisModeStateSymbolMapping();
         updateEveDetectedIndicator();
         const calculationPanel = document.getElementById('calculation-panel');
         if (calculationPanel && calculationPanel.style.display === 'block') showEveDetectedCalculation();
@@ -1375,7 +1457,7 @@
 
     function setCnotStateCircle(circle, symbol, isError = false, isInactive = false) {
         if (!circle) return;
-        circle.innerText = symbol;
+        circle.innerText = displayStateSymbol(symbol, true);
         circle.classList.remove('state-blue', 'state-red', 'eve-error', 'inactive');
         if (isInactive) circle.classList.add('inactive');
         else circle.classList.add(isError ? 'state-red' : 'state-blue');
@@ -1540,6 +1622,71 @@
             focusCalculationPanel(panel);
         }
     }
+
+    /* Basis Mode final normalization patch: keeps branch updates from reverting to polarization symbols. */
+    (function installBasisModeFinalNormalizer() {
+        const normalizeKet = value => String(value || '').replace(/\s+/g, '');
+        const ketMap = {
+            '|↑⟩': '|1⟩', '|→⟩': '|0⟩', '|↖⟩': '|-⟩', '|↗⟩': '|+⟩',
+            '↑': '|1⟩', '→': '|0⟩', '↖': '|-⟩', '↗': '|+⟩'
+        };
+        const originalDisplayStateSymbol = window.displayStateSymbol || displayStateSymbol;
+        displayStateSymbol = function(symbol, forceBasisMode = false) {
+            if (!forceBasisMode && representationMode !== 'basis' && !isEveCnot) return symbol;
+            const normalized = normalizeKet(symbol);
+            if (ketMap[normalized]) return ketMap[normalized];
+            if (normalized.includes('↑')) return '|1⟩';
+            if (normalized.includes('→')) return '|0⟩';
+            if (normalized.includes('↖')) return '|-⟩';
+            if (normalized.includes('↗')) return '|+⟩';
+            return originalDisplayStateSymbol ? originalDisplayStateSymbol(symbol, true) : symbol;
+        };
+        window.displayStateSymbol = displayStateSymbol;
+
+        const normalizeStateNode = node => {
+            if (!node) return;
+            const targetNodes = node.querySelectorAll('span').length ? node.querySelectorAll('span') : [node];
+            targetNodes.forEach(target => {
+                const mapped = displayStateSymbol(target.textContent, true);
+                if (mapped !== target.textContent) target.textContent = mapped;
+            });
+        };
+
+        const normalizePolarizerNode = img => {
+            if (!img) return;
+            const id = img.id || '';
+            const src = img.getAttribute('src') || '';
+            const isEve = id.startsWith('eve-') || /(?:red_|e_)/.test(src);
+            const isX = src.includes('diagonal') || src.includes('eyex') || id.includes('diff') || id === 'cnot-bob-measure' && currentSettings?.bob?.basis === 'X';
+            const basis = isX ? 'X' : 'Z';
+            img.src = basisEyeSrc(basis, isEve ? 'eve' : 'bob');
+            img.classList.add('basis-eye-img');
+            img.classList.toggle('eve-basis-eye-img', isEve);
+        };
+
+        window.normalizeB92BasisModeAfterBranchUpdate = function() {
+            if (representationMode !== 'basis' && !isEveCnot) return;
+            document.querySelectorAll('.state-circle, .eve-state-circle, .state-btn.option-state').forEach(normalizeStateNode);
+            document.querySelectorAll('img.polarizer-img').forEach(normalizePolarizerNode);
+        };
+
+        const wrapAndNormalize = fnName => {
+            const original = window[fnName] || (typeof globalThis !== 'undefined' ? globalThis[fnName] : null);
+            if (typeof original !== 'function') return;
+            const wrapped = function(...args) {
+                const result = original.apply(this, args);
+                normalizeB92BasisModeAfterBranchUpdate();
+                window.requestAnimationFrame(() => normalizeB92BasisModeAfterBranchUpdate());
+                return result;
+            };
+            window[fnName] = wrapped;
+            try { eval(fnName + ' = wrapped'); } catch (e) {}
+        };
+
+        ['updatePageState', 'selectStateB92', 'selectStateB92Eve', 'selectStateB92Cnot', 'handleRepresentationModeToggle', 'applySettings'].forEach(wrapAndNormalize);
+        document.addEventListener('DOMContentLoaded', () => normalizeB92BasisModeAfterBranchUpdate());
+    })();
+
 </script>
 </body>
 </html>
