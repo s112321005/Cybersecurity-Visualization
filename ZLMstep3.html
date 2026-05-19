@@ -676,10 +676,13 @@
     }
 
     function prevStep() { 
+        // ?��? Bob 一?��??�選??(?�止變�? null)
         let bobChoice = JSON.parse(localStorage.getItem('bobOriginalChoice')) || { basis: 'Z', msg: '0' };
         
+        // 清除 Charlie (Step2) ??Alice (Step3) ?��???        localStorage.removeItem('qssStepData'); 
         localStorage.removeItem('qssStep3Data'); 
         
+        // 帶�? Bob ?��??�退??Step 2
         window.location.href = `ZLMstep2.html?bobBasis=${bobChoice.basis}&bobMsg=${bobChoice.msg}`; 
     }
     
@@ -693,6 +696,7 @@
 </script>
 
 <script>
+/* ZLM ?�側?��?步�?視�?：�?止使?�者滾?�此?�?��??�用 transform ?��?顯示?��? step??*/
 document.addEventListener('DOMContentLoaded', function () {
     const dock = document.querySelector('.zlm-image-dock');
     const windowBox = document.querySelector('.zlm-image-window');

@@ -649,6 +649,7 @@
         const explainBox = document.getElementById("explain-box");
         const calcContainer = document.getElementById("calc-process-container");
         
+        // 將這裡?��??�設定改??Charlie ?��???var(--charlie-color)
         let calcHTML = `<div class="math-display" style="display: flex; align-items: center; gap: 10px;">
             \\( ${gateLatex[selectedGate]} \\times ${vectorLatex[bobStateStr]} = ${vectorLatex[finalStateStr]} \\)
             <span style="color:var(--charlie-color); font-weight:bold;">= ${finalStateStr}</span>
@@ -700,6 +701,7 @@
 </script>
 
 <script>
+/* ZLM ?�側?��?步�?視�?：�?止使?�者滾?�此?�?��??�用 transform ?��?顯示?��? step??*/
 document.addEventListener('DOMContentLoaded', function () {
     const dock = document.querySelector('.zlm-image-dock');
     const windowBox = document.querySelector('.zlm-image-window');
