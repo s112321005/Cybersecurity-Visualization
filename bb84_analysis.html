@@ -17,9 +17,9 @@
         .page-title { border: 2px solid var(--primary-blue); color: #000; padding: 10px 40px; border-radius: 10px; font-size: 20px; font-weight: bold; }
         .main-content { display: flex; flex-direction: row !important; gap: 30px; align-items: flex-start; width: 100%; }
         .sidebar { width: 220px; display: flex; flex-direction: column; align-items: center; z-index: 10; gap: 20px; flex-shrink: 0; }
-        .selection-box { background: var(--light-blue); border-radius: 15px; padding: 20px 15px; width: 100%; box-sizing: border-box; display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
-        .selection-box h4 { margin: 0 0 5px 0; text-align: center; color: #333; width: 100%; }
-        .option-row { justify-content: center; margin-bottom: 0; cursor: pointer; padding: 5px; border-radius: 10px; flex: 0 0 auto; }
+        .selection-box { background: var(--light-blue); border-radius: 15px; padding: 20px 15px; width: 100%; box-sizing: border-box; }
+        .selection-box h4 { margin: 0 0 15px 0; text-align: center; color: #333; }
+        .option-row { justify-content: space-between; margin-bottom: 10px; cursor: pointer; padding: 5px; border-radius: 10px; }
         .option-row:hover { background: rgba(255, 255, 255, 0.5); }
         .option-row.active .state-btn { background: var(--alice-blue); color: white; }
         .state-btn { background: white; border: 2px solid var(--alice-blue); color: var(--alice-blue); width: 45px; height: 45px; border-radius: 10px; font-size: 18px; pointer-events: none; }
@@ -28,8 +28,6 @@
         .arrows { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; }
         .node { position: absolute; display: flex; flex-direction: column; align-items: center; z-index: 2; transform: translate(-50%, -50%); }
         .polarizer-img { width: 70px; height: auto; object-fit: contain; }
-        .polarizer-img.inactive { filter: grayscale(100%); opacity: 0.45; }
-        .polarizer-img.basis-eye-img { width: 70px; height: 70px; padding: 6px; border: 4px solid var(--bob-blue); border-radius: 50%; background: #ffffff; object-fit: contain; box-sizing: border-box; }
         .state-circle, .eve-state-circle { width: 45px; height: 45px; border-radius: 50%; font-size: 18px; margin-top: 10px; }
         .state-circle { background: var(--primary-blue); color: white; }
         .state-circle.inactive { background-color: var(--inactive-gray); color: #666; }
@@ -83,15 +81,6 @@
         .settings-overlay { position: fixed; inset: 0; width: 100dvw; height: 100dvh; min-height: 100vh; background: var(--bg-gradient); z-index: 10000; transform: translateY(-100%); transition: transform 1.1s cubic-bezier(0.22, 1, 0.36, 1); display: flex; flex-direction: column; align-items: center; justify-content: flex-start; overflow-y: auto; overflow-x: hidden; box-sizing: border-box; padding: 80px 16px 48px; box-shadow: 0 15px 50px rgba(0,0,0,0.2); }
         .settings-overlay.show { transform: translateY(0); }
         .overlay-container { width: 1100px; max-width: 95vw; display: flex; flex-direction: column; align-items: center; padding-bottom: 50px; }
-        .settings-mode-row { display: flex; justify-content: center; align-items: center; width: 100%; margin: 0 0 24px; padding: 0; box-sizing: border-box; }
-        .modern-toggle { cursor: pointer; display: inline-block; user-select: none; -webkit-tap-highlight-color: transparent; }
-        .modern-toggle input { display: none; }
-        .modern-toggle .toggle-track { position: relative; display: grid; grid-template-columns: 1fr 1fr; align-items: center; width: 330px; height: 52px; background-color: #eef7ff; border: 2px solid var(--primary-blue); border-radius: 99px; padding: 4px; box-shadow: inset 0 2px 5px rgba(0,0,0,0.05); overflow: hidden; box-sizing: border-box; }
-        .modern-toggle .toggle-text { position: relative; z-index: 2; display: flex; align-items: center; justify-content: center; height: 100%; padding: 0 12px; font-size: 0.9rem; font-weight: 800; color: var(--primary-blue); transition: color 0.3s cubic-bezier(0.4,0.0,0.2,1); text-align: center; letter-spacing: 0.02em; white-space: nowrap; }
-        .modern-toggle input:not(:checked) ~ .toggle-track .text-left { color: #ffffff; }
-        .modern-toggle input:checked ~ .toggle-track .text-right { color: #ffffff; }
-        .modern-toggle .toggle-thumb { position: absolute; top: 4px; left: 4px; width: calc((100% - 8px) / 2); height: calc(100% - 8px); background-color: var(--primary-blue); border-radius: 99px; transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1); box-shadow: 0 3px 8px rgba(84,159,208,0.3); z-index: 1; }
-        .modern-toggle input:checked ~ .toggle-track .toggle-thumb { transform: translateX(100%); }
         .main-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; width: 100%; margin-bottom: 30px; }
         .character-col { flex: 1; display: flex; flex-direction: column; align-items: center; z-index: 2; position: relative; }
         .character-img { height: 80px; object-fit: contain; margin-bottom: 15px; z-index: 2; transition: all 0.3s ease; }
@@ -145,16 +134,12 @@
         #settings-overlay input:disabled + span { opacity: 0.45; cursor: not-allowed; filter: grayscale(0.35); }
         .apply-btn { background-color: #28a745; color: white; border: none; padding: 12px 50px; border-radius: 25px; font-size: 20px; font-weight: bold; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 10px rgba(40,167,69,0.3); }
         .apply-btn:hover { background-color: #218838; transform: scale(1.05); }
-        #eve-detected-indicator,
-        .eve-detected-indicator { cursor: pointer; user-select: none; margin-left: auto; border-color: var(--eve-red); color: var(--eve-red); }
-        #eve-detected-indicator:hover,
-        .eve-detected-indicator:hover { background: #fff1f1; box-shadow: 0 4px 10px rgba(211,47,47,0.18); }
+        #eve-detected-indicator { cursor: pointer; user-select: none; margin-left: auto; border-color: var(--eve-red); color: var(--eve-red); }
+        #eve-detected-indicator:hover { background: #fff1f1; box-shadow: 0 4px 10px rgba(211,47,47,0.18); }
         .eve-calculation-panel { background: white; border-radius: 12px; padding: 20px; margin-top: 20px; margin-left: 250px; width: calc(100% - 250px); box-sizing: border-box; box-shadow: 0 4px 10px rgba(0,0,0,0.08); display: none; }
         .eve-calculation-panel h4 { margin-top: 0; margin-bottom: 15px; color: var(--primary-blue); border-bottom: 2px solid var(--light-blue); padding-bottom: 10px; }
-        #calculation-panel,
-        #cnot-calculation-panel { scroll-margin-top: 28px; transform-origin: center top; }
-        #calculation-panel.calc-panel-pop,
-        #cnot-calculation-panel.calc-panel-pop { animation: calcPanelPop 0.9s ease-out; }
+        #calculation-panel { scroll-margin-top: 28px; transform-origin: center top; }
+        #calculation-panel.calc-panel-pop { animation: calcPanelPop 0.9s ease-out; }
         @keyframes calcPanelPop {
             0% { transform: scale(1); box-shadow: 0 4px 10px rgba(0,0,0,0.08); outline: 0 solid rgba(84,159,208,0); }
             28% { transform: scale(1.018); box-shadow: 0 12px 28px rgba(84,159,208,0.32); outline: 4px solid rgba(84,159,208,0.28); }
@@ -163,16 +148,11 @@
         .eve-calc-red { color: var(--eve-red); font-weight: 900; }
         .eve-calc-blue { color: var(--primary-blue); font-weight: 900; }
         .eve-calc-gray { color: #777; font-weight: 900; }
-        #math-display,
-        #cnot-math-display { overflow-x: auto; user-select: none; padding: 26px 18px 30px; text-align: center; }
-        #math-display math,
-        #cnot-math-display math { font-family: "Times New Roman", serif; font-size: 21px; white-space: nowrap; }
-        #math-display > mjx-container,
-        #cnot-math-display > mjx-container { margin-left: auto !important; margin-right: auto !important; }
-        #math-display mjx-container[display="true"],
-        #cnot-math-display mjx-container[display="true"] { text-align: center !important; }
-        #math-display .eve-calc-note,
-        #cnot-math-display .eve-calc-note { margin-top: 16px; font-size: 14px; font-weight: 800; color: #667085; text-align: center; }
+        #math-display { overflow-x: auto; user-select: none; padding: 26px 18px 30px; text-align: center; }
+        #math-display math { font-family: "Times New Roman", serif; font-size: 21px; white-space: nowrap; }
+        #math-display > mjx-container { margin-left: auto !important; margin-right: auto !important; }
+        #math-display mjx-container[display="true"] { text-align: center !important; }
+        #math-display .eve-calc-note { margin-top: 16px; font-size: 14px; font-weight: 800; color: #667085; text-align: center; }
         .eve-calc-wrapper { display: inline-flex; flex-direction: column; align-items: center; gap: 18px; min-width: max-content; padding: 8px 22px 12px; margin: 0 auto; }
         .eve-calc-main-row { display: inline-flex; align-items: center; justify-content: flex-start; gap: 16px; min-width: max-content; }
         .eve-calc-main-row > math { flex: 0 0 auto; }
@@ -186,17 +166,6 @@
         .eve-fraction-stack .eve-fraction-denominator mjx-container { display: inline-block !important; }
         .eve-fraction-line { grid-column: 1; justify-self: stretch; width: 100%; height: 2px; background: #333; }
         .eve-final-row { margin-top: 4px; }
-        .cnot-op-node { width: 165px; height: 290px; border-radius: 20px; background: #ffffff; border: 8px solid var(--eve-red); color: #000000; font-family: "Times New Roman", serif; font-size: 38px; display: flex; align-items: center; justify-content: center; box-shadow: 0 6px 14px rgba(211,47,47,0.18); cursor: pointer; user-select: none; }
-        .cnot-op-node sub { font-size: 0.55em; line-height: 0; vertical-align: sub; }
-        .cnot-op-node:hover { transform: scale(1.04); box-shadow: 0 0 18px rgba(211,47,47,0.35); }
-        .cnot-gate-dot { width: 24px; height: 24px; border-radius: 50%; background: #d40000; }
-        .cnot-gate-plus { width: 54px; height: 54px; border: 6px solid #d40000; border-radius: 50%; position: relative; box-sizing: border-box; background: #ffffff; }
-        .cnot-gate-plus::before,
-        .cnot-gate-plus::after { content: ''; position: absolute; background: #d40000; left: 50%; top: 50%; transform: translate(-50%, -50%); }
-        .cnot-gate-plus::before { width: 42px; height: 6px; }
-        .cnot-gate-plus::after { width: 6px; height: 54px; }
-        .state-circle.state-blue { background: var(--bob-blue); color: #fff; border-color: var(--bob-blue); }
-        .state-circle.state-red { background: var(--eve-red); color: #fff; border-color: var(--eve-red); }
         @media (max-width: 760px) {
             body { min-width: 0 !important; padding: 0; align-items: stretch; overflow-x: auto; }
             .pull-tab { position: fixed; left: 50vw; right: auto; transform: translateX(-50%); white-space: nowrap; }
@@ -220,18 +189,6 @@
 
 <div id="settings-overlay" class="settings-overlay">
     <div class="overlay-container">
-        <div class="settings-mode-row">
-            <div>
-                <label class="modern-toggle" aria-label="Toggle basis or polarization display mode">
-                    <input type="checkbox" id="representation-mode-toggle" checked onchange="handleRepresentationModeToggle(this.checked)">
-                    <div class="toggle-track">
-                        <span class="toggle-text text-left">Basis Mode</span>
-                        <span class="toggle-text text-right">Polarization Mode</span>
-                        <div class="toggle-thumb"></div>
-                    </div>
-                </label>
-            </div>
-        </div>
         <div class="main-grid" id="qkd-interface">
             <div class="character-col" id="alice-col">
                 <img src="pictures/cat_alice.svg" class="character-img" alt="Alice">
@@ -313,11 +270,11 @@
         <div class="main-content">
             <div class="sidebar">
                 <div class="selection-box" id="bb84-options">
-                    <h4>Alice Selects State</h4>
-                    <div class="option-row basis-z" data-state-symbol="|&rarr;&#10217;" data-basis-type="rectilinear" onclick="selectStateBB84(this, '|\u2192\u27E9', 'rectilinear')"><div class="state-btn option-state">|&rarr;&#10217;</div></div>
-                    <div class="option-row basis-z" data-state-symbol="|&uarr;&#10217;" data-basis-type="rectilinear" onclick="selectStateBB84(this, '|\u2191\u27E9', 'rectilinear')"><div class="state-btn option-state">|&uarr;&#10217;</div></div>
-                    <div class="option-row basis-x" data-state-symbol="|&#8599;&#10217;" data-basis-type="diagonal" onclick="selectStateBB84(this, '|\u2197\u27E9', 'diagonal')"><div class="state-btn option-state">|&#8599;&#10217;</div></div>
-                    <div class="option-row basis-x" data-state-symbol="|&#8598;&#10217;" data-basis-type="diagonal" onclick="selectStateBB84(this, '|\u2196\u27E9', 'diagonal')"><div class="state-btn option-state">|&#8598;&#10217;</div></div>
+                    <h4>Alice Selects Message</h4>
+                    <div class="option-row basis-z" onclick="selectStateBB84(this, '|\u2192\u27E9', 'rectilinear')"><div class="state-btn">|0&#10217;</div><div class="arrow-icon">&rarr;</div><div class="state-btn">|&rarr;&#10217;</div></div>
+                    <div class="option-row basis-z" onclick="selectStateBB84(this, '|\u2191\u27E9', 'rectilinear')"><div class="state-btn">|1&#10217;</div><div class="arrow-icon">&rarr;</div><div class="state-btn">|&uarr;&#10217;</div></div>
+                    <div class="option-row basis-x" onclick="selectStateBB84(this, '|\u2197\u27E9', 'diagonal')"><div class="state-btn">|+&#10217;</div><div class="arrow-icon">&rarr;</div><div class="state-btn">|&#8599;&#10217;</div></div>
+                    <div class="option-row basis-x" onclick="selectStateBB84(this, '|\u2196\u27E9', 'diagonal')"><div class="state-btn">|-&#10217;</div><div class="arrow-icon">&rarr;</div><div class="state-btn">|&#8598;&#10217;</div></div>
                 </div>                
                 <div class="settings-panel" style="margin-top: 20px;">
                     <h4>Current Settings</h4>
@@ -374,25 +331,25 @@
 <div id="view-bb84-eve-resend" class="page-view" style="padding-top: 60px;">
     <div class="container">
         <div class="top-bar" style="display: flex; align-items: center; justify-content: flex-start; gap: 20px; margin-bottom: 20px;">            
-            <a href="VerifySetting.html" class="btn-back">◀</a>
+            <a href="VerifySetting.html" class="btn-back">&larr;</a>
             <div class="page-title">Quantum Key Distribution : BB84 Protocol</div>
             <div id="eve-detected-indicator" class="page-title" onclick="showEveDetectedCalculation()" title="Click to show Eve detection calculation">Eve detected probability: 12.5%</div>
         </div>
         <div class="main-content">
             <div class="sidebar">
                 <div class="selection-box" id="bb84-eve-options">
-                    <h4>Alice Selects State</h4>
-                    <div class="option-row basis-z" data-state-symbol="|&rarr;&#10217;" data-basis-type="rectilinear" onclick="selectStateBB84Eve(this, '|\u2192\u27E9', 'rectilinear')">
-                        <div class="state-btn option-state">|&rarr;&#10217;</div>
+                    <h4>Alice Selects Message</h4>
+                    <div class="option-row basis-z" onclick="selectStateBB84Eve(this, '|\u2192\u27E9', 'rectilinear')">
+                        <div class="state-btn">|0&#10217;</div><div class="arrow-icon">&rarr;</div><div class="state-btn">|&rarr;&#10217;</div>
                     </div>
-                    <div class="option-row basis-z" data-state-symbol="|&uarr;&#10217;" data-basis-type="rectilinear" onclick="selectStateBB84Eve(this, '|\u2191\u27E9', 'rectilinear')">
-                        <div class="state-btn option-state">|&uarr;&#10217;</div>
+                    <div class="option-row basis-z" onclick="selectStateBB84Eve(this, '|\u2191\u27E9', 'rectilinear')">
+                        <div class="state-btn">|1&#10217;</div><div class="arrow-icon">&rarr;</div><div class="state-btn">|&uarr;&#10217;</div>
                     </div>
-                    <div class="option-row basis-x" data-state-symbol="|&#8599;&#10217;" data-basis-type="diagonal" onclick="selectStateBB84Eve(this, '|\u2197\u27E9', 'diagonal')">
-                        <div class="state-btn option-state">|&#8599;&#10217;</div>
+                    <div class="option-row basis-x" onclick="selectStateBB84Eve(this, '|\u2197\u27E9', 'diagonal')">
+                        <div class="state-btn">|+&#10217;</div><div class="arrow-icon">&rarr;</div><div class="state-btn">|&#8599;&#10217;</div>
                     </div>
-                    <div class="option-row basis-x" data-state-symbol="|&#8598;&#10217;" data-basis-type="diagonal" onclick="selectStateBB84Eve(this, '|\u2196\u27E9', 'diagonal')">
-                        <div class="state-btn option-state">|&#8598;&#10217;</div>
+                    <div class="option-row basis-x" onclick="selectStateBB84Eve(this, '|\u2196\u27E9', 'diagonal')">
+                        <div class="state-btn">|-&#10217;</div><div class="arrow-icon">&rarr;</div><div class="state-btn">|&#8598;&#10217;</div>
                     </div>
                 </div>                
                 <div class="settings-panel" style="margin-top: 20px;">
@@ -479,169 +436,10 @@
     </div>
 </div>
 
-<div id="view-bb84-eve-cnot" class="page-view" style="padding-top: 60px;">
-    <div class="container">
-        <div class="top-bar" style="display: flex; align-items: center; justify-content: flex-start; gap: 20px; margin-bottom: 20px;">
-            <a href="VerifySetting.html" class="btn-back">◀</a>
-            <div class="page-title">Quantum Key Distribution : BB84 Protocol</div>
-            <div id="cnot-eve-detected-indicator" class="page-title eve-detected-indicator" onclick="showCnotEveDetectedCalculation()" title="Click to show Eve detection calculation">Eve detected probability: 0%</div>
-        </div>
-        <div class="main-content">
-            <div class="sidebar">
-                <div class="selection-box" id="bb84-cnot-options">
-                    <h4>Alice Selects State</h4>
-                    <div class="option-row basis-z" data-state-symbol="|&rarr;&#10217;" data-basis-type="rectilinear" onclick="selectStateBB84Cnot(this, '|\u2192\u27E9', 'rectilinear')">
-                        <div class="state-btn option-state">|&rarr;&#10217;</div>
-                    </div>
-                    <div class="option-row basis-z" data-state-symbol="|&uarr;&#10217;" data-basis-type="rectilinear" onclick="selectStateBB84Cnot(this, '|\u2191\u27E9', 'rectilinear')">
-                        <div class="state-btn option-state">|&uarr;&#10217;</div>
-                    </div>
-                    <div class="option-row basis-x" data-state-symbol="|&#8599;&#10217;" data-basis-type="diagonal" onclick="selectStateBB84Cnot(this, '|\u2197\u27E9', 'diagonal')">
-                        <div class="state-btn option-state">|&#8599;&#10217;</div>
-                    </div>
-                    <div class="option-row basis-x" data-state-symbol="|&#8598;&#10217;" data-basis-type="diagonal" onclick="selectStateBB84Cnot(this, '|\u2196\u27E9', 'diagonal')">
-                        <div class="state-btn option-state">|&#8598;&#10217;</div>
-                    </div>
-                </div>
-                <div class="settings-panel" style="margin-top: 20px;">
-                    <h4>Current Settings</h4>
-                    <div class="settings-content"></div>
-                </div>
-            </div>
-            <div class="diagram-area" style="height: 620px;">
-                <div class="character-avatar avatar-alice" style="left: 12%; width: 260px;"><img src="pictures/cat_alice.svg" alt="Alice"></div>
-                <div class="character-avatar avatar-eve" style="left: 48%; width: 260px;"><img src="pictures/Eavesdropper.svg" alt="Eve" style="width:60px;"></div>
-                <div class="character-avatar avatar-bob" style="left: 82%; width: 260px;"><img src="pictures/cat_bob.svg" alt="Bob"></div>
-                <div style="position: absolute; top: 120px; left: 0; width: 100%; height: calc(100% - 120px);">
-                    <svg class="arrows" style="width: 100%; height: 100%; position: absolute; z-index: 1;">
-                        <defs>
-                            <marker id="arrow-bb84-cnot" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-                                <path d="M 0 0 L 10 5 L 0 10 z" fill="#333" />
-                            </marker>
-                        </defs>
-                        <line data-prob="100%" x1="18%" y1="38%" x2="72%" y2="38%" stroke="#333" stroke-width="3" marker-end="url(#arrow-bb84-cnot)" />
-                        <line data-prob="100%" x1="18%" y1="75%" x2="72%" y2="75%" stroke="#333" stroke-width="3" />
-                        <line x1="43%" y1="38%" x2="43%" y2="75%" stroke="#d40000" stroke-width="6" />
-                        <line id="cnot-branch-up" data-prob="50%" x1="83%" y1="38%" x2="90%" y2="27%" stroke="#333" stroke-width="3" marker-end="url(#arrow-bb84-cnot)" />
-                        <line id="cnot-branch-down" data-prob="50%" x1="83%" y1="38%" x2="90%" y2="49%" stroke="#333" stroke-width="3" marker-end="url(#arrow-bb84-cnot)" />
-                        <line id="cnot-branch-single" data-prob="100%" x1="83%" y1="38%" x2="90%" y2="38%" stroke="#333" stroke-width="3" marker-end="url(#arrow-bb84-cnot)" style="display:none;" />
-                    </svg>
-                    <div class="node" style="left: 9%; top: 38%;">
-                        <div class="state-circle" id="cnot-alice-state">|&#8599;&#10217;</div>
-                    </div>
-                    <div class="node" style="left: 9%; top: 75%;">
-                        <div class="eve-state-circle" id="cnot-eve-state">|0&#10217;</div>
-                    </div>
-                    <div class="node" style="left: 43%; top: 38%;"><div class="cnot-gate-dot"></div></div>
-                    <div class="node" style="left: 43%; top: 75%;"><div class="cnot-gate-plus"></div></div>
-                    <div class="node" style="left: 58%; top: 56%;">
-                        <div id="cnot-operation-node" class="cnot-op-node" onclick="showCnotCalculation()" title="Click to view CNOT calculation">|𝜙<sup>+</sup>&#10217;<sub>AE</sub></div>
-                    </div>
-                    <div class="node" style="left: 78%; top: 38%;"><img id="cnot-bob-measure" src="pictures/b_eyez.svg" class="polarizer-img basis-eye-img" alt="Bob Z basis measurement"></div>
-                    <div class="node" id="cnot-bob-top-node" style="left: 93%; top: 27%;">
-                        <div class="state-circle state-blue" id="cnot-bob-top">|&#8599;&#10217;</div>
-                    </div>
-                    <div class="prob-circle prob-fraction" id="cnot-prob-top" style="left: calc(93% + 38px); top: 27%;" data-prob-for="cnot-bob-top"><div class="fraction-num">1</div><div class="fraction-den">2</div></div>
-                    <div class="node" id="cnot-bob-bottom-node" style="left: 93%; top: 49%;">
-                        <div class="state-circle state-red" id="cnot-bob-bottom">|&#8598;&#10217;</div>
-                    </div>
-                    <div class="prob-circle prob-fraction eve-error" id="cnot-prob-bottom" style="left: calc(93% + 38px); top: 49%;" data-prob-for="cnot-bob-bottom"><div class="fraction-num">1</div><div class="fraction-den">2</div></div>
-                </div>
-            </div>
-        </div>
-        <div id="cnot-calculation-panel" class="eve-calculation-panel">
-            <h4>Calculation Process</h4>
-            <div id="cnot-math-display" class="eve-calc-display"></div>
-        </div>
-    </div>
-</div>
-
 <script>
     let globalBobBasis = 'X';
     let isEveInterceptResend = false; 
-    let isEveCnot = false;
-    let representationMode = 'polarization';
     const symbols = { Stype: ['|\u2191\u27E9', '|\u2192\u27E9'], Dtype: ['|\u2197\u27E9', '|\u2196\u27E9']};
-
-    function displayStateSymbol(symbol, forceBasisMode = false) {
-        if (!forceBasisMode && representationMode !== 'basis') return symbol;
-        const map = {
-            '|\u2192\u27E9': '|0\u27E9',
-            '|\u2191\u27E9': '|1\u27E9',
-            '|\u2197\u27E9': '|+\u27E9',
-            '|\u2196\u27E9': '|-\u27E9'
-        };
-        return map[symbol] || symbol;
-    }
-
-    function setStateTextById(id, symbol, forceBasisMode = false) {
-        const target = document.getElementById(id);
-        if (target) target.innerText = displayStateSymbol(symbol, forceBasisMode);
-    }
-
-    function setStateTextInSelector(selector, symbol, forceBasisMode = false) {
-        const target = document.querySelector(selector);
-        if (target) target.innerText = displayStateSymbol(symbol, forceBasisMode);
-    }
-
-    function updateAliceOptionLabels() {
-        document.querySelectorAll('#bb84-options .option-row, #bb84-eve-options .option-row, #bb84-cnot-options .option-row').forEach(row => {
-            const stateButton = row.querySelector('.option-state');
-            if (!stateButton) return;
-            const forceBasisMode = row.closest('#bb84-cnot-options') !== null;
-            stateButton.innerText = displayStateSymbol(row.dataset.stateSymbol, forceBasisMode);
-        });
-    }
-
-    function basisEyeSrc(basis) {
-        return basis === 'Z' ? 'pictures/b_eyez.svg' : 'pictures/b_eyex.svg';
-    }
-
-    function setPolarizerImage(img, basis, active, activeSrc, inactiveSrc) {
-        if (!img) return;
-        if (representationMode === 'basis' || isEveCnot) {
-            img.src = basisEyeSrc(basis);
-            img.classList.add('basis-eye-img');
-            img.classList.toggle('inactive', !active);
-        } else {
-            img.src = active ? activeSrc : inactiveSrc;
-            img.classList.remove('basis-eye-img');
-            img.classList.toggle('inactive', !active);
-        }
-    }
-
-    function getDraftEveAttack() {
-        const eveAttackNode = document.querySelector('input[name="e_attack"]:checked');
-        return eveAttackNode ? eveAttackNode.value : 'Intercept-resend';
-    }
-
-    function syncRepresentationModeLock() {
-        const toggle = document.getElementById('representation-mode-toggle');
-        const eveToggle = document.getElementById('eve-status-toggle');
-        if (!toggle) return;
-        const shouldLockToBasis = !!(eveToggle && eveToggle.checked && getDraftEveAttack() === 'CNOT');
-        if (shouldLockToBasis) {
-            representationMode = 'basis';
-            toggle.checked = false;
-        }
-        toggle.disabled = shouldLockToBasis;
-    }
-
-    function handleRepresentationModeToggle(isPolarizationMode) {
-        const eveToggle = document.getElementById('eve-status-toggle');
-        if (eveToggle && eveToggle.checked && getDraftEveAttack() === 'CNOT') {
-            representationMode = 'basis';
-            syncRepresentationModeLock();
-        } else {
-            representationMode = isPolarizationMode ? 'polarization' : 'basis';
-        }
-        if (currentSettings.eve.isOn && currentSettings.eve.attack === 'CNOT' && !(eveToggle && eveToggle.checked && getDraftEveAttack() === 'CNOT')) {
-            syncRepresentationModeLock();
-            updateAliceOptionLabels();
-            return;
-        }
-        updatePageState();
-    }
 
         // Keeps the visualization state in sync with the selected settings.
     let currentSettings = {
@@ -793,14 +591,10 @@
             nameTag.classList.remove('red-text');
             inputs.forEach(input => input.disabled = true);
         }
-        syncRepresentationModeLock();
     }
 
     document.getElementById('eve-status-toggle').addEventListener('change', function() {
         updatePanelState(this);
-    });
-    document.querySelectorAll('input[name="e_attack"]').forEach(input => {
-        input.addEventListener('change', syncRepresentationModeLock);
     });
 
         // Keeps the visualization state in sync with the selected settings.
@@ -815,11 +609,6 @@
             eve: { isOn: isEveOn, attack: isEveOn ? eveAttack : "None" },
             subProtocol: 'bb84'
         };
-        if (currentSettings.eve.isOn && currentSettings.eve.attack === 'CNOT') {
-            representationMode = 'basis';
-            const representationToggle = document.getElementById('representation-mode-toggle');
-            if (representationToggle) representationToggle.checked = false;
-        }
         updatePageState();
         toggleSettings();
 
@@ -834,37 +623,23 @@
         globalBobBasis = settings.bob.basis;
         
         isEveInterceptResend = false;
-        isEveCnot = false;
         if (settings.eve.isOn && settings.eve.attack.includes('Intercept')) {
             isEveInterceptResend = true;
-        } else if (settings.eve.isOn && settings.eve.attack === 'CNOT') {
-            isEveCnot = true;
-            representationMode = 'basis';
-        }
-        const representationToggle = document.getElementById('representation-mode-toggle');
-        if (representationToggle) {
-            representationToggle.checked = representationMode === 'polarization';
-            representationToggle.disabled = isEveCnot;
         }
         
         // Keeps the visualization state in sync with the selected settings.
-        const plainView = document.getElementById('view-bb84');
-        const resendView = document.getElementById('view-bb84-eve-resend');
-        const cnotView = document.getElementById('view-bb84-eve-cnot');
-        [plainView, resendView, cnotView].forEach(view => { if (view) view.classList.remove('active-view'); });
         if (isEveInterceptResend) {
-            resendView.classList.add('active-view');
-        } else if (isEveCnot) {
-            cnotView.classList.add('active-view');
+            document.getElementById('view-bb84').classList.remove('active-view');
+            document.getElementById('view-bb84-eve-resend').classList.add('active-view');
         } else {
-            plainView.classList.add('active-view');
+            document.getElementById('view-bb84').classList.add('active-view');
+            document.getElementById('view-bb84-eve-resend').classList.remove('active-view');
         }
         
         // Keeps the visualization state in sync with the selected settings.
         const showZ = aliceBasis.includes('Z') || aliceBasis.toLowerCase().includes('rectilinear') || !aliceBasis.includes('X');
         const showX = aliceBasis.includes('X') || aliceBasis.toLowerCase().includes('diagonal') || !aliceBasis.includes('Z');
-        const allOptionRows = document.querySelectorAll('#bb84-options .option-row, #bb84-eve-options .option-row, #bb84-cnot-options .option-row');            
-        updateAliceOptionLabels();
+        const allOptionRows = document.querySelectorAll('#bb84-options .option-row, #bb84-eve-options .option-row');            
         
         allOptionRows.forEach(row => {
             row.classList.remove('active'); 
@@ -901,22 +676,15 @@
         if (isEveInterceptResend) {
             const defaultEve = Array.from(document.querySelectorAll('#bb84-eve-options .option-row')).find(row => row.style.display !== 'none');
             if(defaultEve) {
-                const symbol = defaultEve.dataset.stateSymbol;
-                const basis = defaultEve.dataset.basisType;
+                const symbol = defaultEve.querySelectorAll('.state-btn')[1].innerText;
+                const basis = defaultEve.classList.contains('basis-z') ? 'rectilinear' : 'diagonal';
                 selectStateBB84Eve(defaultEve, symbol, basis);
-            }
-        } else if (isEveCnot) {
-            const defaultCnot = Array.from(document.querySelectorAll('#bb84-cnot-options .option-row')).find(row => row.style.display !== 'none');
-            if(defaultCnot) {
-                const symbol = defaultCnot.dataset.stateSymbol;
-                const basis = defaultCnot.dataset.basisType;
-                selectStateBB84Cnot(defaultCnot, symbol, basis);
             }
         } else {
             const defaultBB84 = Array.from(document.querySelectorAll('#bb84-options .option-row')).find(row => row.style.display !== 'none');
             if(defaultBB84) {
-                const symbol = defaultBB84.dataset.stateSymbol;
-                const basis = defaultBB84.dataset.basisType;
+                const symbol = defaultBB84.querySelectorAll('.state-btn')[1].innerText;
+                const basis = defaultBB84.classList.contains('basis-z') ? 'rectilinear' : 'diagonal';
                 selectStateBB84(defaultBB84, symbol, basis);
             }
         }
@@ -955,22 +723,22 @@
         const rows = document.querySelectorAll('#bb84-options .option-row');
         rows.forEach(row => row.classList.remove('active'));
         element.classList.add('active');
-        setStateTextById('bb84-initial-state-text', stateSymbol);
-        setStateTextById('bb84-symbol-bobsame', stateSymbol);
+        document.getElementById('bb84-initial-state-text').innerText = stateSymbol;
+        document.getElementById('bb84-symbol-bobsame').innerText = stateSymbol;
         const oppoSymbol = symbols[(basisType === 'rectilinear') ? 'Dtype' : 'Stype'];
-        setStateTextById('bb84-symbol-bobunsame-1', oppoSymbol[0]);
-        setStateTextById('bb84-symbol-bobunsame-2', oppoSymbol[1]);
+        document.getElementById('bb84-symbol-bobunsame-1').innerText = oppoSymbol[0];
+        document.getElementById('bb84-symbol-bobunsame-2').innerText = oppoSymbol[1];
         const bobSame = document.getElementById('bb84-bob-same');
         const bobUnsame = document.getElementById('bb84-bob-unsame');
         const isAliceZ = (basisType === 'rectilinear');
         const isBobZ = (globalBobBasis === 'Z');
         const isSameBasis = (isAliceZ === isBobZ);
         if (isAliceZ) {
-            setPolarizerImage(bobSame, 'Z', isSameBasis, "pictures/b_vertical.svg", "pictures/gray_vertical.svg");
-            setPolarizerImage(bobUnsame, 'X', !isSameBasis, "pictures/b_diagonal.svg", "pictures/gray_diagonal.svg");
+            bobSame.src = isSameBasis ? "pictures/b_vertical.svg" : "pictures/gray_vertical.svg";
+            bobUnsame.src = !isSameBasis ? "pictures/b_diagonal.svg" : "pictures/gray_diagonal.svg";
         } else {
-            setPolarizerImage(bobSame, 'X', isSameBasis, "pictures/b_diagonal.svg", "pictures/gray_diagonal.svg");
-            setPolarizerImage(bobUnsame, 'Z', !isSameBasis, "pictures/b_vertical.svg", "pictures/gray_vertical.svg");
+            bobSame.src = isSameBasis ? "pictures/b_diagonal.svg" : "pictures/gray_diagonal.svg";
+            bobUnsame.src = !isSameBasis ? "pictures/b_vertical.svg" : "pictures/gray_vertical.svg";
         }
         const aliceBasis = (basisType === 'rectilinear') ? 'Z' : 'X';
         updateLines(aliceBasis, globalBobBasis, 'bb84');
@@ -1021,100 +789,6 @@
         indicator.innerText = `Eve detected probability: ${totalPercent}%`;
     }
 
-    function getCnotDetectedTerms() {
-        return [
-            { probId: 'cnot-prob-top', nodeId: 'cnot-bob-top' },
-            { probId: 'cnot-prob-bottom', nodeId: 'cnot-bob-bottom' }
-        ].map(item => {
-            const probNode = document.getElementById(item.probId);
-            const stateNode = document.getElementById(item.nodeId);
-            if (!probNode || !stateNode || probNode.style.display === 'none') return null;
-            const numerator = Number(probNode.querySelector('.fraction-num')?.textContent || 0);
-            const denominator = Number(probNode.querySelector('.fraction-den')?.textContent || 1);
-            const isInactive = stateNode.classList.contains('inactive') || probNode.classList.contains('inactive');
-            const isError = stateNode.classList.contains('eve-error') && !isInactive;
-            return {
-                prob: denominator === 0 ? 0 : numerator / denominator,
-                isError,
-                colorClass: isError ? 'eve-calc-red' : (isInactive ? 'eve-calc-gray' : 'eve-calc-blue')
-            };
-        }).filter(Boolean);
-    }
-
-    function updateCnotEveDetectedIndicator() {
-        const indicator = document.getElementById('cnot-eve-detected-indicator');
-        if (!indicator) return;
-        const total = getCnotDetectedTerms()
-            .filter(term => term.isError)
-            .reduce((sum, term) => sum + term.prob, 0);
-        indicator.innerText = `Eve detected probability: ${formatPercent(total)}%`;
-    }
-
-    function showCnotEveDetectedCalculation() {
-        const panel = document.getElementById('cnot-calculation-panel');
-        const display = document.getElementById('cnot-math-display');
-        if (!panel || !display) return;
-
-        panel.style.display = 'block';
-        display.dataset.calcType = 'cnot-detected';
-        panel.oncontextmenu = () => false;
-        display.oncontextmenu = () => false;
-        const title = panel.querySelector('h4');
-        if (title) title.textContent = 'Calculation Process';
-
-        const terms = getCnotDetectedTerms();
-        const total = terms.filter(term => term.isError).reduce((sum, term) => sum + term.prob, 0);
-
-        function termToMathML(term, visibleIndex) {
-            const frac = probabilityToFraction(term.prob);
-            const sign = visibleIndex === 0 ? '' : '+';
-            return `
-                ${sign ? `<mo>${sign}</mo>` : ''}
-                <mstyle class="${term.colorClass}">
-                    <mfrac><mn>${frac.num}</mn><mn>${frac.den}</mn></mfrac>
-                </mstyle>
-            `;
-        }
-
-        const allTermsMathML = terms.length
-            ? terms.map((term, index) => termToMathML(term, index)).join('')
-            : '<mstyle class="eve-calc-gray"><mn>0</mn></mstyle>';
-        const detectedTerms = terms.filter(term => term.isError);
-        const detectedTermsMathML = detectedTerms.length
-            ? detectedTerms.map((term, index) => termToMathML(term, index)).join('')
-            : '<mstyle class="eve-calc-gray"><mn>0</mn></mstyle>';
-        const totalFrac = probabilityToFraction(total);
-        const totalPercent = formatPercent(total);
-
-        display.innerHTML = `
-            <div class="eve-calc-wrapper" oncontextmenu="return false;">
-                <div class="eve-calc-main-row">
-                    <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML">
-                        <mrow><msub><mi>P</mi><mtext>detected</mtext></msub><mo>=</mo></mrow>
-                    </math>
-                    <div class="eve-fraction-stack">
-                        <div class="eve-fraction-numerator"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><mrow>${detectedTermsMathML}</mrow></math></div>
-                        <div class="eve-fraction-line"></div>
-                        <div class="eve-fraction-denominator"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><mrow>${allTermsMathML}</mrow></math></div>
-                    </div>
-                </div>
-                <math class="eve-final-row" display="block" xmlns="http://www.w3.org/1998/Math/MathML">
-                    <mrow>
-                        <mtext>Detected probability</mtext><mo>=</mo>
-                        <mstyle class="eve-calc-red"><mfrac><mn>${totalFrac.num}</mn><mn>${totalFrac.den}</mn></mfrac></mstyle>
-                        <mo>=</mo><mstyle class="eve-calc-red"><mn>${totalPercent}</mn><mo>%</mo></mstyle>
-                    </mrow>
-                </math>
-            </div>`;
-
-        if (window.MathJax) {
-            MathJax.typesetClear([display]);
-            MathJax.typesetPromise([display]).then(() => focusCalculationPanel(panel));
-        } else {
-            focusCalculationPanel(panel);
-        }
-    }
-
     function selectStateBB84Eve(element, stateSymbol, basisType) {
         const rows = document.querySelectorAll('#bb84-eve-options .option-row');
         rows.forEach(row => row.classList.remove('active'));
@@ -1129,30 +803,30 @@
         if (isAliceZ) { aliceOppoState = (stateSymbol === '|\u2192\u27E9') ? '|\u2191\u27E9' : '|\u2192\u27E9';}
         else { aliceOppoState = (stateSymbol === '|\u2197\u27E9') ? '|\u2196\u27E9' : '|\u2197\u27E9';}
         const eveDiffStates = isAliceZ ? symbolsX : symbolsZ;
-        setStateTextById('eve-alice-state', stateSymbol);
+        document.getElementById('eve-alice-state').innerText = stateSymbol;
         const eveSameImg = document.getElementById('eve-pol-same');
         const eveDiffImg = document.getElementById('eve-pol-diff');
         if (isAliceZ) {
-            setPolarizerImage(eveSameImg, 'Z', true, "pictures/red_vertical.svg", "pictures/gray_vertical.svg");
-            setPolarizerImage(eveDiffImg, 'X', true, "pictures/red_diagonal.svg", "pictures/gray_diagonal.svg");
+            eveSameImg.src = "pictures/red_vertical.svg";
+            eveDiffImg.src = "pictures/red_diagonal.svg";
         } else {
-            setPolarizerImage(eveSameImg, 'X', true, "pictures/red_diagonal.svg", "pictures/gray_diagonal.svg");
-            setPolarizerImage(eveDiffImg, 'Z', true, "pictures/red_vertical.svg", "pictures/gray_vertical.svg");
+            eveSameImg.src = "pictures/red_diagonal.svg";
+            eveDiffImg.src = "pictures/red_vertical.svg";
         }
-        setStateTextById('eve-state-same', stateSymbol);
-        setStateTextById('eve-state-diff1', eveDiffStates[0]);
-        setStateTextById('eve-state-diff2', eveDiffStates[1]);
+        document.getElementById('eve-state-same').innerText = stateSymbol;
+        document.getElementById('eve-state-diff1').innerText = eveDiffStates[0];
+        document.getElementById('eve-state-diff2').innerText = eveDiffStates[1];
         const bobPols = [
             document.getElementById('bob-pol-1'), document.getElementById('bob-pol-2'),
             document.getElementById('bob-pol-3'), document.getElementById('bob-pol-4'),
             document.getElementById('bob-pol-5'), document.getElementById('bob-pol-6')
         ];
         if (isAliceZ) {
-            [0, 2, 4].forEach(i => setPolarizerImage(bobPols[i], 'Z', isBobZ, "pictures/b_vertical.svg", "pictures/gray_vertical.svg"));
-            [1, 3, 5].forEach(i => setPolarizerImage(bobPols[i], 'X', !isBobZ, "pictures/b_diagonal.svg", "pictures/gray_diagonal.svg"));
+            if(isBobZ){ bobPols[0].src = bobPols[2].src = bobPols[4].src = "pictures/b_vertical.svg"; bobPols[1].src = bobPols[3].src = bobPols[5].src = "pictures/gray_diagonal.svg";}
+            else{ bobPols[0].src = bobPols[2].src = bobPols[4].src = "pictures/gray_vertical.svg"; bobPols[1].src = bobPols[3].src = bobPols[5].src = "pictures/b_diagonal.svg"; }
         } else {
-            [0, 2, 4].forEach(i => setPolarizerImage(bobPols[i], 'X', !isBobZ, "pictures/b_diagonal.svg", "pictures/gray_diagonal.svg"));
-            [1, 3, 5].forEach(i => setPolarizerImage(bobPols[i], 'Z', isBobZ, "pictures/b_vertical.svg", "pictures/gray_vertical.svg"));
+            if(isBobZ){ bobPols[0].src = bobPols[2].src = bobPols[4].src = "pictures/gray_diagonal.svg"; bobPols[1].src = bobPols[3].src = bobPols[5].src = "pictures/b_vertical.svg"; }
+             else{ bobPols[0].src = bobPols[2].src = bobPols[4].src = "pictures/b_diagonal.svg"; bobPols[1].src = bobPols[3].src = bobPols[5].src = "pictures/gray_vertical.svg"; }
         }
         const sameNodes = document.querySelectorAll('#view-bb84-eve-resend .bob-same-node .polarizer-img, #view-bb84-eve-resend .bob-same-node .state-circle');
         const diffNodes = document.querySelectorAll('#view-bb84-eve-resend .bob-diff-node .polarizer-img, #view-bb84-eve-resend .bob-diff-node .state-circle');
@@ -1185,166 +859,15 @@
         updateEveDetectedIndicator();
         const calculationPanel = document.getElementById('calculation-panel');
         if (calculationPanel && calculationPanel.style.display === 'block') showEveDetectedCalculation();
-        setStateTextById('bob-final-1', stateSymbol);
-        setStateTextInSelector('#bob-final-2 span', eveDiffStates[0]);
-        setStateTextInSelector('#bob-final-3 span', eveDiffStates[1]);
-        setStateTextById('bob-final-4', stateSymbol);
-        setStateTextById('bob-final-5', aliceOppoState); 
-        setStateTextInSelector('#bob-final-6 span', eveDiffStates[0]);
-        setStateTextById('bob-final-7', stateSymbol);
-        setStateTextById('bob-final-8', aliceOppoState); 
-        setStateTextInSelector('#bob-final-9 span', eveDiffStates[1]);
-    }
-
-    function setCnotProb(probNode, numerator, denominator, isError = false, isInactive = false) {
-        if (!probNode) return;
-        probNode.classList.toggle('eve-error', isError && !isInactive);
-        probNode.classList.toggle('inactive', isInactive);
-        probNode.innerHTML = `<div class="fraction-num">${numerator}</div><div class="fraction-den">${denominator}</div>`;
-    }
-
-    function setCnotStateCircle(circle, symbol, isError = false, isInactive = false) {
-        if (!circle) return;
-        circle.innerText = symbol;
-        circle.classList.remove('state-blue', 'state-red', 'eve-error', 'inactive');
-        if (isInactive) {
-            circle.classList.add('inactive');
-        } else {
-            circle.classList.add(isError ? 'state-red' : 'state-blue');
-        }
-        circle.classList.toggle('eve-error', isError && !isInactive);
-    }
-
-    function getCnotStateData(stateSymbol, basisType) {
-        const isZ = basisType === 'rectilinear';
-        const isOne = stateSymbol === '|\u2191\u27E9';
-        const isMinus = stateSymbol === '|\u2196\u27E9';
-        if (isZ) {
-            return {
-                isZ: true,
-                inputLabel: isOne ? '|1\u27E9' : '|0\u27E9',
-                operationLabel: isOne ? '|11\u27E9' : '|00\u27E9',
-                calculationLatex: isOne ? '|1\\rangle_A|0\\rangle_E \\xrightarrow{CNOT} |11\\rangle_{AE}' : '|0\\rangle_A|0\\rangle_E \\xrightarrow{CNOT} |00\\rangle_{AE}'
-            };
-        }
-        return {
-            isZ: false,
-            isMinus,
-            inputLabel: isMinus ? '|-\\rangle' : '|+\\rangle',
-            operationLabel: isMinus ? '|\uD835\uDF19\u207b\u27e9' : '|\uD835\uDF19\u207a\u27e9',
-            calculationLatex: isMinus
-                ? '|-\\rangle_A|0\\rangle_E = \\frac{1}{\\sqrt{2}}(|0\\rangle-|1\\rangle)_A|0\\rangle_E \\xrightarrow{CNOT} \\frac{1}{\\sqrt{2}}(|00\\rangle-|11\\rangle)_{AE}=|\\unicode{x1D719}^-\\rangle_{AE}'
-                : '|+\\rangle_A|0\\rangle_E = \\frac{1}{\\sqrt{2}}(|0\\rangle+|1\\rangle)_A|0\\rangle_E \\xrightarrow{CNOT} \\frac{1}{\\sqrt{2}}(|00\\rangle+|11\\rangle)_{AE}=|\\unicode{x1D719}^+\\rangle_{AE}'
-        };
-    }
-
-    function selectStateBB84Cnot(element, stateSymbol, basisType) {
-        const rows = document.querySelectorAll('#bb84-cnot-options .option-row');
-        rows.forEach(row => row.classList.remove('active'));
-        element.classList.add('active');
-
-        const stateData = getCnotStateData(stateSymbol, basisType);
-        const aliceState = document.getElementById('cnot-alice-state');
-        const operationNode = document.getElementById('cnot-operation-node');
-        const branchUp = document.getElementById('cnot-branch-up');
-        const branchDown = document.getElementById('cnot-branch-down');
-        const branchSingle = document.getElementById('cnot-branch-single');
-        const topNode = document.getElementById('cnot-bob-top-node');
-        const bottomNode = document.getElementById('cnot-bob-bottom-node');
-        const topCircle = document.getElementById('cnot-bob-top');
-        const bottomCircle = document.getElementById('cnot-bob-bottom');
-        const topProb = document.getElementById('cnot-prob-top');
-        const bottomProb = document.getElementById('cnot-prob-bottom');
-        const bobMeasure = document.getElementById('cnot-bob-measure');
-        const aliceBasis = stateData.isZ ? 'Z' : 'X';
-        const bobBasis = currentSettings.bob.basis;
-        const isSameBasis = aliceBasis === bobBasis;
-
-        aliceState.innerText = displayStateSymbol(stateSymbol, true);
-        operationNode.innerHTML = `${stateData.operationLabel}<sub>AE</sub>`;
-        operationNode.dataset.cnotLatex = stateData.calculationLatex;
-        if (bobMeasure) {
-            bobMeasure.src = basisEyeSrc(bobBasis);
-            bobMeasure.alt = `Bob ${bobBasis} basis measurement`;
-        }
-
-        if (!isSameBasis) {
-            branchUp.style.display = 'block';
-            branchDown.style.display = 'block';
-            branchSingle.style.display = 'none';
-            branchUp.setAttribute('data-prob', '50%');
-            branchDown.setAttribute('data-prob', '50%');
-            topNode.style.top = '27%';
-            topProb.style.top = '27%';
-            bottomNode.style.display = 'flex';
-            bottomProb.style.display = 'flex';
-            const discardStates = bobBasis === 'Z' ? ['|\u2192\u27E9', '|\u2191\u27E9'] : ['|\u2197\u27E9', '|\u2196\u27E9'];
-            setCnotStateCircle(topCircle, displayStateSymbol(discardStates[0], true), false, true);
-            setCnotStateCircle(bottomCircle, displayStateSymbol(discardStates[1], true), false, true);
-            setCnotProb(topProb, 1, 2, false, true);
-            setCnotProb(bottomProb, 1, 2, false, true);
-        } else if (stateData.isZ) {
-            const y = '38%';
-            branchUp.style.display = 'none';
-            branchDown.style.display = 'none';
-            branchSingle.style.display = 'block';
-            branchSingle.setAttribute('data-prob', '100%');
-            topNode.style.top = y;
-            topProb.style.top = y;
-            bottomNode.style.display = 'none';
-            bottomProb.style.display = 'none';
-            setCnotStateCircle(topCircle, displayStateSymbol(stateSymbol, true), false);
-            setCnotProb(topProb, 1, 1, false);
-        } else {
-            branchUp.style.display = 'block';
-            branchDown.style.display = 'block';
-            branchSingle.style.display = 'none';
-            branchUp.setAttribute('data-prob', '50%');
-            branchDown.setAttribute('data-prob', '50%');
-            topNode.style.top = '27%';
-            topProb.style.top = '27%';
-            bottomNode.style.display = 'flex';
-            bottomProb.style.display = 'flex';
-            const correctState = displayStateSymbol(stateData.isMinus ? '|\u2196\u27E9' : '|\u2197\u27E9', true);
-            const errorState = displayStateSymbol(stateData.isMinus ? '|\u2197\u27E9' : '|\u2196\u27E9', true);
-            setCnotStateCircle(topCircle, stateData.isMinus ? errorState : correctState, stateData.isMinus);
-            setCnotStateCircle(bottomCircle, stateData.isMinus ? correctState : errorState, !stateData.isMinus);
-            setCnotProb(topProb, 1, 2, stateData.isMinus);
-            setCnotProb(bottomProb, 1, 2, !stateData.isMinus);
-        }
-
-        updateCnotEveDetectedIndicator();
-        const calculationPanel = document.getElementById('cnot-calculation-panel');
-        const calculationDisplay = document.getElementById('cnot-math-display');
-        if (calculationPanel && calculationPanel.style.display === 'block') {
-            if (calculationDisplay && calculationDisplay.dataset.calcType === 'cnot-detected') {
-                showCnotEveDetectedCalculation();
-            } else {
-                showCnotCalculation();
-            }
-        }
-    }
-
-    function showCnotCalculation() {
-        const panel = document.getElementById('cnot-calculation-panel');
-        const display = document.getElementById('cnot-math-display');
-        const operationNode = document.getElementById('cnot-operation-node');
-        if (!panel || !display || !operationNode) return;
-        panel.style.display = 'block';
-        display.dataset.calcType = 'cnot';
-        const title = panel.querySelector('h4');
-        if (title) title.textContent = 'Calculation Process';
-        display.innerHTML = `\\[
-            \\begin{aligned}
-            ${operationNode.dataset.cnotLatex || '|+\\rangle_A|0\\rangle_E \\xrightarrow{CNOT} |\\unicode{x1D719}^+\\rangle_{AE}'}
-            \\end{aligned}
-        \\]`;
-        if (window.MathJax) {
-            MathJax.typesetClear([display]);
-            MathJax.typesetPromise([display]).then(() => focusCalculationPanel(panel));
-        } else {
-            focusCalculationPanel(panel);
-        }
+        document.getElementById('bob-final-1').innerText = stateSymbol;
+        document.querySelector('#bob-final-2 span').innerText = eveDiffStates[0];
+        document.querySelector('#bob-final-3 span').innerText = eveDiffStates[1];
+        document.getElementById('bob-final-4').innerText = stateSymbol;
+        document.getElementById('bob-final-5').innerText = aliceOppoState; 
+        document.querySelector('#bob-final-6 span').innerText = eveDiffStates[0];
+        document.getElementById('bob-final-7').innerText = stateSymbol;
+        document.getElementById('bob-final-8').innerText = aliceOppoState; 
+        document.querySelector('#bob-final-9 span').innerText = eveDiffStates[1];
     }
 </script>
 </body>
