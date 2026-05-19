@@ -69,7 +69,6 @@
 
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* 流�?節點�? */
         .flow-visual {
             display: flex; align-items: flex-end; justify-content: space-between;
             width: 100%; max-width: 840px; margin: 4px 0 18px; position: relative;
@@ -138,7 +137,6 @@
 
         .calc-desc { font-size: .96rem; color: #555; line-height: 1.42; margin-top: 10px; background: white; padding: 12px; border-radius: 10px; }
 
-        /* ?�� ?��??�吸?��??��??��??��??��??�用 */
         @keyframes pulseGlowCapsule {
             0% { box-shadow: 0 0 0 0 rgba(0, 74, 173, 0.36); }
             70% { box-shadow: 0 0 0 22px rgba(0, 74, 173, 0); }
@@ -153,13 +151,11 @@
         .node-capsule:not(.active) { animation: pulseGlowCapsule 2s infinite; }
         .final-reveal:not(.revealed) { animation: pulseGlowFinal 2s infinite; }
 
-        /* Final Reveal �?? */
         .final-reveal {
             margin-top: 32px; padding: 16px 48px; border-radius: 36px;
             text-align: center; cursor: pointer; transition: all 0.4s ease;
             position: relative; overflow: hidden;
             
-            /* ?�設?�灰?�未�???�??*/
             background: linear-gradient(135deg, #f7fbff 0%, #eef7ff 100%);
             border: 3px dashed #9fc8e8;
         }
@@ -184,11 +180,11 @@
         }
         .final-msg { 
             font-size: 1.08rem; font-weight: bold; margin-bottom: 3px; pointer-events: none; transition: color 0.3s;
-            color: #666; /* ?�設?��?顏色 */
+            color: #666;
         }
         .final-secret { 
             font-size: 3rem; font-weight: 900; pointer-events: none; transition: color 0.3s;
-            color: #333; /* ?�設?��?顏色 */
+            color: #333; 
         }
         .final-reveal.revealed .final-msg { color: var(--primary-blue); }
         .final-reveal.revealed .final-secret { color: var(--primary-blue); }
@@ -531,7 +527,6 @@
 </script>
 
 <script>
-/* ZLM ?�側?��?步�?視�?：�?止使?�者滾?�此?�?��??�用 transform ?��?顯示?��? step??*/
 document.addEventListener('DOMContentLoaded', function () {
     const dock = document.querySelector('.zlm-image-dock');
     const windowBox = document.querySelector('.zlm-image-window');

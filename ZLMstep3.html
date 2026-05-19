@@ -17,7 +17,6 @@
             --primary-blue: #549FD0;
             --bob-color: #4C80C5;
             --charlie-color: #478CEA;
-            /* ?��? Alice ?��?屬�???*/
             --alice-color: #004aad; 
             
             --dark-text: #333333;
@@ -37,7 +36,6 @@
             overflow-y: scroll; 
         }
 
-        /* ?�部導覽??*/
         .header {
             width: min(1000px, 95vw);
             display: flex;
@@ -76,7 +74,6 @@
         }
         .nav-btn:hover { background: var(--primary-blue); color: white; }
 
-        /* 主卡??*/
         .main-card {
             width: min(1000px, 95vw); height: 650px; border: 3px solid var(--primary-blue); border-radius: 35px;
             position: relative; background: white; box-sizing: border-box; overflow: hidden;
@@ -89,7 +86,6 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* 網格?��? */
         .decision-grid { display: flex; align-items: center; justify-content: center; gap: 20px; width: 100%; }
         
         .col { 
@@ -127,7 +123,6 @@
             z-index: 2;
         }
 
-        /* 顏色�?? */
         .charlie-text { color: var(--charlie-color) !important; }
         .charlie-bg { 
             background: var(--charlie-color) !important; 
@@ -137,7 +132,6 @@
         
         .alice-text { color: var(--alice-color) !important; }
 
-        /* Alice ?��??�??*/
         .alice-interactive { 
             position: absolute; top: 50%; transform: translateY(-50%); 
             display: flex; flex-direction: column; align-items: center; gap: 15px; 
@@ -163,7 +157,6 @@
             100% { box-shadow: 0 0 0 0 rgba(0, 73, 176, 0); }
         }
 
-        /* Alice ?��?中�?顯示 */
         .alice-active-gate {
             position: absolute; top: 50%; transform: translateY(-50%);
             display: none; flex-direction: column; align-items: center; width: 100%;
@@ -175,7 +168,6 @@
             100% { transform: translateY(-50%) scale(1); opacity: 1; } 
         }
 
-        /* ??��線�??�箭??*/
         .connector { 
             position: relative; display: flex; align-items: center; 
             height: 50px; width: 0; opacity: 0; transition: width 0.5s ease-out, opacity 0.2s ease; 
@@ -193,16 +185,13 @@
         .connector.active { opacity: 1; width: 80px; }
         .arrow-connector.active::after { opacity: 1; }
 
-        /* 線�?顏色設�? */
         #conn-1::before { background-color: var(--charlie-color); }
         #arrow-out::before { background-color: var(--alice-color); }
         #arrow-out.arrow-connector::after { border-left-color: var(--alice-color); }
 
-        /* 結�?顯示 */
         .output-group { display: flex; align-items: center; opacity: 0; transition: opacity 0.5s ease; }
         .show-result .output-group { opacity: 1; }
 
-        /* �?��?�板?��?算�? */
         .explanation-box {
             position: absolute; bottom: 25px; width: 85%; background: #eaf0ff;
             border-left: 6px solid var(--alice-color); padding: 18px 30px; border-radius: 15px; 
@@ -228,7 +217,6 @@
 
         .bottom-hint { position: absolute; bottom: 30px; color: gray; font-weight: bold; font-size: 1.1rem; transition: opacity 0.3s; z-index: 5;}
 
-        /* ?��??�畫 */
         @keyframes shoot-to-alice {
             0% { transform: translate(0, 0) scale(0); opacity: 1; }
             20% { transform: translate(calc(var(--tx-mid) * 0.2), calc(var(--ty-mid) * 0.2)) scale(1.3); }
@@ -542,7 +530,6 @@
             inputStateStr = "|0⟩";
         }
         
-        // ?��?純�?字寫?��?不使??MathJax
         document.getElementById("input-state").textContent = inputStateStr;
 
         const aliceData = localStorage.getItem('qssStep3Data');
@@ -569,7 +556,6 @@
         if (window.MathJax && MathJax.typesetPromise) {MathJax.typesetPromise([gateDisplay]);}
 
         finalStateStr = operationRules[inputStateStr][gate];
-        // ?��?純�?字寫?��?不使??MathJax
         document.getElementById("final-state").textContent = finalStateStr;
         document.getElementById("results-area").classList.remove("show-result");
 
@@ -659,7 +645,6 @@
         document.getElementById("results-area").classList.remove("show-result");
         document.getElementById("arrow-out").classList.remove("active");
         
-        // ?��?純�?字寫?��?不使??MathJax
         document.getElementById("final-state").textContent = "Waiting...";
         
         const oldPhoton = document.querySelector('.photon-particle');
@@ -676,13 +661,10 @@
     }
 
     function prevStep() { 
-        // ?��? Bob 一?��??�選??(?�止變�? null)
         let bobChoice = JSON.parse(localStorage.getItem('bobOriginalChoice')) || { basis: 'Z', msg: '0' };
         
-        // 清除 Charlie (Step2) ??Alice (Step3) ?��???        localStorage.removeItem('qssStepData'); 
         localStorage.removeItem('qssStep3Data'); 
         
-        // 帶�? Bob ?��??�退??Step 2
         window.location.href = `ZLMstep2.html?bobBasis=${bobChoice.basis}&bobMsg=${bobChoice.msg}`; 
     }
     
@@ -696,7 +678,6 @@
 </script>
 
 <script>
-/* ZLM ?�側?��?步�?視�?：�?止使?�者滾?�此?�?��??�用 transform ?��?顯示?��? step??*/
 document.addEventListener('DOMContentLoaded', function () {
     const dock = document.querySelector('.zlm-image-dock');
     const windowBox = document.querySelector('.zlm-image-window');

@@ -44,14 +44,13 @@
             overflow-x: hidden;
         }
 
-        /* --- Header 佈�??��? --- */
         .header {
             width: min(1000px, 95vw); 
             display: flex;
             align-items: center; 
             justify-content: space-between; 
             margin-bottom: 25px;
-            height: 60px; /* 增�? Header 高度以容納大?��? */
+            height: 60px; 
         }
 
         .header-left { 
@@ -60,7 +59,6 @@
             gap: 15px; 
         }
 
-        /* ?�大?��??��???(48px) */
         .btn-back {
             width: 40px; 
             height: 40px; 
@@ -71,7 +69,7 @@
             justify-content: center; 
             align-items: center; 
             text-decoration: none; 
-            font-size: 1.1rem; /* 稍微?�大箭頭 */
+            font-size: 1.1rem;
             transition: transform 0.2s;
             cursor: pointer; 
             border: none;
@@ -85,7 +83,6 @@
             transform: scale(1.1); 
         }
 
-        /* ?�大?��?題�? (48px) */
         .title-pill {
             border: 2px solid var(--primary-blue); 
             height: 48px;           
@@ -103,7 +100,6 @@
 
         .step-text { font-weight: bold; font-size: 1.1rem; margin: 0; color: var(--dark-text); }
 
-        /* ?�大??Next ?��? (48px) */
         .nav-btn {
             border: 2px solid var(--primary-blue); 
             background: white;
@@ -126,7 +122,6 @@
             background: var(--primary-blue); color: white;
             box-shadow: 0 4px 15px rgba(0, 74, 173, 0.3);
         }
-                /* --- 主卡?�內�?--- */
         .main-card {
             width: min(1000px, 95vw); 
             height: 560px; 
@@ -492,7 +487,6 @@
 </script>
 
 <script>
-/* ZLM ?�側?��?步�?視�?：�?止使?�者滾?�此?�?��??�用 transform ?��?顯示?��? step??*/
 document.addEventListener('DOMContentLoaded', function () {
     const dock = document.querySelector('.zlm-image-dock');
     const windowBox = document.querySelector('.zlm-image-window');
