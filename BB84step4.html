@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <base href="https://s112321005.github.io/Cybersecurity-Visualization/">
-    <title>Quantum Key Distribution : BB84 Protocol - Basis Comparison</title>
+    <title>Quantum Key Distribution : BB84 Protocol - Mismatched Basis Measurement</title>
     <style>
         :root{--primary-blue:#549FD0;--dark-text:#333333;--bg-gradient:linear-gradient(135deg,#E0F2FE 0%,#F5F3FF 50%,#ECFDF5 100%);--alice-blue:#004aad;--bob-blue:#4C80C5;--keep-green:#28a745;--drop-gray:#8b929c;--soft-blue:#eef7ff;--line:#333;--zero:#3d7df2;--one:#e55d8b;--plus:#f0a92d;--minus:#23a9a5}
         *{box-sizing:border-box}
@@ -97,15 +97,15 @@
     </style>
 </head>
 <body>
-    <aside class="bb84-image-dock" aria-label="BB84 current-step image preview" data-current-step="5">
+    <aside class="bb84-image-dock" aria-label="BB84 current-step image preview" data-current-step="3">
         <div class="bb84-image-viewport">
             <div class="bb84-image-window">
                 <div class="bb84-image-list">
                     <div class="bb84-image-card" data-bb84-step="1"><div class="bb84-step-summary"><span class="bb84-step-number">1</span><span>PREPARE</span></div><img src="pictures/bb84-1.png" alt="BB84 Step 1"></div>
                     <div class="bb84-image-card" data-bb84-step="2"><div class="bb84-step-summary"><span class="bb84-step-number">2</span><span>TRANSMIT</span></div><img src="pictures/bb84-2.png" alt="BB84 Step 2"></div>
-                    <div class="bb84-image-card" data-bb84-step="3"><div class="bb84-step-summary"><span class="bb84-step-number">3</span><span>MEASURE</span></div><img src="pictures/bb84-3.png" alt="BB84 Step 3"></div>
+                    <div class="bb84-image-card is-current" data-bb84-step="3" aria-current="step"><div class="bb84-step-summary"><span class="bb84-step-number">3</span><span>MEASURE</span></div><img src="pictures/bb84-3.png" alt="BB84 Step 3"></div>
                     <div class="bb84-image-card" data-bb84-step="4"><div class="bb84-step-summary"><span class="bb84-step-number">4</span><span>SIFTING</span></div><img src="pictures/bb84-4.png" alt="BB84 Step 4"></div>
-                    <div class="bb84-image-card is-current" data-bb84-step="5" aria-current="step"><div class="bb84-step-summary"><span class="bb84-step-number">5</span><span>KEY</span></div><img src="pictures/bb84-5.png" alt="BB84 Step 5"></div>
+                    <div class="bb84-image-card" data-bb84-step="5"><div class="bb84-step-summary"><span class="bb84-step-number">5</span><span>KEY</span></div><img src="pictures/bb84-5.png" alt="BB84 Step 5"></div>
                 </div>
             </div>
         </div>
@@ -116,23 +116,23 @@
             <a href="QuantumCybersecurityEducationPlatform.html?section=qkd#quantum-security-applications" class="btn-back" title="back home">&#x25C0;&#xFE0E;</a>
             <div class="title-pill">QKD : BB84 Protocol</div>
         </div>
-        <div class="header-center">STEP 5 : BASIS COMPARISON</div>
+        <div class="header-center">STEP 6 : POLARIZER/BASIS MEASUREMENT</div>
         <div class="header-right">
             <button class="nav-btn" onclick="prevStep()">Back</button>
             <button class="nav-btn" onclick="nextStep()">Next</button>
         </div>
     </div>
 
-    <main class="main-card">
-        <h1 class="stage-title">Bob compares Z-basis and X-basis measurement outcomes.</h1>
+    <main class="main-card photon-mode">
+        <h1 class="stage-title">Bob tests matched and mismatched basis measurement outcomes.</h1>
         <p class="stage-subtitle">Same basis gives a usable BB84 bit; different basis gives a random result and is discarded during sifting.</p>
 
         <div class="view-toggle-row">
             <label class="modern-toggle" aria-label="Toggle view mode">
                 <input type="checkbox" id="viewToggleSwitch" onchange="togglePhotonView()">
                 <div class="toggle-track">
-                    <span class="toggle-text text-left">Basis</span>
-                    <span class="toggle-text text-right">Polarizer</span>
+                    <span class="toggle-text text-left">Polarizer</span>
+                    <span class="toggle-text text-right">Basis</span>
                     <div class="toggle-thumb"></div>
                 </div>
             </label>
