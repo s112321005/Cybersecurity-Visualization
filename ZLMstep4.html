@@ -21,7 +21,7 @@
             --dark-text: #333333;
             --bg-color: #f8f9fa;
             --bg-gradient: linear-gradient(135deg, #E0F2FE 0%, #F5F3FF 50%, #ECFDF5 100%);
-            --result-gold: #FFD700;
+            --result-blue: #549FD0;
         }
 
         body {
@@ -62,33 +62,33 @@
         .nav-btn:hover { background: var(--primary-blue); color: white; transform: scale(1.05); }
 
         .main-card {
-            width: min(1000px, 95vw); min-height: 650px; border: 3px solid var(--primary-blue); border-radius: 35px;
-            position: relative; background: white; padding: 25px 40px 40px; box-sizing: border-box;
+            width: min(1000px, 95vw); min-height: 730px; border: 3px solid var(--primary-blue); border-radius: 35px;
+            position: relative; background: white; padding: 32px 36px 36px; box-sizing: border-box;
             display: flex; flex-direction: column; align-items: center; animation: fadeIn 0.8s ease-out forwards;
         }
 
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* 流程節點圖 */
+        /* 流�?節點�? */
         .flow-visual {
             display: flex; align-items: flex-end; justify-content: space-between;
-            width: 100%; max-width: 750px; margin: 0 0 20px; position: relative;
+            width: 100%; max-width: 840px; margin: 4px 0 18px; position: relative;
         }
 
         .node-group {
-            display: flex; flex-direction: column; align-items: center; gap: 10px; z-index: 2;
+            display: flex; flex-direction: column; align-items: center; gap: 7px; z-index: 2;
         }
 
         .node-cat-avatar {
-            width: 120px;
+            width: 105px;
             height: auto;
-            margin-bottom: 5px; 
+            margin-bottom: 2px; 
             filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));
         }
 
         .node-capsule {
             position: relative;
-            width: 160px; height: 60px; background: white; border: 3px solid #ddd;
+            width: 166px; height: 58px; background: white; border: 3px solid #ddd;
             border-radius: 30px; display: flex; align-items: center; justify-content: center;
             font-weight: bold; font-size: 1.2rem; cursor: pointer; transition: all 0.3s;
             box-shadow: 0 4px 10px rgba(0,0,0,0.05); box-sizing: border-box;
@@ -101,135 +101,144 @@
         .node-charlie { border-color: var(--charlie-color); color: var(--charlie-color); }
         .node-bob { border-color: var(--bob-color); color: var(--bob-color); }
 
-        .node-label { font-size: 0.8rem; font-weight: bold; text-transform: uppercase; margin-bottom: -5px; }
+        .node-label { font-size: 0.78rem; font-weight: bold; text-transform: uppercase; margin-bottom: -3px; }
 
         .line-connector {
-            flex-grow: 1; height: 3px; background: black; margin: 0 10px; 
-            margin-bottom: 28px; 
+            position: relative; flex-grow: 1; height: 4px; background: #111; margin: 0 8px 25px;
+            border-radius: 999px;
+        }
+        .line-connector::after {
+            content: "";
+            position: absolute;
+            right: -1px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 0;
+            height: 0;
+            border-top: 8px solid transparent;
+            border-bottom: 8px solid transparent;
+            border-left: 14px solid #111;
         }
 
         .hint-click {
-            color: #aaa; font-weight: bold; font-style: italic; margin-top: 25px; font-size: 1rem; text-align: center;
+            color: #aaa; font-weight: bold; font-style: italic; margin: 14px 0 0; font-size: .95rem; text-align: center;
         }
 
         .calc-panel {
             width: 100%; max-width: 850px; background: #f8faff; border-radius: 20px;
-            border: 1px solid #d0daff; padding: 25px; margin-top: 20px;
+            border: 1px solid #d0daff; padding: 18px 22px; margin-top: 18px;
             display: none; flex-direction: column; animation: slideDown 0.4s ease-out;
         }
 
         @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
 
-        .calc-header { font-weight: bold; font-size: 1.1rem; color: var(--primary-blue); margin-bottom: 15px; border-bottom: 2px solid #e0e7ff; padding-bottom: 8px; }
+        .calc-header { font-weight: bold; font-size: 1.05rem; color: var(--primary-blue); margin-bottom: 10px; border-bottom: 2px solid #e0e7ff; padding-bottom: 7px; }
         
-        .calc-body { display: flex; align-items: center; justify-content: center; gap: 20px; font-size: 1.3rem; min-height: 80px; }
+        .calc-body { display: flex; align-items: center; justify-content: center; gap: 18px; font-size: 1.22rem; min-height: 56px; }
 
-        .calc-desc { font-size: 1rem; color: #555; line-height: 1.5; margin-top: 15px; background: white; padding: 15px; border-radius: 10px; }
+        .calc-desc { font-size: .96rem; color: #555; line-height: 1.42; margin-top: 10px; background: white; padding: 12px; border-radius: 10px; }
 
-        /* 🎯 光暈呼吸燈動畫：膠囊與結果框共用 */
+        /* ?�� ?��??�吸?��??��??��??��??��??�用 */
         @keyframes pulseGlowCapsule {
-            0% { box-shadow: 0 0 0 0 rgba(0, 74, 173, 0.2); }
-            70% { box-shadow: 0 0 0 10px rgba(0, 74, 173, 0); }
+            0% { box-shadow: 0 0 0 0 rgba(0, 74, 173, 0.36); }
+            70% { box-shadow: 0 0 0 22px rgba(0, 74, 173, 0); }
             100% { box-shadow: 0 0 0 0 rgba(0, 74, 173, 0); }
         }
         @keyframes pulseGlowFinal {
-            0% { box-shadow: 0 0 0 0 rgba(153, 153, 153, 0.4); }
-            70% { box-shadow: 0 0 0 15px rgba(153, 153, 153, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(153, 153, 153, 0); }
+            0% { box-shadow: 0 0 0 0 rgba(84, 159, 208, 0.38); }
+            70% { box-shadow: 0 0 0 28px rgba(84, 159, 208, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(84, 159, 208, 0); }
         }
 
         .node-capsule:not(.active) { animation: pulseGlowCapsule 2s infinite; }
         .final-reveal:not(.revealed) { animation: pulseGlowFinal 2s infinite; }
 
-        /* Final Reveal 樣式 */
+        /* Final Reveal �?? */
         .final-reveal {
-            margin-top: 40px; padding: 20px 50px; border-radius: 40px;
+            margin-top: 32px; padding: 16px 48px; border-radius: 36px;
             text-align: center; cursor: pointer; transition: all 0.4s ease;
             position: relative; overflow: hidden;
             
-            /* 預設為灰色未解鎖狀態 */
-            background: linear-gradient(135deg, #f0f0f0 0%, #e0e0e0 100%);
-            border: 3px dashed #999;
+            /* ?�設?�灰?�未�???�??*/
+            background: linear-gradient(135deg, #f7fbff 0%, #eef7ff 100%);
+            border: 3px dashed #9fc8e8;
         }
 
         .final-reveal:hover {
             transform: scale(1.03);
             border-style: solid;
-            border-color: #666;
+            border-color: var(--primary-blue);
         }
         .final-reveal.revealed {
-            background: linear-gradient(135deg, #fffdf0 0%, #fff5cc 100%);
-            border: 3px solid var(--result-gold);
-            box-shadow: 0 10px 30px rgba(255, 215, 0, 0.3);
+            background: linear-gradient(135deg, #f7fbff 0%, #e8f5ff 100%);
+            border: 3px solid var(--result-blue);
+            box-shadow: 0 10px 30px rgba(84,159,208,0.28);
             animation: none;
         }
         .final-reveal.revealed:hover {
-            box-shadow: 0 12px 35px rgba(255, 215, 0, 0.5);
+            box-shadow: 0 12px 35px rgba(84,159,208,0.4);
         }
         .final-reveal.active {
             border-color: var(--primary-blue);
             box-shadow: 0 0 20px rgba(0,74,173,0.3);
         }
         .final-msg { 
-            font-size: 1.2rem; font-weight: bold; margin-bottom: 5px; pointer-events: none; transition: color 0.3s;
-            color: #666; /* 預設文字顏色 */
+            font-size: 1.08rem; font-weight: bold; margin-bottom: 3px; pointer-events: none; transition: color 0.3s;
+            color: #666; /* ?�設?��?顏色 */
         }
         .final-secret { 
-            font-size: 3.5rem; font-weight: 900; pointer-events: none; transition: color 0.3s;
-            color: #333; /* 預設問號顏色 */
+            font-size: 3rem; font-weight: 900; pointer-events: none; transition: color 0.3s;
+            color: #333; /* ?�設?��?顏色 */
         }
-        .final-reveal.revealed .final-msg { color: #856404; }
+        .final-reveal.revealed .final-msg { color: var(--primary-blue); }
         .final-reveal.revealed .final-secret { color: var(--primary-blue); }
 
     
 
-/* ===== ZLM right-side image-only fixed current-step window =====
-   需求：移到主體教學右側；灰色框線延伸至整個視窗高度；禁止使用者滾動此直式視窗；
-   目前步驟藍色框框位於灰色框線上方，且可超出灰色框線。 */
+/* ===== ZLM right-side fixed current-step window ===== */
 .zlm-image-dock {
     position: fixed;
-    right: 18px;
+    right: 16px;
     top: 0;
-    width: 330px;                 /* 灰色滑動視窗外層寬度固定 */
-    height: 100vh;                /* 灰色框線延伸至網頁可視高度 */
+    width: 430px;
+    height: 100vh;
     z-index: 900;
-    pointer-events: none;         /* 禁止滑鼠滾動/拖曳此區域 */
+    pointer-events: none;
     display: flex;
     justify-content: center;
     overflow: visible;
     isolation: isolate;
+    font-family:'Arial Rounded MT Bold','Arial Rounded MT','Arial',sans-serif;
 }
 .zlm-image-viewport {
     position: relative;
-    width: 285px;                 /* 灰色框框寬度固定不變 */
+    width: 330px;
     height: 100vh;
     background: #ffffff;
     box-sizing: border-box;
-    box-shadow: 0 12px 26px rgba(0, 0, 0, 0.12);
-    overflow: visible;            /* 允許藍色框框超出灰色框線 */
+    box-shadow: 0 12px 26px rgba(0,0,0,.12);
+    overflow: visible;
     z-index: 1;
 }
-/* 灰色側邊框使用低圖層 pseudo elements，藍色框框會蓋在灰線上方 */
 .zlm-image-viewport::before,
 .zlm-image-viewport::after {
     content: "";
     position: absolute;
     top: 0;
     width: 14px;
-    height: 100vh;                /* 灰線延伸至整個網頁可視高度 */
+    height: 100vh;
     background: #d9d9d9;
     z-index: 1;
     pointer-events: none;
 }
 .zlm-image-viewport::before { left: 0; }
 .zlm-image-viewport::after { right: 0; }
-/* 內容層比灰框寬，但不改灰框本體寬度；用 overflow hidden 禁止直式滑動視窗被滾動 */
 .zlm-image-window {
     position: relative;
-    width: 393px;                 /* 285 + 54*2；只加寬內容圖層，不加寬灰框 */
+    width: 500px;
     height: 100vh;
-    margin-left: -54px;
-    overflow: hidden;             /* 禁止直式滑動視窗滾動，只停在目前步驟 */
+    margin-left: -85px;
+    overflow: hidden;
     z-index: 10;
 }
 .zlm-image-list {
@@ -237,108 +246,104 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 34px;
-    padding: 24px 0 34px;
+    gap: 12px;
+    padding: 52px 0 42px;
     box-sizing: border-box;
-    width: 393px;
+    width: 500px;
     transform: translateY(0);
-    transition: transform .45s ease;
+    transition: transform .55s cubic-bezier(.22,.8,.22,1);
     z-index: 20;
 }
 .zlm-image-card {
     position: relative;
-    width: 232px;
-    min-height: 245px;
-    padding: 12px;
+    width: 350px;
+    min-height: 52px;
+    padding: 0 18px;
     box-sizing: border-box;
     background: #ffffff;
-    border: 0 solid transparent;
-    border-radius: 30px;
+    border: 6px solid var(--primary-blue);
+    border-radius: 16px;
     display: flex;
     align-items: center;
     justify-content: center;
     flex: 0 0 auto;
-    transition: filter .25s ease, opacity .25s ease, transform .25s ease, width .25s ease, min-height .25s ease, box-shadow .25s ease;
+    transition: width .55s cubic-bezier(.22,.8,.22,1), min-height .55s cubic-bezier(.22,.8,.22,1), padding .55s cubic-bezier(.22,.8,.22,1), border-width .55s cubic-bezier(.22,.8,.22,1), border-radius .55s cubic-bezier(.22,.8,.22,1), box-shadow .55s cubic-bezier(.22,.8,.22,1), filter .35s ease, opacity .35s ease, transform .55s cubic-bezier(.22,.8,.22,1);
     z-index: 20;
+    overflow: hidden;
 }
-.zlm-image-card:not(.is-current) {
-    filter: grayscale(1) saturate(0);
-    opacity: .42;
-    transform: scale(.9);
-}
+.zlm-image-card:not(.is-current) { filter: none; opacity: 1; transform: scale(1); }
 .zlm-image-card.is-current {
-    width: 340px;
-    min-height: 390px;
-    padding: 16px;
-    border: 11px solid #0054bd;
-    border-radius: 36px;
-    box-shadow: 0 12px 28px rgba(0, 84, 189, .28);
+    width: 365px;
+    min-height: 365px;
+    padding: 14px;
+    border: 7px solid var(--primary-blue);
+    border-radius: 20px;
+    box-shadow: 0 12px 28px rgba(84,159,208,.28);
     filter: none;
     opacity: 1;
     transform: scale(1);
-    margin: 8px 0;
-    z-index: 100;                 /* 藍色框框位於灰色框線上方 */
+    margin: 6px 0;
+    z-index: 100;
 }
+.zlm-step-summary {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    height: 100%;
+    color: #111;
+    font-weight: 900;
+    font-size: 1rem;
+    letter-spacing: .02em;
+    white-space: nowrap;
+    transition: opacity .22s ease, transform .22s ease;
+}
+.zlm-step-number {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--primary-blue);
+    color: #ffffff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: .86rem;
+    line-height: 1;
+    flex: 0 0 auto;
+}
+.zlm-step-title { display: inline-block; line-height: 1; }
 .zlm-image-card img {
     position: relative;
     z-index: 101;
     width: 100%;
     height: 100%;
-    max-width: 208px;
-    max-height: 276px;
+    max-width: 0;
+    max-height: 0;
     object-fit: contain;
     display: block;
+    opacity: 0;
+    transform: scale(.92);
+    transition: opacity .28s ease .2s, transform .45s cubic-bezier(.22,.8,.22,1) .12s, max-width .55s cubic-bezier(.22,.8,.22,1), max-height .55s cubic-bezier(.22,.8,.22,1);
 }
-.zlm-image-card.is-current img {
-    max-width: 305px;
-    max-height: 350px;
+.zlm-image-card.is-current .zlm-step-summary {
+    opacity: 0;
+    transform: translateY(-8px);
+    position: absolute;
+    pointer-events: none;
 }
-@media (min-width: 1180px) {
-    body { padding-right: 350px !important; }
-}
+.zlm-image-card.is-current img { max-width: 318px; max-height: 320px; opacity: 1; transform: scale(1); }
+@media (min-width: 1180px) { body { padding-right: 450px !important; } }
 @media (max-width: 1179px) {
-    .zlm-image-dock {
-        position: relative;
-        right: auto;
-        top: auto;
-        width: min(94vw, 760px);
-        height: 285px;
-        margin: 18px auto 10px;
-        overflow: visible;
-    }
-    .zlm-image-viewport {
-        width: 100%;
-        height: 285px;
-    }
-    .zlm-image-viewport::before,
-    .zlm-image-viewport::after {
-        width: 10px;
-        height: 285px;
-    }
-    .zlm-image-window {
-        width: 100%;
-        height: 285px;
-        margin-left: 0;
-        overflow: hidden;
-    }
-    .zlm-image-list {
-        flex-direction: row;
-        align-items: center;
-        gap: 22px;
-        width: max-content;
-        height: 285px;
-        padding: 0 18px;
-    }
-    .zlm-image-card { width: 220px; min-height: 226px; }
-    .zlm-image-card.is-current {
-        width: 305px;
-        min-height: 258px;
-        margin: 0 10px;
-        z-index: 100;
-    }
-    .zlm-image-card.is-current img { max-width: 270px; max-height: 230px; }
+    .zlm-image-dock { position: relative; right: auto; top: auto; width: min(94vw, 840px); height: 320px; margin: 18px auto 10px; overflow: visible; }
+    .zlm-image-viewport { width: 100%; height: 320px; }
+    .zlm-image-viewport::before, .zlm-image-viewport::after { width: 10px; height: 320px; }
+    .zlm-image-window { width: 100%; height: 320px; margin-left: 0; overflow: hidden; }
+    .zlm-image-list { flex-direction: row; align-items: center; gap: 14px; width: max-content; height: 320px; padding: 0 24px; }
+    .zlm-image-card { width: 270px; min-height: 52px; }
+    .zlm-image-card.is-current { width: 305px; min-height: 250px; margin: 0 10px; z-index: 100; }
+    .zlm-image-card.is-current img { max-width: 275px; max-height: 220px; }
 }
-
 </style>
 </head>
 <body>
@@ -346,18 +351,10 @@
     <div class="zlm-image-viewport">
         <div class="zlm-image-window">
             <div class="zlm-image-list">
-            <div class="zlm-image-card" data-zlm-step="1">
-                <img src="pictures/zlm-1.png" alt="ZLM Step 1" onerror="this.onerror=null;this.src='pictures/zlm-1.png';">
-            </div>
-            <div class="zlm-image-card" data-zlm-step="2">
-                <img src="pictures/zlm-2.png" alt="ZLM Step 2" onerror="this.onerror=null;this.src='pictures/zlm-2.png';">
-            </div>
-            <div class="zlm-image-card" data-zlm-step="3">
-                <img src="pictures/zlm-3.png" alt="ZLM Step 3" onerror="this.onerror=null;this.src='pictures/zlm-3.png';">
-            </div>
-            <div class="zlm-image-card is-current" data-zlm-step="4" aria-current="step">
-                <img src="pictures/zlm-4.png" alt="ZLM Step 4" onerror="this.onerror=null;this.src='pictures/zlm-4.png';">
-            </div>
+                <div class="zlm-image-card" data-zlm-step="1"><div class="zlm-step-summary"><span class="zlm-step-number">1</span><span class="zlm-step-title">PREPARE</span></div><img src="pictures/zlm-1.png" alt="ZLM Step 1" onerror="this.onerror=null;this.src='pictures/zlm-1.png';"></div>
+                <div class="zlm-image-card" data-zlm-step="2"><div class="zlm-step-summary"><span class="zlm-step-number">2</span><span class="zlm-step-title">ENCRYPT</span></div><img src="pictures/zlm-2.png" alt="ZLM Step 2" onerror="this.onerror=null;this.src='pictures/zlm-2.png';"></div>
+                <div class="zlm-image-card" data-zlm-step="3"><div class="zlm-step-summary"><span class="zlm-step-number">3</span><span class="zlm-step-title">ENCODE</span></div><img src="pictures/zlm-3.png" alt="ZLM Step 3" onerror="this.onerror=null;this.src='pictures/zlm-3.png';"></div>
+                <div class="zlm-image-card is-current" data-zlm-step="4" aria-current="step"><div class="zlm-step-summary"><span class="zlm-step-number">4</span><span class="zlm-step-title">COLLABORATE</span></div><img src="pictures/zlm-4.png" alt="ZLM Step 4" onerror="this.onerror=null;this.src='pictures/zlm-4.png';"></div>
             </div>
         </div>
     </div>
@@ -365,7 +362,7 @@
 
 <div class="header">
     <div class="header-left">
-        <button class="btn-back" onclick="goHome()">◀&#xFE0E;</button>
+        <button class="btn-back" onclick="goHome()">&#x25C0;&#xFE0E;</button>
         <div class="title-pill">QSS : ZhangLiMan Protocol</div>
     </div>
     <div class="header-center">STEP 4 : COLLABORATE</div>
@@ -534,7 +531,7 @@
 </script>
 
 <script>
-/* ZLM 右側目前步驟視窗：禁止使用者滾動此區域，僅用 transform 固定顯示目前 step。 */
+/* ZLM ?�側?��?步�?視�?：�?止使?�者滾?�此?�?��??�用 transform ?��?顯示?��? step??*/
 document.addEventListener('DOMContentLoaded', function () {
     const dock = document.querySelector('.zlm-image-dock');
     const windowBox = document.querySelector('.zlm-image-window');
