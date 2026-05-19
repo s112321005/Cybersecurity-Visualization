@@ -220,7 +220,7 @@
 
     <div class="basis-announcer" id="basis-announcer" aria-live="polite">
         <span class="basis-announcer-icon" aria-hidden="true">📢</span>
-        <span class="basis-announcer-text" id="basis-announcer-text">Alice Basis : Z</span>
+        <span class="basis-announcer-text" id="basis-announcer-text">Alice Announced Basis : Z</span>
     </div>
 
     <div class="explanation-box" id="explain-box">
@@ -402,7 +402,7 @@
             const stageRect = stage.getBoundingClientRect();
             const aliceRect = aliceAvatar.getBoundingClientRect();
             const aliceCenterY = aliceRect.top - stageRect.top + aliceRect.height / 2;
-            announcerText.textContent = "Alice Basis : " + basisLabel;
+            announcerText.textContent = "Alice Announced Basis : " + basisLabel;
             announcer.style.setProperty("--announce-row-y", aliceCenterY + "px");
             announcer.classList.remove("show");
             void announcer.offsetWidth;
