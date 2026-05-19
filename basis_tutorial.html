@@ -6,10 +6,10 @@
     <base href="https://s112321005.github.io/Cybersecurity-Visualization/">
     <title>Polarization Basis Tutorial</title>
     <style>
-        :root { --primary-blue: #549FD0; --ink: #263238; --muted: #667085; --paper: #ffffff; --soft: #f5f8fc; --line: #d7e3f5; --photon: #ffd84d; --pass: #20a464; --block: #d94343; --zero: #3d7df2; --one: #e55d8b; --plus: #f0a92d; --minus: #23a9a5; }
+        :root { --primary-blue: #549FD0; --ink: #263238; --bg-gradient: linear-gradient(135deg,#E0F2FE 0%,#F5F3FF 50%,#ECFDF5 100%); --muted: #667085; --paper: #ffffff; --soft: #f5f8fc; --line: #d7e3f5; --photon: #ffd84d; --pass: #20a464; --block: #d94343; --zero: #3d7df2; --one: #e55d8b; --plus: #f0a92d; --minus: #23a9a5; }
         * { box-sizing: border-box; }
-        body { font-family: "Segoe UI", "Noto Sans TC", sans-serif; display: flex; flex-direction: column; align-items: center; min-height: 100vh; padding: 34px 18px; background: var(--soft); color: var(--ink); margin: 0; }
-        .header { width: min(1120px, 96vw); display: flex; align-items: center; justify-content: space-between; gap: 18px; margin-bottom: 20px; animation: fadeIn 0.65s ease-out both; }
+        body { font-family: "Segoe UI", "Noto Sans TC", sans-serif; display: flex; flex-direction: column; align-items: center; min-height: 100vh; padding: 34px 18px; background: var(--bg-gradient); color: var(--ink); margin: 0; }
+        .header { width: min(1080px, 95vw); display: flex; align-items: center; justify-content: space-between; gap: 18px; margin-bottom: 20px; animation: fadeIn 0.65s ease-out both; }
         .header-left { display: flex; align-items: center; gap: 14px; }
         .btn-back { width: 40px; height: 40px; background-color: var(--primary-blue); color: white; border-radius: 50%; display: flex; justify-content: center; align-items: center; text-decoration: none; font-size: 0; transition: transform 0.2s; cursor: pointer; border: none; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
         .btn-back::before { content: ""; width: 0; height: 0; border-top: 7px solid transparent; border-bottom: 7px solid transparent; border-right: 11px solid currentColor; margin-left: -2px; }
@@ -19,71 +19,71 @@
         .header-right { min-width: 120px; display: flex; justify-content: flex-end; }
         .nav-btn { border: 2px solid var(--primary-blue); background: white; color: var(--primary-blue); padding: 10px 18px; border-radius: 999px; font-weight: 800; font-size: 0.95rem; cursor: pointer; transition: 0.2s ease; }
         .nav-btn:hover { background: var(--primary-blue); color: white; }
-        .main-card { width: min(1340px, 98vw); min-height: 680px; border: 3px solid var(--primary-blue); border-radius: 28px; position: relative; background: var(--paper); overflow: hidden; padding: 22px; animation: fadeIn 0.75s ease-out both; }
-        .tutorial-shell { display: grid; grid-template-columns: 360px minmax(650px, 1fr); gap: 22px; height: 100%; min-height: 630px; }
-        .panel { border: 1px solid var(--line); border-radius: 14px; background: #fbfdff; padding: 16px; }
-        .panel h2 { margin: 0 0 12px; font-size: 1.02rem; letter-spacing: 0; }
-        .state-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin-bottom: 16px; }
-        .state-btn, .filter-btn { appearance: none; outline: none; border: 2px solid transparent; border-radius: 12px; background: white; padding: 10px 8px; min-height: 104px; cursor: pointer; box-shadow: 0 3px 12px rgba(31, 67, 107, 0.08); transition: transform 0.18s ease, border-color 0.18s ease, background 0.18s ease; }
+        .main-card { width: min(1080px, 95vw); height: 710px; min-height: 710px; border: 3px solid var(--primary-blue); border-radius: 28px; position: relative; background: var(--paper); overflow: hidden; padding: 18px; animation: fadeIn 0.75s ease-out both; }
+        .tutorial-shell { display: grid; grid-template-columns: 330px minmax(560px, 1fr); gap: 18px; height: 100%; min-height: 0; }
+        .panel { border: 1px solid var(--line); border-radius: 14px; background: #fbfdff; padding: 14px; height: 100%; display: flex; flex-direction: column; overflow: hidden; }
+        .panel h2 { margin: 0 0 9px; font-size: 1rem; letter-spacing: 0; }
+        .state-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin-bottom: 12px; }
+        .state-btn, .filter-btn { appearance: none; outline: none; border: 2px solid transparent; border-radius: 12px; background: white; padding: 8px 7px; min-height: 84px; cursor: pointer; box-shadow: 0 3px 12px rgba(31, 67, 107, 0.08); transition: transform 0.18s ease, border-color 0.18s ease, background 0.18s ease; }
         .state-btn:hover, .filter-btn:hover { transform: translateY(-2px); border-color: #94b9ee; }
         .state-btn.active, .filter-btn.active { border-color: var(--primary-blue); background: #edf5ff; box-shadow: 0 8px 22px rgba(0, 74, 173, 0.16); }
-        .state-symbol { display: block; font-size: 2rem; line-height: 1; font-weight: 900; }
-        .state-name { display: block; margin-top: 8px; color: var(--muted); font-size: 0.86rem; font-weight: 700; min-height: 34px; display: flex; align-items: center; justify-content: center; text-align: center; }
+        .state-symbol { display: block; font-size: 1.75rem; line-height: 1; font-weight: 900; }
+        .state-name { display: block; margin-top: 6px; color: var(--muted); font-size: 0.82rem; font-weight: 700; min-height: 26px; display: flex; align-items: center; justify-content: center; text-align: center; }
         .mini-polar { width: 48px; height: 48px; margin: 0 auto 8px; position: relative; border: 2px solid #a8bfdc; border-radius: 50%; background: #fff; }
         .mini-polar::after { content: ""; position: absolute; left: 50%; top: 8px; width: 6px; height: 30px; border-radius: 999px; transform: translateX(-50%)rotate(var(--angle)); background: var(--primary-blue); }
-        .filter-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 18px; }
-        .filter-btn { min-height: 146px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-        .filter-btn img { width: 62px; height: 74px; object-fit: contain; display: block; margin-bottom: 7px; }
-        .stage { position: relative; min-height: 630px; overflow: hidden; border: 1px solid #dfe8f5; border-radius: 16px; background: linear-gradient(90deg, rgba(0, 74, 173, 0.06)1px, transparent 1px), linear-gradient(180deg, rgba(0, 74, 173, 0.05)1px, transparent 1px), #ffffff; background-size: 42px 42px; }
+        .filter-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; }
+        .filter-btn { min-height: 112px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .filter-btn img { width: 54px; height: 62px; object-fit: contain; display: block; margin-bottom: 5px; }
+        .stage { position: relative; height: 100%; min-height: 0; overflow: hidden; border: 1px solid #dfe8f5; border-radius: 16px; background: linear-gradient(90deg, rgba(0, 74, 173, 0.06)1px, transparent 1px), linear-gradient(180deg, rgba(0, 74, 173, 0.05)1px, transparent 1px), #ffffff; background-size: 42px 42px; }
         .stage-top { position: absolute; left: 20px; right: 20px; top: 18px; display: flex; justify-content: space-between; align-items: center; z-index: 4; }
         .stage-top .formula-pill { display: none; }
         .formula-pill { min-height: 42px; padding: 8px 14px; border-radius: 999px; border: 1px solid var(--line); background: rgba(255, 255, 255, 0.9); font-weight: 900; color: #17345f; display: flex; align-items: center; gap: 8px; box-shadow: 0 6px 18px rgba(0, 42, 100, 0.08); }
-        .control-formula { margin-top: 4px; border-radius: 14px; justify-content: center; text-align: center; width: 100%; min-height: 54px; line-height: 1.35; }
+        .control-formula { margin-top: 2px; border-radius: 14px; justify-content: center; text-align: center; width: 100%; min-height: 44px; line-height: 1.25; }
         .frac { display: inline-grid; grid-template-rows: auto auto; align-items: center; vertical-align: middle; margin: 0 3px; font-size: 0.92em; line-height: 1; }
         .frac > span:first-child { border-bottom: 2px solid currentColor; padding: 0 4px 2px; }
         .frac > span:last-child { padding: 2px 4px 0; }
         .result-badge { min-width: 96px; text-align: center; border-radius: 999px; padding: 9px 14px; color: white; font-weight: 900; background: var(--pass); box-shadow: 0 8px 24px rgba(32, 164, 100, 0.24); }
         .stage-top .result-badge { display: none; }
-        .filter-result-badge { position: absolute; left: 51%; top: calc(32% - 126px); transform: translateX(-50%); z-index: 8; }
+        .filter-result-badge { position: absolute; left: 51%; top: calc(34% - 104px); transform: translateX(-50%); z-index: 8; }
         .result-badge.blocked { background: var(--block); box-shadow: 0 8px 24px rgba(217, 67, 67, 0.22); }
         .beam-wrap { position: absolute; inset: 0; pointer-events: none; }
-        .source { position: absolute; left: 42px; top: 32%; width: 78px; height: 78px; transform: translateY(-50%); border-radius: 50%; background: radial-gradient(circle, #ffffff 0 47%, color-mix(in srgb, var(--beam-color) 28%, transparent) 48% 54%, transparent 55% 100%); border: 1.5px solid color-mix(in srgb, var(--beam-color) 70%, white); box-shadow: 0 0 18px color-mix(in srgb, var(--beam-color) 38%, transparent); display: grid; place-items: center; z-index: 3; }
+        .source { position: absolute; left: 68px; top: 39%; width: 78px; height: 78px; transform: translateY(-50%); border-radius: 50%; background: radial-gradient(circle, #ffffff 0 47%, color-mix(in srgb, var(--beam-color) 28%, transparent) 48% 54%, transparent 55% 100%); border: 1.5px solid color-mix(in srgb, var(--beam-color) 70%, white); box-shadow: 0 0 18px color-mix(in srgb, var(--beam-color) 38%, transparent); display: grid; place-items: center; z-index: 3; }
         .source::after { content: ""; position: absolute; left: 50%; top: 50%; width: 16px; height: 48px; background: var(--beam-color); transform: translate(-50%, -50%)rotate(var(--state-angle)); box-shadow: 0 0 10px var(--beam-color); clip-path: polygon(50% 0, 100% 18%, 72% 18%, 72% 82%, 100% 82%, 50% 100%, 0 82%, 28% 82%, 28% 18%, 0 18%); }
         .source::before { display: none; }
-        .filter-stand { position: absolute; left: 50%; top: 32%; width: 138px; transform: translate(-50%, -49%); z-index: 3; filter: drop-shadow(0 12px 18px rgba(16, 48, 91, 0.18)); }
+        .filter-stand { position: absolute; left: 50%; top: 39%; width: 138px; transform: translate(-50%, -49%); z-index: 3; filter: drop-shadow(0 12px 18px rgba(16, 48, 91, 0.18)); }
         .filter-stand img { width: 100%; height: auto; display: block; }
-        .photon-dot { position: absolute; left: 83px; top: 32%; width: 18px; height: 18px; margin: -9px 0 0 -9px; border-radius: 50%; background: var(--beam-color); box-shadow: 0 0 18px var(--beam-color), 0 0 30px color-mix(in srgb, var(--beam-color)52%, transparent); animation: photonPass 4s linear infinite; z-index: 5; }
+        .photon-dot { position: absolute; left: 103px; top: 39%; width: 18px; height: 18px; margin: -9px 0 0 -9px; border-radius: 50%; background: var(--beam-color); box-shadow: 0 0 18px var(--beam-color), 0 0 30px color-mix(in srgb, var(--beam-color)52%, transparent); animation: photonPass 4s linear infinite; z-index: 5; }
         .blocked .photon-dot { animation-name: photonBlock; }
-        .beam { position: absolute; top: 32%; height: 8px; border-radius: 999px; transform: translateY(-50%); background: linear-gradient(90deg, transparent, var(--beam-color), transparent); opacity: 0.74; }
-        .beam.in { left: 112px; right: calc(50% + 66px); }
-        .beam.out { left: calc(50% + 72px); right: 88px; opacity: 0; background: linear-gradient(90deg, transparent, var(--pass-color), transparent); }
+        .beam { position: absolute; top: 39%; height: 8px; border-radius: 999px; transform: translateY(-50%); background: linear-gradient(90deg, transparent, var(--beam-color), transparent); opacity: 0.74; }
+        .beam.in { left: 136px; right: calc(50% + 76px); }
+        .beam.out { left: calc(50% + 78px); right: 118px; opacity: 0; background: linear-gradient(90deg, transparent, var(--pass-color), transparent); }
         .passed .beam.out { animation: outputBeam 4s linear infinite; }
         .split-mode .beam.out { background: linear-gradient(90deg, transparent, var(--pass-color), transparent); }
-        .split-source { position: absolute; left: calc(50% + 148px); top: var(--split-top); width: 52px; height: 52px; transform: translate(-50%, -50%)scale(0.3); border-radius: 50%; background: radial-gradient(circle, #ffffff 0 47%, color-mix(in srgb, var(--split-color) 28%, transparent) 48% 54%, transparent 55% 100%); border: 1.5px solid color-mix(in srgb, var(--split-color) 70%, white); box-shadow: 0 0 18px color-mix(in srgb, var(--split-color) 38%, transparent); opacity: 0; z-index: 5; }
-        .split-a { --split-top: 25%; --split-color: #9aa4b2; --split-angle: var(--split-a-angle); filter: grayscale(1); }
-        .split-b { --split-top: 39%; --split-color: var(--pass-color); --split-angle: var(--split-b-angle); }
+        .split-source { position: absolute; left: calc(50% + 126px); top: var(--split-top); width: 52px; height: 52px; transform: translate(-50%, -50%)scale(0.3); border-radius: 50%; background: radial-gradient(circle, #ffffff 0 47%, color-mix(in srgb, var(--split-color) 28%, transparent) 48% 54%, transparent 55% 100%); border: 1.5px solid color-mix(in srgb, var(--split-color) 70%, white); box-shadow: 0 0 18px color-mix(in srgb, var(--split-color) 38%, transparent); opacity: 0; z-index: 5; }
+        .split-a { --split-top: 32%; --split-color: #9aa4b2; --split-angle: var(--split-a-angle); filter: grayscale(1); }
+        .split-b { --split-top: 46%; --split-color: var(--pass-color); --split-angle: var(--split-b-angle); }
         .split-source::after { content: ""; position: absolute; left: 50%; top: 50%; width: 11px; height: 32px; background: var(--split-color); transform: translate(-50%, -50%)rotate(var(--split-angle)); box-shadow: 0 0 8px var(--split-color); clip-path: polygon(50% 0, 100% 18%, 72% 18%, 72% 82%, 100% 82%, 50% 100%, 0 82%, 28% 82%, 28% 18%, 0 18%); }
         .split-source::before { display: none; }
-        .split-label { position: absolute; left: calc(50% + 202px); top: var(--split-top); transform: translateY(-50%)scale(0.3); min-width: 48px; padding: 4px 9px; border-radius: 999px; background: rgba(255, 255, 255, 0.9); border: 1px solid var(--line); color: #17345f; font-weight: 900; font-size: 0.86rem; text-align: center; opacity: 0; z-index: 6; box-shadow: 0 6px 16px rgba(0, 42, 100, 0.08); }
-        .split-label-a { --split-top: 25%; }
-        .split-label-b { --split-top: 39%; }
+        .split-label { position: absolute; left: calc(50% + 176px); top: var(--split-top); transform: translateY(-50%)scale(0.3); min-width: 48px; padding: 4px 9px; border-radius: 999px; background: rgba(255, 255, 255, 0.9); border: 1px solid var(--line); color: #17345f; font-weight: 900; font-size: 0.86rem; text-align: center; opacity: 0; z-index: 6; box-shadow: 0 6px 16px rgba(0, 42, 100, 0.08); }
+        .split-label-a { --split-top: 32%; }
+        .split-label-b { --split-top: 46%; }
         .split-mode .split-source, .split-mode .split-label { animation: splitPop 4s linear infinite; }
-        .block-flash { position: absolute; left: 50%; top: 32%; width: 64px; height: 64px; transform: translate(-50%, -50%); border-radius: 50%; border: 4px solid rgba(217, 67, 67, 0.68); opacity: 0; z-index: 6; }
+        .block-flash { position: absolute; left: 50%; top: 39%; width: 64px; height: 64px; transform: translate(-50%, -50%); border-radius: 50%; border: 4px solid rgba(217, 67, 67, 0.68); opacity: 0; z-index: 6; }
         .block-flash::after { content: ""; position: absolute; left: 50%; top: 50%; width: 8px; height: 62px; border-radius: 999px; background: rgba(217, 67, 67, 0.82); transform: translate(-50%, -50%)rotate(-45deg); box-shadow: 0 0 12px rgba(217, 67, 67, 0.32); }
         .blocked .block-flash { animation: blockFlash 4s linear infinite; }
-        .detector { position: absolute; right: 35px; top: 32%; width: 90px; height: 90px; transform: translateY(-50%); border: 0; border-radius: 50%; background: transparent; display: grid; place-items: center; z-index: 3; }
+        .detector { position: absolute; right: 58px; top: 39%; width: 90px; height: 90px; transform: translateY(-50%); border: 0; border-radius: 50%; background: transparent; display: grid; place-items: center; z-index: 3; }
         .detector-light { display: none; }
         .detector-source { position: absolute; left: 50%; top: 50%; width: 78px; height: 78px; transform: translate(-50%, -50%)scale(0.55); border-radius: 50%; background: radial-gradient(circle, #ffffff 0 47%, color-mix(in srgb, var(--detector-color) 28%, transparent) 48% 54%, transparent 55% 100%); border: 1.5px solid color-mix(in srgb, var(--detector-color) 70%, white); box-shadow: 0 0 18px color-mix(in srgb, var(--detector-color) 38%, transparent); opacity: 0; z-index: 2; }
         .detector-source::after { content: ""; position: absolute; left: 50%; top: 50%; width: 16px; height: 48px; background: var(--detector-color); transform: translate(-50%, -50%)rotate(var(--detector-angle)); box-shadow: 0 0 8px var(--detector-color); clip-path: polygon(50% 0, 100% 18%, 72% 18%, 72% 82%, 100% 82%, 50% 100%, 0 82%, 28% 82%, 28% 18%, 0 18%); }
         .detector-source::before { display: none; }
         .passed .detector-source { animation: detectorAppear 4s linear infinite; }
-        .component-field { position: absolute; left: 50%; bottom: 94px; width: 360px; height: 170px; transform: translateX(-50%); z-index: 2; }
-        .control-components { position: relative; left: auto; bottom: auto; width: 100%; height: 222px; transform: none; margin: 14px auto 18px; border: 1px solid var(--line); border-radius: 14px; background: white; overflow: visible; }
-        .control-components .component { width: 130px; left: 50%; top: 50%; transform-origin: center center; transform: translate(-50%, -50%)rotate(var(--angle)); }
+        .component-field { position: absolute; left: 50%; bottom: 52px; width: 330px; height: 140px; transform: translateX(-50%); z-index: 2; }
+        .control-components { position: relative; left: auto; bottom: auto; width: 100%; height: auto; min-height: 165px; flex: 1 1 auto; transform: none; margin: 10px auto 0; border: 1px solid var(--line); border-radius: 14px; background: white; overflow: visible; }
+        .control-components .component { width: 105px; left: 50%; top: 50%; transform-origin: center center; transform: translate(-50%, -50%)rotate(var(--angle)); }
         .control-components .component .label { font-size: 0.78rem; padding: 1px 5px; }
         .axis { position: absolute; left: 0; top: 50%; width: 100%; height: 2px; background: #d8e2ee; }
         .axis.v { left: 50%; top: 8px; width: 2px; height: calc(100% - 16px); }
-        .component { position: absolute; left: 50%; top: 50%; width: 130px; height: 6px; border-radius: 999px; transform-origin: center center; transform: translate(-50%, -50%)rotate(var(--angle)); background: var(--color); box-shadow: 0 0 14px color-mix(in srgb, var(--color)52%, transparent); opacity: 0.06; transition: opacity 0.25s ease, transform 0.25s ease, filter 0.25s ease; }
+        .component { position: absolute; left: 50%; top: 50%; width: 112px; height: 6px; border-radius: 999px; transform-origin: center center; transform: translate(-50%, -50%)rotate(var(--angle)); background: var(--color); box-shadow: 0 0 14px color-mix(in srgb, var(--color)52%, transparent); opacity: 0.06; transition: opacity 0.25s ease, transform 0.25s ease, filter 0.25s ease; }
         .component::after { content: ""; position: absolute; right: -10px; top: 50%; width: 0; height: 0; border-top: 8px solid transparent; border-bottom: 8px solid transparent; border-left: 14px solid var(--color); transform: translateY(-50%); }
         .component::before { content: ""; position: absolute; left: -10px; top: 50%; width: 0; height: 0; border-top: 8px solid transparent; border-bottom: 8px solid transparent; border-right: 14px solid var(--color); transform: translateY(-50%); }
         .component.active { opacity: 0.95; }
@@ -94,7 +94,7 @@
         .component .label { position: absolute; left: 100%; top: 50%; transform: translate(16px, -50%)rotate(calc(var(--angle)* -1)); font-weight: 900; color: var(--color); background: rgba(255, 255, 255, 0.84); padding: 2px 7px; border-radius: 999px; white-space: nowrap; font-size: 0.9rem; opacity: 0; transition: opacity 0.2s ease; }
         .component.active .label { opacity: 1; }
         .component.negative .label { transform: translate(16px, -50%)rotate(calc(var(--angle)* -1)); }
-        .hint-line { position: absolute; left: 96px; right: 96px; top: calc(32% - 220px); bottom: auto; min-height: 48px; padding: 9px 18px; border-radius: 14px; background: rgba(255, 255, 255, 0.82); border: 1px solid rgba(215, 227, 245, 0.9); text-align: center; color: var(--muted); font-weight: 700; font-size: 1.1rem; line-height: 1.35; z-index: 7; }
+        .hint-line { position: absolute; left: 70px; right: 70px; top: 34px; bottom: auto; min-height: 42px; padding: 8px 16px; border-radius: 14px; background: rgba(255, 255, 255, 0.82); border: 1px solid rgba(215, 227, 245, 0.9); text-align: center; color: var(--muted); font-weight: 700; font-size: 1rem; line-height: 1.3; z-index: 7; }
         .legend-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
         .legend-item { border: 1px solid var(--line); border-radius: 12px; background: white; padding: 10px 11px; display: grid; grid-template-columns: 36px 1fr; gap: 9px; align-items: center; }
         .legend-symbol { width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center; color: white; font-weight: 950; font-size: 1.35rem; background: var(--color); }
@@ -105,8 +105,8 @@
         .switch input { inline-size: 18px; block-size: 18px; }
         .reset-btn { border: 0; border-radius: 999px; background: var(--primary-blue); color: white; padding: 9px 13px; font-weight: 900; cursor: pointer; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes photonPass { 0% { left: 83px; transform: scale(0.7); opacity: 0; } 10% { opacity: 1; } 50% { left: 50%; transform: scale(1); opacity: 1; } 90% { left: calc(100% - 78px); transform: scale(1); opacity: 1; } 100% { left: calc(100% - 78px); transform: scale(1); opacity: 0; } }
-        @keyframes photonBlock { 0% { left: 83px; transform: scale(0.7); opacity: 0; } 12% { opacity: 1; } 50% { left: 50%; transform: scale(1); opacity: 1; } 64%, 100% { left: 50%; transform: scale(0.08); opacity: 0; } }
+        @keyframes photonPass { 0% { left: 103px; transform: scale(0.7); opacity: 0; } 10% { opacity: 1; } 50% { left: 50%; transform: scale(1); opacity: 1; } 90% { left: calc(100% - 106px); transform: scale(1); opacity: 1; } 100% { left: calc(100% - 106px); transform: scale(1); opacity: 0; } }
+        @keyframes photonBlock { 0% { left: 103px; transform: scale(0.7); opacity: 0; } 12% { opacity: 1; } 50% { left: 50%; transform: scale(1); opacity: 1; } 64%, 100% { left: 50%; transform: scale(0.08); opacity: 0; } }
         @keyframes blockFlash { 0%, 50%, 100% { opacity: 0; transform: translate(-50%, -50%)scale(0.6); } 58% { opacity: 1; transform: translate(-50%, -50%)scale(1.18); } 78% { opacity: 1; transform: translate(-50%, -50%)scale(1.18); } 88% { opacity: 0; transform: translate(-50%, -50%)scale(1.55); } }
         @keyframes splitPop { 0%, 50% { opacity: 0; transform: translate(-50%, -50%)scale(0.3); } 60% { opacity: 1; transform: translate(-50%, -50%)scale(1); } 100% { opacity: 1; transform: translate(-50%, -50%)scale(1); } }
         @keyframes outputBeam { 0%, 50% { opacity: 0; } 60% { opacity: 0.82; } 100% { opacity: 0.82; } }
@@ -118,8 +118,8 @@
             .header-center { order: 3; flex-basis: 100%; }
             .header-right { min-width: auto; }
             .tutorial-shell { grid-template-columns: 1fr; }
-            .main-card { min-height: auto; }
-            .stage { min-height: 520px; }
+            .main-card { height: auto; min-height: auto; }
+            .stage { min-height: 480px; }
             .panel { min-height: auto; }
             .state-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
             .legend-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -132,8 +132,8 @@
             .state-grid, .legend-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
             .state-btn { min-height: 82px; }
             .filter-stand { width: 104px; }
-            .source { left: 24px; width: 64px; height: 64px; }
-            .detector { right: 18px; width: 72px; height: 72px; }
+            .source { left: 32px; width: 64px; height: 64px; }
+            .detector { right: 28px; width: 72px; height: 72px; }
             .detector-source { width: 64px; height: 64px; }
             .detector-source::after { height: 42px; }
             .component-field { bottom: 88px; width: 230px; height: 130px; }
