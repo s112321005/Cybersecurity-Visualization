@@ -201,6 +201,7 @@
         .state-circle.state-blue { background: var(--bob-blue); color: #fff; border-color: var(--bob-blue); }
         .state-circle.state-red { background: var(--eve-red); color: #fff; border-color: var(--eve-red); }
         .state-circle.state-gray { background: var(--inactive-gray); color: #555; border-color: var(--inactive-gray); }
+        .state-circle sub, .eve-state-circle sub { font-size: 0.55em; line-height: 0; margin-left: 1px; transform: translateY(13px); }
         #view-bb84-eve-cnot .state-btn.option-state { border-color: var(--alice-blue); color: var(--alice-blue); }
         #cnot-alice-state { background-color: var(--alice-blue) !important; color: #ffffff !important; border: 2px solid var(--alice-blue) !important; }
         #view-bb84-eve-cnot #cnot-bob-top.state-blue, #view-bb84-eve-cnot #cnot-bob-bottom.state-blue { background-color: var(--bob-blue) !important; color: #ffffff !important; border: 2px solid var(--bob-blue) !important; }
@@ -515,14 +516,14 @@
                         <line id="cnot-branch-down" data-prob="50%" x1="77%" y1="38%" x2="84%" y2="49%" stroke="#333" stroke-width="3" marker-end="url(#arrow-bb84-cnot)" />
                         <line id="cnot-branch-single" data-prob="100%" x1="76%" y1="38%" x2="83%" y2="38%" stroke="#333" stroke-width="3" marker-end="url(#arrow-bb84-cnot)" style="display:none;" />
                     </svg>
-                    <div class="node" style="left: 9%; top: 38%;"><div class="state-circle" id="cnot-alice-state">|+⟩</div></div>
-                    <div class="node" style="left: 9%; top: 75%;"><div class="eve-state-circle" id="cnot-eve-state">|0⟩</div></div>
+                    <div class="node" style="left: 9%; top: 38%;"><div class="state-circle" id="cnot-alice-state">|+⟩<sub>A</sub></div></div>
+                    <div class="node" style="left: 9%; top: 75%;"><div class="eve-state-circle" id="cnot-eve-state">|0⟩<sub>E</sub></div></div>
                     <div class="node" style="left: 40%; top: 38%;"><div class="cnot-gate-dot"></div></div>
                     <div class="node" style="left: 40%; top: 75%;"><div class="cnot-gate-plus"></div></div>
                     <div class="node" style="left: 53%; top: 56%;"><div id="cnot-operation-node" class="cnot-op-node" onclick="showCnotCalculation()" title="Click to view CNOT calculation">|𝜙<sup>+</sup>⟩<sub>AE</sub></div></div>
                     <div class="node" style="left: 73%; top: 38%;"><img id="cnot-bob-measure" src="pictures/b_eyex.svg" class="polarizer-img basis-eye-img" alt="Bob basis measurement"></div>
-                    <div class="node" id="cnot-bob-top-node" style="left: 90%; top: 27%;"><div class="cnot-outcome-row"><div class="state-circle state-blue" id="cnot-bob-top">|+⟩</div><div class="prob-circle prob-fraction cnot-prob-node state-blue" id="cnot-prob-top" data-prob-for="cnot-bob-top"><div class="fraction-num">1</div><div class="fraction-den">2</div></div></div></div>
-                    <div class="node" id="cnot-bob-bottom-node" style="left: 90%; top: 49%;"><div class="cnot-outcome-row"><div class="state-circle state-red" id="cnot-bob-bottom">|-⟩</div><div class="prob-circle prob-fraction cnot-prob-node state-red" id="cnot-prob-bottom" data-prob-for="cnot-bob-bottom"><div class="fraction-num">1</div><div class="fraction-den">2</div></div></div></div>
+                    <div class="node" id="cnot-bob-top-node" style="left: 90%; top: 27%;"><div class="cnot-outcome-row"><div class="state-circle state-blue" id="cnot-bob-top">|+⟩<sub>B</sub></div><div class="prob-circle prob-fraction cnot-prob-node state-blue" id="cnot-prob-top" data-prob-for="cnot-bob-top"><div class="fraction-num">1</div><div class="fraction-den">2</div></div></div></div>
+                    <div class="node" id="cnot-bob-bottom-node" style="left: 90%; top: 49%;"><div class="cnot-outcome-row"><div class="state-circle state-red" id="cnot-bob-bottom">|-⟩<sub>B</sub></div><div class="prob-circle prob-fraction cnot-prob-node state-red" id="cnot-prob-bottom" data-prob-for="cnot-bob-bottom"><div class="fraction-num">1</div><div class="fraction-den">2</div></div></div></div>
                 </div>
             </div>
         </div>
@@ -555,6 +556,10 @@
         if (!forceBasisMode && representationMode !== 'basis') return symbol;
         const map = { '|→⟩': '|0⟩', '|↑⟩': '|1⟩', '|↗⟩': '|+⟩', '|↖⟩': '|-⟩' };
         return map[compact] || symbol;
+    }
+    function setCnotStateWithSubscript(target, symbol, subscript) {
+        if (!target) return;
+        target.innerHTML = `${displayStateSymbol(symbol, true)}<sub>${subscript}</sub>`;
     }
     function basisEyeSrc(basis) { return basis === 'Z' ? 'pictures/b_eyez.svg' : 'pictures/b_eyex.svg'; }
     function basisEyeSrcFromPolarizer(src) {
@@ -1197,7 +1202,8 @@
         const bobBasis = currentSettings.bob.basis;
         const isSameBasis = stateData.basis === bobBasis;
 
-        aliceState.innerText = stateData.intended;
+        setCnotStateWithSubscript(aliceState, stateData.intended, 'A');
+        setCnotStateWithSubscript(document.getElementById('cnot-eve-state'), '|0⟩', 'E');
         operationNode.innerHTML = `${stateData.label}<sub>AE</sub>`;
         operationNode.dataset.cnotLatex = stateData.latex;
         bobMeasure.src = basisEyeSrc(bobBasis);
@@ -1210,7 +1216,7 @@
             branchDown.style.display = 'none';
             branchSingle.style.display = '';
             topNode.style.top = '38%';
-            topCircle.innerText = stateData.intended;
+            setCnotStateWithSubscript(topCircle, stateData.intended, 'B');
             topCircle.className = 'state-circle state-blue';
             setCnotProbability(topProb, 1, 1, 'blue');
             bottomNode.style.display = 'none';
@@ -1228,8 +1234,8 @@
             else outcomes = stateData.compact === '|↖⟩' ? ['|-⟩', '|+⟩'] : ['|+⟩', '|-⟩'];
             const topError = isSameBasis && outcomes[0] !== stateData.intended;
             const bottomError = isSameBasis && outcomes[1] !== stateData.intended;
-            topCircle.innerText = outcomes[0];
-            bottomCircle.innerText = outcomes[1];
+            setCnotStateWithSubscript(topCircle, outcomes[0], 'B');
+            setCnotStateWithSubscript(bottomCircle, outcomes[1], 'B');
             const topTone = !isSameBasis ? 'gray' : (topError ? 'red' : 'blue');
             const bottomTone = !isSameBasis ? 'gray' : (bottomError ? 'red' : 'blue');
             topCircle.className = `state-circle state-${topTone}`;

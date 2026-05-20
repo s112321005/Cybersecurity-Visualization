@@ -178,6 +178,7 @@
         .cnot-gate-plus::after { width: 6px; height: 54px; }
         .state-circle.state-blue { background: var(--bob-blue); color: #fff; border-color: var(--bob-blue); }
         .state-circle.state-red { background: var(--eve-red); color: #fff; border-color: var(--eve-red); }
+        .state-circle sub, .eve-state-circle sub { font-size: 0.55em; line-height: 0; margin-left: 1px; transform: translateY(13px); }
     </style>
     <script>window.MathJax = { options: { enableMenu: false } };</script>
     <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
@@ -494,17 +495,17 @@
                         <line id="cnot-branch-down" data-prob="50%" x1="83%" y1="38%" x2="90%" y2="49%" stroke="#333" stroke-width="3" marker-end="url(#arrow-b92-cnot)" />
                         <line id="cnot-branch-single" data-prob="100%" x1="83%" y1="38%" x2="90%" y2="38%" stroke="#333" stroke-width="3" marker-end="url(#arrow-b92-cnot)" style="display:none;" />
                     </svg>
-                    <div class="node" style="left: 9%; top: 38%;"><div class="state-circle" id="cnot-alice-state">|+⟩</div></div>
-                    <div class="node" style="left: 9%; top: 75%;"><div class="eve-state-circle" id="cnot-eve-state">|0⟩</div></div>
+                    <div class="node" style="left: 9%; top: 38%;"><div class="state-circle" id="cnot-alice-state">|+⟩<sub>A</sub></div></div>
+                    <div class="node" style="left: 9%; top: 75%;"><div class="eve-state-circle" id="cnot-eve-state">|0⟩<sub>E</sub></div></div>
                     <div class="node" style="left: 43%; top: 38%;"><div class="cnot-gate-dot"></div></div>
                     <div class="node" style="left: 43%; top: 75%;"><div class="cnot-gate-plus"></div></div>
                     <div class="node" style="left: 58%; top: 56%;">
                         <div id="cnot-operation-node" class="cnot-op-node" onclick="showCnotCalculation()" title="Click to view CNOT calculation">|𝜙<sup>+</sup>⟩<sub>AE</sub></div>
                     </div>
                     <div class="node" style="left: 78%; top: 38%;"><img id="cnot-bob-measure" src="pictures/b_eyez.svg" class="polarizer-img basis-eye-img" alt="Bob Z basis measurement"></div>
-                    <div class="node" id="cnot-bob-top-node" style="left: 93%; top: 27%;"><div class="state-circle state-blue" id="cnot-bob-top">|+⟩</div></div>
+                    <div class="node" id="cnot-bob-top-node" style="left: 93%; top: 27%;"><div class="state-circle state-blue" id="cnot-bob-top">|+⟩<sub>B</sub></div></div>
                     <div class="prob-circle prob-fraction" id="cnot-prob-top" style="left: calc(93% + 38px); top: 27%;" data-prob-for="cnot-bob-top"><div class="fraction-num">1</div><div class="fraction-den">2</div></div>
-                    <div class="node" id="cnot-bob-bottom-node" style="left: 93%; top: 49%;"><div class="state-circle state-red" id="cnot-bob-bottom">|-⟩</div></div>
+                    <div class="node" id="cnot-bob-bottom-node" style="left: 93%; top: 49%;"><div class="state-circle state-red" id="cnot-bob-bottom">|-⟩<sub>B</sub></div></div>
                     <div class="prob-circle prob-fraction eve-error" id="cnot-prob-bottom" style="left: calc(93% + 38px); top: 49%;" data-prob-for="cnot-bob-bottom"><div class="fraction-num">1</div><div class="fraction-den">2</div></div>
                 </div>
             </div>
@@ -530,6 +531,10 @@
         const map = { '|→⟩': '|0⟩', '|↑⟩': '|1⟩', '|↗⟩': '|+⟩', '|↖⟩': '|-⟩' };
         const normalized = normalizeKetSymbol(symbol);
         return map[normalized] || symbol;
+    }
+    function setCnotStateWithSubscript(target, symbol, subscript) {
+        if (!target) return;
+        target.innerHTML = `${displayStateSymbol(symbol, true)}<sub>${subscript}</sub>`;
     }
     function setStateTextById(id, symbol, forceBasisMode = false) { const target = document.getElementById(id); if (target) target.innerText = displayStateSymbol(symbol, forceBasisMode); }
     function setStateTextInSelector(selector, symbol, forceBasisMode = false) { const target = document.querySelector(selector); if (target) target.innerText = displayStateSymbol(symbol, forceBasisMode); }
@@ -1494,7 +1499,7 @@
 
     function setCnotStateCircle(circle, symbol, isError = false, isInactive = false) {
         if (!circle) return;
-        circle.innerText = displayStateSymbol(symbol, true);
+        setCnotStateWithSubscript(circle, symbol, 'B');
         circle.classList.remove('state-blue', 'state-red', 'eve-error', 'inactive');
         if (isInactive) circle.classList.add('inactive');
         else circle.classList.add(isError ? 'state-red' : 'state-blue');
@@ -1539,7 +1544,8 @@
         const bobBasis = currentSettings.bob.basis;
         const isSameBasis = aliceBasis === bobBasis;
 
-        aliceState.innerText = displayStateSymbol(stateSymbol, true);
+        setCnotStateWithSubscript(aliceState, stateSymbol, 'A');
+        setCnotStateWithSubscript(document.getElementById('cnot-eve-state'), '|0⟩', 'E');
         operationNode.innerHTML = `${stateData.operationLabel}<sub>AE</sub>`;
         operationNode.dataset.cnotLatex = stateData.calculationLatex;
         if (bobMeasure) {
