@@ -75,19 +75,39 @@
         .pill-radio { display: inline-block; position: relative; }
         .pill-radio input { display: none; }
         .pill-radio span { display: inline-flex; padding: 4px 12px; border: 2px solid var(--primary-blue); border-radius: 20px; color: var(--primary-blue); font-weight: bold; font-size: 14px; cursor: pointer; background-color: white; text-align: center; min-width: 20px; justify-content: center; transition: all 0.3s ease; white-space: nowrap; }
+        .basis-options-row { display: flex; gap: 10px; width: 100%; align-items: stretch; flex-wrap: nowrap; }
+        .pill-radio.basis-choice { flex: 0 0 92px; min-width: 0; display: block; }
+        .pill-radio .basis-pill { width: 100%; height: 86px; min-width: 0; min-height: 0; padding: 10px 6px !important; border: 2px solid #e2e8f0; border-radius: 12px; color: #64748b; background: #ffffff; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; line-height: 1; box-sizing: border-box; text-align: center; box-shadow: none; }
+        .basis-icon-wrapper { width: 56px; height: 56px; display: flex; align-items: center; justify-content: center; transition: transform 0.25s ease; }
+        .basis-letter-icon { color: #94a3b8; font-size: 40px; font-weight: 1000; line-height: 1; }
+        .basis-text-main { display: none; }
+        .basis-text-sub { font-size: 13px; font-weight: 800; color: #94a3b8; line-height: 1.15; white-space: normal; }
+        .basis-polarizer-img { width: 56px; height: 56px; object-fit: contain; display: block; pointer-events: none; filter: grayscale(100%) opacity(0.72); transition: filter 0.25s ease, transform 0.25s ease; }
+        .pill-radio input:checked + .basis-pill { background-color: #ffffff !important; box-shadow: 0 6px 14px rgba(29,78,216,0.1); }
+        .pill-radio input:checked + .basis-pill .basis-icon-wrapper { transform: scale(1.05); }
+        .pill-radio input:checked + .basis-pill .basis-letter-icon { color: currentColor; }
+        .pill-radio input:checked + .basis-pill .basis-polarizer-img { filter: none; }
+        .pill-radio input:checked + .basis-pill .basis-text-main { color: currentColor; }
+        .pill-radio input:checked + .basis-pill .basis-text-sub { color: #6b8fd1; }
         .pill-radio input:checked + span { background-color: var(--primary-blue); color: white; border-color: var(--primary-blue); }
         .disabled .pill-radio span { border-color: #b0b0b0 !important; color: #b0b0b0 !important; cursor: not-allowed; background-color: white !important; }
         #alice-col .name-tag { background-color: var(--alice-blue) !important; color: #ffffff !important; }
         #alice-col .click-toggle { --toggle-active: var(--alice-blue); }
         #alice-col .control-panel:not(.disabled) { border-color: var(--alice-blue) !important; }
         #alice-col .control-panel:not(.disabled) .pill-radio span { border-color: var(--alice-blue) !important; color: var(--alice-blue) !important; }
+        #alice-col .control-panel:not(.disabled) .pill-radio .basis-pill { border-color: #e2e8f0 !important; color: #64748b !important; }
         #alice-col .control-panel:not(.disabled) .pill-radio input[type="radio"]:checked + span { background-color: var(--alice-blue) !important; border-color: var(--alice-blue) !important; color: #ffffff !important; }
+        #alice-col .control-panel:not(.disabled) .pill-radio input[type="radio"]:checked + .basis-pill { background-color: #ffffff !important; border-color: var(--alice-blue) !important; color: var(--alice-blue) !important; }
         #alice-col .control-panel:not(.disabled) .setting-title::before { background-color: var(--alice-blue); }        #bob-col .name-tag { background-color: var(--bob-blue) !important; }
         #bob-col .click-toggle { --toggle-active: var(--bob-blue); }
         #bob-col .control-panel:not(.disabled) { border-color: var(--bob-blue) !important; }
         #bob-col .control-panel:not(.disabled) .pill-radio span { border-color: var(--bob-blue) !important; color: var(--bob-blue) !important; }
+        #bob-col .control-panel:not(.disabled) .pill-radio .basis-pill { border-color: #e2e8f0 !important; color: #64748b !important; }
         #bob-col .control-panel:not(.disabled) .pill-radio input:checked + span { background-color: var(--bob-blue) !important; color: white !important; }
+        #bob-col .control-panel:not(.disabled) .pill-radio input:checked + .basis-pill { background-color: #ffffff !important; border-color: var(--bob-blue) !important; color: var(--bob-blue) !important; }
         #bob-col .control-panel:not(.disabled) .setting-title::before { background-color: var(--bob-blue); }
+        #alice-col .control-panel:not(.disabled) .pill-radio .basis-pill > span,
+        #bob-col .control-panel:not(.disabled) .pill-radio .basis-pill > span { border: 0 !important; padding: 0 !important; min-width: 0 !important; background: transparent !important; color: inherit !important; box-shadow: none !important; }
         .theme-red .click-toggle { --toggle-active: var(--eve-red); }
         .theme-red .control-panel:not(.disabled) { border-color: var(--eve-red); }
         .theme-red .pill-radio span { border-color: var(--eve-red); color: var(--eve-red); }
@@ -100,6 +120,15 @@
         .polarizer-img.eve-basis-eye-img { border-color: var(--eve-red); }
         .selection-box .state-btn { border-color: var(--alice-blue); color: var(--alice-blue); }
         .option-row.active .state-btn { background-color: var(--alice-blue); border-color: var(--alice-blue); color: #ffffff; }
+        #b92-options .option-row,
+        #b92-eve-options .option-row,
+        #b92-cnot-options .option-row { justify-content: center; gap: 8px; }
+        #b92-options .option-row .state-btn,
+        #b92-eve-options .option-row .state-btn,
+        #b92-cnot-options .option-row .state-btn { width: 58px; min-width: 58px; height: 42px; }
+        #b92-options .option-row .arrow-icon,
+        #b92-eve-options .option-row .arrow-icon,
+        #b92-cnot-options .option-row .arrow-icon { color: var(--alice-blue); font-size: 18px; font-weight: 900; }
         .state-circle { background: var(--alice-blue); color: #ffffff; }
         #b92-symbol-bobsame,
         .state-circle:has(#b92-symbol-bobunsame-1),
@@ -211,9 +240,9 @@
                         <label class="pill-radio"><input type="radio" name="a_particle" value="single" checked><span>single</span></label>
                     </div>
                     <div class="setting-title">Basis Selection</div>
-                    <div class="flex-row">
-                        <label class="pill-radio"><input type="radio" name="a_basis" value="X" checked><span>X</span></label>
-                        <label class="pill-radio"><input type="radio" name="a_basis" value="Z"><span>Z</span></label>
+                    <div class="flex-row basis-options-row">
+                        <label class="pill-radio"><input type="radio" name="a_basis" value="X" checked><span class="basis-pill"><span>X</span></span></label>
+                        <label class="pill-radio"><input type="radio" name="a_basis" value="Z"><span class="basis-pill"><span>Z</span></span></label>
                     </div>
                 </div>
             </div>
@@ -234,9 +263,9 @@
                         <label class="pill-radio"><input type="radio" name="b_particle" value="single" checked><span>single</span></label>
                     </div>
                     <div class="setting-title">Basis Selection</div>
-                    <div class="flex-row">
-                        <label class="pill-radio"><input type="radio" name="b_basis" value="X" checked><span>X</span></label>
-                        <label class="pill-radio"><input type="radio" name="b_basis" value="Z"><span>Z</span></label>
+                    <div class="flex-row basis-options-row">
+                        <label class="pill-radio"><input type="radio" name="b_basis" value="X" checked><span class="basis-pill"><span>X</span></span></label>
+                        <label class="pill-radio"><input type="radio" name="b_basis" value="Z"><span class="basis-pill"><span>Z</span></span></label>
                     </div>
                 </div>
             </div>
@@ -275,10 +304,10 @@
                 <div class="selection-box" id="b92-options">
                     <h4>Alice Selects State</h4>
                     <div class="option-row basis-z" data-state-symbol="|→⟩" data-basis-type="rectilinear" onclick="selectStateB92(this, '|→⟩', 'rectilinear')">
-                        <div class="state-btn option-state">|→⟩</div>
+                        <div class="state-btn bit-state">|0⟩</div><div class="arrow-icon">➔</div><div class="state-btn option-state">|→⟩</div>
                     </div>
                     <div class="option-row basis-x" data-state-symbol="|↗⟩" data-basis-type="diagonal" onclick="selectStateB92(this, '|↗⟩', 'diagonal')">
-                        <div class="state-btn option-state">|↗⟩</div>
+                        <div class="state-btn bit-state">|1⟩</div><div class="arrow-icon">➔</div><div class="state-btn option-state">|↗⟩</div>
                     </div>
                 </div>                <div class="settings-panel" style="margin-top: 20px;">
                     <h4>Current Settings</h4>
@@ -352,10 +381,10 @@
                 <div class="selection-box" id="b92-eve-options">
                     <h4>Alice Selects State</h4>
                     <div class="option-row basis-z" data-state-symbol="|→⟩" data-basis-type="rectilinear" onclick="selectStateB92Eve(this, '|→⟩', 'rectilinear')">
-                        <div class="state-btn option-state">|→⟩</div>
+                        <div class="state-btn bit-state">|0⟩</div><div class="arrow-icon">➔</div><div class="state-btn option-state">|→⟩</div>
                     </div>
                     <div class="option-row basis-x" data-state-symbol="|↗⟩" data-basis-type="diagonal" onclick="selectStateB92Eve(this, '|↗⟩', 'diagonal')">
-                        <div class="state-btn option-state">|↗⟩</div>
+                        <div class="state-btn bit-state">|1⟩</div><div class="arrow-icon">➔</div><div class="state-btn option-state">|↗⟩</div>
                     </div>
                 </div>                <div class="settings-panel" style="margin-top: 20px;">
                     <h4>Current Settings</h4>
@@ -459,10 +488,10 @@
                 <div class="selection-box" id="b92-cnot-options">
                     <h4>Alice Selects State</h4>
                     <div class="option-row basis-z" data-state-symbol="|→⟩" data-basis-type="rectilinear" onclick="selectStateB92Cnot(this, '|→⟩', 'rectilinear')">
-                        <div class="state-btn option-state">|0⟩</div>
+                        <div class="state-btn bit-state">|0⟩</div><div class="arrow-icon">➔</div><div class="state-btn option-state">|0⟩</div>
                     </div>
                     <div class="option-row basis-x" data-state-symbol="|↗⟩" data-basis-type="diagonal" onclick="selectStateB92Cnot(this, '|↗⟩', 'diagonal')">
-                        <div class="state-btn option-state">|+⟩</div>
+                        <div class="state-btn bit-state">|1⟩</div><div class="arrow-icon">➔</div><div class="state-btn option-state">|+⟩</div>
                     </div>
                 </div>
                 <div class="settings-panel" style="margin-top: 20px;">
@@ -551,6 +580,28 @@
             const forceBasisMode = row.closest('#b92-cnot-options') !== null;
             stateButton.innerText = displayStateSymbol(row.dataset.stateSymbol, forceBasisMode);
         });
+        renderBasisChoicePills();
+    }
+    function renderBasisChoicePills() {
+        const isBasisMode = representationMode === 'basis' || isEveCnot;
+        const basisChoices = [
+            { selector: 'input[name="a_basis"][value="X"]', label: 'X', name: 'X Basis', states: '(+, -)', image: 'pictures/a_diagonal.svg', alt: 'Alice X basis diagonal polarizer' },
+            { selector: 'input[name="a_basis"][value="Z"]', label: 'Z', name: 'Z Basis', states: '(0, 1)', image: 'pictures/a_vertical.svg', alt: 'Alice Z basis vertical polarizer' },
+            { selector: 'input[name="b_basis"][value="X"]', label: 'X', name: 'X Basis', states: '(+, -)', image: 'pictures/b_diagonal.svg', alt: 'Bob X basis diagonal polarizer' },
+            { selector: 'input[name="b_basis"][value="Z"]', label: 'Z', name: 'Z Basis', states: '(0, 1)', image: 'pictures/b_vertical.svg', alt: 'Bob Z basis vertical polarizer' }
+        ];
+        basisChoices.forEach(choice => {
+            const input = document.querySelector(choice.selector);
+            const pill = input ? input.nextElementSibling : null;
+            if (!pill) return;
+            if (pill.parentElement) pill.parentElement.classList.add('basis-choice');
+            pill.classList.add('basis-pill');
+            pill.classList.toggle('basis-image-pill', !isBasisMode);
+            const visual = isBasisMode
+                ? `<div class="basis-icon-wrapper basis-letter-icon">${choice.label}</div>`
+                : `<div class="basis-icon-wrapper"><img class="basis-polarizer-img" src="${choice.image}" alt="${choice.alt}"></div>`;
+            pill.innerHTML = isBasisMode ? `${visual}<div class="basis-text-sub">${choice.states}</div>` : visual;
+        });
     }
     function basisEyeSrc(basis, role = 'bob') {
         const prefix = role === 'eve' ? 'e' : 'b';
@@ -600,6 +651,7 @@
         const shouldLockToBasis = !!(eveToggle && eveToggle.checked && getDraftEveAttack() === 'CNOT');
         if (shouldLockToBasis) { representationMode = 'basis'; toggle.checked = false; }
         toggle.disabled = shouldLockToBasis;
+        renderBasisChoicePills();
     }
     function handleRepresentationModeToggle(isPolarizationMode) {
         const eveToggle = document.getElementById('eve-status-toggle');
@@ -1332,7 +1384,7 @@
             else node.classList.remove('inactive');
         }
 
-        function configureLowerBranchGroup(group, topSrc, bottomSrc, upperSymbol, lowerSymbol) {
+        function configureLowerBranchGroup(group, topSrc, bottomSrc, upperSymbol, lowerSymbol, topActive = false, bottomActive = true) {
             const topPol = document.querySelector(group.polarizers[0]);
             const bottomPol = document.querySelector(group.polarizers[1]);
             const res1 = document.querySelector(group.results[0]);
@@ -1341,8 +1393,8 @@
             const line1 = document.querySelector(group.lines[0]);
             const line2 = document.querySelector(group.lines[1]);
             const line3 = document.querySelector(group.lines[2]);
-            if (topPol) setPolarizerImageFromSrc(topPol, topSrc, false);
-            if (bottomPol) setPolarizerImageFromSrc(bottomPol, bottomSrc, true);
+            if (topPol) setPolarizerImageFromSrc(topPol, topSrc, topActive);
+            if (bottomPol) setPolarizerImageFromSrc(bottomPol, bottomSrc, bottomActive);
             if (line1) line1.classList.add('line-inactive');
             if (line2) line2.classList.remove('line-inactive');
             if (line3) line3.classList.remove('line-inactive');
@@ -1355,11 +1407,11 @@
 
         if (isAliceZ) {
             bobGroups.filter(group => group.eveState === '|→⟩').forEach(group => {
-                configureLowerBranchGroup(group, bobPolarizerName('vertical'), bobPolarizerName('diagonal'), '|↖⟩', '|↗⟩');
+                configureLowerBranchGroup(group, bobPolarizerName('vertical'), bobPolarizerName('diagonal'), '|↖⟩', '|↗⟩', isBobZ, !isBobZ);
             });
         } else {
             bobGroups.filter(group => group.eveState === '|↗⟩').forEach(group => {
-                configureLowerBranchGroup(group, bobPolarizerName('diagonal'), bobPolarizerName('vertical'), '| ↑ ⟩', '|→⟩');
+                configureLowerBranchGroup(group, bobPolarizerName('diagonal'), bobPolarizerName('vertical'), '| ↑ ⟩', '|→⟩', !isBobZ, isBobZ);
             });
         }
 
@@ -1375,8 +1427,8 @@
             const line9 = document.querySelector(bottomGroup.lines[2]);
 
             if (isAliceZ) {
-                if (topPol) setPolarizerImageFromSrc(topPol, bobPolarizerName('vertical'), true);
-                if (bottomPol) setPolarizerImageFromSrc(bottomPol, bobPolarizerName('diagonal'), false);
+                if (topPol) setPolarizerImageFromSrc(topPol, bobPolarizerName('vertical'), isBobZ);
+                if (bottomPol) setPolarizerImageFromSrc(bottomPol, bobPolarizerName('diagonal'), !isBobZ);
                 if (line7) line7.classList.remove('line-inactive');
                 if (line8) line8.classList.remove('line-inactive');
                 if (line9) line9.classList.add('line-inactive');
@@ -1387,8 +1439,8 @@
                 if (res8) setInactiveState(res8, false);
                 if (res9) setInactiveState(res9, true);
             } else {
-                if (topPol) setPolarizerImageFromSrc(topPol, bobPolarizerName('diagonal'), true);
-                if (bottomPol) setPolarizerImageFromSrc(bottomPol, bobPolarizerName('vertical'), false);
+                if (topPol) setPolarizerImageFromSrc(topPol, bobPolarizerName('diagonal'), !isBobZ);
+                if (bottomPol) setPolarizerImageFromSrc(bottomPol, bobPolarizerName('vertical'), isBobZ);
                 if (line7) line7.classList.remove('line-inactive');
                 if (line8) line8.classList.remove('line-inactive');
                 if (line9) line9.classList.add('line-inactive');
@@ -1409,7 +1461,13 @@
             }
         }
 
-        const targetBasisKeyword = isBobZ ? 'vertical' : 'diagonal';
+        const targetBasisKeyword = isBobZ ? 'Z' : 'X';
+        function getRenderedPolarizerBasis(img) {
+            const src = img ? (img.getAttribute('src') || img.src || '') : '';
+            if (src.includes('eyez') || src.includes('vertical')) return 'Z';
+            if (src.includes('eyex') || src.includes('diagonal')) return 'X';
+            return '';
+        }
         const eveToBobLines = Array.from(document.querySelectorAll('#view-b92-eve-resend .eve-bob-line')).slice(0, 6);
         const polarizerLineMap = [
             { polarizer: '#view-b92-eve-resend #bob-pol-1', eveLineIndex: 0, resultLines: ['#view-b92-eve-resend #bob-result-line-1'] },
@@ -1422,7 +1480,7 @@
 
         polarizerLineMap.forEach(({ polarizer, eveLineIndex, resultLines }) => {
             const polarizerNode = document.querySelector(polarizer);
-            const isBobChosenPath = !!(polarizerNode && polarizerNode.src.includes(targetBasisKeyword));
+            const isBobChosenPath = getRenderedPolarizerBasis(polarizerNode) === targetBasisKeyword;
             setLineActiveByBobPath(eveToBobLines[eveLineIndex], isBobChosenPath);
             resultLines.forEach(lineSelector => {
                 const lineNode = document.querySelector(lineSelector);
@@ -1444,6 +1502,11 @@
                 node.classList.add('eve-error');
             }
         });
+        const bottomError = document.getElementById('bob-final-8');
+        if (bottomError) {
+            bottomError.classList.add('eve-error');
+            bottomError.classList.toggle('inactive', !isBobBasisSameAsAlice);
+        }
 
         syncProbabilityNodes('#view-b92-eve-resend');
         normalizeBasisModePolarizerImages();
@@ -1663,7 +1726,7 @@
             const id = img.id || '';
             const src = img.getAttribute('src') || '';
             const isEve = id.startsWith('eve-') || /(?:red_|e_)/.test(src);
-            const isX = src.includes('diagonal') || src.includes('eyex') || id.includes('diff') || id === 'cnot-bob-measure' && currentSettings?.bob?.basis === 'X';
+            const isX = src.includes('eyex') || src.includes('diagonal') || (id === 'cnot-bob-measure' && currentSettings?.bob?.basis === 'X');
             const basis = isX ? 'X' : 'Z';
             img.src = basisEyeSrc(basis, isEve ? 'eve' : 'bob');
             img.classList.add('basis-eye-img');
