@@ -6,44 +6,54 @@
 <base href="https://s112321005.github.io/Cybersecurity-Visualization/">
 <title>Entanglement Swapping</title>
 <style>
-:root { --primary-blue: #549FD0; --deep-blue: #2f7eaf; --soft-blue: #eef8ff; --dark-text: #263746; --muted: #6b7c8f; --bg-color: #f8f9fa; --purple: #7b61ff; --orange: #f2a93b; --green: #27a36a; --border: #d8edf8; --shadow: 0 12px 30px rgba(44,62,80,0.10); }
+:root { --primary-blue: #549FD0; --deep-blue: #2f7eaf; --soft-blue: #eef8ff; --dark-text: #263746; --muted: #6b7c8f; --bg-gradient: linear-gradient(135deg,#E0F2FE 0%,#F5F3FF 50%,#ECFDF5 100%); --purple: #7b61ff; --orange: #f2a93b; --green: #27a36a; --border: #d8edf8; --shadow: 0 12px 30px rgba(44,62,80,0.10); }
 * { box-sizing: border-box; }
-body { margin: 0; min-height: 100vh; font-family: "Segoe UI", Arial, sans-serif; background: radial-gradient(circle at top, #e9f6ff 0, var(--bg-color) 46%); color: var(--dark-text); padding: 28px 16px 42px; }
-.header { width: min(1140px, 96vw); margin: 0 auto 18px; display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 16px; }
+body { margin: 0; min-height: 100vh; font-family: "Segoe UI", "Noto Sans TC", Arial, sans-serif; background: var(--bg-gradient); color: var(--dark-text); padding: 28px 16px 42px; }
+.header { width: min(1320px, 98vw); margin: 0 auto 18px; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 16px; }
 .header-left { display: flex; align-items: center; gap: 14px; }
 .btn-back { width: 40px; height: 40px; background: var(--primary-blue); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; text-decoration: none; border: none; box-shadow: 0 4px 12px rgba(84,159,208,0.28); transition: 0.2s; }
 .btn-back:hover { transform: scale(1.08); background: var(--deep-blue); }
 .page-title { border: 2px solid var(--primary-blue); background: white; color: #111827; padding: 10px 24px; border-radius: 12px; font-size: 19px; font-weight: 900; }
-.header-center { text-align: center; font-size: 25px; font-weight: 1000; letter-spacing: 0.2px; }
+.header-center { grid-column: 2; text-align: center; font-size: 25px; font-weight: 1000; letter-spacing: 0.2px; }
 .header-right { display: flex; gap: 10px; flex-wrap: wrap; justify-content: flex-end; }
 .nav-btn { border: 2px solid var(--primary-blue); background: white; color: var(--dark-text); padding: 10px 18px; border-radius: 999px; font-weight: 900; cursor: pointer; transition: 0.2s; }
 .nav-btn:hover { background: var(--primary-blue); color: white; transform: translateY(-1px); }
-.page { width: min(1140px, 96vw); margin: 0 auto; display: grid; gap: 16px; }
-.intro { display: block; }
+.page { width: min(1320px, 98vw); margin: 0 auto; display: grid; gap: 16px; }
+.workspace { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); grid-template-areas: "defs controls" "stage formula"; column-gap: 16px; row-gap: 0; align-items: stretch; }
+.intro { display: block; min-width: 0; }
+.workspace .intro { grid-area: defs; display: flex; }
 .panel { background: white; border: 2px solid var(--border); border-radius: 26px; box-shadow: var(--shadow); }
 .bell-grid { padding: 14px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
-.bell-card { border: 2px solid #e1f1f9; border-radius: 16px; padding: 12px 14px; background: #fbfdff; color: #334155; display: flex; align-items: center; gap: 7px; min-height: 72px; overflow: hidden; box-shadow: none; }
+.workspace .bell-grid { width: 100%; height: 100%; grid-template-columns: repeat(2, minmax(0, 1fr)); align-content: start; }
+.bell-card { border: 2px solid #e1f1f9; border-radius: 16px; padding: 8px 10px; background: #fbfdff; color: #334155; display: flex; align-items: center; gap: 5px; min-height: 54px; overflow: hidden; box-shadow: none; }
 .bell-name { font-size: 22px; font-weight: 1000; white-space: nowrap; }
-.bell-formula { font-size: 21px; white-space: nowrap; }
+.workspace .bell-name { font-size: 19px; }
+.bell-formula { font-size: 16px; white-space: nowrap; }
 .bell-equals { font-size: 22px; font-weight: 900; }
+.workspace .bell-equals { font-size: 18px; }
 .state-symbol { font-style: normal; }
 mjx-mi.mjx-i { display: inline-block; font-family: "Cambria Math", "Times New Roman", serif; font-style: normal; line-height: 1; }
 mjx-c { display: inline-block; font-style: normal; }
-mjx-c.mjx-c1D719.TEX-I::before { content: "ϕ"; }
-mjx-c.mjx-c1D713.TEX-I::before { content: "ψ"; }
-.controls { padding: 16px; display: grid; gap: 14px; }
+mjx-c.mjx-c1D719.TEX-I::before { content: "\1D719"; }
+mjx-c.mjx-c1D713.TEX-I::before { content: "\1D713"; }
+.controls { padding: 16px; display: grid; gap: 14px; min-width: 0; }
+.workspace .controls { grid-area: controls; }
 .control-top { display: grid; grid-template-columns: 1fr 1fr auto; gap: 12px; align-items: stretch; }
+.workspace .controls { padding: 10px; gap: 8px; }
+.workspace .control-top { grid-template-columns: 1fr 1fr auto; gap: 8px; }
 .control-block { border: 2px solid #e1f1f9; background: #fbfdff; border-radius: 22px; padding: 14px; display: grid; gap: 10px; align-content: start; }
+.workspace .control-block { padding: 8px 10px; gap: 6px; }
 .control-title { font-size: 12px; color: #466f88; font-weight: 1000; letter-spacing: 0.07em; text-transform: uppercase; }
 .option-row { display: flex; flex-wrap: wrap; gap: 8px; }
 .option-btn { border: 2px solid #d8edf8; background: #fff; color: #334155; border-radius: 999px; padding: 8px 12px; font-weight: 900; cursor: pointer; transition: 0.18s; min-height: 38px; }
+.workspace .option-btn { min-height: 32px; padding: 5px 9px; }
 .option-btn:hover { border-color: var(--primary-blue); background: var(--soft-blue); transform: translateY(-1px); }
 .option-btn.active { border-color: var(--primary-blue); background: var(--primary-blue); color: #fff; box-shadow: 0 7px 16px rgba(84,159,208,0.22); }
 .option-btn:disabled { opacity: 0.42; cursor: not-allowed; transform: none; }
 .bell-row .option-btn { font-family: "Cambria Math", "Times New Roman", serif; font-size: 16px; padding-inline: 13px; }
 .fixed-box { border: 2px solid #e2eef5; border-radius: 16px; background: white; color: #334155; padding: 10px 12px; min-height: 42px; display: flex; align-items: center; font-weight: 1000; font-family: "Cambria Math", "Times New Roman", serif; }
 .auto-row { display: grid; grid-template-columns: 1.4fr 1fr 1fr; gap: 10px; }
-.auto-box { border: 2px solid #e2eef5; border-radius: 18px; background: white; padding: 11px 13px; min-height: 58px; }
+.auto-box { border: 2px solid #e2eef5; border-radius: 18px; background: white; padding: 9px 12px; min-height: 50px; }
 .auto-label { display: block; font-size: 11px; color: #64748b; font-weight: 1000; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 4px; }
 .auto-value { display: block; color: #17202a; font-weight: 1000; font-family: "Cambria Math", "Times New Roman", serif; font-size: 16px; }
 .order-circles { display: flex; gap: 7px; flex-wrap: wrap; align-items: center; min-height: 32px; }
@@ -53,8 +63,9 @@ mjx-c.mjx-c1D713.TEX-I::before { content: "ψ"; }
 .order-circle.draggable:active { cursor: grabbing; }
 .order-circle.dragging { opacity: 0.45; transform: scale(0.94); }
 .primary-btn { align-self: center; border: none; background: var(--primary-blue); color: white; padding: 13px 24px; border-radius: 999px; font-weight: 1000; cursor: pointer; box-shadow: 0 8px 18px rgba(84,159,208,0.25); transition: 0.2s; white-space: nowrap; }
+.workspace .primary-btn { width: 100%; grid-column: 1 / -1; }
 .primary-btn:hover { background: var(--deep-blue); transform: translateY(-1px); }
-.stage { height: 1180px; border: 3px solid var(--primary-blue); position: relative; overflow: hidden; background: white; border-radius: 30px; box-shadow: var(--shadow); }
+.stage { grid-area: stage; height: 500px; border: 2px solid var(--border); position: relative; overflow: hidden; background: white; border-radius: 26px; box-shadow: var(--shadow); min-width: 0; }
 .stage-bg { position: absolute; inset: 0; background: radial-gradient(circle at 50% 28%, rgba(84,159,208,0.16), transparent 28%), linear-gradient(180deg, #fff, #f9fcff); }
 .result-strip { position: absolute; left: 26px; right: 26px; top: 22px; min-height: 158px; border: 2px solid var(--border); background: rgba(255,255,255,0.96); border-radius: 22px; padding: 14px 18px; display: grid; grid-template-columns: 1fr; gap: 12px; align-items: stretch; z-index: 30; box-shadow: 0 8px 20px rgba(44,62,80,0.08); }
 .stage-actions { display: flex; gap: 12px; align-items: center; justify-content: center; flex-wrap: wrap; }
@@ -106,34 +117,56 @@ svg { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: n
 .qubit.pair .qubit-ball { border-color: var(--purple); box-shadow: 0 0 0 7px rgba(123,97,255,0.12), 0 12px 24px rgba(44,62,80,0.13); }
 .qubit.measure .qubit-ball { border-color: var(--orange); box-shadow: 0 0 0 7px rgba(242,169,59,0.16), 0 12px 24px rgba(44,62,80,0.13); }
 .qubit.final .qubit-ball { border-color: var(--green); box-shadow: 0 0 0 7px rgba(39,163,106,0.15), 0 12px 24px rgba(44,62,80,0.13); }
-.measure-box { position: absolute; left: 50%; top: 308px; transform: translateX(-50%) scale(0.92); width: 172px; height: 90px; border: 2.5px solid #f2bd65; background: #fff7e7; border-radius: 24px; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 6px; color: #8a5a07; font-weight: 1000; z-index: 10; opacity: 0; transition: 0.45s; }
+.measure-box { position: absolute; left: 50%; top: 358px; transform: translateX(-50%) scale(0.92); width: 172px; height: 90px; border: 2.5px solid #f2bd65; background: #fff7e7; border-radius: 24px; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 6px; color: #8a5a07; font-weight: 1000; z-index: 10; opacity: 0; transition: 0.45s; }
 .measure-box.show { opacity: 1; transform: translateX(-50%) scale(1); }
 .measure-symbol { width: 40px; height: 40px; border-radius: 50%; background: white; border: 2px solid #f2bd65; display: flex; align-items: center; justify-content: center; font-size: 22px; animation: pulseMeasure 1.1s infinite; }
 @keyframes pulseMeasure { 0% { box-shadow: 0 0 0 0 rgba(242,169,59,0.32); } 70% { box-shadow: 0 0 0 12px rgba(242,169,59,0); } 100% { box-shadow: 0 0 0 0 rgba(242,169,59,0); } }
-.calc-area { position: absolute; left: 26px; right: 78px; top: 420px; bottom: 142px; overflow-y: hidden; padding-right: 8px; z-index: 24; scroll-snap-type: y mandatory; scroll-behavior: smooth; scrollbar-width: none; }
+.formula-panel { grid-area: formula; padding: 14px; min-width: 0; height: 500px; max-height: 540px; display: grid; grid-template-columns: minmax(0, 1fr) 34px; grid-template-rows: minmax(0, 1fr) auto; gap: 12px; overflow: hidden; }
+.calc-area { position: static; overflow-y: auto; padding-right: 8px; z-index: 24; scroll-snap-type: y mandatory; scroll-behavior: smooth; scrollbar-width: none; min-height: 0; }
+.calc-area::after { content: ""; display: block; height: 420px; scroll-snap-align: none; }
 .calc-area::-webkit-scrollbar { display: none; }
-.calc-step-scroll { position: absolute; right: 28px; top: 420px; bottom: 142px; width: 34px; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; gap: 13px; z-index: 26; }
+.calc-step-scroll { position: static; width: 34px; min-height: 0; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; gap: 13px; z-index: 26; }
 .calc-track { width: 16px; height: 98%; border: 3px solid var(--deep-blue); border-radius: 22px; background: white; position: relative; overflow: hidden; box-shadow: 3px 3px 0 rgba(84,159,208,0.32); cursor: pointer; }
 .calc-thumb { position: absolute; left: 0; top: 0; width: 100%; height: 25%; background: var(--primary-blue); border-radius: 14px; transform: translateY(0); transition: top 0.28s cubic-bezier(0.25,0.8,0.25,1), height 0.28s cubic-bezier(0.25,0.8,0.25,1); }
-.calc-card { scroll-snap-align: start; scroll-margin-top: 8px; border: 1.8px solid #cfddea; background: #f3f5f8; border-radius: 18px; margin-bottom: 12px; padding: 14px 16px; transition: 0.28s; display: block; opacity: 1; transform: translateY(0); min-height: 150px; }
+.calc-card { scroll-snap-align: start; scroll-margin-top: 8px; border: 1.8px solid #cfddea; background: #f3f5f8; border-radius: 18px; margin-bottom: 12px; padding: 14px 16px; transition: 0.28s; display: block; opacity: 1; transform: translateY(0); min-height: 150px; cursor: pointer; }
+.calc-card:hover { border-color: var(--primary-blue); background: #f8fcff; }
 #card2 { min-height: 110px; padding: 12px 14px; }
-#card3 { min-height: 110px; padding: 12px 14px; }
+#card3 { min-height: 260px; padding: 12px 14px; }
 #card4 { min-height: 80px; padding: 12px 14px; }
 .calc-card.focus { border-color: var(--primary-blue); background: #eef8ff; box-shadow: 0 8px 18px rgba(84,159,208,0.16); }
 .calc-head { color: #0f52b4; font-size: 17px; font-weight: 1000; margin-bottom: 10px; }
 .calc-line { font-family: "Cambria Math", "Times New Roman", serif; color: #1f3f67; font-size: 18px; line-height: 1.62; margin: 4px 0; word-break: break-word; overflow-x: auto; }
 .calc-line.small { font-size: 17px; }
 .calc-line.indent { padding-left: 8px; }
+.bit-mark, .q-chip, .swap-token { --q-color: #64748b; color: var(--q-color); font-weight: 1000; }
+.q1 { --q-color: #3d7df2; }
+.q2 { --q-color: #e55d8b; }
+.q3 { --q-color: #f0a92d; }
+.q4 { --q-color: #23a9a5; }
+.bit-mark { display: inline-block; min-width: 0.62em; text-align: center; text-shadow: 0 0 10px color-mix(in srgb, var(--q-color) 28%, transparent); }
+.swap-flow { margin-top: 8px; border: 1.5px solid #dbeaf6; border-radius: 14px; background: #fff; padding: 10px; overflow: hidden; }
+.swap-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; align-items: center; }
+.swap-row-label { grid-column: 1 / -1; color: #64748b; font-family: "Segoe UI", Arial, sans-serif; font-size: 11px; font-weight: 1000; letter-spacing: 0.06em; text-transform: uppercase; }
+.q-chip, .swap-token { border: 2px solid color-mix(in srgb, var(--q-color) 45%, white); background: color-mix(in srgb, var(--q-color) 12%, white); border-radius: 999px; min-height: 30px; display: inline-flex; align-items: center; justify-content: center; font-family: "Segoe UI", Arial, sans-serif; font-size: 13px; font-weight: 1000; box-shadow: 0 4px 12px color-mix(in srgb, var(--q-color) 16%, transparent); }
+.swap-lane { position: relative; height: 58px; margin: 8px 0 4px; border-radius: 12px; background: linear-gradient(90deg, rgba(84,159,208,0.12), rgba(39,163,106,0.10)); }
+.swap-lane::before { content: ""; position: absolute; left: 9%; right: 9%; top: 50%; height: 2px; background: repeating-linear-gradient(90deg, #b9d7ea 0 10px, transparent 10px 16px); transform: translateY(-50%); }
+.swap-token { position: absolute; top: 50%; left: var(--from-left); width: 44px; transform: translate(-50%, -50%); animation: swapTokenMove 3.2s ease-in-out infinite; animation-delay: var(--delay); }
+.calc-card.focus .swap-token { animation-duration: 2.2s; }
+@keyframes swapTokenMove {
+  0%, 22% { left: var(--from-left); transform: translate(-50%, -50%) scale(1); }
+  45% { transform: translate(-50%, -76%) scale(1.08); }
+  72%, 100% { left: var(--to-left); transform: translate(-50%, -50%) scale(1); }
+}
 .math { font-family: "Cambria Math", "Times New Roman", serif; }
 .ket sub, .bell sub { font-size: 70%; vertical-align: -0.35em; }
 .sup { font-size: 70%; vertical-align: 0.55em; }
 .frac { display: inline-flex; flex-direction: column; align-items: center; justify-content: center; vertical-align: middle; font-size: 0.92em; line-height: 1; margin: 0 0.15em; }
 .frac .top { border-bottom: 1.8px solid currentColor; padding: 0 0.18em 0.08em; }
 .frac .bottom { padding: 0.08em 0.18em 0; }
-.all-results { position: absolute; left: 26px; right: 26px; bottom: 28px; min-height: 96px; border: 2px solid var(--border); border-radius: 24px; background: rgba(255,255,255,0.96); display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; padding: 12px; z-index: 25; opacity: 1; transform: translateY(0); pointer-events: auto; transition: 0.35s; }
+.all-results { grid-column: 1 / -1; min-height: 96px; border: 2px solid var(--border); border-radius: 24px; background: rgba(255,255,255,0.96); display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 7px; padding: 10px; z-index: 25; opacity: 1; transform: translateY(0); pointer-events: auto; transition: 0.35s; }
 .all-results.show { opacity: 1; transform: translateY(0); pointer-events: auto; }
-.result-card { border: 1.5px solid #e3f1f9; border-radius: 17px; background: #fff; padding: 10px; display: grid; gap: 5px; }
-.result-card .r-label, .result-card .r-value { font-family: "Cambria Math", "Times New Roman", serif; color: #17202a; font-size: 16px; font-weight: 1000; letter-spacing: 0; text-transform: none; display: inline-flex; align-items: center; gap: 3px; flex-wrap: wrap; }
+.result-card { border: 1.5px solid #e3f1f9; border-radius: 14px; background: #fff; padding: 8px; display: grid; gap: 5px; min-width: 0; }
+.result-card .r-label, .result-card .r-value { font-family: "Cambria Math", "Times New Roman", serif; color: #17202a; font-size: 14px; font-weight: 1000; letter-spacing: 0; text-transform: none; display: inline-flex; align-items: center; gap: 3px; flex-wrap: wrap; min-width: 0; }
 .progress { border: 0; border-radius: 18px; background: transparent; display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; padding: 0; }
 .step-chip { border: 1.5px solid #e3f1f9; border-radius: 17px; background: white; padding: 10px; transition: 0.25s; text-align: left; font-family: inherit; }
 .step-chip.active { background: var(--soft-blue); border-color: var(--primary-blue); transform: translateY(-3px); }
@@ -143,23 +176,24 @@ svg { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: n
 .step-name { display: block; font-size: 13px; font-weight: 1000; color: #17202a; }
 .step-text { display: block; margin-top: 4px; font-size: 12px; color: var(--muted); line-height: 1.25; }
 @media (max-width: 1100px) {
-.control-top { grid-template-columns: 1fr 1fr; }
+.workspace { grid-template-columns: 1fr; }
+.workspace { grid-template-areas: "defs" "controls" "stage" "formula"; }
+.workspace .control-top { grid-template-columns: 1fr 1fr; }
 .auto-row { grid-template-columns: repeat(2, 1fr); }
-.bell-grid { grid-template-columns: repeat(2, 1fr); }
+.workspace .bell-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.all-results { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 @media (max-width: 760px) {
 body { padding: 18px 10px 34px; }
 .header { grid-template-columns: 1fr; justify-items: center; }
 .header-right { justify-content: center; }
-.intro { grid-template-columns: 1fr; }
-.control-top { grid-template-columns: 1fr; }
+.workspace .control-top { grid-template-columns: 1fr; }
 .auto-row { grid-template-columns: 1fr; }
-.stage { height: 1540px; }
-.calc-area { top: 620px; right: 66px; bottom: 250px; overflow-y: hidden; }
-.calc-step-scroll { top: 620px; bottom: 250px; right: 24px; }
+.stage { height: 720px; }
+.formula-panel { height: 720px; max-height: 720px; }
 .all-results { grid-template-columns: 1fr 1fr; bottom: 26px; }
 .progress { grid-template-columns: 1fr 1fr; }
-.bell-grid { grid-template-columns: 1fr; }
+.workspace .bell-grid { grid-template-columns: 1fr; }
 .calc-line { font-size: 16px; }
 }
 </style>
@@ -177,14 +211,7 @@ body { padding: 18px 10px 34px; }
 </header>
 
 <main class="page">
-<section class="intro">
-<div class="panel bell-grid">
-<div class="bell-card"><span class="bell-name math">|<mjx-mi class="mjx-i"><mjx-c class="mjx-c1D719 TEX-I"></mjx-c></mjx-mi><span class="sup">+</span>⟩</span><span class="bell-equals">=</span><span class="math"><span class="frac"><span class="top">1</span><span class="bottom">√2</span></span></span><span class="bell-formula math">(|00⟩ + |11⟩)<sub>12</sub></span></div>
-<div class="bell-card"><span class="bell-name math">|<mjx-mi class="mjx-i"><mjx-c class="mjx-c1D719 TEX-I"></mjx-c></mjx-mi><span class="sup">−</span>⟩</span><span class="bell-equals">=</span><span class="math"><span class="frac"><span class="top">1</span><span class="bottom">√2</span></span></span><span class="bell-formula math">(|00⟩ − |11⟩)<sub>12</sub></span></div>
-<div class="bell-card"><span class="bell-name math">|<mjx-mi class="mjx-i"><mjx-c class="mjx-c1D713 TEX-I"></mjx-c></mjx-mi><span class="sup">+</span>⟩</span><span class="bell-equals">=</span><span class="math"><span class="frac"><span class="top">1</span><span class="bottom">√2</span></span></span><span class="bell-formula math">(|01⟩ + |10⟩)<sub>12</sub></span></div>
-<div class="bell-card"><span class="bell-name math">|<mjx-mi class="mjx-i"><mjx-c class="mjx-c1D713 TEX-I"></mjx-c></mjx-mi><span class="sup">−</span>⟩</span><span class="bell-equals">=</span><span class="math"><span class="frac"><span class="top">1</span><span class="bottom">√2</span></span></span><span class="bell-formula math">(|01⟩ − |10⟩)<sub>12</sub></span></div>
-</div>
-</section>
+<section class="workspace">
 
 <section class="panel controls">
 <div class="control-top">
@@ -262,6 +289,9 @@ body { padding: 18px 10px 34px; }
 <div class="qubit" id="q3"><div class="qubit-ball"><div class="qubit-core">3</div></div></div>
 <div class="qubit" id="q4"><div class="qubit-ball"><div class="qubit-core">4</div></div></div>
 
+</section>
+
+<section class="panel formula-panel">
 <div class="calc-area" id="calcArea">
 <div class="calc-card" id="card1">
 <div class="calc-head">1. Bell state to computational basis</div>
@@ -298,6 +328,17 @@ body { padding: 18px 10px 34px; }
 <div class="result-card"><span class="r-label">q<sub>2</sub>-q<sub>3</sub> = |<mjx-mi class="mjx-i"><mjx-c class="mjx-c1D713 TEX-I"></mjx-c></mjx-mi>⁺⟩<sub>23</sub></span><span class="r-value" id="resPsiPlus"><span class="order-circle result-order-circle">1</span><span class="order-circle result-order-circle">4</span> = ?</span></div>
 <div class="result-card"><span class="r-label">q<sub>2</sub>-q<sub>3</sub> = |<mjx-mi class="mjx-i"><mjx-c class="mjx-c1D713 TEX-I"></mjx-c></mjx-mi>⁻⟩<sub>23</sub></span><span class="r-value" id="resPsiMinus"><span class="order-circle result-order-circle">1</span><span class="order-circle result-order-circle">4</span> = ?</span></div>
 </div>
+
+</section>
+
+<section class="intro">
+<div class="panel bell-grid">
+<div class="bell-card"><span class="bell-name math">|<mjx-mi class="mjx-i"><mjx-c class="mjx-c1D719 TEX-I"></mjx-c></mjx-mi><span class="sup">+</span>⟩</span><span class="bell-equals">=</span><span class="math"><span class="frac"><span class="top">1</span><span class="bottom">√2</span></span></span><span class="bell-formula math">(|00⟩ + |11⟩)<sub>12</sub></span></div>
+<div class="bell-card"><span class="bell-name math">|<mjx-mi class="mjx-i"><mjx-c class="mjx-c1D719 TEX-I"></mjx-c></mjx-mi><span class="sup">−</span>⟩</span><span class="bell-equals">=</span><span class="math"><span class="frac"><span class="top">1</span><span class="bottom">√2</span></span></span><span class="bell-formula math">(|00⟩ − |11⟩)<sub>12</sub></span></div>
+<div class="bell-card"><span class="bell-name math">|<mjx-mi class="mjx-i"><mjx-c class="mjx-c1D713 TEX-I"></mjx-c></mjx-mi><span class="sup">+</span>⟩</span><span class="bell-equals">=</span><span class="math"><span class="frac"><span class="top">1</span><span class="bottom">√2</span></span></span><span class="bell-formula math">(|01⟩ + |10⟩)<sub>12</sub></span></div>
+<div class="bell-card"><span class="bell-name math">|<mjx-mi class="mjx-i"><mjx-c class="mjx-c1D713 TEX-I"></mjx-c></mjx-mi><span class="sup">−</span>⟩</span><span class="bell-equals">=</span><span class="math"><span class="frac"><span class="top">1</span><span class="bottom">√2</span></span></span><span class="bell-formula math">(|01⟩ − |10⟩)<sub>12</sub></span></div>
+</div>
+</section>
 
 </section>
 </main>
@@ -381,14 +422,14 @@ function getBasePositions() {
   const { w } = stageSize();
   const xs = [0.14, 0.38, 0.62, 0.86].map(r => Math.round(w * r));
   const pos = {};
-  for (let i = 1; i <= 4; i++) pos["q" + i] = { x: xs[i - 1], y: 300 };
+  for (let i = 1; i <= 4; i++) pos["q" + i] = { x: xs[i - 1], y: 350 };
   return pos;
 }
 
 function getMeasurePositions(base) {
   const { w } = stageSize();
   const pos = JSON.parse(JSON.stringify(base));
-  pos.q2.x = Math.round(w * 0.44); pos.q3.x = Math.round(w * 0.56); pos.q2.y = 300; pos.q3.y = 300;
+  pos.q2.x = Math.round(w * 0.44); pos.q3.x = Math.round(w * 0.56); pos.q2.y = 350; pos.q3.y = 350;
   return pos;
 }
 
@@ -399,7 +440,7 @@ function getFinalPositions(base) {
   const xs = [0.14, 0.38, 0.62, 0.86].map(r => Math.round(w * r));
   order.forEach((q, index) => {
     pos["q" + q].x = xs[index];
-    pos["q" + q].y = 300;
+    pos["q" + q].y = 350;
   });
   return pos;
 }
@@ -577,7 +618,12 @@ function circlePairHTML(a, b) {
 }
 
 function ketHTML(bits, sub) {
-  return `<span class="ket">|${bits}⟩<sub>${sub}</sub></span>`;
+  const order = String(sub || "").replace(/\D/g, "").split("");
+  const markedBits = bits.split("").map((bit, index) => {
+    const q = order[index] || "";
+    return q ? `<span class="bit-mark q${q}">${bit}</span>` : bit;
+  }).join("");
+  return `<span class="ket">|${markedBits}⟩<sub>${sub}</sub></span>`;
 }
 
 function fracHTML(top, bottom) {
@@ -598,6 +644,29 @@ function signHTML(sign, isFirst) {
 
 function basisSumHTML(terms, subscript) {
   return terms.map((t, i) => `${signHTML(t.sign, i === 0)}${ketHTML(t.bits, subscript)}`).join("");
+}
+
+function orderChipsHTML(order) {
+  return order.map(q => `<span class="q-chip q${q}">q${q}</span>`).join("");
+}
+
+function reorderFlowHTML(initialOrder, finalOrder) {
+  const initial = String(initialOrder).split("").map(Number);
+  const final = String(finalOrder).split("").map(Number);
+  const leftFor = index => `${12.5 + index * 25}%`;
+  const moving = initial.map((q, index) => {
+    const toIndex = Math.max(0, final.indexOf(q));
+    return `<span class="swap-token q${q}" style="--from-left:${leftFor(index)}; --to-left:${leftFor(toIndex)}; --delay:${index * 0.08}s;">q${q}</span>`;
+  }).join("");
+  return `
+    <div class="swap-flow" aria-hidden="true">
+      <div class="swap-row-label">Initial order</div>
+      <div class="swap-row">${orderChipsHTML(initial)}</div>
+      <div class="swap-lane">${moving}</div>
+      <div class="swap-row-label">Final order</div>
+      <div class="swap-row">${orderChipsHTML(final)}</div>
+    </div>
+  `;
 }
 
 function extraBellProductHTML(count) {
@@ -643,7 +712,7 @@ function updateCalculationCards() {
   document.getElementById("card2l1").innerHTML = `${bellHTML(c.state12, "12")} ⊗ ${bellHTML(c.state34, "34")}`;
   document.getElementById("card2l2").innerHTML = `= ${fracHTML("1", coefficientDenominator(c.count))} (${basisSumHTML(expanded, initialOrder)})`;
 
-  document.getElementById("card3l1").innerHTML = `Initial order ${initialOrder} → Final order ${finalOrder}`;
+  document.getElementById("card3l1").innerHTML = `Initial order ${orderChipsHTML(activeQubits())} → Final order ${orderChipsHTML(safeOrder)}${reorderFlowHTML(initialOrder, finalOrder)}`;
   document.getElementById("card3l2").innerHTML = `= ${fracHTML("1", coefficientDenominator(c.count))} (${basisSumHTML(reordered, finalOrder)})`;
 
   document.getElementById("card4l1").innerHTML = `= ${fracHTML("1", "2")} (${collectedHTML(collected)})`;
@@ -696,6 +765,34 @@ function updateCalcSwitcher(step) {
   thumb.style.transform = "translateY(0)";
 }
 
+function calcScrollTopForStep(step) {
+  const area = document.getElementById("calcArea");
+  const card = document.getElementById("card" + visibleStep(step));
+  const firstCard = document.getElementById("card1");
+  if (!area || !card || !firstCard) return 0;
+  const maxTop = Math.max(0, area.scrollHeight - area.clientHeight);
+  return Math.min(maxTop, Math.max(0, card.offsetTop - firstCard.offsetTop));
+}
+
+function syncCalcFocusFromScroll() {
+  const area = document.getElementById("calcArea");
+  if (!area) return;
+  const cards = [1, 2, 3, 4].map(i => document.getElementById("card" + i)).filter(Boolean);
+  const firstCard = cards[0];
+  if (!firstCard) return;
+  const activeCard = cards.reduce((best, card) => {
+    const cardTop = card.offsetTop - firstCard.offsetTop;
+    const bestTop = best.offsetTop - firstCard.offsetTop;
+    return Math.abs(cardTop - area.scrollTop) < Math.abs(bestTop - area.scrollTop) ? card : best;
+  }, firstCard);
+  const activeStep = Number(activeCard.id.replace("card", ""));
+  cards.forEach(card => card.classList.toggle("focus", card === activeCard));
+  updateCalcSwitcher(activeStep);
+  if (activeStep !== visibleStep(currentStep)) {
+    showStep(activeStep, true, false);
+  }
+}
+
 function changeCalcFocus(dir) {
   const base = currentStep > 0 ? currentStep : 1;
   const next = Math.max(1, Math.min(4, base + dir));
@@ -736,14 +833,14 @@ function drawScene(pos, mode) {
   ["line12", "line34"].forEach(id => document.getElementById(id).classList.toggle("idle-link", idleInitialLinks));
   ["flow12", "flow34"].forEach(id => document.getElementById(id).classList.toggle("idle-link", idleInitialLinks));
 }
-function showStep(step, preserveAuto = false) {
+function showStep(step, preserveAuto = false, focusFormula = true) {
   if (!preserveAuto) stopAutoPlay();
   currentStep = Math.max(0, Math.min(4, Number(step)));
   updateInfoBoxes();
   updateCalculationCards();
   clearMarks();
   showCards(currentStep);
-  focusCalcCard(visibleStep(currentStep));
+  if (focusFormula) focusCalcCard(visibleStep(currentStep));
 
   const c = getChoice();
   const base = getBasePositions();
@@ -830,17 +927,21 @@ function focusCalcCard(step) {
   const card = document.getElementById("card" + visibleStep(step));
   if (!area || !card || step <= 0) return;
   requestAnimationFrame(() => {
-    const isFinalStep = visibleStep(step) === 4;
-    const top = isFinalStep
-      ? Math.max(0, card.offsetTop - area.offsetTop - (area.clientHeight - card.offsetHeight - 12))
-      : card.offsetTop - area.offsetTop;
-    area.scrollTo({ top, behavior: "smooth" });
+    area.scrollTo({ top: calcScrollTopForStep(step), behavior: "smooth" });
   });
 }
 
 function jumpToStep(step) {
   showStep(step);
   focusCalcCard(step);
+}
+
+function bindCalcCards() {
+  for (let i = 1; i <= 4; i++) {
+    const card = document.getElementById("card" + i);
+    if (!card) continue;
+    card.addEventListener("click", () => jumpToStep(i));
+  }
 }
 
 function nextStep() {
@@ -998,6 +1099,10 @@ function bindOptionButtons() {
 }
 
 bindOptionButtons();
+bindCalcCards();
+document.getElementById("calcArea")?.addEventListener("scroll", () => {
+  window.requestAnimationFrame(syncCalcFocusFromScroll);
+});
 window.addEventListener("load", resetScene);
 window.addEventListener("resize", resetScene);
 </script>
