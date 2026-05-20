@@ -82,6 +82,11 @@
         .name-tag { background-color: var(--primary-blue); color: white; padding: 6px 30px; border-radius: 20px; font-weight: bold; font-size: 16px; margin-bottom: 15px; z-index: 3; text-align: center; min-width: 140px; box-sizing: border-box; transition: all 0.3s ease; }
         .name-tag.gray { background-color: #b0b0b0; color: white; }
         .name-tag.red-text { background-color: var(--eve-red); }
+        .toast-warning { position: fixed; top: 28px; left: 50%; transform: translateX(-50%) translateY(-8px); background: #263238; color: #ffffff; padding: 11px 20px; border-radius: 999px; font-size: 14px; font-weight: 800; box-shadow: 0 10px 28px rgba(0,0,0,0.22); opacity: 0; pointer-events: none; z-index: 20000; transition: opacity 0.24s ease, transform 0.24s ease; }
+        .toast-warning.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+        .required-toggle { cursor: not-allowed; opacity: 0.96; }
+        .required-toggle:active { transform: none; box-shadow: none; }
+        .required-toggle .toggle-track { filter: none; }
         .click-toggle { --toggle-active: var(--primary-blue); --toggle-inactive: #b0b0b0; cursor: pointer; margin-bottom: -12px; z-index: 3; display: inline-block; border-radius: 99px; transition: transform 0.2s ease, box-shadow 0.2s ease; user-select: none; -webkit-tap-highlight-color: transparent; }
         .click-toggle:active { transform: scale(0.95); box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
         .click-toggle input { display: none; }
@@ -257,7 +262,7 @@
             <div class="character-col" id="alice-col">
                 <img src="pictures/cat_alice.svg" class="character-img" alt="Alice">
                 <div class="name-tag">Alice</div>
-                <div class="click-toggle status-toggle-static" aria-label="Alice status on">
+                <div class="click-toggle status-toggle-static required-toggle" role="button" tabindex="0" aria-label="Alice is required and always on" data-required-role="Alice">
                     <div class="toggle-track">
                         <span class="toggle-text text-left">OFF</span>
                         <span class="toggle-text text-right">ON</span>
@@ -280,7 +285,7 @@
             <div class="character-col" id="bob-col">
                 <img src="pictures/cat_bob.svg" class="character-img" alt="Bob">
                 <div class="name-tag">Bob</div>
-                <div class="click-toggle status-toggle-static" aria-label="Bob status on">
+                <div class="click-toggle status-toggle-static required-toggle" role="button" tabindex="0" aria-label="Bob is required and always on" data-required-role="Bob">
                     <div class="toggle-track">
                         <span class="toggle-text text-left">OFF</span>
                         <span class="toggle-text text-right">ON</span>
@@ -968,11 +973,39 @@
         }
     }
 
+    function showRequiredRoleToast(role) {
+        let toast = document.getElementById('required-role-toast');
+        if (!toast) {
+            toast = document.createElement('div');
+            toast.id = 'required-role-toast';
+            toast.className = 'toast-warning';
+            document.body.appendChild(toast);
+        }
+        toast.textContent = `${role} is required in this protocol and cannot be turned off.`;
+        toast.classList.add('show');
+        clearTimeout(toast.hideTimer);
+        toast.hideTimer = setTimeout(() => toast.classList.remove('show'), 1800);
+    }
+
+    function bindRequiredRoleToggles() {
+        document.querySelectorAll('.required-toggle').forEach(toggle => {
+            const showMessage = () => showRequiredRoleToast(toggle.dataset.requiredRole || 'This participant');
+            toggle.addEventListener('click', showMessage);
+            toggle.addEventListener('keydown', event => {
+                if (event.key === 'Enter' || event.key === ' ') {
+                    event.preventDefault();
+                    showMessage();
+                }
+            });
+        });
+    }
+
     document.addEventListener('DOMContentLoaded', () => {
         // 初始化面網開關狀態 (一進來 Eve 預設為 OFF)
         const eveToggle = document.getElementById('eve-status-toggle');
         eveToggle.checked = false;
         updatePanelState(eveToggle);
+        bindRequiredRoleToggles();
 
         // Tooltip 功能綁定
         const tooltip = document.createElement('div');
