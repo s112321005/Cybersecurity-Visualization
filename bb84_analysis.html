@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <base href="https://s112321005.github.io/Cybersecurity-Visualization/">
-    <title>Security Analysis Visualization - BB84 Protocol</title>
+    <title>Security Analysis Visualization：BB84 Protocol</title>
     <style>
         :root { --primary-blue: #549FD0; --alice-blue: #004aad; --light-blue: #D0E0FF; --inactive-gray: #e0e0e0; --bg-color: #f8f9fa; --bg-gradient: linear-gradient(135deg, #E0F2FE 0%, #F5F3FF 50%, #ECFDF5 100%); --eve-red: #D32F2F; --bob-blue: #4C80C5; --charlie-blue: #478CEA; }
         body { margin: 0; background: var(--bg-gradient); font-family: sans-serif; overflow-x: hidden; display: flex; flex-direction: column; align-items: center; padding: 20px 0; color: #333; min-width: 1450px !important; }
@@ -32,24 +32,12 @@
         .state-circle { background: var(--primary-blue); color: white; }
         .state-circle.inactive { background-color: var(--inactive-gray); color: #666; }
         .eve-state-circle { background: var(--eve-red); color: white; }
+        .state-circle.bob-result { background-color: var(--bob-blue); color: white; border: 2px solid var(--bob-blue); }
         .state-circle.eve-error { background-color: var(--eve-red); color: white; border: 2px solid var(--eve-red); }
         .state-circle.eve-error.inactive { background-color: var(--inactive-gray); color: #666; border: 2px solid var(--eve-red); }
-        #bb84-symbol-bobsame,
-        .state-circle:has(#bb84-symbol-bobunsame-1),
-        .state-circle:has(#bb84-symbol-bobunsame-2),
-        #view-bb84-eve-resend [id^="bob-final-"] { background-color: var(--bob-blue); color: #ffffff; border-color: var(--bob-blue); }
-        #bb84-symbol-bobsame.inactive,
-        .state-circle.inactive:has(#bb84-symbol-bobunsame-1),
-        .state-circle.inactive:has(#bb84-symbol-bobunsame-2),
-        #view-bb84-eve-resend [id^="bob-final-"].inactive { background-color: var(--inactive-gray); color: #666; border-color: var(--inactive-gray); }
-        #view-bb84-eve-resend [id^="bob-final-"].eve-error:not(.inactive) { background-color: var(--eve-red); color: #ffffff; border-color: var(--eve-red); }
         .prob-circle, .result-circle { position: absolute; width: 40px; height: 40px; border-radius: 50%; font-size: 18px; z-index: 3; transform: translate(-50%, -50%); }
-        .prob-circle { background: var(--light-blue); color: var(--bob-blue); border: 2px solid var(--light-blue); }
-        .prob-circle.inactive { background-color: var(--inactive-gray); color: #666; border-color: var(--inactive-gray); }
-        .prob-circle.eve-error { background-color: #ffe6e6; color: var(--eve-red); border-color: #ffe6e6; }
-        .prob-fraction { width: 30px; height: 30px; font-size: 12px; flex-direction: column; box-shadow: 0 2px 4px rgba(0,0,0,0.1); transform: translateY(-50%); }
-        .prob-fraction .fraction-num { border-bottom: 1px solid currentColor; width: 100%; text-align: center; line-height: 1; }
-        .prob-fraction .fraction-den { text-align: center; line-height: 1; }
+        .prob-circle { background: var(--light-blue); }
+        .prob-circle.inactive { background-color: var(--inactive-gray); color: #333; }
         .result-circle { background: var(--light-blue); color: #28a745; &.inactive { color: #000; } }
         .character-avatar img { width: 70px; height: 70px; object-fit: contain; }
         .result-header { position: absolute; top: -10px; left: 90%; transform: translateX(-50%); background: var(--light-blue); padding: 10px 25px; border-radius: 15px; font-weight: bold; text-align: center; z-index: 10; white-space: nowrap; }
@@ -134,37 +122,21 @@
         #settings-overlay input:disabled + span { opacity: 0.45; cursor: not-allowed; filter: grayscale(0.35); }
         .apply-btn { background-color: #28a745; color: white; border: none; padding: 12px 50px; border-radius: 25px; font-size: 20px; font-weight: bold; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 10px rgba(40,167,69,0.3); }
         .apply-btn:hover { background-color: #218838; transform: scale(1.05); }
-        #eve-detected-indicator { cursor: pointer; user-select: none; margin-left: auto; border-color: var(--eve-red); color: var(--eve-red); }
-        #eve-detected-indicator:hover { background: #fff1f1; box-shadow: 0 4px 10px rgba(211,47,47,0.18); }
-        .eve-calculation-panel { background: white; border-radius: 12px; padding: 20px; margin-top: 20px; margin-left: 250px; width: calc(100% - 250px); box-sizing: border-box; box-shadow: 0 4px 10px rgba(0,0,0,0.08); display: none; }
+        #eve-detected-indicator, #cnot-eve-detected-indicator { cursor: pointer; user-select: none; margin-left: auto; border-color: var(--eve-red); color: var(--eve-red); }
+        #eve-detected-indicator:hover, #cnot-eve-detected-indicator:hover { background: #fff1f1; box-shadow: 0 4px 10px rgba(211,47,47,0.18); }
+        .eve-calculation-panel { background: white; border-radius: 12px; padding: 20px; margin-top: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.08); display: none; }
         .eve-calculation-panel h4 { margin-top: 0; margin-bottom: 15px; color: var(--primary-blue); border-bottom: 2px solid var(--light-blue); padding-bottom: 10px; }
-        #calculation-panel { scroll-margin-top: 28px; transform-origin: center top; }
-        #calculation-panel.calc-panel-pop { animation: calcPanelPop 0.9s ease-out; }
-        @keyframes calcPanelPop {
-            0% { transform: scale(1); box-shadow: 0 4px 10px rgba(0,0,0,0.08); outline: 0 solid rgba(84,159,208,0); }
-            28% { transform: scale(1.018); box-shadow: 0 12px 28px rgba(84,159,208,0.32); outline: 4px solid rgba(84,159,208,0.28); }
-            100% { transform: scale(1); box-shadow: 0 4px 10px rgba(0,0,0,0.08); outline: 0 solid rgba(84,159,208,0); }
-        }
         .eve-calc-red { color: var(--eve-red); font-weight: 900; }
         .eve-calc-blue { color: var(--primary-blue); font-weight: 900; }
-        .eve-calc-gray { color: #777; font-weight: 900; }
-        #math-display { overflow-x: auto; user-select: none; padding: 26px 18px 30px; text-align: center; }
+        #math-display { overflow-x: auto; user-select: none; padding: 26px 18px 30px; }
         #math-display math { font-family: "Times New Roman", serif; font-size: 21px; white-space: nowrap; }
-        #math-display > mjx-container { margin-left: auto !important; margin-right: auto !important; }
-        #math-display mjx-container[display="true"] { text-align: center !important; }
         #math-display .eve-calc-note { margin-top: 16px; font-size: 14px; font-weight: 800; color: #667085; text-align: center; }
-        .eve-calc-wrapper { display: inline-flex; flex-direction: column; align-items: center; gap: 18px; min-width: max-content; padding: 8px 22px 12px; margin: 0 auto; }
+        .eve-calc-wrapper { display: inline-flex; flex-direction: column; align-items: center; gap: 18px; min-width: max-content; padding: 8px 22px 12px; }
         .eve-calc-main-row { display: inline-flex; align-items: center; justify-content: flex-start; gap: 16px; min-width: max-content; }
         .eve-calc-main-row > math { flex: 0 0 auto; }
-        .eve-fraction-stack { display: inline-grid; grid-template-columns: max-content; justify-items: stretch; align-items: center; gap: 11px; min-width: max-content; }
+        .eve-fraction-stack { display: inline-flex; flex-direction: column; align-items: stretch; justify-content: center; gap: 11px; min-width: max-content; }
         .eve-fraction-stack math { display: block; text-align: center; margin: 0; }
-        .eve-fraction-stack .eve-fraction-numerator,
-        .eve-fraction-stack .eve-fraction-denominator { grid-column: 1; justify-self: stretch; width: 100%; text-align: center; }
-        .eve-fraction-stack mjx-container.eve-fraction-numerator,
-        .eve-fraction-stack mjx-container.eve-fraction-denominator { display: block !important; width: 100%; text-align: center; }
-        .eve-fraction-stack .eve-fraction-numerator mjx-container,
-        .eve-fraction-stack .eve-fraction-denominator mjx-container { display: inline-block !important; }
-        .eve-fraction-line { grid-column: 1; justify-self: stretch; width: 100%; height: 2px; background: #333; }
+        .eve-fraction-line { width: 100%; height: 2px; background: #333; flex: 0 0 auto; }
         .eve-final-row { margin-top: 4px; }
         @media (max-width: 760px) {
             body { min-width: 0 !important; padding: 0; align-items: stretch; overflow-x: auto; }
@@ -176,6 +148,66 @@
             .control-panel { height: auto; min-height: 0; width: 100%; padding: 24px 18px 18px; }
             .apply-btn { width: 100%; max-width: 330px; padding: 12px 18px; }
         }
+
+        .settings-mode-row { display: flex; justify-content: center; align-items: center; width: 100%; margin: 0 0 24px; padding: 0; box-sizing: border-box; }
+        .modern-toggle { cursor: pointer; display: inline-block; user-select: none; -webkit-tap-highlight-color: transparent; }
+        .modern-toggle input { display: none; }
+        .modern-toggle .toggle-track { position: relative; display: grid; grid-template-columns: 1fr 1fr; align-items: center; width: 330px; height: 52px; background-color: #eef7ff; border: 2px solid var(--primary-blue); border-radius: 99px; padding: 4px; box-shadow: inset 0 2px 5px rgba(0,0,0,0.05); overflow: hidden; box-sizing: border-box; }
+        .modern-toggle .toggle-text { position: relative; z-index: 2; display: flex; align-items: center; justify-content: center; height: 100%; padding: 0 12px; font-size: 0.9rem; font-weight: 800; color: var(--primary-blue); transition: color 0.3s cubic-bezier(0.4,0.0,0.2,1); text-align: center; letter-spacing: 0.02em; white-space: nowrap; }
+        .modern-toggle input:not(:checked) ~ .toggle-track .text-left { color: #ffffff; }
+        .modern-toggle input:checked ~ .toggle-track .text-right { color: #ffffff; }
+        .modern-toggle .toggle-thumb { position: absolute; top: 4px; left: 4px; width: calc((100% - 8px) / 2); height: calc(100% - 8px); background-color: var(--primary-blue); border-radius: 99px; transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1); box-shadow: 0 3px 8px rgba(84,159,208,0.3); z-index: 1; }
+        .modern-toggle input:checked ~ .toggle-track .toggle-thumb { transform: translateX(100%); }
+        .polarizer-img.inactive { filter: grayscale(100%); opacity: 0.45; }
+        .polarizer-img.basis-eye-img { width: 70px; height: 70px; padding: 6px; border: 4px solid var(--bob-blue); border-radius: 50%; background: #ffffff; object-fit: contain; box-sizing: border-box; }
+        .polarizer-img.basis-eye-img.eve-basis-eye-img { border-color: var(--eve-red); }
+        .prob-fraction { width: 30px; height: 30px; font-size: 12px; flex-direction: column; box-shadow: 0 2px 4px rgba(0,0,0,0.1); transform: translateY(-50%); }
+        .prob-fraction .fraction-num { border-bottom: 1px solid currentColor; width: 100%; text-align: center; line-height: 1; }
+        .prob-fraction .fraction-den { text-align: center; line-height: 1; }
+        .prob-circle.eve-error { background-color: #ffe6e6; color: var(--eve-red); border-color: #ffe6e6; }
+        #view-bb84-eve-resend .bb84-resend-prob { position: absolute; left: calc(88% + 38px); transform: translateY(-50%); display: flex; align-items: center; justify-content: center; margin: 0; }
+        #view-bb84-eve-resend .bb84-resend-prob.state-blue { background: #eaf4ff; color: var(--bob-blue); border: 2px solid #cfe8ff; }
+        #view-bb84-eve-resend .bb84-resend-prob.state-red { background: #ffe6e6; color: var(--eve-red); border: 2px solid #ffd0d0; }
+        #view-bb84-eve-resend .bb84-resend-prob.state-gray { background: var(--inactive-gray); color: #555; border: 2px solid var(--inactive-gray); }
+        #view-bb84 .bb84-off-prob { position: absolute; left: calc(90% + 38px); transform: translateY(-50%); width: 30px; height: 30px; border-radius: 50%; font-size: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; font-weight: bold; z-index: 4; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        #view-bb84 .bb84-off-prob.state-blue { background: #eaf4ff !important; color: var(--bob-blue) !important; border: 2px solid #cfe8ff !important; }
+        #view-bb84 .bb84-off-prob.state-gray { background: var(--inactive-gray) !important; color: #555 !important; border: 2px solid var(--inactive-gray) !important; }
+        #view-bb84 .bb84-off-prob .fraction-num { border-bottom: 1px solid currentColor; width: 100%; text-align: center; line-height: 1; }
+        #view-bb84 .bb84-off-prob .fraction-den { text-align: center; line-height: 1; }
+        #view-bb84-eve-cnot .cnot-outcome-row { display: inline-flex; align-items: center; justify-content: center; gap: 10px; white-space: nowrap; }
+        #view-bb84-eve-cnot .state-circle.state-blue { background: var(--bob-blue); color: #ffffff; border: 2px solid var(--bob-blue); }
+        #view-bb84-eve-cnot .state-circle.state-red { background: var(--eve-red); color: #ffffff; border: 2px solid var(--eve-red); }
+        #view-bb84-eve-cnot .state-circle.state-gray { background: var(--inactive-gray); color: #666; border: 2px solid var(--inactive-gray); }
+        #view-bb84-eve-cnot .prob-circle.cnot-prob-node { position: static; transform: none; display: inline-flex; margin: 0; }
+        #view-bb84-eve-cnot .prob-circle.state-blue { background: #eaf4ff; color: var(--bob-blue); border: 2px solid #cfe8ff; }
+        #view-bb84-eve-cnot .prob-circle.state-red { background: #ffe6e6; color: var(--eve-red); border: 2px solid #ffd0d0; }
+        #view-bb84-eve-cnot .prob-circle.state-gray { background: var(--inactive-gray); color: #555; border: 2px solid var(--inactive-gray); }
+        #cnot-calculation-panel { scroll-margin-top: 28px; transform-origin: center top; }
+        #cnot-calculation-panel.calc-panel-pop { animation: calcPanelPop 0.9s ease-out; }
+        @keyframes calcPanelPop { 0% { transform: scale(1); box-shadow: 0 4px 10px rgba(0,0,0,0.08); outline: 0 solid rgba(84,159,208,0); } 28% { transform: scale(1.018); box-shadow: 0 12px 28px rgba(84,159,208,0.32); outline: 4px solid rgba(84,159,208,0.28); } 100% { transform: scale(1); box-shadow: 0 4px 10px rgba(0,0,0,0.08); outline: 0 solid rgba(84,159,208,0); } }
+        #cnot-math-display { overflow-x: auto; user-select: none; padding: 26px 18px 30px; text-align: center; }
+        #cnot-math-display math { font-family: "Times New Roman", serif; font-size: 21px; white-space: nowrap; }
+        #cnot-math-display > mjx-container { margin-left: auto !important; margin-right: auto !important; }
+        #cnot-math-display mjx-container[display="true"] { text-align: center !important; }
+        #cnot-math-display .eve-calc-note { margin-top: 16px; font-size: 14px; font-weight: 800; color: #667085; text-align: center; }
+        .cnot-op-node { width: 165px; height: 290px; border-radius: 20px; background: #ffffff; border: 8px solid var(--eve-red); color: #000000; font-family: "Times New Roman", serif; font-size: 38px; display: flex; align-items: center; justify-content: center; box-shadow: 0 6px 14px rgba(211,47,47,0.18); cursor: pointer; user-select: none; text-align: center; }
+        .cnot-op-node sub { font-size: 0.55em; line-height: 0; vertical-align: sub; }
+        .cnot-op-node:hover { transform: scale(1.04); box-shadow: 0 0 18px rgba(211,47,47,0.35); }
+        .cnot-gate-dot { width: 24px; height: 24px; border-radius: 50%; background: #d40000; }
+        .cnot-gate-plus { width: 54px; height: 54px; border: 6px solid #d40000; border-radius: 50%; position: relative; box-sizing: border-box; background: #ffffff; }
+        .cnot-gate-plus::before, .cnot-gate-plus::after { content: ''; position: absolute; background: #d40000; left: 50%; top: 50%; transform: translate(-50%, -50%); }
+        .cnot-gate-plus::before { width: 42px; height: 6px; }
+        .cnot-gate-plus::after { width: 6px; height: 54px; }
+        .state-circle.state-blue { background: var(--bob-blue); color: #fff; border-color: var(--bob-blue); }
+        .state-circle.state-red { background: var(--eve-red); color: #fff; border-color: var(--eve-red); }
+        .state-circle.state-gray { background: var(--inactive-gray); color: #555; border-color: var(--inactive-gray); }
+        #view-bb84-eve-cnot .state-btn.option-state { border-color: var(--alice-blue); color: var(--alice-blue); }
+        #cnot-alice-state { background-color: var(--alice-blue) !important; color: #ffffff !important; border: 2px solid var(--alice-blue) !important; }
+        #view-bb84-eve-cnot #cnot-bob-top.state-blue, #view-bb84-eve-cnot #cnot-bob-bottom.state-blue { background-color: var(--bob-blue) !important; color: #ffffff !important; border: 2px solid var(--bob-blue) !important; }
+        #view-bb84-eve-cnot #cnot-bob-top.state-red, #view-bb84-eve-cnot #cnot-bob-bottom.state-red { background-color: var(--eve-red) !important; color: #ffffff !important; border: 2px solid var(--eve-red) !important; }
+        #view-bb84-eve-cnot #cnot-bob-top.state-gray, #view-bb84-eve-cnot #cnot-bob-bottom.state-gray { background-color: var(--inactive-gray) !important; color: #555 !important; border: 2px solid var(--inactive-gray) !important; }
+        #view-bb84-eve-cnot .option-row.active .state-btn.option-state { background-color: var(--alice-blue); border-color: var(--alice-blue); color: #ffffff; }
+
     </style>
     <script>window.MathJax = { options: { enableMenu: false } };</script>
     <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
@@ -183,12 +215,21 @@
 <body>
 
 <div class="pull-tab" onclick="toggleSettings()">
-    <span id="tab-icon">▼</span>
-    <span id="tab-text">Settings ⚙️</span>
+    <span id="tab-icon">▼</span> <span id="tab-text"> Settings ⚙️</span>
 </div>
 
 <div id="settings-overlay" class="settings-overlay">
     <div class="overlay-container">
+        <div class="settings-mode-row">
+            <label class="modern-toggle" aria-label="Toggle basis or polarization display mode">
+                <input type="checkbox" id="representation-mode-toggle" checked onchange="handleRepresentationModeToggle(this.checked)">
+                <div class="toggle-track">
+                    <span class="toggle-text text-left">Basis Mode</span>
+                    <span class="toggle-text text-right">Polarization Mode</span>
+                    <div class="toggle-thumb"></div>
+                </div>
+            </label>
+        </div>
         <div class="main-grid" id="qkd-interface">
             <div class="character-col" id="alice-col">
                 <img src="pictures/cat_alice.svg" class="character-img" alt="Alice">
@@ -264,17 +305,17 @@
 <div id="view-bb84" class="page-view active-view" style="padding-top: 60px;">
     <div class="container">
         <div class="top-bar" style="display: flex; align-items: center; justify-content: flex-start; gap: 20px; margin-bottom: 20px;">            
-            <a href="VerifySetting.html" class="btn-back">◀</a>
+            <a href="VerifySetting.html" class="btn-back">◀&#xFE0E</a>
             <div class="page-title">Quantum Key Distribution : BB84 Protocol</div>
         </div>
         <div class="main-content">
             <div class="sidebar">
                 <div class="selection-box" id="bb84-options">
                     <h4>Alice Selects Message</h4>
-                    <div class="option-row basis-z" onclick="selectStateBB84(this, '|\u2192\u27E9', 'rectilinear')"><div class="state-btn">|0&#10217;</div><div class="arrow-icon">&rarr;</div><div class="state-btn">|&rarr;&#10217;</div></div>
-                    <div class="option-row basis-z" onclick="selectStateBB84(this, '|\u2191\u27E9', 'rectilinear')"><div class="state-btn">|1&#10217;</div><div class="arrow-icon">&rarr;</div><div class="state-btn">|&uarr;&#10217;</div></div>
-                    <div class="option-row basis-x" onclick="selectStateBB84(this, '|\u2197\u27E9', 'diagonal')"><div class="state-btn">|+&#10217;</div><div class="arrow-icon">&rarr;</div><div class="state-btn">|&#8599;&#10217;</div></div>
-                    <div class="option-row basis-x" onclick="selectStateBB84(this, '|\u2196\u27E9', 'diagonal')"><div class="state-btn">|-&#10217;</div><div class="arrow-icon">&rarr;</div><div class="state-btn">|&#8598;&#10217;</div></div>
+                    <div class="option-row basis-z" data-state-symbol="|→⟩" onclick="selectStateBB84(this, '|→⟩', 'rectilinear')"><div class="state-btn">| 0 ⟩</div><div class="arrow-icon">➔</div><div class="state-btn">|→⟩</div></div>
+                    <div class="option-row basis-z" data-state-symbol="| ↑ ⟩" onclick="selectStateBB84(this, '| ↑ ⟩', 'rectilinear')"><div class="state-btn">| 1 ⟩</div><div class="arrow-icon">➔</div><div class="state-btn">| ↑ ⟩</div></div>
+                    <div class="option-row basis-x" data-state-symbol="|↗⟩" onclick="selectStateBB84(this, '|↗⟩', 'diagonal')"><div class="state-btn">|十⟩</div><div class="arrow-icon">➔</div><div class="state-btn">|↗⟩</div></div>
+                    <div class="option-row basis-x" data-state-symbol="|↖⟩" onclick="selectStateBB84(this, '|↖⟩', 'diagonal')"><div class="state-btn">|一⟩</div><div class="arrow-icon">➔</div><div class="state-btn">|↖⟩</div></div>
                 </div>                
                 <div class="settings-panel" style="margin-top: 20px;">
                     <h4>Current Settings</h4>
@@ -295,33 +336,34 @@
                         <line class="bb84-line FalseRoute" data-prob="25%" x1="47%" y1="75%" x2="67%" y2="85%" stroke="#333" stroke-width="3" marker-end="url(#arrow-bb84)" />
                     </svg>
                     <div class="node" style="left: 10%; top: 50%;">
-                        <div class="state-circle" id="bb84-initial-state-text">|&rarr;&#10217;</div>
+                        <img id="bb84-initial-key-img" src="pictures/a_vertical.svg" class="polarizer-img">
+                        <div class="state-circle" id="bb84-initial-state-text">|→⟩</div>
                     </div>
                     <div class="node" style="left: 41%; top: 25%;">
-                        <img id="bb84-bob-same" src="pictures/b_vertical.svg" class="polarizer-img">
+                        <img id="bb84-bob-same" src="pictures/a_vertical.svg" class="polarizer-img">
                     </div>
                     <div class="node" style="left: 41%; top: 75%;">
                         <img id="bb84-bob-unsame" src="pictures/gray_diagonal.svg" class="polarizer-img inactive">
                     </div>
                     <div class="node" style="left: 75%; top: 25%;">
-                        <div id="bb84-symbol-bobsame" class="state-circle">|&rarr;&#10217;</div>
+                        <div id="bb84-symbol-bobsame" class="state-circle">|→⟩</div>
                     </div>
                     <div class="node" style="left: 75%; top: 55%;">
                         <div class="state-circle inactive" style="transform: rotate(-45deg); display: flex; align-items: center; justify-content: center;">
-                             <span id="bb84-symbol-bobunsame-1" style="transform: rotate(45deg);">|&#8598;&#10217;</span>
+                             <span id="bb84-symbol-bobunsame-1" style="transform: rotate(45deg);">|↖⟩</span>
                         </div>
                     </div>
                     <div class="node" style="left: 75%; top: 85%;">
                          <div class="state-circle inactive" style="transform: rotate(45deg); display: flex; align-items: center; justify-content: center;">
-                             <span id="bb84-symbol-bobunsame-2" style="transform: rotate(-45deg);">|&#8599;&#10217;</span>
+                             <span id="bb84-symbol-bobunsame-2" style="transform: rotate(-45deg);">|↗⟩</span>
                         </div>
                     </div>
-                    <div class="result-circle" style="left: 90%; top: 25%; width: 50px; height: 50px;">&#10004;</div>
-                    <div class="prob-circle prob-fraction" style="left: calc(90% + 38px); top: 25%;" data-prob-for="bb84-symbol-bobsame"><div class="fraction-num">1</div><div class="fraction-den">2</div></div>
-                    <div class="result-circle inactive" style="left: 90%; top: 56%; width: 50px; height: 50px;">&#10006;</div>
-                    <div class="prob-circle prob-fraction inactive" style="left: calc(90% + 38px); top: 56%;" data-prob-for="bb84-symbol-bobunsame-1"><div class="fraction-num">1</div><div class="fraction-den">4</div></div>
-                    <div class="result-circle inactive" style="left: 90%; top: 85%; width: 50px; height: 50px;">&#10006;</div>
-                    <div class="prob-circle prob-fraction inactive" style="left: calc(90% + 38px); top: 85%;" data-prob-for="bb84-symbol-bobunsame-2"><div class="fraction-num">1</div><div class="fraction-den">4</div></div>
+                    <div class="result-circle" style="left: 90%; top: 25%; width: 50px; height: 50px;">✔</div>
+                    <div class="bb84-off-prob state-blue" data-for="bb84-symbol-bobsame" style="top: 25%;"><div class="fraction-num">1</div><div class="fraction-den">2</div></div>
+                    <div class="result-circle inactive" style="left: 90%; top: 56%; width: 50px; height: 50px;">✖</div>
+                    <div class="bb84-off-prob state-gray" data-for="bb84-symbol-bobunsame-1" style="top: 56%;"><div class="fraction-num">1</div><div class="fraction-den">4</div></div>
+                    <div class="result-circle inactive" style="left: 90%; top: 85%; width: 50px; height: 50px;">✖</div>
+                    <div class="bb84-off-prob state-gray" data-for="bb84-symbol-bobunsame-2" style="top: 85%;"><div class="fraction-num">1</div><div class="fraction-den">4</div></div>
                 </div>
             </div>
         </div>
@@ -331,25 +373,25 @@
 <div id="view-bb84-eve-resend" class="page-view" style="padding-top: 60px;">
     <div class="container">
         <div class="top-bar" style="display: flex; align-items: center; justify-content: flex-start; gap: 20px; margin-bottom: 20px;">            
-            <a href="VerifySetting.html" class="btn-back">&larr;</a>
-            <div class="page-title">Quantum Key Distribution : BB84 Protocol</div>
-            <div id="eve-detected-indicator" class="page-title" onclick="showEveDetectedCalculation()" title="Click to show Eve detection calculation">Eve detected probability: 12.5%</div>
+            <a href="VerifySetting.html" class="btn-back">◀&#xFE0E</a>
+            <div class="page-title">Quantum Key Distribution：BB84</div>
+            <div id="eve-detected-indicator" class="page-title" onclick="showEveDetectedCalculation()" title="Click to show Eve detection calculation">Eve detected probability： 12.5%</div>
         </div>
         <div class="main-content">
             <div class="sidebar">
                 <div class="selection-box" id="bb84-eve-options">
                     <h4>Alice Selects Message</h4>
-                    <div class="option-row basis-z" onclick="selectStateBB84Eve(this, '|\u2192\u27E9', 'rectilinear')">
-                        <div class="state-btn">|0&#10217;</div><div class="arrow-icon">&rarr;</div><div class="state-btn">|&rarr;&#10217;</div>
+                    <div class="option-row basis-z" data-state-symbol="|→⟩" onclick="selectStateBB84Eve(this, '|→⟩', 'rectilinear')">
+                        <div class="state-btn">| 0 ⟩</div><div class="arrow-icon">➔</div><div class="state-btn">|→⟩</div>
                     </div>
-                    <div class="option-row basis-z" onclick="selectStateBB84Eve(this, '|\u2191\u27E9', 'rectilinear')">
-                        <div class="state-btn">|1&#10217;</div><div class="arrow-icon">&rarr;</div><div class="state-btn">|&uarr;&#10217;</div>
+                    <div class="option-row basis-z" data-state-symbol="| ↑ ⟩" onclick="selectStateBB84Eve(this, '| ↑ ⟩', 'rectilinear')">
+                        <div class="state-btn">| 1 ⟩</div><div class="arrow-icon">➔</div><div class="state-btn">| ↑ ⟩</div>
                     </div>
-                    <div class="option-row basis-x" onclick="selectStateBB84Eve(this, '|\u2197\u27E9', 'diagonal')">
-                        <div class="state-btn">|+&#10217;</div><div class="arrow-icon">&rarr;</div><div class="state-btn">|&#8599;&#10217;</div>
+                    <div class="option-row basis-x" data-state-symbol="|↗⟩" onclick="selectStateBB84Eve(this, '|↗⟩', 'diagonal')">
+                        <div class="state-btn">|十⟩</div><div class="arrow-icon">➔</div><div class="state-btn">|↗⟩</div>
                     </div>
-                    <div class="option-row basis-x" onclick="selectStateBB84Eve(this, '|\u2196\u27E9', 'diagonal')">
-                        <div class="state-btn">|-&#10217;</div><div class="arrow-icon">&rarr;</div><div class="state-btn">|&#8598;&#10217;</div>
+                    <div class="option-row basis-x" data-state-symbol="|↖⟩" onclick="selectStateBB84Eve(this, '|↖⟩', 'diagonal')">
+                        <div class="state-btn">|一⟩</div><div class="arrow-icon">➔</div><div class="state-btn">|↖⟩</div>
                     </div>
                 </div>                
                 <div class="settings-panel" style="margin-top: 20px;">
@@ -357,7 +399,7 @@
                     <div class="settings-content"></div>
                 </div>
             </div>
-            <div class="diagram-area eve-layout" style="height: 1100px;">
+            <div class="diagram-area eve-layout" style="height: 900px;">
                 <div class="character-avatar avatar-alice" style="left: 8%; width: 130px;"><img src="pictures/cat_alice.svg" alt="Alice"></div>
                 <div class="character-avatar avatar-eve" style="left: 38%; width: 350px;"><img src="pictures/Eavesdropper.svg" alt="Eve" style="width:60px;"></div>
                 <div class="character-avatar avatar-bob" style="left: 72%; width: 235px;"><img src="pictures/cat_bob.svg" alt="Bob"></div>
@@ -391,16 +433,17 @@
                         <line class="eve-bob-line diff-path" data-prob="12.5%" x1="76%" y1="94%" x2="84%" y2="94%" stroke="#333" stroke-width="3" marker-end="url(#arrow-bb84-resend)" />
                     </svg>
                     <div class="node" style="left: 8%; top: 50%;">
-                        <div class="state-circle" id="eve-alice-state">|&rarr;&#10217;</div>
+                        <img id="eve-alice-key" src="pictures/a_vertical.svg" class="polarizer-img">
+                        <div class="state-circle" id="eve-alice-state">|→⟩</div>
                     </div>
                     <div class="node" style="left: 32%; top: 25%;"><img id="eve-pol-same" src="pictures/red_vertical.svg" class="polarizer-img"></div>
                     <div class="node" style="left: 32%; top: 75%;"><img id="eve-pol-diff" src="pictures/red_diagonal.svg" class="polarizer-img"></div>
-                    <div class="node" style="left: 50%; top: 25%;"><div class="eve-state-circle" id="eve-state-same">|&rarr;&#10217;</div></div>
+                    <div class="node" style="left: 50%; top: 25%;"><div class="eve-state-circle" id="eve-state-same">|→⟩</div></div>
                     <div class="node" style="left: 50%; top: 60%;">
-                        <div class="eve-state-circle" style="transform: rotate(-45deg);"><span id="eve-state-diff1" style="transform: rotate(45deg); display:block;">|&#8598;&#10217;</span></div>
+                        <div class="eve-state-circle" style="transform: rotate(-45deg);"><span id="eve-state-diff1" style="transform: rotate(45deg); display:block;">|↖⟩</span></div>
                     </div>
                     <div class="node" style="left: 50%; top: 90%;">
-                        <div class="eve-state-circle" style="transform: rotate(45deg);"><span id="eve-state-diff2" style="transform: rotate(-45deg); display:block;">|&#8599;&#10217;</span></div>
+                        <div class="eve-state-circle" style="transform: rotate(45deg);"><span id="eve-state-diff2" style="transform: rotate(-45deg); display:block;">|↗⟩</span></div>
                     </div>
                     <div class="node bob-same-node" style="left: 72%; top: 15%;"><img id="bob-pol-1" src="pictures/b_vertical.svg" class="polarizer-img"></div>
                     <div class="node bob-diff-node" style="left: 72%; top: 35%;"><img id="bob-pol-2" src="pictures/gray_diagonal.svg" class="polarizer-img inactive"></div>
@@ -408,30 +451,84 @@
                     <div class="node bob-diff-node" style="left: 72%; top: 68%;"><img id="bob-pol-4" src="pictures/gray_diagonal.svg" class="polarizer-img inactive"></div>
                     <div class="node bob-same-node" style="left: 72%; top: 82%;"><img id="bob-pol-5" src="pictures/b_vertical.svg" class="polarizer-img"></div>
                     <div class="node bob-diff-node" style="left: 72%; top: 94%;"><img id="bob-pol-6" src="pictures/gray_diagonal.svg" class="polarizer-img inactive"></div>
-                    <div class="node bob-same-node" style="left: 88%; top: 15%;"><div class="state-circle" id="bob-final-1">|&rarr;&#10217;</div></div>
-                    <div class="prob-circle prob-fraction" style="left: calc(88% + 38px); top: 15%;" data-prob-for="bob-final-1"><div class="fraction-num">1</div><div class="fraction-den">4</div></div>
-                    <div class="node bob-diff-node" style="left: 88%; top: 30%;"><div class="state-circle inactive" id="bob-final-2" style="transform: rotate(-45deg);"><span style="transform: rotate(45deg); display:block;">|&#8598;&#10217;</span></div></div>
-                    <div class="prob-circle prob-fraction inactive" style="left: calc(88% + 38px); top: 30%;" data-prob-for="bob-final-2"><div class="fraction-num">1</div><div class="fraction-den">8</div></div>
-                    <div class="node bob-diff-node" style="left: 88%; top: 40%;"><div class="state-circle inactive" id="bob-final-3" style="transform: rotate(45deg);"><span style="transform: rotate(-45deg); display:block;">|&#8599;&#10217;</span></div></div>
-                    <div class="prob-circle prob-fraction inactive" style="left: calc(88% + 38px); top: 40%;" data-prob-for="bob-final-3"><div class="fraction-num">1</div><div class="fraction-den">8</div></div>
-                    <div class="node bob-same-node" style="left: 88%; top: 48%;"><div class="state-circle" id="bob-final-4">|&rarr;&#10217;</div></div>
-                    <div class="prob-circle prob-fraction" style="left: calc(88% + 38px); top: 48%;" data-prob-for="bob-final-4"><div class="fraction-num">1</div><div class="fraction-den">16</div></div>
-                    <div class="node bob-same-node" style="left: 88%; top: 56%;"><div class="state-circle eve-error" id="bob-final-5">|&uarr;&#10217;</div></div>
-                    <div class="prob-circle prob-fraction eve-error" style="left: calc(88% + 38px); top: 56%;" data-prob-for="bob-final-5"><div class="fraction-num">1</div><div class="fraction-den">16</div></div>
-                    <div class="node bob-diff-node" style="left: 88%; top: 68%;"><div class="state-circle inactive" id="bob-final-6" style="transform: rotate(-45deg);"><span style="transform: rotate(45deg); display:block;">|&#8598;&#10217;</span></div></div>
-                    <div class="prob-circle prob-fraction inactive" style="left: calc(88% + 38px); top: 68%;" data-prob-for="bob-final-6"><div class="fraction-num">1</div><div class="fraction-den">8</div></div>
-                    <div class="node bob-same-node" style="left: 88%; top: 78%;"><div class="state-circle" id="bob-final-7">|&rarr;&#10217;</div></div>
-                    <div class="prob-circle prob-fraction" style="left: calc(88% + 38px); top: 78%;" data-prob-for="bob-final-7"><div class="fraction-num">1</div><div class="fraction-den">16</div></div>
-                    <div class="node bob-same-node" style="left: 88%; top: 86%;"><div class="state-circle eve-error" id="bob-final-8">|&uarr;&#10217;</div></div>
-                    <div class="prob-circle prob-fraction eve-error" style="left: calc(88% + 38px); top: 86%;" data-prob-for="bob-final-8"><div class="fraction-num">1</div><div class="fraction-den">16</div></div>
-                    <div class="node bob-diff-node" style="left: 88%; top: 94%;"><div class="state-circle inactive" id="bob-final-9" style="transform: rotate(45deg);"><span style="transform: rotate(-45deg); display:block;">|&#8599;&#10217;</span></div></div>
-                    <div class="prob-circle prob-fraction inactive" style="left: calc(88% + 38px); top: 94%;" data-prob-for="bob-final-9"><div class="fraction-num">1</div><div class="fraction-den">8</div></div>
+                    <div class="node bob-same-node" style="left: 88%; top: 15%;"><div class="state-circle" id="bob-final-1">|→⟩</div></div>
+                    <div class="prob-circle prob-fraction bb84-resend-prob state-gray" data-for="bob-final-1" style="top: 15%;"><div class="fraction-num">1</div><div class="fraction-den">4</div></div>
+                    <div class="node bob-diff-node" style="left: 88%; top: 30%;"><div class="state-circle inactive" id="bob-final-2" style="transform: rotate(-45deg);"><span style="transform: rotate(45deg); display:block;">|↖⟩</span></div></div>
+                    <div class="prob-circle prob-fraction bb84-resend-prob state-gray" data-for="bob-final-2" style="top: 30%;"><div class="fraction-num">1</div><div class="fraction-den">8</div></div>
+                    <div class="node bob-diff-node" style="left: 88%; top: 40%;"><div class="state-circle inactive" id="bob-final-3" style="transform: rotate(45deg);"><span style="transform: rotate(-45deg); display:block;">|↗⟩</span></div></div>
+                    <div class="prob-circle prob-fraction bb84-resend-prob state-gray" data-for="bob-final-3" style="top: 40%;"><div class="fraction-num">1</div><div class="fraction-den">8</div></div>
+                    <div class="node bob-same-node" style="left: 88%; top: 48%;"><div class="state-circle" id="bob-final-4">|→⟩</div></div>
+                    <div class="prob-circle prob-fraction bb84-resend-prob state-gray" data-for="bob-final-4" style="top: 48%;"><div class="fraction-num">1</div><div class="fraction-den">16</div></div>
+                    <div class="node bob-same-node" style="left: 88%; top: 56%;"><div class="state-circle eve-error" id="bob-final-5">|↑⟩</div></div>
+                    <div class="prob-circle prob-fraction bb84-resend-prob state-gray" data-for="bob-final-5" style="top: 56%;"><div class="fraction-num">1</div><div class="fraction-den">16</div></div>
+                    <div class="node bob-diff-node" style="left: 88%; top: 68%;"><div class="state-circle inactive" id="bob-final-6" style="transform: rotate(-45deg);"><span style="transform: rotate(45deg); display:block;">|↖⟩</span></div></div>
+                    <div class="prob-circle prob-fraction bb84-resend-prob state-gray" data-for="bob-final-6" style="top: 68%;"><div class="fraction-num">1</div><div class="fraction-den">8</div></div>
+                    <div class="node bob-same-node" style="left: 88%; top: 78%;"><div class="state-circle" id="bob-final-7">|→⟩</div></div>
+                    <div class="prob-circle prob-fraction bb84-resend-prob state-gray" data-for="bob-final-7" style="top: 78%;"><div class="fraction-num">1</div><div class="fraction-den">16</div></div>
+                    <div class="node bob-same-node" style="left: 88%; top: 86%;"><div class="state-circle eve-error" id="bob-final-8">|↑⟩</div></div>
+                    <div class="prob-circle prob-fraction bb84-resend-prob state-gray" data-for="bob-final-8" style="top: 86%;"><div class="fraction-num">1</div><div class="fraction-den">16</div></div>
+                    <div class="node bob-diff-node" style="left: 88%; top: 94%;"><div class="state-circle inactive" id="bob-final-9" style="transform: rotate(45deg);"><span style="transform: rotate(-45deg); display:block;">|↗⟩</span></div></div>
+                    <div class="prob-circle prob-fraction bb84-resend-prob state-gray" data-for="bob-final-9" style="top: 94%;"><div class="fraction-num">1</div><div class="fraction-den">8</div></div>
                 </div>
             </div>
         </div>
         <div id="calculation-panel" class="eve-calculation-panel">
-            <h4>Calculation Process</h4>
+            <h4>Eve Detection Calculation</h4>
             <div id="math-display" class="eve-calc-display"></div>
+        </div>
+    </div>
+</div>
+
+
+<div id="view-bb84-eve-cnot" class="page-view">
+    <div class="container">
+        <div class="top-bar" style="display: flex; align-items: center; justify-content: flex-start; gap: 20px; margin-bottom: 20px;">
+            <a href="VerifySetting.html" class="btn-back">◀&#xFE0E</a>
+            <div class="page-title">Quantum Key Distribution : BB84 Protocol</div>
+            <div id="cnot-eve-detected-indicator" class="page-title" onclick="showCnotEveDetectedCalculation()" title="Click to show Eve detection calculation">Eve detected probability： 0%</div>
+        </div>
+        <div class="main-content">
+            <div class="sidebar">
+                <div class="selection-box" id="bb84-cnot-options">
+                    <h4>Alice Selects Message</h4>
+                    <div class="option-row basis-z" data-state-symbol="|→⟩" data-basis-type="rectilinear" onclick="selectStateBB84Cnot(this, '|→⟩', 'rectilinear')"><div class="state-btn option-state">|0⟩</div><div class="arrow-icon">➔</div><div class="state-btn option-state">|0⟩</div></div>
+                    <div class="option-row basis-z" data-state-symbol="| ↑ ⟩" data-basis-type="rectilinear" onclick="selectStateBB84Cnot(this, '| ↑ ⟩', 'rectilinear')"><div class="state-btn option-state">|1⟩</div><div class="arrow-icon">➔</div><div class="state-btn option-state">|1⟩</div></div>
+                    <div class="option-row basis-x" data-state-symbol="|↗⟩" data-basis-type="diagonal" onclick="selectStateBB84Cnot(this, '|↗⟩', 'diagonal')"><div class="state-btn option-state">|+⟩</div><div class="arrow-icon">➔</div><div class="state-btn option-state">|+⟩</div></div>
+                    <div class="option-row basis-x" data-state-symbol="|↖⟩" data-basis-type="diagonal" onclick="selectStateBB84Cnot(this, '|↖⟩', 'diagonal')"><div class="state-btn option-state">|-⟩</div><div class="arrow-icon">➔</div><div class="state-btn option-state">|-⟩</div></div>
+                </div>
+                <div class="settings-panel" style="margin-top: 20px;">
+                    <h4>Current Settings</h4>
+                    <div class="settings-content"></div>
+                </div>
+            </div>
+            <div class="diagram-area" style="height: 620px;">
+                <div class="character-avatar avatar-alice" style="left: 12%; width: 260px;"><img src="pictures/cat_alice.svg" alt="Alice"></div>
+                <div class="character-avatar avatar-eve" style="left: 48%; width: 260px;"><img src="pictures/Eavesdropper.svg" alt="Eve" style="width:60px;"></div>
+                <div class="character-avatar avatar-bob" style="left: 82%; width: 260px;"><img src="pictures/cat_bob.svg" alt="Bob"></div>
+                <div style="position: absolute; top: 120px; left: 0; width: 100%; height: calc(100% - 120px);">
+                    <svg class="arrows" style="width: 100%; height: 100%; position: absolute; z-index: 1;">
+                        <defs><marker id="arrow-bb84-cnot" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#333" /></marker></defs>
+                        <line data-prob="100%" x1="18%" y1="38%" x2="68%" y2="38%" stroke="#333" stroke-width="3" marker-end="url(#arrow-bb84-cnot)" />
+                        <line data-prob="100%" x1="18%" y1="75%" x2="68%" y2="75%" stroke="#333" stroke-width="3" />
+                        <line x1="40%" y1="38%" x2="40%" y2="75%" stroke="#d40000" stroke-width="6" />
+                        <line id="cnot-branch-up" data-prob="50%" x1="77%" y1="38%" x2="84%" y2="27%" stroke="#333" stroke-width="3" marker-end="url(#arrow-bb84-cnot)" />
+                        <line id="cnot-branch-down" data-prob="50%" x1="77%" y1="38%" x2="84%" y2="49%" stroke="#333" stroke-width="3" marker-end="url(#arrow-bb84-cnot)" />
+                        <line id="cnot-branch-single" data-prob="100%" x1="76%" y1="38%" x2="83%" y2="38%" stroke="#333" stroke-width="3" marker-end="url(#arrow-bb84-cnot)" style="display:none;" />
+                    </svg>
+                    <div class="node" style="left: 9%; top: 38%;"><div class="state-circle" id="cnot-alice-state">|+⟩</div></div>
+                    <div class="node" style="left: 9%; top: 75%;"><div class="eve-state-circle" id="cnot-eve-state">|0⟩</div></div>
+                    <div class="node" style="left: 40%; top: 38%;"><div class="cnot-gate-dot"></div></div>
+                    <div class="node" style="left: 40%; top: 75%;"><div class="cnot-gate-plus"></div></div>
+                    <div class="node" style="left: 53%; top: 56%;"><div id="cnot-operation-node" class="cnot-op-node" onclick="showCnotCalculation()" title="Click to view CNOT calculation">|𝜙<sup>+</sup>⟩<sub>AE</sub></div></div>
+                    <div class="node" style="left: 73%; top: 38%;"><img id="cnot-bob-measure" src="pictures/b_eyex.svg" class="polarizer-img basis-eye-img" alt="Bob basis measurement"></div>
+                    <div class="node" id="cnot-bob-top-node" style="left: 90%; top: 27%;"><div class="cnot-outcome-row"><div class="state-circle state-blue" id="cnot-bob-top">|+⟩</div><div class="prob-circle prob-fraction cnot-prob-node state-blue" id="cnot-prob-top" data-prob-for="cnot-bob-top"><div class="fraction-num">1</div><div class="fraction-den">2</div></div></div></div>
+                    <div class="node" id="cnot-bob-bottom-node" style="left: 90%; top: 49%;"><div class="cnot-outcome-row"><div class="state-circle state-red" id="cnot-bob-bottom">|-⟩</div><div class="prob-circle prob-fraction cnot-prob-node state-red" id="cnot-prob-bottom" data-prob-for="cnot-bob-bottom"><div class="fraction-num">1</div><div class="fraction-den">2</div></div></div></div>
+                </div>
+            </div>
+        </div>
+        <div id="cnot-calculation-panel" class="eve-calculation-panel">
+            <h4>Calculation Process</h4>
+            <div id="cnot-math-display" class="eve-calc-display"></div>
         </div>
     </div>
 </div>
@@ -439,9 +536,11 @@
 <script>
     let globalBobBasis = 'X';
     let isEveInterceptResend = false; 
-    const symbols = { Stype: ['|\u2191\u27E9', '|\u2192\u27E9'], Dtype: ['|\u2197\u27E9', '|\u2196\u27E9']};
+    let isEveCnot = false;
+    let representationMode = 'polarization';
+    const symbols = { Stype: ['| ↑ ⟩', '|→⟩'],  Dtype: ['|↗⟩', '|↖⟩']};
 
-        // Keeps the visualization state in sync with the selected settings.
+    // 預設的設定值 (不依賴上一頁)
     let currentSettings = {
         alice: { isOn: true, particle: 'single', basis: 'X' },
         bob:   { isOn: true, particle: 'single', basis: 'X' },
@@ -449,70 +548,159 @@
         subProtocol: 'bb84'
     };
 
-    const eveDetectedTerms = [
-        { num: 1, den: 4, detected: false, targetId: 'bob-final-1' },
-        { num: 1, den: 8, detected: false, targetId: 'bob-final-2' },
-        { num: 1, den: 8, detected: false, targetId: 'bob-final-3' },
-        { num: 1, den: 16, detected: false, targetId: 'bob-final-4' },
-        { num: 1, den: 16, detected: true, targetId: 'bob-final-5' },
-        { num: 1, den: 8, detected: false, targetId: 'bob-final-6' },
-        { num: 1, den: 16, detected: false, targetId: 'bob-final-7' },
-        { num: 1, den: 16, detected: true, targetId: 'bob-final-8' },
-        { num: 1, den: 8, detected: false, targetId: 'bob-final-9' }
-    ];
+
+    function normalizeStateSymbol(symbol) { return String(symbol || '').replace(/\s+/g, ''); }
+    function displayStateSymbol(symbol, forceBasisMode = false) {
+        const compact = normalizeStateSymbol(symbol);
+        if (!forceBasisMode && representationMode !== 'basis') return symbol;
+        const map = { '|→⟩': '|0⟩', '|↑⟩': '|1⟩', '|↗⟩': '|+⟩', '|↖⟩': '|-⟩' };
+        return map[compact] || symbol;
+    }
+    function basisEyeSrc(basis) { return basis === 'Z' ? 'pictures/b_eyez.svg' : 'pictures/b_eyex.svg'; }
+    function basisEyeSrcFromPolarizer(src) {
+        const file = String(src || '').split('/').pop().toLowerCase();
+        if (file.includes('b_diagonal') || file.includes('gray_diagonal')) return { src: 'pictures/b_eyex.svg', role: 'bob' };
+        if (file.includes('b_vertical') || file.includes('gray_vertical')) return { src: 'pictures/b_eyez.svg', role: 'bob' };
+        if (file.includes('e_diagonal') || file.includes('red_diagonal')) return { src: 'pictures/e_eyex.svg', role: 'eve' };
+        if (file.includes('e_vertical') || file.includes('red_vertical')) return { src: 'pictures/e_eyez.svg', role: 'eve' };
+        return null;
+    }
+    function applyRepresentationToPolarizerImages(scope = document) {
+        scope.querySelectorAll('img.polarizer-img').forEach(img => {
+            const currentSrc = img.getAttribute('src') || '';
+            if (!/eye[xyz]\.svg/i.test(currentSrc)) img.dataset.polarizationSrc = currentSrc;
+            const sourceSrc = img.dataset.polarizationSrc || currentSrc;
+            const mapped = basisEyeSrcFromPolarizer(sourceSrc);
+            img.classList.remove('basis-eye-img', 'eve-basis-eye-img');
+            if (representationMode === 'basis' && mapped) {
+                img.src = mapped.src;
+                img.classList.add('basis-eye-img');
+                if (mapped.role === 'eve') img.classList.add('eve-basis-eye-img');
+            } else if (sourceSrc) {
+                img.src = sourceSrc;
+            }
+        });
+    }
+    function setStateSymbolText(target, symbol, forceBasisMode = false) {
+        if (!target) return;
+        target.innerText = displayStateSymbol(symbol, forceBasisMode);
+    }
+    function setStateSymbolTextById(id, symbol, forceBasisMode = false) {
+        setStateSymbolText(document.getElementById(id), symbol, forceBasisMode);
+    }
+    function setStateSymbolTextInSelector(selector, symbol, forceBasisMode = false) {
+        setStateSymbolText(document.querySelector(selector), symbol, forceBasisMode);
+    }
+    function getDraftEveAttack() { const eveAttackNode = document.querySelector('input[name="e_attack"]:checked'); return eveAttackNode ? eveAttackNode.value : 'Intercept-resend'; }
+    function syncRepresentationModeLock() {
+        const toggle = document.getElementById('representation-mode-toggle');
+        const eveToggle = document.getElementById('eve-status-toggle');
+        if (!toggle) return;
+        const shouldLockToBasis = !!(eveToggle && eveToggle.checked && getDraftEveAttack() === 'CNOT');
+        if (shouldLockToBasis) { representationMode = 'basis'; toggle.checked = false; }
+        toggle.disabled = shouldLockToBasis;
+    }
+    function handleRepresentationModeToggle(isPolarizationMode) {
+        const eveToggle = document.getElementById('eve-status-toggle');
+        if (eveToggle && eveToggle.checked && getDraftEveAttack() === 'CNOT') { representationMode = 'basis'; syncRepresentationModeLock(); }
+        else { representationMode = isPolarizationMode ? 'polarization' : 'basis'; }
+        updatePageState();
+    }
+    function updateBB84OptionLabels() {
+        document.querySelectorAll('#bb84-options .option-row, #bb84-eve-options .option-row').forEach(row => {
+            const stateButtons = row.querySelectorAll('.state-btn');
+            const symbol = row.dataset.stateSymbol || (stateButtons.length ? stateButtons[stateButtons.length - 1].innerText : '');
+            if (stateButtons.length > 1) stateButtons[stateButtons.length - 1].innerText = displayStateSymbol(symbol, false);
+        });
+        document.querySelectorAll('#bb84-cnot-options .option-row').forEach(row => {
+            const stateButtons = row.querySelectorAll('.option-state');
+            const symbol = row.dataset.stateSymbol || '';
+            const shown = displayStateSymbol(symbol, true);
+            stateButtons.forEach(btn => btn.innerText = shown);
+        });
+    }
+    function focusCalculationPanel(panel) {
+        if (!panel) return;
+        panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        panel.classList.remove('calc-panel-pop');
+        void panel.offsetWidth;
+        panel.classList.add('calc-panel-pop');
+    }
 
     function probabilityToFraction(prob) {
-        for (let den = 1; den <= 64; den++) {
+        if (Math.abs(prob) < 0.000001) return { num: 0, den: 1 };
+        for (let den = 1; den <= 128; den++) {
             const num = Math.round(prob * den);
             if (Math.abs(prob - num / den) < 0.000001) return { num, den };
         }
         return { num: Math.round(prob * 1000), den: 1000 };
     }
 
-    function formatPercent(prob) {
-        return (prob * 100).toFixed(3).replace(/\.?0+$/, '');
+    function gcd(a, b) {
+        a = Math.abs(a);
+        b = Math.abs(b);
+        while (b) [a, b] = [b, a % b];
+        return a || 1;
     }
 
-    function showEveDetectedCalculation() {
-        const panel = document.getElementById('calculation-panel');
-        const display = document.getElementById('math-display');
-        if (!panel || !display) return;
-
-        panel.style.display = 'block';
-        display.dataset.calcType = 'eve-detected';
-        panel.oncontextmenu = () => false;
-        display.oncontextmenu = () => false;
-
-        const terms = eveDetectedTerms.map(term => {
-            const target = document.getElementById(term.targetId);
-            const isInactive = target ? target.classList.contains('inactive') : false;
-            const isError = term.detected && !isInactive;
-            return {
-                prob: term.num / term.den,
-                isError,
-                colorClass: isError ? 'eve-calc-red' : (isInactive ? 'eve-calc-gray' : 'eve-calc-blue')
-            };
+    function addFractions(items) {
+        let num = 0;
+        let den = 1;
+        items.forEach(item => {
+            const n = Number(item.num) || 0;
+            const d = Number(item.den) || 1;
+            num = num * d + n * den;
+            den = den * d;
+            const g = gcd(num, den);
+            num /= g;
+            den /= g;
         });
-        const total = terms.filter(term => term.isError).reduce((sum, term) => sum + term.prob, 0);
+        return { num, den };
+    }
 
-        function termToMathML(term, visibleIndex) {
-            const frac = probabilityToFraction(term.prob);
-            const sign = visibleIndex === 0 ? '' : '+';
-            return `
-                ${sign ? `<mo>${sign}</mo>` : ''}
-                <mstyle class="${term.colorClass}">
-                    <mfrac><mn>${frac.num}</mn><mn>${frac.den}</mn></mfrac>
-                </mstyle>
-            `;
-        }
+    function fractionToDecimal(frac) {
+        return frac.den ? frac.num / frac.den : 0;
+    }
 
-        const allTermsMathML = terms.map((term, index) => termToMathML(term, index)).join('');
-        const detectedTerms = terms.filter(term => term.isError);
-        const detectedTermsMathML = detectedTerms.length
-            ? detectedTerms.map((term, index) => termToMathML(term, index)).join('')
-            : '<mstyle class="eve-calc-gray"><mn>0</mn></mstyle>';
-        const totalFrac = probabilityToFraction(total);
-        const totalPercent = formatPercent(total);
+    function getProbNodeTone(node) {
+        if (!node) return 'gray';
+        if (node.classList.contains('state-red')) return 'red';
+        if (node.classList.contains('state-blue')) return 'blue';
+        return 'gray';
+    }
+
+    function getFractionFromProbNode(node) {
+        const numNode = node ? node.querySelector('.fraction-num') : null;
+        const denNode = node ? node.querySelector('.fraction-den') : null;
+        return {
+            num: numNode ? Number(numNode.innerText.trim()) || 0 : 0,
+            den: denNode ? Number(denNode.innerText.trim()) || 1 : 1,
+            tone: getProbNodeTone(node)
+        };
+    }
+
+    function buildColoredTermsMathML(terms, includeZeroRed = false) {
+        const visibleTerms = terms.filter(term => includeZeroRed || term.num !== 0);
+        if (!visibleTerms.length) return '<mstyle class="eve-calc-red"><mn>0</mn></mstyle>';
+        return visibleTerms.map((term, index) => {
+            const colorClass = term.tone === 'red' ? 'eve-calc-red' : (term.tone === 'blue' ? 'eve-calc-blue' : 'eve-calc-gray');
+            const sign = index === 0 ? '' : '<mo>+</mo>';
+            return `${sign}<mstyle class="${colorClass}"><mfrac><mn>${term.num}</mn><mn>${term.den}</mn></mfrac></mstyle>`;
+        }).join('');
+    }
+
+    function renderDetectedCalculation(display, terms, labelText) {
+        const redTerms = terms.filter(term => term.tone === 'red');
+        const detected = addFractions(redTerms);
+        const denominator = addFractions(terms);
+        const detectedValue = fractionToDecimal(detected);
+        const denominatorValue = fractionToDecimal(denominator) || 1;
+        const finalValue = detectedValue / denominatorValue;
+        const finalFrac = probabilityToFraction(finalValue);
+        const totalPercent = (finalValue * 100).toFixed(1).replace('.0', '');
+        const numeratorTermsMathML = redTerms.length ? buildColoredTermsMathML(redTerms, true) : '<mstyle class="eve-calc-red"><mn>0</mn></mstyle>';
+        const denominatorTermsMathML = buildColoredTermsMathML(terms);
+        const finalProbabilityMathML = finalValue === 0 ? '<mstyle class="eve-calc-red"><mn>0</mn></mstyle>' : `<mstyle class="eve-calc-red"><mfrac><mn>${finalFrac.num}</mn><mn>${finalFrac.den}</mn></mfrac></mstyle>`;
 
         display.innerHTML = `
             <div class="eve-calc-wrapper" oncontextmenu="return false;">
@@ -521,51 +709,69 @@
                         <mrow><msub><mi>P</mi><mtext>detected</mtext></msub><mo>=</mo></mrow>
                     </math>
                     <div class="eve-fraction-stack">
-                        <div class="eve-fraction-numerator"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><mrow>${detectedTermsMathML}</mrow></math></div>
+                        <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><mrow>${numeratorTermsMathML}</mrow></math>
                         <div class="eve-fraction-line"></div>
-                        <div class="eve-fraction-denominator"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><mrow>${allTermsMathML}</mrow></math></div>
+                        <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><mrow>${denominatorTermsMathML}</mrow></math>
                     </div>
                 </div>
                 <math class="eve-final-row" display="block" xmlns="http://www.w3.org/1998/Math/MathML">
                     <mrow>
-                        <mtext>Detected probability</mtext><mo>=</mo>
-                        <mstyle class="eve-calc-red"><mfrac><mn>${totalFrac.num}</mn><mn>${totalFrac.den}</mn></mfrac></mstyle>
+                        <mtext>${labelText}</mtext><mo>=</mo>
+                        ${finalProbabilityMathML}
                         <mo>=</mo><mstyle class="eve-calc-red"><mn>${totalPercent}</mn><mo>%</mo></mstyle>
                     </mrow>
                 </math>
+                <div class="eve-calc-note">Blue = kept and correct, red = detected error, gray = discarded by basis mismatch.</div>
             </div>`;
 
         if (window.MathJax) {
             MathJax.typesetClear([display]);
-            MathJax.typesetPromise([display]).then(() => focusCalculationPanel(panel));
-        } else {
-            focusCalculationPanel(panel);
+            return MathJax.typesetPromise([display]);
+        }
+        return Promise.resolve();
+    }
+
+    function getBB84ResendDetectedTerms() {
+        syncBB84ResendProbabilityColors();
+        const isDifferentBasis = currentSettings.alice.basis !== currentSettings.bob.basis;
+        return Array.from(document.querySelectorAll('#view-bb84-eve-resend .bb84-resend-prob')).map(node => {
+            const term = getFractionFromProbNode(node);
+            if (isDifferentBasis && term.tone === 'red') term.tone = 'gray';
+            return term;
+        });
+    }
+
+    function renderBB84ResendDetectedCalculation(shouldFocus = false) {
+        const panel = document.getElementById('calculation-panel');
+        const display = document.getElementById('math-display');
+        if (!panel || !display) return;
+        panel.style.display = 'block';
+        display.dataset.calcType = 'eve-detected';
+        panel.oncontextmenu = () => false;
+        display.oncontextmenu = () => false;
+        const renderPromise = renderDetectedCalculation(display, getBB84ResendDetectedTerms(), 'Detected probability');
+        if (shouldFocus) {
+            Promise.resolve(renderPromise).then(() => focusCalculationPanel(panel));
         }
     }
 
-    function focusCalculationPanel(panel = document.getElementById('calculation-panel')) {
-        if (!panel) return;
-        panel.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        panel.classList.remove('calc-panel-pop');
-        void panel.offsetWidth;
-        panel.classList.add('calc-panel-pop');
-        window.setTimeout(() => panel.classList.remove('calc-panel-pop'), 950);
+    function showEveDetectedCalculation() {
+        renderBB84ResendDetectedCalculation(true);
     }
 
-        // Keeps the visualization state in sync with the selected settings.
+    // ▼▼▼ Overlay Settings JavaScript ▼▼▼
     function toggleSettings() {
         const overlay = document.getElementById('settings-overlay');
         const icon = document.getElementById('tab-icon');
         const text = document.getElementById('tab-text');
-        if (!overlay || !text) return;
-
+        
         if (overlay.classList.contains('show')) {
             overlay.classList.remove('show');
-            if (icon) icon.innerText = '▼';
-            text.innerText = 'Settings ⚙️';
+            icon.innerText = '▼';
+            text.innerText = ' Settings ⚙️';
         } else {
             overlay.classList.add('show');
-            if (icon) icon.innerText = '▲';
+            icon.innerText = '▲';
             text.innerText = 'Close Settings';
             // 面板拉下來時不需要再去 localStorage 讀，因為我們都在同一頁了
         }
@@ -591,30 +797,37 @@
             nameTag.classList.remove('red-text');
             inputs.forEach(input => input.disabled = true);
         }
+        syncRepresentationModeLock();
     }
 
     document.getElementById('eve-status-toggle').addEventListener('change', function() {
         updatePanelState(this);
     });
+    document.querySelectorAll('input[name="e_attack"]').forEach(input => { input.addEventListener('change', syncRepresentationModeLock); });
 
-        // Keeps the visualization state in sync with the selected settings.
+    // 動態套用設定且不重新整理
     function applySettings() {
         const isEveOn = document.getElementById('eve-status-toggle').checked;
         const eveAttackNode = document.querySelector('input[name="e_attack"]:checked');
         const eveAttack = eveAttackNode ? eveAttackNode.value : "Intercept-resend";
-        // Keeps the visualization state in sync with the selected settings.
+        // 更新全域設定變數
         currentSettings = {
             alice: { isOn: true, particle: document.querySelector('input[name="a_particle"]:checked').value, basis: document.querySelector('input[name="a_basis"]:checked').value },
             bob: { isOn: true, particle: document.querySelector('input[name="b_particle"]:checked').value, basis: document.querySelector('input[name="b_basis"]:checked').value },
             eve: { isOn: isEveOn, attack: isEveOn ? eveAttack : "None" },
             subProtocol: 'bb84'
         };
-        updatePageState();
-        toggleSettings();
+        if (currentSettings.eve.isOn && currentSettings.eve.attack === 'CNOT') {
+            representationMode = 'basis';
+            const representationToggle = document.getElementById('representation-mode-toggle');
+            if (representationToggle) representationToggle.checked = false;
+        }
+        updatePageState();        // 1. 在遮罩還沒收起前，瞬間在背景把狀態更新完畢       
+        toggleSettings();        // 2. 立刻收起下拉網，不再強制等待
 
     }
 
-        // Keeps the visualization state in sync with the selected settings.
+    // 核心的「頁面狀態更新」函式
     function updatePageState() {
         const contentAreas = document.querySelectorAll('.settings-content');
         
@@ -623,23 +836,27 @@
         globalBobBasis = settings.bob.basis;
         
         isEveInterceptResend = false;
+        isEveCnot = false;
         if (settings.eve.isOn && settings.eve.attack.includes('Intercept')) {
             isEveInterceptResend = true;
         }
-        
-        // Keeps the visualization state in sync with the selected settings.
-        if (isEveInterceptResend) {
-            document.getElementById('view-bb84').classList.remove('active-view');
-            document.getElementById('view-bb84-eve-resend').classList.add('active-view');
-        } else {
-            document.getElementById('view-bb84').classList.add('active-view');
-            document.getElementById('view-bb84-eve-resend').classList.remove('active-view');
+        if (settings.eve.isOn && settings.eve.attack === 'CNOT') {
+            isEveCnot = true;
+            representationMode = 'basis';
+            const representationToggle = document.getElementById('representation-mode-toggle');
+            if (representationToggle) representationToggle.checked = false;
         }
+        syncRepresentationModeLock();
         
-        // Keeps the visualization state in sync with the selected settings.
+        // 視圖切換
+        document.getElementById('view-bb84').classList.toggle('active-view', !isEveInterceptResend && !isEveCnot);
+        document.getElementById('view-bb84-eve-resend').classList.toggle('active-view', isEveInterceptResend);
+        document.getElementById('view-bb84-eve-cnot').classList.toggle('active-view', isEveCnot);
+        
+        // 左側按鈕根據 Alice Basis 的過濾
         const showZ = aliceBasis.includes('Z') || aliceBasis.toLowerCase().includes('rectilinear') || !aliceBasis.includes('X');
         const showX = aliceBasis.includes('X') || aliceBasis.toLowerCase().includes('diagonal') || !aliceBasis.includes('Z');
-        const allOptionRows = document.querySelectorAll('#bb84-options .option-row, #bb84-eve-options .option-row');            
+        const allOptionRows = document.querySelectorAll('#bb84-options .option-row, #bb84-eve-options .option-row, #bb84-cnot-options .option-row');            
         
         allOptionRows.forEach(row => {
             row.classList.remove('active'); 
@@ -647,7 +864,7 @@
             else if (row.classList.contains('basis-x')) row.style.display = showX ? 'flex' : 'none';
         });
         
-        // Keeps the visualization state in sync with the selected settings.
+        // 更新左側的 Current Settings 小視窗
         function formatRole(name, data) {
             if (!data) return ''; 
             if (name === 'Eavesdropper' && (!data.isOn || String(data.isOn).toLowerCase() === 'false')) {
@@ -671,19 +888,27 @@
             ${formatRole('Eavesdropper', settings.eve)}
         `;
         contentAreas.forEach(area => { area.innerHTML = htmlContent; });
+        updateBB84OptionLabels();
         
-        // Keeps the visualization state in sync with the selected settings.
-        if (isEveInterceptResend) {
+        // 自動點擊畫面中第一個顯示的按鈕
+        if (isEveCnot) {
+            const defaultCnot = Array.from(document.querySelectorAll('#bb84-cnot-options .option-row')).find(row => row.style.display !== 'none');
+            if(defaultCnot) {
+                const symbol = defaultCnot.dataset.stateSymbol || defaultCnot.querySelectorAll('.state-btn')[1].innerText;
+                const basis = defaultCnot.dataset.basisType || (defaultCnot.classList.contains('basis-z') ? 'rectilinear' : 'diagonal');
+                selectStateBB84Cnot(defaultCnot, symbol, basis);
+            }
+        } else if (isEveInterceptResend) {
             const defaultEve = Array.from(document.querySelectorAll('#bb84-eve-options .option-row')).find(row => row.style.display !== 'none');
             if(defaultEve) {
-                const symbol = defaultEve.querySelectorAll('.state-btn')[1].innerText;
+                const symbol = defaultEve.dataset.stateSymbol || defaultEve.querySelectorAll('.state-btn')[1].innerText;
                 const basis = defaultEve.classList.contains('basis-z') ? 'rectilinear' : 'diagonal';
                 selectStateBB84Eve(defaultEve, symbol, basis);
             }
         } else {
             const defaultBB84 = Array.from(document.querySelectorAll('#bb84-options .option-row')).find(row => row.style.display !== 'none');
             if(defaultBB84) {
-                const symbol = defaultBB84.querySelectorAll('.state-btn')[1].innerText;
+                const symbol = defaultBB84.dataset.stateSymbol || defaultBB84.querySelectorAll('.state-btn')[1].innerText;
                 const basis = defaultBB84.classList.contains('basis-z') ? 'rectilinear' : 'diagonal';
                 selectStateBB84(defaultBB84, symbol, basis);
             }
@@ -691,12 +916,12 @@
     }
 
     document.addEventListener('DOMContentLoaded', () => {
-        // Keeps the visualization state in sync with the selected settings.
+        // 初始化面網開關狀態 (一進來 Eve 預設為 OFF)
         const eveToggle = document.getElementById('eve-status-toggle');
         eveToggle.checked = false;
         updatePanelState(eveToggle);
 
-        // Keeps the visualization state in sync with the selected settings.
+        // Tooltip 功能綁定
         const tooltip = document.createElement('div');
         tooltip.className = 'line-tooltip';
         document.body.appendChild(tooltip);
@@ -715,33 +940,51 @@
             line.addEventListener('mouseleave', () => { tooltip.style.opacity = '0';});
         });
 
-        // Keeps the visualization state in sync with the selected settings.
+        // 第一次進來時直接執行狀態更新 (套用 currentSettings 預設值)
         updatePageState();
+        syncBB84OffProbabilityColors();
     });
 
     function selectStateBB84(element, stateSymbol, basisType) {
         const rows = document.querySelectorAll('#bb84-options .option-row');
         rows.forEach(row => row.classList.remove('active'));
         element.classList.add('active');
-        document.getElementById('bb84-initial-state-text').innerText = stateSymbol;
-        document.getElementById('bb84-symbol-bobsame').innerText = stateSymbol;
+        document.getElementById('bb84-initial-state-text').innerText = displayStateSymbol(stateSymbol);
+        document.getElementById('bb84-symbol-bobsame').innerText = displayStateSymbol(stateSymbol);
         const oppoSymbol = symbols[(basisType === 'rectilinear') ? 'Dtype' : 'Stype'];
-        document.getElementById('bb84-symbol-bobunsame-1').innerText = oppoSymbol[0];
-        document.getElementById('bb84-symbol-bobunsame-2').innerText = oppoSymbol[1];
+        document.getElementById('bb84-symbol-bobunsame-1').innerText = displayStateSymbol(oppoSymbol[0]);
+        document.getElementById('bb84-symbol-bobunsame-2').innerText = displayStateSymbol(oppoSymbol[1]);
+        const keyImg = document.getElementById('bb84-initial-key-img');
         const bobSame = document.getElementById('bb84-bob-same');
         const bobUnsame = document.getElementById('bb84-bob-unsame');
         const isAliceZ = (basisType === 'rectilinear');
         const isBobZ = (globalBobBasis === 'Z');
         const isSameBasis = (isAliceZ === isBobZ);
         if (isAliceZ) {
+            keyImg.src = "pictures/a_vertical.svg";
             bobSame.src = isSameBasis ? "pictures/b_vertical.svg" : "pictures/gray_vertical.svg";
             bobUnsame.src = !isSameBasis ? "pictures/b_diagonal.svg" : "pictures/gray_diagonal.svg";
         } else {
+            keyImg.src = "pictures/a_diagonal.svg"; 
             bobSame.src = isSameBasis ? "pictures/b_diagonal.svg" : "pictures/gray_diagonal.svg";
             bobUnsame.src = !isSameBasis ? "pictures/b_vertical.svg" : "pictures/gray_vertical.svg";
         }
         const aliceBasis = (basisType === 'rectilinear') ? 'Z' : 'X';
         updateLines(aliceBasis, globalBobBasis, 'bb84');
+        applyRepresentationToPolarizerImages(document.getElementById('view-bb84'));
+        syncBB84OffProbabilityColors();
+    }
+
+    function syncBB84OffProbabilityColors() {
+        document.querySelectorAll('#view-bb84 .bb84-off-prob').forEach(prob => {
+            const state = document.getElementById(prob.dataset.for);
+            prob.classList.remove('state-blue', 'state-gray');
+            if (!state || state.closest('.state-circle')?.classList.contains('inactive') || state.classList.contains('inactive')) {
+                prob.classList.add('state-gray');
+            } else {
+                prob.classList.add('state-blue');
+            }
+        });
     }
 
     function updateLines(aliceBasis, bobBasis, protocol) {
@@ -758,35 +1001,21 @@
             line.classList.remove('line-inactive');
             line.setAttribute('stroke-width', '4'); 
         });
-        syncProbabilityNodes('#view-bb84');
     }
 
-    function getProbabilityTarget(probNode) {
-        const targetId = probNode.dataset.probFor;
-        const target = targetId ? document.getElementById(targetId) : null;
-        if (!target) return null;
-        return target.classList.contains('state-circle') ? target : target.closest('.state-circle');
-    }
-
-    function syncProbabilityNodes(containerSelector) {
-        document.querySelectorAll(`${containerSelector} .prob-circle[data-prob-for]`).forEach(probNode => {
-            const target = getProbabilityTarget(probNode);
-            if (!target) return;
-            probNode.classList.toggle('inactive', target.classList.contains('inactive'));
-            probNode.classList.toggle('eve-error', target.classList.contains('eve-error') && !target.classList.contains('inactive'));
+    function syncBB84ResendProbabilityColors() {
+        const isDifferentBasis = currentSettings.alice.basis !== currentSettings.bob.basis;
+        document.querySelectorAll('#view-bb84-eve-resend .bb84-resend-prob').forEach(prob => {
+            const state = document.getElementById(prob.dataset.for);
+            prob.classList.remove('state-blue', 'state-red', 'state-gray', 'eve-error', 'inactive');
+            if (!state || state.classList.contains('inactive') || (isDifferentBasis && state.classList.contains('eve-error'))) {
+                prob.classList.add('state-gray');
+            } else if (state.classList.contains('eve-error')) {
+                prob.classList.add('state-red');
+            } else {
+                prob.classList.add('state-blue');
+            }
         });
-    }
-
-    function updateEveDetectedIndicator() {
-        const indicator = document.getElementById('eve-detected-indicator');
-        if (!indicator) return;
-        const total = eveDetectedTerms.reduce((sum, term) => {
-            const target = document.getElementById(term.targetId);
-            const isActiveError = target && term.detected && target.classList.contains('eve-error') && !target.classList.contains('inactive');
-            return sum + (isActiveError ? term.num / term.den : 0);
-        }, 0);
-        const totalPercent = formatPercent(total);
-        indicator.innerText = `Eve detected probability: ${totalPercent}%`;
     }
 
     function selectStateBB84Eve(element, stateSymbol, basisType) {
@@ -799,23 +1028,25 @@
         const isBobBasisSameAsAlice = (isAliceZ === isBobZ);
         const symbolsZ = symbols['Stype']; 
         const symbolsX = symbols['Dtype']; 
-        let aliceOppoState = "";
-        if (isAliceZ) { aliceOppoState = (stateSymbol === '|\u2192\u27E9') ? '|\u2191\u27E9' : '|\u2192\u27E9';}
-        else { aliceOppoState = (stateSymbol === '|\u2197\u27E9') ? '|\u2196\u27E9' : '|\u2197\u27E9';}
+        const aliceBasisStates = isAliceZ ? symbolsZ : symbolsX;
+        const aliceOppoState = aliceBasisStates.find(symbol => symbol !== stateSymbol) || aliceBasisStates[0];
         const eveDiffStates = isAliceZ ? symbolsX : symbolsZ;
-        document.getElementById('eve-alice-state').innerText = stateSymbol;
+        setStateSymbolTextById('eve-alice-state', stateSymbol);
+        const aliceImg = document.getElementById('eve-alice-key');
         const eveSameImg = document.getElementById('eve-pol-same');
         const eveDiffImg = document.getElementById('eve-pol-diff');
         if (isAliceZ) {
+            aliceImg.src = "pictures/a_vertical.svg";
             eveSameImg.src = "pictures/red_vertical.svg";
             eveDiffImg.src = "pictures/red_diagonal.svg";
         } else {
+            aliceImg.src = "pictures/a_diagonal.svg";
             eveSameImg.src = "pictures/red_diagonal.svg";
             eveDiffImg.src = "pictures/red_vertical.svg";
         }
-        document.getElementById('eve-state-same').innerText = stateSymbol;
-        document.getElementById('eve-state-diff1').innerText = eveDiffStates[0];
-        document.getElementById('eve-state-diff2').innerText = eveDiffStates[1];
+        setStateSymbolTextById('eve-state-same', stateSymbol);
+        setStateSymbolTextById('eve-state-diff1', eveDiffStates[0]);
+        setStateSymbolTextById('eve-state-diff2', eveDiffStates[1]);
         const bobPols = [
             document.getElementById('bob-pol-1'), document.getElementById('bob-pol-2'),
             document.getElementById('bob-pol-3'), document.getElementById('bob-pol-4'),
@@ -855,21 +1086,194 @@
             sameLines.forEach(l => { l.classList.add('line-inactive');});
             diffLines.forEach(l => { l.classList.remove('line-inactive');});
         }
-        syncProbabilityNodes('#view-bb84-eve-resend');
-        updateEveDetectedIndicator();
-        const calculationPanel = document.getElementById('calculation-panel');
-        if (calculationPanel && calculationPanel.style.display === 'block') showEveDetectedCalculation();
-        document.getElementById('bob-final-1').innerText = stateSymbol;
-        document.querySelector('#bob-final-2 span').innerText = eveDiffStates[0];
-        document.querySelector('#bob-final-3 span').innerText = eveDiffStates[1];
-        document.getElementById('bob-final-4').innerText = stateSymbol;
-        document.getElementById('bob-final-5').innerText = aliceOppoState; 
-        document.querySelector('#bob-final-6 span').innerText = eveDiffStates[0];
-        document.getElementById('bob-final-7').innerText = stateSymbol;
-        document.getElementById('bob-final-8').innerText = aliceOppoState; 
-        document.querySelector('#bob-final-9 span').innerText = eveDiffStates[1];
+
+        const sameBasisFinalIds = new Set(['bob-final-1', 'bob-final-4', 'bob-final-5', 'bob-final-7', 'bob-final-8']);
+        const eveErrorFinalIds = new Set(['bob-final-5', 'bob-final-8']);
+
+        function setBobFinalColor(id, resultState) {
+            const el = document.getElementById(id);
+            if (!el) return;
+            el.classList.remove('bob-result', 'eve-error', 'inactive');
+            const isSameBasisResultNode = sameBasisFinalIds.has(id);
+
+            if (isBobBasisSameAsAlice) {
+                if (!isSameBasisResultNode) {
+                    el.classList.add('inactive');
+                } else if (resultState === stateSymbol) {
+                    el.classList.add('bob-result');
+                } else {
+                    el.classList.add('eve-error');
+                }
+                return;
+            }
+
+            if (isSameBasisResultNode) {
+                if (resultState === stateSymbol) {
+                    el.classList.add('bob-result');
+                } else {
+                    el.classList.add('inactive');
+                    if (eveErrorFinalIds.has(id)) el.classList.add('eve-error');
+                }
+                return;
+            }
+
+            el.classList.add('inactive');
+        }
+
+        setStateSymbolTextById('bob-final-1', stateSymbol);
+        setStateSymbolTextInSelector('#bob-final-2 span', eveDiffStates[0]);
+        setStateSymbolTextInSelector('#bob-final-3 span', eveDiffStates[1]);
+        setStateSymbolTextById('bob-final-4', stateSymbol);
+        setStateSymbolTextById('bob-final-5', aliceOppoState); 
+        setStateSymbolTextInSelector('#bob-final-6 span', eveDiffStates[0]);
+        setStateSymbolTextById('bob-final-7', stateSymbol);
+        setStateSymbolTextById('bob-final-8', aliceOppoState); 
+        setStateSymbolTextInSelector('#bob-final-9 span', eveDiffStates[1]);
+
+        setBobFinalColor('bob-final-1', stateSymbol);
+        setBobFinalColor('bob-final-2', eveDiffStates[0]);
+        setBobFinalColor('bob-final-3', eveDiffStates[1]);
+        setBobFinalColor('bob-final-4', stateSymbol);
+        setBobFinalColor('bob-final-5', aliceOppoState);
+        setBobFinalColor('bob-final-6', eveDiffStates[0]);
+        setBobFinalColor('bob-final-7', stateSymbol);
+        setBobFinalColor('bob-final-8', aliceOppoState);
+        setBobFinalColor('bob-final-9', eveDiffStates[1]);
+        applyRepresentationToPolarizerImages(document.getElementById('view-bb84-eve-resend'));
+        syncBB84ResendProbabilityColors();
+        const resendIndicator = document.getElementById('eve-detected-indicator');
+        if (resendIndicator) resendIndicator.innerText = isBobBasisSameAsAlice ? 'Eve detected probability： 25%' : 'Eve detected probability： 0%';
+        const panel = document.getElementById('calculation-panel');
+        const display = document.getElementById('math-display');
+        if (panel && display && panel.style.display === 'block' && display.dataset.calcType === 'eve-detected') {
+            renderBB84ResendDetectedCalculation(false);
+        }
     }
+
+    function getBB84CnotStateData(stateSymbol, basisType) {
+        const compact = normalizeStateSymbol(stateSymbol);
+        const isZ = basisType === 'rectilinear';
+        const basis = isZ ? 'Z' : 'X';
+        const intended = displayStateSymbol(stateSymbol, true);
+        const data = {
+            '|→⟩': { amp: '|0\\rangle_A|0\\rangle_E', out: '|00\\rangle_{AE}', label: '|00⟩', latex: '|0\\rangle_A|0\\rangle_E \\xrightarrow{CNOT} |00\\rangle_{AE}' },
+            '|↑⟩': { amp: '|1\\rangle_A|0\\rangle_E', out: '|11\\rangle_{AE}', label: '|11⟩', latex: '|1\\rangle_A|0\\rangle_E \\xrightarrow{CNOT} |11\\rangle_{AE}' },
+            '|↗⟩': { amp: '|+\\rangle_A|0\\rangle_E', out: '|\\unicode{x1D719}^+\\rangle_{AE}', label: '|𝜙<sup>+</sup>⟩', latex: '|+\\rangle_A|0\\rangle_E \\xrightarrow{CNOT} \\frac{|00\\rangle+|11\\rangle}{\\sqrt{2}} = |\\unicode{x1D719}^+\\rangle_{AE}' },
+            '|↖⟩': { amp: '|-\\rangle_A|0\\rangle_E', out: '|\\unicode{x1D719}^-\\rangle_{AE}', label: '|𝜙<sup>-</sup>⟩', latex: '|-\\rangle_A|0\\rangle_E \\xrightarrow{CNOT} \\frac{|00\\rangle-|11\\rangle}{\\sqrt{2}} = |\\unicode{x1D719}^-\\rangle_{AE}' }
+        };
+        return { ...(data[compact] || data['|↗⟩']), compact, basis, isZ, intended };
+    }
+
+    function setCnotProbability(probEl, num, den, tone = 'blue') {
+        if (!probEl) return;
+        probEl.classList.remove('state-blue', 'state-red', 'state-gray', 'eve-error', 'inactive');
+        probEl.classList.add(`state-${tone}`);
+        probEl.style.display = 'inline-flex';
+        const n = probEl.querySelector('.fraction-num');
+        const d = probEl.querySelector('.fraction-den');
+        if (n) n.innerText = num;
+        if (d) d.innerText = den;
+    }
+
+    function selectStateBB84Cnot(element, stateSymbol, basisType) {
+        const rows = document.querySelectorAll('#bb84-cnot-options .option-row');
+        rows.forEach(row => row.classList.remove('active'));
+        element.classList.add('active');
+
+        const stateData = getBB84CnotStateData(stateSymbol, basisType);
+        const aliceState = document.getElementById('cnot-alice-state');
+        const operationNode = document.getElementById('cnot-operation-node');
+        const branchUp = document.getElementById('cnot-branch-up');
+        const branchDown = document.getElementById('cnot-branch-down');
+        const branchSingle = document.getElementById('cnot-branch-single');
+        const topNode = document.getElementById('cnot-bob-top-node');
+        const bottomNode = document.getElementById('cnot-bob-bottom-node');
+        const topCircle = document.getElementById('cnot-bob-top');
+        const bottomCircle = document.getElementById('cnot-bob-bottom');
+        const topProb = document.getElementById('cnot-prob-top');
+        const bottomProb = document.getElementById('cnot-prob-bottom');
+        const bobMeasure = document.getElementById('cnot-bob-measure');
+        const indicator = document.getElementById('cnot-eve-detected-indicator');
+        const bobBasis = currentSettings.bob.basis;
+        const isSameBasis = stateData.basis === bobBasis;
+
+        aliceState.innerText = stateData.intended;
+        operationNode.innerHTML = `${stateData.label}<sub>AE</sub>`;
+        operationNode.dataset.cnotLatex = stateData.latex;
+        bobMeasure.src = basisEyeSrc(bobBasis);
+        bobMeasure.classList.add('basis-eye-img');
+        bobMeasure.classList.remove('eve-basis-eye-img');
+        bobMeasure.alt = `Bob ${bobBasis} basis measurement`;
+
+        if (stateData.isZ && bobBasis === 'Z') {
+            branchUp.style.display = 'none';
+            branchDown.style.display = 'none';
+            branchSingle.style.display = '';
+            topNode.style.top = '38%';
+            topCircle.innerText = stateData.intended;
+            topCircle.className = 'state-circle state-blue';
+            setCnotProbability(topProb, 1, 1, 'blue');
+            bottomNode.style.display = 'none';
+            bottomProb.style.display = 'none';
+            if (indicator) indicator.innerText = 'Eve detected probability: 0%';
+        } else {
+            branchUp.style.display = '';
+            branchDown.style.display = '';
+            branchSingle.style.display = 'none';
+            topNode.style.top = '27%';
+            bottomNode.style.display = '';
+            bottomProb.style.display = 'inline-flex';
+            let outcomes;
+            if (bobBasis === 'Z') outcomes = ['|0⟩', '|1⟩'];
+            else outcomes = stateData.compact === '|↖⟩' ? ['|-⟩', '|+⟩'] : ['|+⟩', '|-⟩'];
+            const topError = isSameBasis && outcomes[0] !== stateData.intended;
+            const bottomError = isSameBasis && outcomes[1] !== stateData.intended;
+            topCircle.innerText = outcomes[0];
+            bottomCircle.innerText = outcomes[1];
+            const topTone = !isSameBasis ? 'gray' : (topError ? 'red' : 'blue');
+            const bottomTone = !isSameBasis ? 'gray' : (bottomError ? 'red' : 'blue');
+            topCircle.className = `state-circle state-${topTone}`;
+            bottomCircle.className = `state-circle state-${bottomTone}`;
+            setCnotProbability(topProb, 1, 2, topTone);
+            setCnotProbability(bottomProb, 1, 2, bottomTone);
+            if (indicator) indicator.innerText = `Eve detected probability: ${isSameBasis ? '50%' : '0% (discarded basis)'}`;
+        }
+    }
+
+    function showCnotCalculation() {
+        const panel = document.getElementById('cnot-calculation-panel');
+        const display = document.getElementById('cnot-math-display');
+        const operationNode = document.getElementById('cnot-operation-node');
+        if (!panel || !display || !operationNode) return;
+        panel.style.display = 'block';
+        display.dataset.calcType = 'cnot';
+        display.innerHTML = `\\[\\begin{aligned}${operationNode.dataset.cnotLatex || '|+\\rangle_A|0\\rangle_E \\xrightarrow{CNOT} |\\unicode{x1D719}^+\\rangle_{AE}'}\\end{aligned}\\]`;
+        if (window.MathJax) {
+            MathJax.typesetClear([display]);
+            MathJax.typesetPromise([display]).then(() => focusCalculationPanel(panel));
+        } else { focusCalculationPanel(panel); }
+    }
+
+    function showCnotEveDetectedCalculation() {
+        const active = document.querySelector('#bb84-cnot-options .option-row.active') || document.querySelector('#bb84-cnot-options .option-row');
+        if (active) selectStateBB84Cnot(active, active.dataset.stateSymbol || '|↗⟩', active.dataset.basisType || 'diagonal');
+
+        const panel = document.getElementById('cnot-calculation-panel');
+        const display = document.getElementById('cnot-math-display');
+        if (!panel || !display) return;
+
+        const terms = Array.from(document.querySelectorAll('#view-bb84-eve-cnot .cnot-prob-node'))
+            .filter(node => node.style.display !== 'none')
+            .map(getFractionFromProbNode);
+        panel.style.display = 'block';
+        display.dataset.calcType = 'cnot-detected';
+        panel.oncontextmenu = () => false;
+        display.oncontextmenu = () => false;
+        renderDetectedCalculation(display, terms, 'Detected probability');
+        focusCalculationPanel(panel);
+    }
+
+
 </script>
 </body>
 </html>
-
