@@ -393,9 +393,9 @@
                         <line id="bob-result-line-4" class="eve-bob-line same-path" data-prob="12.5%" x1="76%" y1="52%" x2="84%" y2="52%" stroke="#333" stroke-width="3" marker-end="url(#arrow-b92-resend)" />
                         <line id="bob-result-line-5" class="eve-bob-line diff-path" data-prob="6.25%" x1="76%" y1="68%" x2="84%" y2="63%" stroke="#333" stroke-width="3" marker-end="url(#arrow-b92-resend)" />
                         <line id="bob-result-line-6" class="eve-bob-line diff-path" data-prob="6.25%" x1="76%" y1="68%" x2="84%" y2="73%" stroke="#333" stroke-width="3" marker-end="url(#arrow-b92-resend)" />
-                        <line id="bob-result-line-7" class="eve-bob-line same-path" data-prob="12.5%" x1="76%" y1="82%" x2="84%" y2="78%" stroke="#333" stroke-width="3" marker-end="url(#arrow-b92-resend)" />
+                        <line id="bob-result-line-7" class="eve-bob-line same-path" data-prob="6.25%" x1="76%" y1="82%" x2="84%" y2="78%" stroke="#333" stroke-width="3" marker-end="url(#arrow-b92-resend)" />
                         <line id="bob-result-line-8" class="eve-bob-line same-path" data-prob="6.25%" x1="76%" y1="82%" x2="84%" y2="86%" stroke="#333" stroke-width="3" marker-end="url(#arrow-b92-resend)" />
-                        <line id="bob-result-line-9" class="eve-bob-line diff-path" data-prob="6.25%" x1="76%" y1="94%" x2="84%" y2="94%" stroke="#333" stroke-width="3" marker-end="url(#arrow-b92-resend)" />
+                        <line id="bob-result-line-9" class="eve-bob-line diff-path" data-prob="12.5%" x1="76%" y1="94%" x2="84%" y2="94%" stroke="#333" stroke-width="3" marker-end="url(#arrow-b92-resend)" />
                     </svg>
                     
                     <div class="node" style="left: 8%; top: 50%;">
@@ -432,11 +432,11 @@
                     <div class="node bob-diff-node" style="left: 88%; top: 73%;"><div class="state-circle" id="bob-final-6" style="transform: rotate(-45deg);"><span style="transform: rotate(45deg); display:block;">|↗⟩</span></div></div>
                     <div class="prob-circle prob-fraction" style="left: calc(88% + 38px); top: 73%;" data-prob-for="bob-final-6"><div class="fraction-num">1</div><div class="fraction-den">16</div></div>
                     <div class="node bob-same-node" style="left: 88%; top: 78%;"><div class="state-circle inactive" id="bob-final-7">|→⟩</div></div>
-                    <div class="prob-circle prob-fraction inactive" style="left: calc(88% + 38px); top: 78%;" data-prob-for="bob-final-7"><div class="fraction-num">1</div><div class="fraction-den">8</div></div>
+                    <div class="prob-circle prob-fraction inactive" style="left: calc(88% + 38px); top: 78%;" data-prob-for="bob-final-7"><div class="fraction-num">1</div><div class="fraction-den">16</div></div>
                     <div class="node bob-same-node" style="left: 88%; top: 86%;"><div class="state-circle eve-error" id="bob-final-8">|→⟩</div></div>
                     <div class="prob-circle prob-fraction eve-error" style="left: calc(88% + 38px); top: 86%;" data-prob-for="bob-final-8"><div class="fraction-num">1</div><div class="fraction-den">16</div></div>
                     <div class="node bob-diff-node" style="left: 88%; top: 94%;"><div class="state-circle inactive" id="bob-final-9" style="transform: rotate(45deg);"><span style="transform: rotate(-45deg); display:block;">|↗⟩</span></div></div>
-                    <div class="prob-circle prob-fraction inactive" style="left: calc(88% + 38px); top: 94%;" data-prob-for="bob-final-9"><div class="fraction-num">1</div><div class="fraction-den">16</div></div>
+                    <div class="prob-circle prob-fraction inactive" style="left: calc(88% + 38px); top: 94%;" data-prob-for="bob-final-9"><div class="fraction-num">1</div><div class="fraction-den">8</div></div>
                 </div>
             </div>
             </div>
@@ -626,9 +626,9 @@
         { num: 1, den: 8, detected: false, targetId: 'bob-final-4' },
         { num: 1, den: 16, detected: false, targetId: 'bob-final-5' },
         { num: 1, den: 16, detected: false, targetId: 'bob-final-6' },
-        { num: 1, den: 8, detected: false, targetId: 'bob-final-7' },
+        { num: 1, den: 16, detected: false, targetId: 'bob-final-7' },
         { num: 1, den: 16, detected: true, targetId: 'bob-final-8' },
-        { num: 1, den: 16, detected: false, targetId: 'bob-final-9' }
+        { num: 1, den: 8, detected: false, targetId: 'bob-final-9' }
     ];
 
     function probabilityToFraction(prob) {
