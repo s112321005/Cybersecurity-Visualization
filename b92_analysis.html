@@ -55,11 +55,6 @@
         .click-toggle input:checked ~ .toggle-track .toggle-thumb,
         .click-toggle.status-toggle-static .toggle-track .toggle-thumb { background-color: var(--toggle-active); transform: translateX(100%); }
         .status-toggle-static { cursor: default; }
-        .required-toggle { cursor: not-allowed; opacity: 0.96; }
-        .required-toggle:active { transform: none; box-shadow: none; }
-        .required-toggle .toggle-track { filter: none; }
-        .toast-warning { position: fixed; top: 28px; left: 50%; transform: translateX(-50%) translateY(-8px); background: #263238; color: #ffffff; padding: 11px 20px; border-radius: 999px; font-size: 14px; font-weight: 800; box-shadow: 0 10px 28px rgba(0,0,0,0.22); opacity: 0; pointer-events: none; z-index: 20000; transition: opacity 0.24s ease, transform 0.24s ease; }
-        .toast-warning.show { opacity: 1; transform: translateX(-50%) translateY(0); }
         .control-panel { border: 2px solid var(--primary-blue); border-radius: 10px; padding: 25px; background-color: white; height: 350px; box-sizing: border-box; width: 100%; transition: all 0.3s ease; display: flex; flex-direction: column; }
         .control-panel.disabled { border-color: #b0b0b0 !important; color: #777; }
         .setting-title { display: flex; align-items: center; gap: 5px; font-weight: bold; font-size: 14px; margin-bottom: 10px; }
@@ -80,8 +75,6 @@
         .pill-radio { display: inline-block; position: relative; }
         .pill-radio input { display: none; }
         .pill-radio span { display: inline-flex; padding: 4px 12px; border: 2px solid var(--primary-blue); border-radius: 20px; color: var(--primary-blue); font-weight: bold; font-size: 14px; cursor: pointer; background-color: white; text-align: center; min-width: 20px; justify-content: center; transition: all 0.3s ease; white-space: nowrap; }
-        .pill-radio .basis-pill { flex-direction: column; align-items: center; gap: 2px; min-width: 42px; line-height: 1.05; }
-        .basis-pill .basis-sub { font-size: 11px; font-weight: 800; opacity: 0.88; }
         .pill-radio input:checked + span { background-color: var(--primary-blue); color: white; border-color: var(--primary-blue); }
         .disabled .pill-radio span { border-color: #b0b0b0 !important; color: #b0b0b0 !important; cursor: not-allowed; background-color: white !important; }
         #alice-col .name-tag { background-color: var(--alice-blue) !important; color: #ffffff !important; }
@@ -205,7 +198,7 @@
             <div class="character-col" id="alice-col">
                 <img src="pictures/cat_alice.svg" class="character-img" alt="Alice">
                 <div class="name-tag">Alice</div>
-                <div class="click-toggle status-toggle-static required-toggle" role="button" tabindex="0" aria-label="Alice is required and always on" data-required-role="Alice">
+                <div class="click-toggle status-toggle-static" aria-label="Alice status on">
                     <div class="toggle-track">
                         <span class="toggle-text text-left">OFF</span>
                         <span class="toggle-text text-right">ON</span>
@@ -219,8 +212,8 @@
                     </div>
                     <div class="setting-title">Basis Selection</div>
                     <div class="flex-row">
-                        <label class="pill-radio"><input type="radio" name="a_basis" value="X" checked><span class="basis-pill"><span>X</span><span class="basis-sub">+ −</span></span></label>
-                        <label class="pill-radio"><input type="radio" name="a_basis" value="Z"><span class="basis-pill"><span>Z</span><span class="basis-sub">0 1</span></span></label>
+                        <label class="pill-radio"><input type="radio" name="a_basis" value="X" checked><span>X</span></label>
+                        <label class="pill-radio"><input type="radio" name="a_basis" value="Z"><span>Z</span></label>
                     </div>
                 </div>
             </div>
@@ -228,7 +221,7 @@
             <div class="character-col" id="bob-col">
                 <img src="pictures/cat_bob.svg" class="character-img" alt="Bob">
                 <div class="name-tag">Bob</div>
-                <div class="click-toggle status-toggle-static required-toggle" role="button" tabindex="0" aria-label="Bob is required and always on" data-required-role="Bob">
+                <div class="click-toggle status-toggle-static" aria-label="Bob status on">
                     <div class="toggle-track">
                         <span class="toggle-text text-left">OFF</span>
                         <span class="toggle-text text-right">ON</span>
@@ -242,8 +235,8 @@
                     </div>
                     <div class="setting-title">Basis Selection</div>
                     <div class="flex-row">
-                        <label class="pill-radio"><input type="radio" name="b_basis" value="X" checked><span class="basis-pill"><span>X</span><span class="basis-sub">+ −</span></span></label>
-                        <label class="pill-radio"><input type="radio" name="b_basis" value="Z"><span class="basis-pill"><span>Z</span><span class="basis-sub">0 1</span></span></label>
+                        <label class="pill-radio"><input type="radio" name="b_basis" value="X" checked><span>X</span></label>
+                        <label class="pill-radio"><input type="radio" name="b_basis" value="Z"><span>Z</span></label>
                     </div>
                 </div>
             </div>
@@ -397,12 +390,12 @@
                         <line id="bob-result-line-1" class="eve-bob-line same-path" data-prob="25%" x1="76%" y1="15%" x2="84%" y2="15%" stroke="#333" stroke-width="3" marker-end="url(#arrow-b92-resend)" />
                         <line id="bob-result-line-2" class="eve-bob-line diff-path" data-prob="12.5%" x1="76%" y1="35%" x2="84%" y2="30%" stroke="#333" stroke-width="3" marker-end="url(#arrow-b92-resend)" />
                         <line id="bob-result-line-3" class="eve-bob-line diff-path" data-prob="12.5%" x1="76%" y1="35%" x2="84%" y2="40%" stroke="#333" stroke-width="3" marker-end="url(#arrow-b92-resend)" />
-                        <line id="bob-result-line-4" class="eve-bob-line same-path" data-prob="6.25%" x1="76%" y1="52%" x2="84%" y2="52%" stroke="#333" stroke-width="3" marker-end="url(#arrow-b92-resend)" />
+                        <line id="bob-result-line-4" class="eve-bob-line same-path" data-prob="12.5%" x1="76%" y1="52%" x2="84%" y2="52%" stroke="#333" stroke-width="3" marker-end="url(#arrow-b92-resend)" />
                         <line id="bob-result-line-5" class="eve-bob-line diff-path" data-prob="6.25%" x1="76%" y1="68%" x2="84%" y2="63%" stroke="#333" stroke-width="3" marker-end="url(#arrow-b92-resend)" />
-                        <line id="bob-result-line-6" class="eve-bob-line diff-path" data-prob="12.5%" x1="76%" y1="68%" x2="84%" y2="73%" stroke="#333" stroke-width="3" marker-end="url(#arrow-b92-resend)" />
-                        <line id="bob-result-line-7" class="eve-bob-line same-path" data-prob="6.25%" x1="76%" y1="82%" x2="84%" y2="78%" stroke="#333" stroke-width="3" marker-end="url(#arrow-b92-resend)" />
+                        <line id="bob-result-line-6" class="eve-bob-line diff-path" data-prob="6.25%" x1="76%" y1="68%" x2="84%" y2="73%" stroke="#333" stroke-width="3" marker-end="url(#arrow-b92-resend)" />
+                        <line id="bob-result-line-7" class="eve-bob-line same-path" data-prob="12.5%" x1="76%" y1="82%" x2="84%" y2="78%" stroke="#333" stroke-width="3" marker-end="url(#arrow-b92-resend)" />
                         <line id="bob-result-line-8" class="eve-bob-line same-path" data-prob="6.25%" x1="76%" y1="82%" x2="84%" y2="86%" stroke="#333" stroke-width="3" marker-end="url(#arrow-b92-resend)" />
-                        <line id="bob-result-line-9" class="eve-bob-line diff-path" data-prob="12.5%" x1="76%" y1="94%" x2="84%" y2="94%" stroke="#333" stroke-width="3" marker-end="url(#arrow-b92-resend)" />
+                        <line id="bob-result-line-9" class="eve-bob-line diff-path" data-prob="6.25%" x1="76%" y1="94%" x2="84%" y2="94%" stroke="#333" stroke-width="3" marker-end="url(#arrow-b92-resend)" />
                     </svg>
                     
                     <div class="node" style="left: 8%; top: 50%;">
@@ -433,17 +426,17 @@
                     <div class="node bob-diff-node" style="left: 88%; top: 40%;"><div class="state-circle inactive" id="bob-final-3" style="transform: rotate(45deg);"><span style="transform: rotate(-45deg); display:block;">|↗⟩</span></div></div>
                     <div class="prob-circle prob-fraction inactive" style="left: calc(88% + 38px); top: 40%;" data-prob-for="bob-final-3"><div class="fraction-num">1</div><div class="fraction-den">8</div></div>
                     <div class="node bob-same-node" style="left: 88%; top: 52%;"><div class="state-circle inactive" id="bob-final-4">|→⟩</div></div>
-                    <div class="prob-circle prob-fraction inactive" style="left: calc(88% + 38px); top: 52%;" data-prob-for="bob-final-4"><div class="fraction-num">1</div><div class="fraction-den">16</div></div>
+                    <div class="prob-circle prob-fraction inactive" style="left: calc(88% + 38px); top: 52%;" data-prob-for="bob-final-4"><div class="fraction-num">1</div><div class="fraction-den">8</div></div>
                     <div class="node bob-same-node" style="left: 88%; top: 63%;"><div class="state-circle eve-error" id="bob-final-5">|→⟩</div></div>
                     <div class="prob-circle prob-fraction eve-error" style="left: calc(88% + 38px); top: 63%;" data-prob-for="bob-final-5"><div class="fraction-num">1</div><div class="fraction-den">16</div></div>
                     <div class="node bob-diff-node" style="left: 88%; top: 73%;"><div class="state-circle" id="bob-final-6" style="transform: rotate(-45deg);"><span style="transform: rotate(45deg); display:block;">|↗⟩</span></div></div>
-                    <div class="prob-circle prob-fraction" style="left: calc(88% + 38px); top: 73%;" data-prob-for="bob-final-6"><div class="fraction-num">1</div><div class="fraction-den">8</div></div>
+                    <div class="prob-circle prob-fraction" style="left: calc(88% + 38px); top: 73%;" data-prob-for="bob-final-6"><div class="fraction-num">1</div><div class="fraction-den">16</div></div>
                     <div class="node bob-same-node" style="left: 88%; top: 78%;"><div class="state-circle inactive" id="bob-final-7">|→⟩</div></div>
-                    <div class="prob-circle prob-fraction inactive" style="left: calc(88% + 38px); top: 78%;" data-prob-for="bob-final-7"><div class="fraction-num">1</div><div class="fraction-den">16</div></div>
+                    <div class="prob-circle prob-fraction inactive" style="left: calc(88% + 38px); top: 78%;" data-prob-for="bob-final-7"><div class="fraction-num">1</div><div class="fraction-den">8</div></div>
                     <div class="node bob-same-node" style="left: 88%; top: 86%;"><div class="state-circle eve-error" id="bob-final-8">|→⟩</div></div>
                     <div class="prob-circle prob-fraction eve-error" style="left: calc(88% + 38px); top: 86%;" data-prob-for="bob-final-8"><div class="fraction-num">1</div><div class="fraction-den">16</div></div>
                     <div class="node bob-diff-node" style="left: 88%; top: 94%;"><div class="state-circle inactive" id="bob-final-9" style="transform: rotate(45deg);"><span style="transform: rotate(-45deg); display:block;">|↗⟩</span></div></div>
-                    <div class="prob-circle prob-fraction inactive" style="left: calc(88% + 38px); top: 94%;" data-prob-for="bob-final-9"><div class="fraction-num">1</div><div class="fraction-den">8</div></div>
+                    <div class="prob-circle prob-fraction inactive" style="left: calc(88% + 38px); top: 94%;" data-prob-for="bob-final-9"><div class="fraction-num">1</div><div class="fraction-den">16</div></div>
                 </div>
             </div>
             </div>
@@ -630,12 +623,12 @@
         { num: 1, den: 4, detected: false, targetId: 'bob-final-1' },
         { num: 1, den: 8, detected: false, targetId: 'bob-final-2' },
         { num: 1, den: 8, detected: false, targetId: 'bob-final-3' },
-        { num: 1, den: 16, detected: false, targetId: 'bob-final-4' },
+        { num: 1, den: 8, detected: false, targetId: 'bob-final-4' },
         { num: 1, den: 16, detected: false, targetId: 'bob-final-5' },
-        { num: 1, den: 8, detected: false, targetId: 'bob-final-6' },
-        { num: 1, den: 16, detected: false, targetId: 'bob-final-7' },
+        { num: 1, den: 16, detected: false, targetId: 'bob-final-6' },
+        { num: 1, den: 8, detected: false, targetId: 'bob-final-7' },
         { num: 1, den: 16, detected: true, targetId: 'bob-final-8' },
-        { num: 1, den: 8, detected: false, targetId: 'bob-final-9' }
+        { num: 1, den: 16, detected: false, targetId: 'bob-final-9' }
     ];
 
     function probabilityToFraction(prob) {
@@ -867,34 +860,6 @@
             if (defaultB92) selectStateB92(defaultB92, defaultB92.dataset.stateSymbol, defaultB92.dataset.basisType);
         }
     }
-
-    function showRequiredRoleToast(role) {
-        let toast = document.getElementById('required-role-toast');
-        if (!toast) {
-            toast = document.createElement('div');
-            toast.id = 'required-role-toast';
-            toast.className = 'toast-warning';
-            document.body.appendChild(toast);
-        }
-        toast.textContent = `${role} is required in this protocol and cannot be turned off.`;
-        toast.classList.add('show');
-        clearTimeout(toast.hideTimer);
-        toast.hideTimer = setTimeout(() => toast.classList.remove('show'), 1800);
-    }
-
-    function bindRequiredRoleToggles() {
-        document.querySelectorAll('.required-toggle').forEach(toggle => {
-            const showMessage = () => showRequiredRoleToast(toggle.dataset.requiredRole || 'This participant');
-            toggle.addEventListener('click', showMessage);
-            toggle.addEventListener('keydown', event => {
-                if (event.key === 'Enter' || event.key === ' ') {
-                    event.preventDefault();
-                    showMessage();
-                }
-            });
-        });
-    }
-
     document.addEventListener('DOMContentLoaded', () => {
         // 初始化面網開關狀態 (一進來 Eve 預設為 OFF)
         const eveToggle = document.getElementById('eve-status-toggle');
@@ -902,8 +867,6 @@
             eveToggle.checked = false;
             updatePanelState(eveToggle);
         }
-
-        bindRequiredRoleToggles();
 
         // Tooltip 功能綁定
         const tooltip = document.createElement('div');
