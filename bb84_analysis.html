@@ -101,6 +101,10 @@
         .click-toggle input:checked ~ .toggle-track .toggle-thumb,
         .click-toggle.status-toggle-static .toggle-track .toggle-thumb { background-color: var(--toggle-active); transform: translateX(100%); }
         .status-toggle-static { cursor: default; }
+        .click-toggle.status-toggle-static.required-toggle,
+        .click-toggle.status-toggle-static.required-toggle .toggle-track,
+        .click-toggle.status-toggle-static.required-toggle .toggle-text,
+        .click-toggle.status-toggle-static.required-toggle .toggle-thumb { cursor: not-allowed; }
         .control-panel { border: 2px solid var(--primary-blue); border-radius: 10px; padding: 25px; background-color: white; height: 350px; box-sizing: border-box; width: 100%; transition: all 0.3s ease; display: flex; flex-direction: column; }
         .control-panel.disabled { border-color: #b0b0b0 !important; color: #777; }
         .setting-title { display: flex; align-items: center; gap: 5px; font-weight: bold; font-size: 14px; margin-bottom: 10px; }
@@ -151,18 +155,27 @@
         .apply-btn:hover { background-color: #218838; transform: scale(1.05); }
         #eve-detected-indicator, #cnot-eve-detected-indicator { cursor: pointer; user-select: none; margin-left: auto; border-color: var(--eve-red); color: var(--eve-red); }
         #eve-detected-indicator:hover, #cnot-eve-detected-indicator:hover { background: #fff1f1; box-shadow: 0 4px 10px rgba(211,47,47,0.18); }
-        .eve-calculation-panel { background: white; border-radius: 12px; padding: 20px; margin-top: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.08); display: none; }
+        .eve-calculation-panel { background: white; border-radius: 12px; padding: 20px; margin-top: 20px; margin-left: 250px; width: calc(100% - 250px); box-sizing: border-box; box-shadow: 0 4px 10px rgba(0,0,0,0.08); display: none; }
         .eve-calculation-panel h4 { margin-top: 0; margin-bottom: 15px; color: var(--primary-blue); border-bottom: 2px solid var(--light-blue); padding-bottom: 10px; }
         .eve-calc-red { color: var(--eve-red); font-weight: 900; }
         .eve-calc-blue { color: var(--primary-blue); font-weight: 900; }
-        #math-display { overflow-x: auto; user-select: none; padding: 26px 18px 30px; }
-        #math-display math { font-family: "Times New Roman", serif; font-size: 21px; white-space: nowrap; }
-        #math-display .eve-calc-note { margin-top: 16px; font-size: 14px; font-weight: 800; color: #667085; text-align: center; }
-        .eve-calc-wrapper { display: inline-flex; flex-direction: column; align-items: center; gap: 18px; min-width: max-content; padding: 8px 22px 12px; }
+        .eve-calc-gray { color: #777; font-weight: 900; }
+        #math-display, #cnot-math-display { overflow-x: auto; user-select: none; padding: 26px 18px 30px; text-align: center; }
+        #math-display math, #cnot-math-display math { font-family: "Times New Roman", serif; font-size: 21px; white-space: nowrap; }
+        #math-display > mjx-container, #cnot-math-display > mjx-container { margin-left: auto !important; margin-right: auto !important; }
+        #math-display mjx-container[display="true"], #cnot-math-display mjx-container[display="true"] { text-align: center !important; }
+        #math-display .eve-calc-note, #cnot-math-display .eve-calc-note { margin-top: 16px; font-size: 14px; font-weight: 800; color: #667085; text-align: center; }
+        .eve-calc-wrapper { display: inline-flex; flex-direction: column; align-items: center; gap: 18px; min-width: max-content; padding: 8px 22px 12px; margin: 0 auto; }
         .eve-calc-main-row { display: inline-flex; align-items: center; justify-content: flex-start; gap: 16px; min-width: max-content; }
         .eve-calc-main-row > math { flex: 0 0 auto; }
-        .eve-fraction-stack { display: inline-flex; flex-direction: column; align-items: stretch; justify-content: center; gap: 11px; min-width: max-content; }
+        .eve-fraction-stack { display: inline-grid; grid-template-columns: max-content; justify-items: stretch; align-items: center; gap: 11px; min-width: max-content; }
         .eve-fraction-stack math { display: block; text-align: center; margin: 0; }
+        .eve-fraction-stack .eve-fraction-numerator,
+        .eve-fraction-stack .eve-fraction-denominator { grid-column: 1; justify-self: stretch; width: 100%; text-align: center; }
+        .eve-fraction-stack mjx-container.eve-fraction-numerator,
+        .eve-fraction-stack mjx-container.eve-fraction-denominator { display: block !important; width: 100%; text-align: center; }
+        .eve-fraction-stack .eve-fraction-numerator mjx-container,
+        .eve-fraction-stack .eve-fraction-denominator mjx-container { display: inline-block !important; }
         .eve-fraction-line { width: 100%; height: 2px; background: #333; flex: 0 0 auto; }
         .eve-final-row { margin-top: 4px; }
         @media (max-width: 760px) {
@@ -212,11 +225,6 @@
         #cnot-calculation-panel { scroll-margin-top: 28px; transform-origin: center top; }
         #cnot-calculation-panel.calc-panel-pop { animation: calcPanelPop 0.9s ease-out; }
         @keyframes calcPanelPop { 0% { transform: scale(1); box-shadow: 0 4px 10px rgba(0,0,0,0.08); outline: 0 solid rgba(84,159,208,0); } 28% { transform: scale(1.018); box-shadow: 0 12px 28px rgba(84,159,208,0.32); outline: 4px solid rgba(84,159,208,0.28); } 100% { transform: scale(1); box-shadow: 0 4px 10px rgba(0,0,0,0.08); outline: 0 solid rgba(84,159,208,0); } }
-        #cnot-math-display { overflow-x: auto; user-select: none; padding: 26px 18px 30px; text-align: center; }
-        #cnot-math-display math { font-family: "Times New Roman", serif; font-size: 21px; white-space: nowrap; }
-        #cnot-math-display > mjx-container { margin-left: auto !important; margin-right: auto !important; }
-        #cnot-math-display mjx-container[display="true"] { text-align: center !important; }
-        #cnot-math-display .eve-calc-note { margin-top: 16px; font-size: 14px; font-weight: 800; color: #667085; text-align: center; }
         .cnot-op-node { width: 165px; height: 290px; border-radius: 20px; background: #ffffff; border: 8px solid var(--eve-red); color: #000000; font-family: "Times New Roman", serif; font-size: 38px; display: flex; align-items: center; justify-content: center; box-shadow: 0 6px 14px rgba(211,47,47,0.18); cursor: pointer; user-select: none; text-align: center; }
         .cnot-op-node sub { font-size: 0.55em; line-height: 0; vertical-align: sub; }
         .cnot-op-node:hover { transform: scale(1.04); box-shadow: 0 0 18px rgba(211,47,47,0.35); }
@@ -767,9 +775,9 @@
                         <mrow><msub><mi>P</mi><mtext>detected</mtext></msub><mo>=</mo></mrow>
                     </math>
                     <div class="eve-fraction-stack">
-                        <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><mrow>${numeratorTermsMathML}</mrow></math>
+                        <div class="eve-fraction-numerator"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><mrow>${numeratorTermsMathML}</mrow></math></div>
                         <div class="eve-fraction-line"></div>
-                        <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><mrow>${denominatorTermsMathML}</mrow></math>
+                        <div class="eve-fraction-denominator"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><mrow>${denominatorTermsMathML}</mrow></math></div>
                     </div>
                 </div>
                 <math class="eve-final-row" display="block" xmlns="http://www.w3.org/1998/Math/MathML">
@@ -1008,9 +1016,7 @@
         bindRequiredRoleToggles();
 
         // Tooltip 功能綁定
-        const tooltip = document.createElement('div');
-        tooltip.className = 'line-tooltip';
-        document.body.appendChild(tooltip);
+        const tooltip = getLineTooltip();
         document.querySelectorAll('svg.arrows line[data-prob]').forEach(line => {
             line.addEventListener('mouseenter', (e) => {
                 const probValue = line.getAttribute('data-prob');
@@ -1070,6 +1076,68 @@
             } else {
                 prob.classList.add('state-blue');
             }
+        });
+        updateBobStateHoverText();
+    }
+
+    function getLineTooltip() {
+        let tooltip = document.querySelector('.line-tooltip');
+        if (!tooltip) {
+            tooltip = document.createElement('div');
+            tooltip.className = 'line-tooltip';
+            document.body.appendChild(tooltip);
+        }
+        return tooltip;
+    }
+
+    function getBobStateHoverText(node) {
+        if (!node) return '';
+        if (node.classList.contains('eve-error') && node.classList.contains('inactive')) return 'Undetected';
+        if (node.classList.contains('eve-error') || node.classList.contains('state-red')) return 'Eve detected';
+        if (node.classList.contains('inactive') || node.classList.contains('state-gray')) return 'Discarded';
+        if (node.classList.contains('bob-result') || node.classList.contains('state-blue')) return 'Key kept';
+        return 'Key kept';
+    }
+
+    function bindBobStateTooltip(node, stateCircle, text) {
+        node.removeAttribute('title');
+        stateCircle.removeAttribute('title');
+        stateCircle.dataset.hoverText = text;
+        if (stateCircle.dataset.bobTooltipBound === 'true') return;
+
+        stateCircle.dataset.bobTooltipBound = 'true';
+        stateCircle.addEventListener('mouseenter', event => {
+            const tooltip = getLineTooltip();
+            tooltip.innerHTML = stateCircle.dataset.hoverText || '';
+            tooltip.style.opacity = '1';
+            tooltip.style.left = (event.pageX + 15) + 'px';
+            tooltip.style.top = (event.pageY + 15) + 'px';
+        });
+        stateCircle.addEventListener('mousemove', event => {
+            const tooltip = getLineTooltip();
+            tooltip.style.left = (event.pageX + 15) + 'px';
+            tooltip.style.top = (event.pageY + 15) + 'px';
+        });
+        stateCircle.addEventListener('mouseleave', () => {
+            getLineTooltip().style.opacity = '0';
+        });
+    }
+
+    function updateBobStateHoverText() {
+        const selectors = [
+            '#view-bb84 #bb84-symbol-bobsame',
+            '#view-bb84 #bb84-symbol-bobunsame-1',
+            '#view-bb84 #bb84-symbol-bobunsame-2',
+            '#view-bb84-eve-resend [id^="bob-final-"]',
+            '#view-bb84-eve-cnot #cnot-bob-top',
+            '#view-bb84-eve-cnot #cnot-bob-bottom'
+        ].join(', ');
+
+        document.querySelectorAll(selectors).forEach(node => {
+            const stateCircle = node.classList.contains('state-circle') ? node : node.closest('.state-circle');
+            if (!stateCircle) return;
+            const text = getBobStateHoverText(stateCircle);
+            bindBobStateTooltip(node, stateCircle, text);
         });
     }
 
@@ -1227,6 +1295,7 @@
         setBobFinalColor('bob-final-9', eveDiffStates[1]);
         applyRepresentationToPolarizerImages(document.getElementById('view-bb84-eve-resend'));
         syncBB84ResendProbabilityColors();
+        updateBobStateHoverText();
         const resendIndicator = document.getElementById('eve-detected-indicator');
         if (resendIndicator) resendIndicator.innerText = isBobBasisSameAsAlice ? 'Eve detected probability： 25%' : 'Eve detected probability： 0%';
         const panel = document.getElementById('calculation-panel');
@@ -1325,6 +1394,7 @@
             setCnotProbability(bottomProb, 1, 2, bottomTone);
             if (indicator) indicator.innerText = `Eve detected probability: ${isSameBasis ? '50%' : '0% (discarded basis)'}`;
         }
+        updateBobStateHoverText();
     }
 
     function showCnotCalculation() {
