@@ -979,10 +979,10 @@
         function getBobStateHoverText(node) {
             const isInactive = node.classList.contains('inactive');
             const isEveError = node.classList.contains('eve-error');
-            if (isInactive && isEveError) return 'Undetected';
-            if (isEveError) return 'Eve detected';
+            if (isInactive && isEveError) return 'Eve Undetected';
+            if (isEveError) return 'Eve Detected';
             if (isInactive) return 'Discarded';
-            return 'Key kept';
+            return 'Key Kept';
         }
 
         const bobStateNodes = [
