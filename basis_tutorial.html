@@ -359,7 +359,7 @@
             resultBadge.textContent = passed ? "PASS" : "BLOCK";
             resultBadge.classList.toggle("blocked", !passed);
             const baseHint = `${state.ket} photon ${passed ? "passes" : "is blocked"} by ${filters[currentFilter].label.toLowerCase()} polarizer`;
-            hintLine.textContent = split ? `${baseHint}; 50% passes and 50% is blocked.` : baseHint;
+            hintLine.textContent = split ? `${baseHint}.<br> 50% passes and 50% is blocked.` : baseHint;
 
             const allComponentIds = ["zeroCompMini", "oneCompMini", "plusCompMini", "minusCompMini"];
             const activeStateKeys = split ? [split.blocked, split.passed] : [currentState];
