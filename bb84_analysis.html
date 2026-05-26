@@ -1106,6 +1106,8 @@
             bobSame.src = isSameBasis ? "pictures/b_diagonal.svg" : "pictures/gray_diagonal.svg";
             bobUnsame.src = !isSameBasis ? "pictures/b_vertical.svg" : "pictures/gray_vertical.svg";
         }
+        bobSame.classList.toggle('inactive', !isSameBasis);
+        bobUnsame.classList.toggle('inactive', isSameBasis);
         const aliceBasis = (basisType === 'rectilinear') ? 'Z' : 'X';
         updateLines(aliceBasis, globalBobBasis, 'bb84');
         applyRepresentationToPolarizerImages(document.getElementById('view-bb84'));
