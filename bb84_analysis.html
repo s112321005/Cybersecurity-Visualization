@@ -43,6 +43,7 @@
         .legend-dot.red { background: var(--eve-red); }
         .legend-dot.gray { background: var(--inactive-gray); border: 1px solid #c7c7c7; box-sizing: border-box; }
         .legend-dot.gray-red { background: var(--inactive-gray); border: 2px solid var(--eve-red); box-sizing: border-box; }
+        .diagram-stack { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; }
         .diagram-area { position: relative; flex-grow: 1; min-height: 500px; background: #fafafa; border-radius: 12px; border: 1px solid #eaeaea;}
         .arrows { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; }
         .node { position: absolute; display: flex; flex-direction: column; align-items: center; z-index: 2; transform: translate(-50%, -50%); }
@@ -168,7 +169,7 @@
         .apply-btn:hover { background-color: #218838; transform: scale(1.05); }
         #eve-detected-indicator, #cnot-eve-detected-indicator { cursor: pointer; user-select: none; margin-left: auto; border-color: var(--eve-red); color: var(--eve-red); }
         #eve-detected-indicator:hover, #cnot-eve-detected-indicator:hover { background: #fff1f1; box-shadow: 0 4px 10px rgba(211,47,47,0.18); }
-        .eve-calculation-panel { background: white; border-radius: 12px; padding: 20px; margin-top: 20px; margin-left: 250px; width: calc(100% - 250px); box-sizing: border-box; box-shadow: 0 4px 10px rgba(0,0,0,0.08); display: none; }
+        .eve-calculation-panel { background: white; border-radius: 12px; padding: 20px; margin-top: 20px; width: 100%; box-sizing: border-box; box-shadow: 0 4px 10px rgba(0,0,0,0.08); display: none; }
         .eve-calculation-panel h4 { margin-top: 0; margin-bottom: 15px; color: var(--primary-blue); border-bottom: 2px solid var(--light-blue); padding-bottom: 10px; }
         .eve-calc-red { color: var(--eve-red); font-weight: 900; }
         .eve-calc-blue { color: var(--primary-blue); font-weight: 900; }
@@ -213,6 +214,7 @@
         .modern-toggle input:checked ~ .toggle-track .toggle-thumb { transform: translateX(100%); }
         .polarizer-img.inactive { filter: grayscale(100%); opacity: 0.45; }
         .polarizer-img.basis-eye-img { width: 70px; height: 70px; padding: 6px; border: 4px solid var(--bob-blue); border-radius: 50%; background: #ffffff; object-fit: contain; box-sizing: border-box; }
+        .polarizer-img.basis-eye-img.alice-basis-eye-img { border-color: var(--alice-blue); }
         .polarizer-img.basis-eye-img.eve-basis-eye-img { border-color: var(--eve-red); }
         .prob-fraction { width: 30px; height: 30px; font-size: 12px; flex-direction: column; box-shadow: 0 2px 4px rgba(0,0,0,0.1); transform: translateY(-50%); }
         .prob-fraction .fraction-num { border-bottom: 1px solid currentColor; width: 100%; text-align: center; line-height: 1; }
@@ -464,7 +466,8 @@
                     <div class="settings-content"></div>
                 </div>
             </div>
-            <div class="diagram-area eve-layout" style="height: 900px;">
+            <div class="diagram-stack">
+                <div class="diagram-area eve-layout" style="height: 900px;">
                 <div class="character-avatar avatar-alice" style="left: 8%; width: 130px;"><img src="pictures/cat_alice.svg" alt="Alice"></div>
                 <div class="character-avatar avatar-eve" style="left: 38%; width: 350px;"><img src="pictures/Eavesdropper.svg" alt="Eve" style="width:60px;"></div>
                 <div class="character-avatar avatar-bob" style="left: 72%; width: 235px;"><img src="pictures/cat_bob.svg" alt="Bob"></div>
@@ -535,11 +538,12 @@
                     <div class="node bob-diff-node" style="left: 88%; top: 94%;"><div class="state-circle inactive" id="bob-final-9" style="transform: rotate(45deg);"><span style="transform: rotate(-45deg); display:block;">|↗⟩</span></div></div>
                     <div class="prob-circle prob-fraction bb84-resend-prob state-gray" data-for="bob-final-9" style="top: 94%;"><div class="fraction-num">1</div><div class="fraction-den">8</div></div>
                 </div>
+                </div>
+                <div id="calculation-panel" class="eve-calculation-panel">
+                    <h4>Eve Detection Calculation</h4>
+                    <div id="math-display" class="eve-calc-display"></div>
+                </div>
             </div>
-        </div>
-        <div id="calculation-panel" class="eve-calculation-panel">
-            <h4>Eve Detection Calculation</h4>
-            <div id="math-display" class="eve-calc-display"></div>
         </div>
     </div>
 </div>
@@ -573,7 +577,8 @@
                     <div class="settings-content"></div>
                 </div>
             </div>
-            <div class="diagram-area" style="height: 620px;">
+            <div class="diagram-stack">
+                <div class="diagram-area" style="height: 620px;">
                 <div class="character-avatar avatar-alice" style="left: 12%; width: 260px;"><img src="pictures/cat_alice.svg" alt="Alice"></div>
                 <div class="character-avatar avatar-eve" style="left: 48%; width: 260px;"><img src="pictures/Eavesdropper.svg" alt="Eve" style="width:60px;"></div>
                 <div class="character-avatar avatar-bob" style="left: 82%; width: 260px;"><img src="pictures/cat_bob.svg" alt="Bob"></div>
@@ -596,11 +601,12 @@
                     <div class="node" id="cnot-bob-top-node" style="left: 90%; top: 27%;"><div class="cnot-outcome-row"><div class="state-circle state-blue" id="cnot-bob-top">|+⟩<sub>B</sub></div><div class="prob-circle prob-fraction cnot-prob-node state-blue" id="cnot-prob-top" data-prob-for="cnot-bob-top"><div class="fraction-num">1</div><div class="fraction-den">2</div></div></div></div>
                     <div class="node" id="cnot-bob-bottom-node" style="left: 90%; top: 49%;"><div class="cnot-outcome-row"><div class="state-circle state-red" id="cnot-bob-bottom">|-⟩<sub>B</sub></div><div class="prob-circle prob-fraction cnot-prob-node state-red" id="cnot-prob-bottom" data-prob-for="cnot-bob-bottom"><div class="fraction-num">1</div><div class="fraction-den">2</div></div></div></div>
                 </div>
+                </div>
+                <div id="cnot-calculation-panel" class="eve-calculation-panel">
+                    <h4>Calculation Process</h4>
+                    <div id="cnot-math-display" class="eve-calc-display"></div>
+                </div>
             </div>
-        </div>
-        <div id="cnot-calculation-panel" class="eve-calculation-panel">
-            <h4>Calculation Process</h4>
-            <div id="cnot-math-display" class="eve-calc-display"></div>
         </div>
     </div>
 </div>
@@ -635,6 +641,8 @@
     function basisEyeSrc(basis) { return basis === 'Z' ? 'pictures/b_eyez.svg' : 'pictures/b_eyex.svg'; }
     function basisEyeSrcFromPolarizer(src) {
         const file = String(src || '').split('/').pop().toLowerCase();
+        if (file.includes('a_diagonal')) return { src: 'pictures/a_eyex.svg', role: 'alice' };
+        if (file.includes('a_vertical')) return { src: 'pictures/a_eyez.svg', role: 'alice' };
         if (file.includes('b_diagonal') || file.includes('gray_diagonal')) return { src: 'pictures/b_eyex.svg', role: 'bob' };
         if (file.includes('b_vertical') || file.includes('gray_vertical')) return { src: 'pictures/b_eyez.svg', role: 'bob' };
         if (file.includes('e_diagonal') || file.includes('red_diagonal')) return { src: 'pictures/e_eyex.svg', role: 'eve' };
@@ -647,10 +655,11 @@
             if (!/eye[xyz]\.svg/i.test(currentSrc)) img.dataset.polarizationSrc = currentSrc;
             const sourceSrc = img.dataset.polarizationSrc || currentSrc;
             const mapped = basisEyeSrcFromPolarizer(sourceSrc);
-            img.classList.remove('basis-eye-img', 'eve-basis-eye-img');
+            img.classList.remove('basis-eye-img', 'alice-basis-eye-img', 'eve-basis-eye-img');
             if (representationMode === 'basis' && mapped) {
                 img.src = mapped.src;
                 img.classList.add('basis-eye-img');
+                if (mapped.role === 'alice') img.classList.add('alice-basis-eye-img');
                 if (mapped.role === 'eve') img.classList.add('eve-basis-eye-img');
             } else if (sourceSrc) {
                 img.src = sourceSrc;
@@ -824,7 +833,6 @@
                         <mo>=</mo><mstyle class="eve-calc-red"><mn>${totalPercent}</mn><mo>%</mo></mstyle>
                     </mrow>
                 </math>
-                <div class="eve-calc-note">Blue = kept and correct, red = detected error, gray = discarded by basis mismatch.</div>
             </div>`;
 
         if (window.MathJax) {
