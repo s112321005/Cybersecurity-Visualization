@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>QKD Retained Particle Comparison</title>
+    <title>QKD Discarded Particle Comparison</title>
     <script>
         window.MathJax = {
             tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] },
@@ -21,10 +21,15 @@
         .btn-back:hover { transform: scale(1.1); background: #3E8FBC; }
         .page-title { border: 2px solid var(--primary-blue); color: #000; padding: 10px 40px; border-radius: 10px; font-size: 20px; font-weight: bold; margin-left: 15px; }
         .content-left { display: flex; flex-direction: column; gap: 20px; min-width: 0; }
-        .control-panel { background: #f1f5f9; padding: 20px 30px; border-radius: 15px; display: flex; align-items: center; justify-content: space-between; gap: 20px; flex-wrap: wrap; }
+        .control-panel { background: #f1f5f9; padding: 20px 30px; border-radius: 15px; display: flex; flex-direction: column; gap: 18px; }
+        .control-top { display: flex; align-items: center; justify-content: space-between; gap: 20px; flex-wrap: wrap; }
         .panel-title { display: flex; flex-direction: column; gap: 5px; }
         .panel-title strong { font-size: 1.05rem; color: #334155; }
         .panel-title span { font-size: 0.9rem; color: var(--muted); }
+        .slider-group { display: grid; gap: 8px; }
+        .slider-group label { display: flex; justify-content: space-between; gap: 14px; font-weight: 800; color: #334155; }
+        .slider-group output { color: var(--primary-blue); font-size: 1.05rem; }
+        input[type=range] { width: 100%; accent-color: var(--primary-blue); cursor: pointer; }
         .formula-row { display: flex; gap: 12px; flex-wrap: wrap; }
         .formula-pill { background: white; border: 2px solid #e2e8f0; border-radius: 12px; padding: 10px 15px; font-weight: bold; color: #334155; box-shadow: 0 4px 8px rgba(0,0,0,0.04); display: flex; align-items: center; gap: 4px; min-height: 40px; }
         .formula-pill.bb84 { border-color: var(--bb84); }
@@ -49,24 +54,34 @@
     <div class="container">
         <div class="header-bar">
             <a href="https://s112321005.github.io/Cybersecurity-Visualization/QuantumCybersecurityEducationPlatform.html" class="btn-back">◀</a>
-            <div class="page-title">QKD Retained Particle Comparison</div>
+            <div class="page-title">QKD Discarded Particle Comparison</div>
         </div>
 
         <div class="content-left">
             <div class="control-panel">
-                <div class="panel-title">
-                    <strong>BB84 vs B92 Retained Particles</strong>
-                    <span>X-axis = total particles used, Y-axis = retained particles after discarding.</span>
+                <div class="control-top">
+                    <div class="panel-title">
+                        <strong>BB84 vs B92 Discarded Particles</strong>
+                        <span>X-axis = total particles used, Y-axis = discarded particles.</span>
+                    </div>
+
+                    <div class="formula-row">
+                        <div class="formula-pill bb84">BB84: discard = \( \frac{1}{2} \) → \( y = \frac{x}{2} \)</div>
+                        <div class="formula-pill b92">B92: discard = \( \frac{3}{4} \) → \( y = \frac{3x}{4} \)</div>
+                    </div>
                 </div>
 
-                <div class="formula-row">
-                    <div class="formula-pill bb84">BB84: discard = \( \frac{1}{2} \) → retained = \( \frac{1}{2} \) → \( y = \frac{x}{2} \)</div>
-                    <div class="formula-pill b92">B92: discard = \( \frac{3}{4} \) → retained = \( \frac{1}{4} \) → \( y = \frac{x}{4} \)</div>
+                <div class="slider-group">
+                    <label for="particleInput">
+                        <span>Total Particle Number</span>
+                        <output id="particleText">1000</output>
+                    </label>
+                    <input type="range" id="particleInput" min="100" max="3000" step="100" value="1000">
                 </div>
             </div>
 
             <div class="chart-box">
-                <canvas id="retainedChart"></canvas>
+                <canvas id="discardedChart"></canvas>
             </div>
 
             <div class="value-grid-container">
@@ -83,8 +98,8 @@
                             <span class="stat-value">\( \frac{1}{2} = 50\% \)</span>
                         </div>
                         <div class="card-stat">
-                            <span class="stat-label">Retained Rate</span>
-                            <span class="stat-value">\( \frac{1}{2} = 50\% \)</span>
+                            <span class="stat-label">Discarded Particles</span>
+                            <span class="stat-value" id="bb84DiscardValue">500</span>
                         </div>
                         <div class="card-stat">
                             <span class="stat-label">Formula</span>
@@ -99,38 +114,57 @@
                             <span class="stat-value">\( \frac{3}{4} = 75\% \)</span>
                         </div>
                         <div class="card-stat">
-                            <span class="stat-label">Retained Rate</span>
-                            <span class="stat-value">\( \frac{1}{4} = 25\% \)</span>
+                            <span class="stat-label">Discarded Particles</span>
+                            <span class="stat-value" id="b92DiscardValue">750</span>
                         </div>
                         <div class="card-stat">
                             <span class="stat-label">Formula</span>
-                            <span class="stat-value">\( y = \frac{x}{4} \)</span>
+                            <span class="stat-value">\( y = \frac{3x}{4} \)</span>
                         </div>
                     </div>
                 </div>
 
-                <div class="note-box">
-                    Example: when the total number of particles is 1000, BB84 retains 500 particles, while B92 retains 250 particles.
+                <div class="note-box" id="exampleNote">
+                    Example: when the total number of particles is 1000, BB84 discards 500 particles, while B92 discards 750 particles.
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        const ctx = document.getElementById('retainedChart').getContext('2d');
+        const ctx = document.getElementById('discardedChart').getContext('2d');
+        const particleInput = document.getElementById('particleInput');
+        const particleText = document.getElementById('particleText');
+        const bb84DiscardValue = document.getElementById('bb84DiscardValue');
+        const b92DiscardValue = document.getElementById('b92DiscardValue');
+        const exampleNote = document.getElementById('exampleNote');
 
-        const xValues = [0, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000];
-        const bb84Data = xValues.map(x => x * 0.5);
-        const b92Data = xValues.map(x => x * 0.25);
+        function buildXValues(maxParticles) {
+            const step = Math.max(10, Math.ceil(maxParticles / 10 / 10) * 10);
+            const values = [];
+            for (let x = 0; x < maxParticles; x += step) values.push(x);
+            if (values[values.length - 1] !== maxParticles) values.push(maxParticles);
+            return values;
+        }
 
-        new Chart(ctx, {
+        function buildChartData(maxParticles) {
+            const xValues = buildXValues(maxParticles);
+            return {
+                labels: xValues,
+                bb84: xValues.map(x => x * 0.5),
+                b92: xValues.map(x => x * 0.75)
+            };
+        }
+
+        const initialData = buildChartData(Number(particleInput.value));
+        const chart = new Chart(ctx, {
             type: 'line',
             data: {
-                labels: xValues,
+                labels: initialData.labels,
                 datasets: [
                     {
-                        label: 'BB84',
-                        data: bb84Data,
+                        label: 'BB84 discarded',
+                        data: initialData.bb84,
                         borderColor: '#549FD0',
                         backgroundColor: 'rgba(84, 159, 208, 0.12)',
                         borderWidth: 3,
@@ -142,8 +176,8 @@
                         pointBorderColor: '#549FD0'
                     },
                     {
-                        label: 'B92',
-                        data: b92Data,
+                        label: 'B92 discarded',
+                        data: initialData.b92,
                         borderColor: '#e55d8b',
                         backgroundColor: 'rgba(229, 93, 139, 0.12)',
                         borderWidth: 3,
@@ -178,7 +212,7 @@
                         beginAtZero: true,
                         title: {
                             display: true,
-                            text: 'Retained Particles (y)',
+                            text: 'Discarded Particles (y)',
                             font: { weight: 'bold', size: 14 }
                         },
                         ticks: {
@@ -199,13 +233,35 @@
                                 return 'Total particles: ' + context[0].label;
                             },
                             label: function(context) {
-                                return context.dataset.label + ': retained ' + context.parsed.y + ' particles';
+                                return context.dataset.label + ': ' + context.parsed.y + ' particles';
                             }
                         }
                     }
                 }
             }
         });
+
+        function updateView(maxParticles) {
+            const data = buildChartData(maxParticles);
+            particleText.textContent = maxParticles;
+            chart.data.labels = data.labels;
+            chart.data.datasets[0].data = data.bb84;
+            chart.data.datasets[1].data = data.b92;
+            chart.options.scales.y.max = maxParticles;
+            chart.update();
+
+            const bb84Discarded = Math.round(maxParticles * 0.5);
+            const b92Discarded = Math.round(maxParticles * 0.75);
+            bb84DiscardValue.textContent = bb84Discarded.toLocaleString();
+            b92DiscardValue.textContent = b92Discarded.toLocaleString();
+            exampleNote.textContent = `Example: when the total number of particles is ${maxParticles.toLocaleString()}, BB84 discards ${bb84Discarded.toLocaleString()} particles, while B92 discards ${b92Discarded.toLocaleString()} particles.`;
+        }
+
+        particleInput.addEventListener('input', event => {
+            updateView(Number(event.target.value));
+        });
+
+        updateView(Number(particleInput.value));
     </script>
 </body>
 </html>
