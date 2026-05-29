@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=430, initial-scale=1.0">
     <base href="https://s112321005.github.io/Cybersecurity-Visualization/">
     <title>Quantum Cybersecurity Education Platform</title>
     <link href="https://fonts.googleapis.com/css2?family=Titan+One&display=swap" rel="stylesheet">
@@ -224,7 +224,7 @@
                 return;
             }
 
-            const scale = Math.min(1, Math.max(0.28, (window.innerWidth - 24) / 960));
+            const scale = Math.min(1, Math.max(0.28, (window.innerWidth - 8) / 960));
             root.style.setProperty('--mobile-fit-scale', scale.toFixed(4));
             root.style.setProperty('--mobile-fit-height', `${Math.ceil(380 * scale)}px`);
         }
