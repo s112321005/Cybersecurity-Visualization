@@ -21,11 +21,11 @@ body { margin: 0; min-height: 100vh; font-family: "Segoe UI", "Noto Sans TC", Ar
 .page { width: min(1320px, 98vw); margin: 0 auto; display: grid; gap: 16px; }
 .workspace { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); grid-template-areas: "defs controls" "stage formula"; column-gap: 16px; row-gap: 0; align-items: stretch; }
 .intro { display: block; min-width: 0; }
-.workspace .intro { grid-area: defs; display: flex; }
+.workspace .intro { grid-area: defs; display: flex; align-self: start; }
 .panel { background: white; border: 2px solid var(--border); border-radius: 26px; box-shadow: var(--shadow); }
-.bell-grid { padding: 14px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
-.workspace .bell-grid { width: 100%; height: 100%; grid-template-columns: repeat(2, minmax(0, 1fr)); align-content: start; }
-.bell-card { border: 2px solid #e1f1f9; border-radius: 16px; padding: 8px 10px; background: #fbfdff; color: #334155; display: flex; align-items: center; gap: 5px; min-height: 54px; overflow: hidden; box-shadow: none; }
+.bell-grid { padding: 10px 14px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+.workspace .bell-grid { width: 100%; height: auto; grid-template-columns: repeat(2, minmax(0, 1fr)); align-content: start; }
+.bell-card { border: 2px solid #e1f1f9; border-radius: 16px; padding: 6px 10px; background: #fbfdff; color: #334155; display: flex; align-items: center; gap: 5px; min-height: 46px; overflow: hidden; box-shadow: none; }
 .bell-name { font-size: 22px; font-weight: 1000; white-space: nowrap; }
 .workspace .bell-name { font-size: 19px; }
 .bell-formula { font-size: 16px; white-space: nowrap; }
@@ -37,7 +37,7 @@ mjx-c { display: inline-block; font-style: normal; }
 mjx-c.mjx-c1D719.TEX-I::before { content: "\1D719"; }
 mjx-c.mjx-c1D713.TEX-I::before { content: "\1D713"; }
 .controls { padding: 16px; display: grid; gap: 14px; min-width: 0; }
-.workspace .controls { grid-area: controls; }
+.workspace .controls { grid-area: controls; position: relative; z-index: 40; }
 .control-top { display: grid; grid-template-columns: 1fr 1fr auto; gap: 12px; align-items: stretch; }
 .workspace .controls { padding: 10px; gap: 8px; }
 .workspace .control-top { grid-template-columns: 1fr 1fr auto; gap: 8px; }
@@ -52,7 +52,7 @@ mjx-c.mjx-c1D713.TEX-I::before { content: "\1D713"; }
 .option-btn:disabled { opacity: 0.42; cursor: not-allowed; transform: none; }
 .bell-row .option-btn { font-family: "Cambria Math", "Times New Roman", serif; font-size: 16px; padding-inline: 13px; }
 .fixed-box { border: 2px solid #e2eef5; border-radius: 16px; background: white; color: #334155; padding: 10px 12px; min-height: 42px; display: flex; align-items: center; font-weight: 1000; font-family: "Cambria Math", "Times New Roman", serif; }
-.auto-row { display: grid; grid-template-columns: 1.4fr 1fr 1fr; gap: 10px; }
+.auto-row { display: grid; grid-template-columns: 1fr 1.15fr 1.15fr; gap: 10px; }
 .auto-box { border: 2px solid #e2eef5; border-radius: 18px; background: white; padding: 9px 12px; min-height: 50px; }
 .auto-label { display: block; font-size: 11px; color: #64748b; font-weight: 1000; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 4px; }
 .auto-value { display: block; color: #17202a; font-weight: 1000; font-family: "Cambria Math", "Times New Roman", serif; font-size: 16px; }
@@ -65,7 +65,7 @@ mjx-c.mjx-c1D713.TEX-I::before { content: "\1D713"; }
 .primary-btn { align-self: center; border: none; background: var(--primary-blue); color: white; padding: 13px 24px; border-radius: 999px; font-weight: 1000; cursor: pointer; box-shadow: 0 8px 18px rgba(84,159,208,0.25); transition: 0.2s; white-space: nowrap; }
 .workspace .primary-btn { width: 100%; grid-column: 1 / -1; }
 .primary-btn:hover { background: var(--deep-blue); transform: translateY(-1px); }
-.stage { grid-area: stage; height: 500px; border: 2px solid var(--border); position: relative; overflow: hidden; background: white; border-radius: 26px; box-shadow: var(--shadow); min-width: 0; }
+.stage { grid-area: stage; height: 600px; margin-top: -100px; border: 2px solid var(--border); position: relative; z-index: 1; overflow: hidden; background: white; border-radius: 26px; box-shadow: var(--shadow); min-width: 0; }
 .stage-bg { position: absolute; inset: 0; background: radial-gradient(circle at 50% 28%, rgba(84,159,208,0.16), transparent 28%), linear-gradient(180deg, #fff, #f9fcff); }
 .result-strip { position: absolute; left: 26px; right: 26px; top: 22px; min-height: 158px; border: 2px solid var(--border); background: rgba(255,255,255,0.96); border-radius: 22px; padding: 14px 18px; display: grid; grid-template-columns: 1fr; gap: 12px; align-items: stretch; z-index: 30; box-shadow: 0 8px 20px rgba(44,62,80,0.08); }
 .stage-actions { display: flex; gap: 12px; align-items: center; justify-content: center; flex-wrap: wrap; }
@@ -117,7 +117,7 @@ svg { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: n
 .qubit.pair .qubit-ball { border-color: var(--purple); box-shadow: 0 0 0 7px rgba(123,97,255,0.12), 0 12px 24px rgba(44,62,80,0.13); }
 .qubit.measure .qubit-ball { border-color: var(--orange); box-shadow: 0 0 0 7px rgba(242,169,59,0.16), 0 12px 24px rgba(44,62,80,0.13); }
 .qubit.final .qubit-ball { border-color: var(--green); box-shadow: 0 0 0 7px rgba(39,163,106,0.15), 0 12px 24px rgba(44,62,80,0.13); }
-.measure-box { position: absolute; left: 50%; top: 358px; transform: translateX(-50%) scale(0.92); width: 172px; height: 90px; border: 2.5px solid #f2bd65; background: #fff7e7; border-radius: 24px; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 6px; color: #8a5a07; font-weight: 1000; z-index: 10; opacity: 0; transition: 0.45s; }
+.measure-box { position: absolute; left: 50%; top: 358px; transform: translateX(-50%) scale(0.92); width: 172px; height: 90px; border: 2.5px solid #f2bd65; background: #fff7e7; border-radius: 24px; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 6px; color: #8a5a07; font-weight: 1000; z-index: 10; opacity: 0; transition: 0.45s; pointer-events: none; }
 .measure-box.show { opacity: 1; transform: translateX(-50%) scale(1); }
 .measure-symbol { width: 40px; height: 40px; border-radius: 50%; background: white; border: 2px solid #f2bd65; display: flex; align-items: center; justify-content: center; font-size: 22px; animation: pulseMeasure 1.1s infinite; }
 @keyframes pulseMeasure { 0% { box-shadow: 0 0 0 0 rgba(242,169,59,0.32); } 70% { box-shadow: 0 0 0 12px rgba(242,169,59,0); } 100% { box-shadow: 0 0 0 0 rgba(242,169,59,0); } }
@@ -189,7 +189,7 @@ body { padding: 18px 10px 34px; }
 .header-right { justify-content: center; }
 .workspace .control-top { grid-template-columns: 1fr; }
 .auto-row { grid-template-columns: 1fr; }
-.stage { height: 720px; }
+.stage { height: 720px; margin-top: 0; }
 .formula-panel { height: 720px; max-height: 720px; }
 .all-results { grid-template-columns: 1fr 1fr; bottom: 26px; }
 .progress { grid-template-columns: 1fr 1fr; }
@@ -422,15 +422,12 @@ function getBasePositions() {
   const { w } = stageSize();
   const xs = [0.14, 0.38, 0.62, 0.86].map(r => Math.round(w * r));
   const pos = {};
-  for (let i = 1; i <= 4; i++) pos["q" + i] = { x: xs[i - 1], y: 350 };
+  for (let i = 1; i <= 4; i++) pos["q" + i] = { x: xs[i - 1], y: 400 };
   return pos;
 }
 
 function getMeasurePositions(base) {
-  const { w } = stageSize();
-  const pos = JSON.parse(JSON.stringify(base));
-  pos.q2.x = Math.round(w * 0.44); pos.q3.x = Math.round(w * 0.56); pos.q2.y = 350; pos.q3.y = 350;
-  return pos;
+  return JSON.parse(JSON.stringify(base));
 }
 
 function getFinalPositions(base) {
@@ -459,6 +456,10 @@ function curve(a, b, lift) {
   return `M ${a.x} ${a.y} C ${mid} ${cy}, ${mid} ${cy}, ${b.x} ${b.y}`;
 }
 
+function straightLine(a, b) {
+  return `M ${a.x} ${a.y} L ${b.x} ${b.y}`;
+}
+
 function setLine(id, d, show) {
   const el = document.getElementById(id);
   el.setAttribute("d", d);
@@ -481,6 +482,18 @@ function clearMarks() {
   for (let i = 1; i <= 4; i++) document.getElementById("q" + i).classList.remove("pair", "measure", "final");
   document.getElementById("measureBox").classList.remove("show");
   document.getElementById("allResults").classList.add("show");
+}
+
+function positionMeasureBox(pos, pair) {
+  const box = document.getElementById("measureBox");
+  if (!box) return;
+  const a = pos["q" + pair[0]];
+  const b = pos["q" + pair[1]];
+  const centerX = (a.x + b.x) / 2;
+  const arcBottom = Math.max(a.y, b.y) + 54;
+  box.style.left = centerX + "px";
+  box.style.top = (arcBottom + 14) + "px";
+  box.style.width = "172px";
 }
 
 function markPair(a, b, cls) {
@@ -518,6 +531,16 @@ function updateInfoBoxes() {
   let init = `${bellHTML(c.state12, "12")} ⊗ ${bellHTML(c.state34, "34")}`;
   document.getElementById("autoInitial").innerHTML = init;
   renderOrderCircles();
+  updateStepTexts();
+}
+
+function updateStepTexts() {
+  const pairA = finalPairA();
+  const pairB = finalPairB();
+  const step3 = document.querySelector("#s3 .step-text");
+  const step4 = document.querySelector("#s4 .step-text");
+  if (step3) step3.textContent = `measure ${pairSub(pairB)} → connect ${pairSub(pairA)}`;
+  if (step4) step4.textContent = `q${pairA[0]}–q${pairA[1]} and q${pairB[0]}–q${pairB[1]}`;
 }
 
 function expandInitialStates() {
@@ -610,6 +633,7 @@ function mjxSymbol(state) {
 }
 
 function bellHTML(state, sub = "") {
+  if (!state) return `<span class="bell">?</span>`;
   return `<span class="bell">|${mjxSymbol(state)}<span class="sup">${superscriptSign(state)}</span>⟩${sub ? `<sub>${sub}</sub>` : ""}</span>`;
 }
 
@@ -679,7 +703,7 @@ function collectedHTML(collected) {
   const pairBSubscript = pairSub(finalPairB());
   const sorted = collected.slice().sort((a, b) => bellOrder.indexOf(a.state23) - bellOrder.indexOf(b.state23));
   return sorted.map((t, i) => {
-    const core = `${bellHTML(t.state23, pairBSubscript)} ${bellHTML(t.state14, pairASubscript)}${suffix}`;
+    const core = `${bellHTML(t.state14, pairASubscript)} ${bellHTML(t.state23, pairBSubscript)}${suffix}`;
     return `${signHTML(t.sign, i === 0)}${core}`;
   }).join("");
 }
@@ -719,14 +743,11 @@ function updateCalculationCards() {
 /*   document.getElementById("card4l2").innerHTML = `BSM<sub>${pairBSubscript}</sub>: ${bellHTML("Φ⁺")} → ${bellHTML(results["Φ⁺"], pairASubscript)}, ${bellHTML("Φ⁻")} → ${bellHTML(results["Φ⁻"], pairASubscript)}, ${bellHTML("Ψ⁺")} → ${bellHTML(results["Ψ⁺"], pairASubscript)}, ${bellHTML("Ψ⁻")} → ${bellHTML(results["Ψ⁻"], pairASubscript)}`;
  */
   const resultLabels = document.querySelectorAll(".result-card .r-label");
-  const resultStates = ["Φ⁺", "Φ⁻", "Ψ⁺", "Ψ⁻"];
-  resultLabels.forEach((label, index) => {
-    label.innerHTML = `${pairText(pairB)} = ${bellHTML(resultStates[index], pairBSubscript)}`;
+  const resultIds = ["resPhiPlus", "resPhiMinus", "resPsiPlus", "resPsiMinus"];
+  bellOrder.forEach((state, index) => {
+    resultLabels[index].innerHTML = `${pairText(pairA)} = ${bellHTML(results[state], pairASubscript)}`;
+    document.getElementById(resultIds[index]).innerHTML = `${pairText(pairB)} = ${bellHTML(state, pairBSubscript)}`;
   });
-  document.getElementById("resPhiPlus").innerHTML = `${pairText(pairA)} = ${bellHTML(results["Φ⁺"], pairASubscript)}`;
-  document.getElementById("resPhiMinus").innerHTML = `${pairText(pairA)} = ${bellHTML(results["Φ⁻"], pairASubscript)}`;
-  document.getElementById("resPsiPlus").innerHTML = `${pairText(pairA)} = ${bellHTML(results["Ψ⁺"], pairASubscript)}`;
-  document.getElementById("resPsiMinus").innerHTML = `${pairText(pairA)} = ${bellHTML(results["Ψ⁻"], pairASubscript)}`;
 }
 
 function showCards(step) {
@@ -813,22 +834,20 @@ function drawScene(pos, mode) {
   syncSvgViewBox();
   const d12 = curve(pos.q1, pos.q2, 76);
   const d34 = curve(pos.q3, pos.q4, 76);
-  const d23 = curve(pos.q2, pos.q3, mode === "step4" ? 76 : 60);
-  const d14 = curve(pos.q1, pos.q4, mode === "step4" ? 76 : 142);
   const pairA = finalPairA();
   const pairB = finalPairB();
-  const dA = curve(pos["q" + pairA[0]], pos["q" + pairA[1]], 76);
-  const dB = curve(pos["q" + pairB[0]], pos["q" + pairB[1]], 76);
+  const dMeasure = curve(pos["q" + pairB[0]], pos["q" + pairB[1]], -72);
+  const dConnect = curve(pos["q" + pairA[0]], pos["q" + pairA[1]], 106);
   const idleInitialLinks = mode === "step3Measure";
 
   setLine("line12", d12, mode === "step1" || mode === "step2" || mode === "step3Measure");
   setLine("flow12", d12, mode === "step1" || mode === "step2");
   setLine("line34", d34, mode === "step1" || mode === "step2" || mode === "step3Measure");
   setLine("flow34", d34, mode === "step1" || mode === "step2");
-  setLine("line23", mode === "step4" ? dB : d23, mode === "step3Measure" || mode === "step3Connect" || mode === "step4");
-  setLine("flow23", mode === "step4" ? dB : d23, mode === "step3Measure" || mode === "step3Connect" || mode === "step4");
-  setLine("line14", mode === "step4" ? dA : d14, mode === "step3Connect" || mode === "step4");
-  setLine("flow14", mode === "step4" ? dA : d14, mode === "step3Connect" || mode === "step4");
+  setLine("line23", dMeasure, mode === "step3Measure" || mode === "step3Connect" || mode === "step4");
+  setLine("flow23", dMeasure, mode === "step3Measure" || mode === "step3Connect" || mode === "step4");
+  setLine("line14", dConnect, mode === "step3Connect" || mode === "step4");
+  setLine("flow14", dConnect, mode === "step3Connect" || mode === "step4");
 
   ["line12", "line34"].forEach(id => document.getElementById(id).classList.toggle("idle-link", idleInitialLinks));
   ["flow12", "flow34"].forEach(id => document.getElementById(id).classList.toggle("idle-link", idleInitialLinks));
@@ -845,7 +864,8 @@ function showStep(step, preserveAuto = false, focusFormula = true) {
   const c = getChoice();
   const base = getBasePositions();
   const measurePos = getMeasurePositions(base);
-  const finalPos = getFinalPositions(base);
+  const pairA = finalPairA();
+  const pairB = finalPairB();
 
   if (currentStep === 0) {
     setStepChip(0);
@@ -885,11 +905,12 @@ function showStep(step, preserveAuto = false, focusFormula = true) {
     setStepChip(3);
     moveQubits(measurePos);
     drawScene(measurePos, "step3Measure");
-    markPair(2,3,"measure");
+    markPair(pairB[0], pairB[1], "measure");
+    positionMeasureBox(measurePos, pairB);
     document.getElementById("measureBox").classList.add("show");
-    if (document.getElementById("resultTitle")) document.getElementById("resultTitle").textContent = "Step 3-1: Bell-state measurement on q2 and q3.";
-    if (document.getElementById("resultDesc")) document.getElementById("resultDesc").textContent = "q2–q3 is measured while the original q1–q2 and q3–q4 links remain as gray reference links.";
-    if (document.getElementById("resultKet")) document.getElementById("resultKet").textContent = "Bell State Measurement on q2–q3";
+    if (document.getElementById("resultTitle")) document.getElementById("resultTitle").textContent = `Step 3-1: Bell-state measurement on q${pairB[0]} and q${pairB[1]}.`;
+    if (document.getElementById("resultDesc")) document.getElementById("resultDesc").textContent = `q${pairB[0]}–q${pairB[1]} is measured while the original q1–q2 and q3–q4 links remain as gray reference links.`;
+    if (document.getElementById("resultKet")) document.getElementById("resultKet").textContent = `Bell State Measurement on q${pairB[0]}–q${pairB[1]}`;
     return;
   }
 
@@ -897,23 +918,23 @@ function showStep(step, preserveAuto = false, focusFormula = true) {
     setStepChip(3);
     moveQubits(measurePos);
     drawScene(measurePos, "step3Connect");
-    markPair(1,4,"final");
-    markPair(2,3,"measure");
+    markPair(pairA[0], pairA[1], "final");
+    markPair(pairB[0], pairB[1], "measure");
+    positionMeasureBox(measurePos, pairB);
     document.getElementById("measureBox").classList.add("show");
-    if (document.getElementById("resultTitle")) document.getElementById("resultTitle").textContent = "Step 3-2: Remove old links and connect q1–q4.";
-    if (document.getElementById("resultDesc")) document.getElementById("resultDesc").textContent = "The q1–q2 and q3–q4 gray links disappear, then the q1–q4 green link is shown.";
-    if (document.getElementById("resultKet")) document.getElementById("resultKet").textContent = "(12)(34) → (14)(23)";
+    if (document.getElementById("resultTitle")) document.getElementById("resultTitle").textContent = `Step 3-2: Remove old links and connect q${pairA[0]}–q${pairA[1]}.`;
+    if (document.getElementById("resultDesc")) document.getElementById("resultDesc").textContent = `The q1–q2 and q3–q4 gray links disappear, then the q${pairA[0]}–q${pairA[1]} green link is shown.`;
+    if (document.getElementById("resultKet")) document.getElementById("resultKet").textContent = `(12)(34) → (${pairSub(pairA)})(${pairSub(pairB)})`;
     return;
   }
 
   if (currentStep === 4) {
     setStepChip(4);
-    moveQubits(finalPos);
-    drawScene(finalPos, "step4");
-    const pairA = finalPairA();
-    const pairB = finalPairB();
+    moveQubits(measurePos);
+    drawScene(measurePos, "step4");
     markPair(pairA[0], pairA[1], "final");
     markPair(pairB[0], pairB[1], "measure");
+    document.getElementById("measureBox").classList.remove("show");
     document.getElementById("allResults").classList.add("show");
     if (document.getElementById("resultTitle")) document.getElementById("resultTitle").textContent = "Step 4: Final collected Bell terms.";
     if (document.getElementById("resultDesc")) document.getElementById("resultDesc").textContent = `Collect the q${pairA[0]}–q${pairA[1]} and q${pairB[0]}–q${pairB[1]} Bell terms, then read off all possible results.`;
@@ -969,7 +990,10 @@ function startFromBeginning() {
   stopAutoPlay();
   refreshForCurrentFinalOrder();
   currentStep = 0;
-  showStep(1);
+  autoPlaying = true;
+  updateAutoButton();
+  showStep(1, true);
+  queueAutoAdvance();
 }
 
 function queueAutoAdvance() {
@@ -1032,8 +1056,7 @@ function syncChoiceButtons() {
     const key = group.dataset.choice;
     group.querySelectorAll(".option-btn").forEach(btn => {
       btn.classList.toggle("active", btn.dataset.value === uiState[key]);
-      if (key === "state12") btn.disabled = btn.dataset.value === uiState.state34;
-      if (key === "state34") btn.disabled = btn.dataset.value === uiState.state12;
+      btn.disabled = false;
     });
   });
 }
@@ -1087,9 +1110,6 @@ function bindOptionButtons() {
       btn.addEventListener("click", () => {
         if (btn.disabled) return;
         uiState[key] = btn.dataset.value;
-        if (key === "state12" || key === "state34") {
-          enforceDistinctStates(key);
-        }
         syncChoiceButtons();
         resetScene();
       });
