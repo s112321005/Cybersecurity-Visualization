@@ -2,12 +2,12 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=1200, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <base href="https://s112321005.github.io/Cybersecurity-Visualization/">
     <title>Quantum Cybersecurity Education Platform</title>
     <link href="https://fonts.googleapis.com/css2?family=Titan+One&display=swap" rel="stylesheet">
     <style>
-        :root{--primary-blue:#5BA4CF;--light-blue:#E1F0F8;--dark-border:#2C3E50;--qss-green:#38C98B;--qsdc-purple:#9B66F9;--bg-gradient:linear-gradient(135deg,#E0F2FE 0%,#F5F3FF 50%,#ECFDF5 100%);--border-width:5px;--border-radius:20px;--transition-speed:0.5s;--easing:cubic-bezier(0.25,1,0.3,1)}
+        :root{--primary-blue:#5BA4CF;--light-blue:#E1F0F8;--dark-border:#2C3E50;--qss-green:#38C98B;--qsdc-purple:#9B66F9;--bg-gradient:linear-gradient(135deg,#E0F2FE 0%,#F5F3FF 50%,#ECFDF5 100%);--border-width:5px;--border-radius:20px;--transition-speed:0.5s;--easing:cubic-bezier(0.25,1,0.3,1);--mobile-fit-scale:1;--mobile-fit-height:380px}
         body{font-family:'Comfortaa','Segoe UI',Tahoma,sans-serif;font-weight:700;background:var(--bg-gradient);background-attachment:fixed;color:var(--dark-border);margin:0;overflow-x:hidden;min-height:100vh;display:flex;flex-direction:column;align-items:center;position:relative}
         body::before{content:"";position:fixed;top:-10%;left:-10%;width:120%;height:120%;background:radial-gradient(circle at 20% 30%,rgba(165,243,252,0.4) 0%,transparent 20%),radial-gradient(circle at 80% 70%,rgba(199,210,254,0.4) 0%,transparent 20%);z-index:-1;filter:blur(60px);animation:moveLight 20s infinite alternate ease-in-out}
         .header{display:flex;align-items:center;justify-content:center;gap:15px;margin-top:40px;margin-bottom:60px;transition:opacity 0.4s ease,transform 0.4s ease}
@@ -66,6 +66,15 @@
         .hub-link,.back-btn{display:inline-flex;align-items:center;justify-content:center;text-decoration:none;background:var(--primary-blue);color:white;border:var(--border-width) solid var(--dark-border);border-radius:60px;padding:13px 54px;font-size:22px;font-weight:900;box-shadow:0px 4px 0 var(--dark-border);text-shadow:2px 2px 0 var(--dark-border);transition:transform .15s ease,box-shadow .15s ease;cursor:pointer}
         .hub-link:hover,.back-btn:hover{transform:translate(-3px,-3px);box-shadow:0px 3px 0 var(--dark-border)}
         .hub-link:active,.back-btn:active{transform:translate(2px,2px);box-shadow:0px 2px 0 var(--dark-border)}
+        @media (max-width:700px){
+            body{min-height:100dvh;overflow-x:hidden}
+            .header{gap:8px;margin-top:24px;margin-bottom:32px;padding:0 10px;box-sizing:border-box;width:100%}
+            .header img{width:30px;flex-shrink:0}
+            .header h1{font-size:clamp(0.86rem,3.65vw,1.35rem);letter-spacing:0;text-shadow:2px 2px 0 white;white-space:nowrap}
+            .app-container{width:960px;max-width:none;height:var(--mobile-fit-height);transform:scale(var(--mobile-fit-scale));transform-origin:top center}
+            .hub-link-wrapper{margin-top:18px}
+            .hub-link,.back-btn{font-size:18px;padding:11px 42px}
+        }
     </style>
 </head>
 <body>
@@ -206,6 +215,20 @@
         let pathWheelLocked = false;
         let pathTouchStartY = null;
 
+        function updateMobileFitScale() {
+            const root = document.documentElement;
+            const isMobile = window.matchMedia('(max-width: 700px)').matches;
+            if (!isMobile) {
+                root.style.setProperty('--mobile-fit-scale', '1');
+                root.style.setProperty('--mobile-fit-height', '380px');
+                return;
+            }
+
+            const scale = Math.min(1, Math.max(0.28, (window.innerWidth - 24) / 960));
+            root.style.setProperty('--mobile-fit-scale', scale.toFixed(4));
+            root.style.setProperty('--mobile-fit-height', `${Math.ceil(380 * scale)}px`);
+        }
+
         function expandView() {
             document.body.classList.add('is-expanded');
             document.querySelector('.state-front').style.display = 'none';
@@ -218,6 +241,10 @@
         }
 
         document.addEventListener('DOMContentLoaded', function () {
+            updateMobileFitScale();
+            window.addEventListener('resize', updateMobileFitScale);
+            window.addEventListener('orientationchange', updateMobileFitScale);
+
             const learningPath = document.querySelector('.learning-path');
             const sections = Array.from(document.querySelectorAll('.path-section'));
             const railSegments = Array.from(document.querySelectorAll('.section-rail-segment'));
