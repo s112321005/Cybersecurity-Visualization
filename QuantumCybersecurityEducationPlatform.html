@@ -31,7 +31,7 @@
         .learning-path::-webkit-scrollbar{width:0}
         .learning-path::-webkit-scrollbar-track{background:linear-gradient( to bottom,rgba(91,164,207,.24) 0 32%,rgba(255,255,255,.78) 32% 34%,rgba(91,164,207,.24) 34% 66%,rgba(255,255,255,.78) 66% 68%,rgba(91,164,207,.24) 68% 100% );border-radius:10px;border:2px solid var(--dark-border);margin-block:5px}
         .learning-path::-webkit-scrollbar-thumb{background:var(--primary-blue);border-radius:10px;border:2px solid white}
-        .section-rail{position:absolute;top:5px;right:14px;width:14px;height:520px;display:grid;grid-template-rows:repeat(3,1fr);gap:8px}
+        .section-rail{position:absolute;top:50%;right:14px;width:14px;height:380px;display:grid;grid-template-rows:repeat(4,1fr);gap:8px;transform:translateY(-70%)}
         .section-rail-segment{border:3px solid var(--dark-border);border-radius:999px;background:white;transition:background .25s ease,transform .15s ease;cursor:pointer;padding:0}
         .section-rail-segment:hover{transform:scaleX(1.25)}
         .section-rail-segment.is-active{background:var(--dark-border)}
@@ -46,6 +46,7 @@
         .path-title{font-size:18px;color:var(--dark-border);margin:0;font-weight:900}
         .path-items{display:flex;flex-direction:column;gap:15px}
         .menu-item{border:3px solid var(--dark-border);border-radius:15px;padding:15px 20px;text-decoration:none;background-color:white;transition:all 0.2s ease-out}
+        .section-basics .menu-item:hover{transform:translate(-2px,-2px);box-shadow:6px 6px 0px var(--primary-blue)}
         .section-qkd .menu-item:hover{transform:translate(-2px,-2px);box-shadow:6px 6px 0px var(--primary-blue)}
         .section-qss .menu-item:hover{transform:translate(-2px,-2px);box-shadow:6px 6px 0px var(--primary-blue)}
         .section-qsdc .menu-item:hover{transform:translate(-2px,-2px);box-shadow:6px 6px 0px var(--primary-blue)}
@@ -102,26 +103,41 @@
 
         <div class="right-menu-container">
             <div class="section-rail" aria-label="Protocol category navigation">
-                <button class="section-rail-segment is-active" type="button" aria-label="Show QKD"></button>
+                <button class="section-rail-segment is-active" type="button" aria-label="Show Basics"></button>
+                <button class="section-rail-segment" type="button" aria-label="Show QKD"></button>
                 <button class="section-rail-segment" type="button" aria-label="Show QSS"></button>
                 <button class="section-rail-segment" type="button" aria-label="Show QSDC"></button>
             </div>
 
             <div class="learning-path">
 
-                <div class="path-section section-qkd is-active-section">
+                <div class="path-section section-basics is-active-section">
+                    <div class="path-header">
+                        <div class="path-badge badge-qkd">Basics</div>
+                        <h3 class="path-title">Quantum Foundations</h3>
+                    </div>
+                    <div class="path-items">
+                        <a href="basis_tutorial.html" class="menu-item">
+                            <div class="text-content">
+                                <p class="en-title">Photon Direction &amp; Polarization Basis</p>
+                                <p class="topic-desc">Learn how photon directions, polarizers, and qubit states work before entering QKD protocols.</p>
+                            </div>
+                        </a>
+                        <a href="entanglement_tutorial.html" class="menu-item">
+                            <div class="text-content">
+                                <p class="en-title">Entanglement Swapping</p>
+                                <p class="topic-desc">Learn how Bell states and Bell-state measurements create new entangled particle pairs.</p>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="path-section section-qkd">
                     <div class="path-header">
                         <div class="path-badge badge-qkd">QKD</div>
                         <h3 class="path-title">Quantum Key Distribution</h3>
                     </div>
                     <div class="path-items">
-                        <a href="basis_tutorial.html" class="menu-item">
-                            <div class="text-content">
-                                <p class="topic-subtitle">Recommended Before BB84 & B92 Protocol</p>
-                                <p class="en-title">Photon Direction &amp; Polarization Basis</p>
-                                <p class="topic-desc">Learn how photon directions, polarizers, and qubit states work before entering QKD protocols.</p>
-                            </div>
-                        </a>
                         <a href="BB84step1.html" class="menu-item">
                             <div class="text-content">
                                 <p class="en-title">BB84 Protocol</p>
@@ -147,13 +163,6 @@
                             <div class="text-content">
                                 <p class="en-title">ZhangLiMan Protocol</p>
                                 <p class="topic-desc">Learn how multiple participants cooperate so that a secret can be recovered only through shared information.</p>
-                            </div>
-                        </a>
-                        <a href="entanglement_tutorial.html" class="menu-item">
-                            <div class="text-content">
-                                <p class="topic-subtitle">Recommended Before ZhangMan Protocol</p>
-                                <p class="en-title">Entanglement Swapping</p>
-                                <p class="topic-desc">Learn how Bell states and Bell-state measurements create new entangled particle pairs.</p>
                             </div>
                         </a>
                         <a href="ZMstep1.html" class="menu-item">
@@ -248,7 +257,7 @@
             const learningPath = document.querySelector('.learning-path');
             const sections = Array.from(document.querySelectorAll('.path-section'));
             const railSegments = Array.from(document.querySelectorAll('.section-rail-segment'));
-            const sectionMap = { qkd: 0, qss: 1, qsdc: 2 };
+            const sectionMap = { basics: 0, foundation: 0, foundations: 0, qkd: 1, qss: 2, qsdc: 3 };
             if (!learningPath || sections.length === 0) return;
 
             function setActivePathSection(index) {
