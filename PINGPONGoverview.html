@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <base href="https://s112321005.github.io/Cybersecurity-Visualization/">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quantum Key Distribution : BB84 Overview</title>
+    <title>QSDC : Ping-Pong Overview</title>
     <style>
         :root{--primary-blue:#549FD0;--alice-blue:#004aad;--bob-blue:#4C80C5;--dark-blue:#06276d;--dark-text:#263238;--muted:#667085;--line:#d7e3f5;--paper:#ffffff;--soft:#f8fbff;--goal-bg:#eef7ff}
         *{box-sizing:border-box}
@@ -68,7 +68,7 @@
         .panel-title{margin:0;font-size:1.05rem;color:var(--dark-blue);font-weight:900;letter-spacing:.02em;display:flex;align-items:center;gap:8px}
         .panel-title::before{content:"•";color:var(--primary-blue);font-size:1.5rem;line-height:0}
         .count-pill{padding:5px 11px;border-radius:999px;background:#ffffff;border:2px solid #b7d8f3;color:var(--primary-blue);font-weight:900;font-size:.8rem;white-space:nowrap}
-        .participant-list{display:grid;grid-template-columns:minmax(150px,1fr) 120px minmax(150px,1fr);gap:14px;align-items:center}
+        .participant-list{display:grid;grid-template-columns:minmax(150px,1fr) 140px minmax(150px,1fr);gap:14px;align-items:center}
         .participant-card{background:#ffffff;border:2px solid #cfe4f8;border-radius:20px;padding:12px 10px 11px;min-height:142px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;position:relative;z-index:2;overflow:hidden}
         .participant-card.alice{animation:character-swing 4s ease-in-out infinite}
         .participant-card.bob{animation:character-swing 4s ease-in-out infinite;animation-delay:.42s}
@@ -83,18 +83,18 @@
         .bit:nth-child(2){top:60%;left:70%;animation-delay:1.1s}
         .bit:nth-child(3){top:40%;left:10%;animation-delay:1.9s}
         .bit:nth-child(4){top:70%;left:40%;animation-delay:2.5s}
-        .quantum-channel{display:flex;align-items:center;justify-content:center;width:120px;height:2px;position:relative;z-index:1}
+        .quantum-channel{display:flex;align-items:center;justify-content:center;width:140px;height:2px;position:relative;z-index:1}
         .quantum-channel::before{content:'';position:absolute;width:100%;height:2px;border-top:2px dashed #cfe4f8}
-        .photon{width:9px;height:9px;border-radius:50%;position:absolute;left:0;animation:shoot 2.5s linear infinite;opacity:0}
+        .quantum-channel::after{position:absolute;top:12px;left:50%;transform:translateX(-50%);color:var(--muted);font-size:.65rem;font-weight:900;letter-spacing:.04em;white-space:nowrap;text-transform:uppercase}
+        .photon{width:9px;height:9px;border-radius:50%;position:absolute;left:0;animation:pingpong-flight 3.2s ease-in-out infinite;opacity:0}
         .photon:nth-child(1){animation-delay:0.0s;background:#3d7df2;box-shadow:0 0 10px #3d7df2,0 0 20px #3d7df2}
-        .photon:nth-child(2){animation-delay:0.6s;background:#e55d8b;box-shadow:0 0 10px #e55d8b,0 0 20px #e55d8b}
-        .photon:nth-child(3){animation-delay:1.2s;background:#f0a92d;box-shadow:0 0 10px #f0a92d,0 0 20px #f0a92d}
-        .photon:nth-child(4){animation-delay:1.8s;background:#23a9a5;box-shadow:0 0 10px #23a9a5,0 0 20px #23a9a5}
-        @keyframes shoot{
+        @keyframes pingpong-flight{
         0%{left:0;opacity:1;transform:scale(1.1)}
-        15%{opacity:1;transform:scale(1.1)}
-        85%{opacity:1;transform:scale(1.1)}
-        100%{left:calc(100% - 9px);opacity:0;transform:scale(0.6)}
+        12%{opacity:1;transform:scale(1.1)}
+        42%{left:calc(100% - 9px);opacity:1;transform:scale(1.1)}
+        52%{left:calc(100% - 9px);opacity:.75;transform:scale(.9)}
+        86%{left:0;opacity:1;transform:scale(1.1)}
+        100%{left:0;opacity:0;transform:scale(0.6)}
         }
         .goal-panel{border:2px solid #b7d8f3;border-radius:24px;background:linear-gradient(135deg,var(--goal-bg),#ffffff);padding:15px 20px;box-shadow:0 10px 24px rgba(84,159,208,.10);display:flex;flex-direction:column;justify-content:center;position:relative;overflow:hidden}
         .goal-panel p{margin:0;color:#172033;font-weight:700;font-size:1.05rem;line-height:1.6;position:relative;z-index:1}
@@ -118,11 +118,13 @@
         .participant-list{grid-template-columns:1fr;grid-template-rows:auto auto auto}
         .quantum-channel{width:2px;height:30px;margin:0 auto}
         .quantum-channel::before{width:2px;height:100%;border-top:none;border-left:2px dashed #b7d8f3}
-        @keyframes shoot{
+        @keyframes pingpong-flight{
         0%{top:0;left:-3.5px;opacity:1;transform:scale(1.1)}
-        15%{opacity:1;transform:scale(1.1)}
-        85%{opacity:1;transform:scale(1.1)}
-        100%{top:calc(100% - 9px);left:-3.5px;opacity:0;transform:scale(0.6)}
+        12%{opacity:1;transform:scale(1.1)}
+        42%{top:calc(100% - 9px);left:-3.5px;opacity:1;transform:scale(1.1)}
+        52%{top:calc(100% - 9px);left:-3.5px;opacity:.75;transform:scale(.9)}
+        86%{top:0;left:-3.5px;opacity:1;transform:scale(1.1)}
+        100%{top:0;left:-3.5px;opacity:0;transform:scale(0.6)}
         }
         }
     </style>
@@ -135,58 +137,54 @@
 </div>
 <div class="header">
     <div class="header-left">
-        <a href="QuantumCybersecurityEducationPlatform.html?section=qkd#quantum-security-applications" class="btn-back" title="back home">&#x25C0;&#xFE0E;</a>
-        <div class="title-pill">QKD : BB84</div>
+        <a href="QuantumCybersecurityEducationPlatform.html?section=qsdc#quantum-security-applications" class="btn-back" title="back home">&#x25C0;&#xFE0E;</a>
+        <div class="title-pill">QSDC : Ping Pong</div>
     </div>
     <div class="header-center"><p class="step-text">PROTOCOL OVERVIEW</p></div>
     <div class="header-right"><button class="start-btn" onclick="startProtocol()"><span>Start Learning</span></button></div>
 </div>
 <div class="main-card">
     <div class="overview-grid">
-        <section class="info-panel" aria-label="BB84 participants">
+        <section class="info-panel" aria-label="PINGPONG participants">
             <div class="panel-head">
                 <h2 class="panel-title">Characters</h2>
                 <span class="count-pill">2 Participants</span>
             </div>
             <div class="participant-list">
+                <div class="participant-card bob">
+                    <img src="pictures/cat_bob.svg" alt="Bob">
+                    <span class="role-label-bob">Preparer</span>
+                </div>
+                <div class="quantum-channel">
+                    <div class="photon"></div>
+                </div>
                 <div class="participant-card alice">
                     <div class="bits-stream">
                     </div>
                     <img src="pictures/cat_alice.svg" alt="Alice">
-                    <span class="role-label-alice">Sender</span>
-                </div>
-                <div class="quantum-channel">
-                    <div class="photon"></div>
-                    <div class="photon"></div>
-                    <div class="photon"></div>
-                    <div class="photon"></div>
-                </div>
-                <div class="participant-card bob">
-                    <div class="bits-stream">
-                    </div>
-                    <img src="pictures/cat_bob.svg" alt="Bob">
-                    <span class="role-label-bob">Receiver</span>
+                    <span class="role-label-alice">Encoder</span>
                 </div>
             </div>
         </section>
-        <section class="goal-panel" aria-label="BB84 protocol goal">
+        <section class="goal-panel" aria-label="PINGPONG protocol goal">
             <div class="panel-head">
                 <h2 class="panel-title">Goal</h2>
             </div>
-            <p>Create a <span class="goal-highlight">shared secret key</span> by sending randomly encoded photons, comparing bases, and keeping only matched results.</p>
+            <p>Achieve <span class="goal-highlight">quantum-secure transmission</span> for direct message communication.</p>
         </section>
     </div>
     <div class="scene-frame">
-        <img src="pictures/scene-QKD-BB84.png" alt="BB84 protocol scene overview">
+        <img src="pictures/scene-QSDC-pingpong.png" alt="PINGPONG protocol scene overview">
     </div>
 </div>
 <script>
 function startProtocol() {
-    localStorage.removeItem('qssStepData');
-    localStorage.removeItem('qssStep3Data');
-    localStorage.removeItem('qkdStepData');
+    localStorage.removeItem('messageModeProbability');
+    localStorage.removeItem('pingpongMode');
+    localStorage.removeItem('pingpongMessage');
+    localStorage.removeItem('pingpongStep2Data');
     setTimeout(() => {
-        window.location.href = 'BB84step1.html';
+        window.location.href = 'PINGPONGprev.html';
     }, 200);
 }
 </script>
