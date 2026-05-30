@@ -795,16 +795,16 @@
                      </div>`;
             
             // Msg 0 Branch
-            drawArrowedLine(svg, xBob1+9, yStart, xAliceOp - 2, yStart - yOffset, 1.0);//Bob傳給Alice運算(上)
+            drawArrowedLine(svg, xBob1+9, yStart, xAliceOp - 2, yStart - yOffset, 0.5);//Bob傳給Alice運算(上)
             html += `<div class="node" style="left: ${xAliceOp}%; top: ${yStart - yOffset}px;">
                         <div class="qss-shape color-op">${ppSettings.alice.msg0Op}</div>
                      </div>`;
-            drawArrowedLine(svg, xAliceOp, yStart - yOffset, xAliceOut - 10, yStart - yOffset, 1.0); //Alice運算線+節點(上)
+            drawArrowedLine(svg, xAliceOp, yStart - yOffset, xAliceOut - 10, yStart - yOffset, 0.5); //Alice運算線+節點(上)
             let state0 = getResultState(ppSettings.bob.state, ppSettings.alice.msg0Op);
             html += `<div class="node clickable-node" style="left: ${xAliceOut-5}%; top: ${yStart - yOffset}px;" onclick="showCalc('${ppSettings.alice.msg0Op}')" title="點擊查看詳細運算">
                         <div class="math-box-alice">\\(${state0.latex}\\)</div>
                      </div>`;
-            drawArrowedLine(svg, xAliceOut+1, yStart - yOffset, xBobMeas -3, yStart - yOffset, 1.0); //Alice傳送線+Bob測量(上)
+            drawArrowedLine(svg, xAliceOut+1, yStart - yOffset, xBobMeas -3, yStart - yOffset, 0.5); //Alice傳送線+Bob測量(上)
             html += `<div class="node" style="left: ${xBobMeas-3}%; top: ${yStart - yOffset}px;">
                     <div style="position: absolute; top: -45px; display: flex; align-items: center; justify-content: center; white-space: nowrap;">
                         <div class="particle-indicator" style="border-color:var(--bob-blue); margin:0;">1</div>
@@ -813,22 +813,22 @@
                     </div>
                     <img src="pictures/b_eyeb.svg" style="width: 70px; height: 70px; object-fit: contain;">
                 </div>`;
-            drawArrowedLine(svg, xBobMeas -2, yStart - yOffset, xBobOut-6, yStart - yOffset, 1.0); //Bob測量線+節點(上)
+            drawArrowedLine(svg, xBobMeas -2, yStart - yOffset, xBobOut-6, yStart - yOffset, 0.5); //Bob測量線+節點(上)
             html += `<div class="node" style="left: ${xBobOut +2}%; top: ${yStart - yOffset}px;">
                         <div class="math-box">\\(${state0.bell} = ${state0.latex}\\)</div></div>`;
-            html += createFinalProbCircle(xBobOut + 9.5, yStart - yOffset, 1.0);
+            html += createFinalProbCircle(xBobOut + 9.5, yStart - yOffset, 0.5);
 
             // Msg 1 Branch
-            drawArrowedLine(svg, xBob1+9, yStart, xAliceOp - 2, yStart + yOffset, 1.0);//Bob傳給Alice運算(下)
+            drawArrowedLine(svg, xBob1+9, yStart, xAliceOp - 2, yStart + yOffset, 0.5);//Bob傳給Alice運算(下)
             html += `<div class="node" style="left: ${xAliceOp}%; top: ${yStart + yOffset}px;">
                         <div class="qss-shape color-op">${ppSettings.alice.msg1Op}</div>
                      </div>`;
-            drawArrowedLine(svg, xAliceOp, yStart + yOffset, xAliceOut -10, yStart + yOffset, 1.0); //Alice運算線+節點(下)
+            drawArrowedLine(svg, xAliceOp, yStart + yOffset, xAliceOut -10, yStart + yOffset, 0.5); //Alice運算線+節點(下)
             let state1 = getResultState(ppSettings.bob.state, ppSettings.alice.msg1Op);
             html += `<div class="node clickable-node" style="left: ${xAliceOut-5}%; top: ${yStart + yOffset}px;" onclick="showCalc('${ppSettings.alice.msg1Op}')" title="點擊查看詳細運算">
                         <div class="math-box-alice">\\(${state1.latex}\\)</div>
                      </div>`;
-            drawArrowedLine(svg, xAliceOut + 1, yStart + yOffset, xBobMeas -3, yStart + yOffset, 1.0);//Alice傳送線+Bob測量(下)
+            drawArrowedLine(svg, xAliceOut + 1, yStart + yOffset, xBobMeas -3, yStart + yOffset, 0.5);//Alice傳送線+Bob測量(下)
             html += `<div class="node" style="left: ${xBobMeas -3}%; top: ${yStart + yOffset}px;">
                     <div style="position: absolute; top: -45px; display: flex; align-items: center; justify-content: center; white-space: nowrap;">
                         <div class="particle-indicator" style="border-color:var(--bob-blue); margin:0;">1</div>
@@ -837,11 +837,11 @@
                     </div>
                     <img src="pictures/b_eyeb.svg" style="width: 70px; height: 70px; object-fit: contain;">
                 </div>`;
-            drawArrowedLine(svg, xBobMeas-2, yStart + yOffset, xBobOut-6, yStart + yOffset, 1.0); //Bob測量線+節點(下)
+            drawArrowedLine(svg, xBobMeas-2, yStart + yOffset, xBobOut-6, yStart + yOffset, 0.5); //Bob測量線+節點(下)
             html += `<div class="node" style="left: ${xBobOut +2}%; top: ${yStart + yOffset}px;">
                         <div class="math-box">\\(${state1.bell} = ${state1.latex}\\)</div>
                      </div>`;
-            html += createFinalProbCircle(xBobOut + 9.5, yStart + yOffset, 1.0);
+            html += createFinalProbCircle(xBobOut + 9.5, yStart + yOffset, 0.5);
         }
 
         nodes.innerHTML = html;
