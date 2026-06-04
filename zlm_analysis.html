@@ -37,6 +37,8 @@
         .state-circle { background: var(--primary-blue); color: white; }
         .eve-state-circle { background: var(--eve-red); color: white; }
         .state-circle.eve-error { background-color: var(--eve-red); color: white; border: 2px solid var(--eve-red); }
+        #qss-nodes .zlm-final-state-node,
+        #qss-nodes .zlm-final-state { pointer-events: auto; cursor: default; }
         #prob-tooltip { position: absolute; background: rgba(33, 37, 41, 0.9); color: #f8f9fa; padding: 6px 12px; border-radius: 6px; font-size: 0.9rem; font-weight: bold; pointer-events: none; display: none; z-index: 1000; }
         .character-avatar { position: absolute; top: 18px; transform: translateX(-50%); z-index: 10; flex-direction: column; padding: 8px 12px; border-radius: 16px; box-shadow: 0 4px 8px rgba(0,0,0,0.15); background-color: #ffffff; }
         .character-avatar img { width: 75px; object-fit: contain; }    
@@ -698,6 +700,21 @@
         }
         return {num: Math.round(dec*1000), den: 1000};
     }
+    function formatProbabilityPercent(prob) {
+        return (prob * 100).toFixed(3).replace(/\.?0+$/, '') + '%';
+    }
+    function bindFinalStateHoverText() {
+        document.querySelectorAll('#qss-nodes .zlm-final-state').forEach(circle => {
+            if (circle.dataset.finalHoverBound === 'true') return;
+            circle.dataset.finalHoverBound = 'true';
+            const showFinalTooltip = event => {
+                showTooltip(event, `${circle.dataset.hoverStatus}<br>Probability: ${circle.dataset.hoverProb}`);
+            };
+            circle.addEventListener('mouseenter', showFinalTooltip);
+            circle.addEventListener('mousemove', showFinalTooltip);
+            circle.addEventListener('mouseleave', hideTooltip);
+        });
+    }
     function drawArrowedLine(container, x1, y1, x2, y2, probVal) {
         const probStr = (probVal * 100).toFixed(1).replace('.0', '') + '%';
         const offsetX = 2.6; 
@@ -737,7 +754,7 @@
             ${content}
         </div>`;
     }
-    function createNodeHtml(x, y, content, type, character, isError = false, inState = null, gate = null) {
+    function createNodeHtml(x, y, content, type, character, isError = false, inState = null, gate = null, hoverProb = null) {
         let nodeContent = '';
         let extraClass = '';
         let extraProps = '';
@@ -751,7 +768,12 @@
         } else if (type === 'eve_state') { nodeContent = `<div class="eve-state-circle" style="font-size: 1.1rem; width: 45px; height: 45px;">${content}</div>`;
         } else if (type === 'charlie_state1' || type === 'charlie_state2') { nodeContent = `<div class="qss-shape color-charlie">${content}</div>`;
         } else if (type === 'alice_state') { nodeContent = `<div class="qss-shape color-alice">${content}</div>`;
-        } else if (type === 'bob_result') { let circleClass = isError ? 'state-circle eve-error' : 'state-circle'; nodeContent = `<div class="${circleClass}">${content}</div>`;
+        } else if (type === 'bob_result') {
+            let circleClass = isError ? 'state-circle eve-error' : 'state-circle';
+            extraClass = `${extraClass} zlm-final-state-node`.trim();
+            const hoverStatus = isError ? 'Eve detected' : 'Recovered';
+            const hoverProbability = Number.isFinite(hoverProb) ? formatProbabilityPercent(hoverProb) : '';
+            nodeContent = `<div class="${circleClass} zlm-final-state" data-hover-status="${hoverStatus}" data-hover-prob="${hoverProbability}">${content}</div>`;
         } else if (type.includes('op')) { nodeContent = `<div class="qss-shape color-op">${content}</div>`; }
         return `<div class="node ${extraClass}" style="left: ${x}%; top: ${y}px;" ${extraProps}>${nodeContent}</div>`;
     }
@@ -1216,11 +1238,12 @@
             if(node.type.startsWith('charlie')) char = 'charlie';
             if(node.type.startsWith('alice')) char = 'alice';
             if(node.type.startsWith('eve')) char = 'eve';
-            nodesHtml += createNodeHtml(x, y, node.val, node.type, char, node.isError, node.inState, node.gate);
+            nodesHtml += createNodeHtml(x, y, node.val, node.type, char, node.isError, node.inState, node.gate, node.type === 'bob_result' ? currentProb : null);
             node.children.forEach(child => drawNode(child, x, y, currentProb));
         }
         drawNode(root, null, null, 1.0);
         nodesContainer.innerHTML = nodesHtml;
+        bindFinalStateHoverText();
         updateEveDetectedIndicator();
         const mathDisplay = document.getElementById('math-display');
         if (mathDisplay && mathDisplay.dataset.calcType === 'eve-detected') {

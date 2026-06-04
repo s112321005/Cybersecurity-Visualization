@@ -49,6 +49,8 @@
         .bg-alice { background-color: var(--alice-blue); }
         .bg-bob { background-color: var(--bob-blue); }
         .bg-eve { background-color: var(--eve-red); }
+        #diagram-nodes .pp-final-state-node,
+        #diagram-nodes .pp-final-state { pointer-events: auto; cursor: default; }
         .particle-indicator { width: 35px; height: 35px; border-radius: 50%; background: #ffffff; border: 4px solid; display: flex; align-items: center; justify-content: center; font-weight: bold; margin-bottom: 5px; color: #333; }
         .state-circle-bob { background-color: var(--bob-blue); color: white; border: none; }
         .classical-label { position: absolute; background: white; border: 1px solid #333; padding: 4px 8px; font-size: 0.8rem; font-weight: bold; transform: translate(-50%, -50%); z-index: 5; border-radius: 4px; white-space: nowrap; }
@@ -267,8 +269,8 @@
                     <div class="setting-title">Attack Strategy</div>
                     <div style="display:flex; flex-direction:column; gap:10px; align-items: flex-start;">
                         <label class="pill-radio"><input type="radio" name="ent_e_attack" value="Intercept-resend" checked disabled><span style="padding: 6px 20px;">Intercept-resend</span></label>
-                        <label class="pill-radio"><input type="radio" name="ent_e_attack" value="CNOT" disabled><span style="padding: 6px 20px;">CNOT</span></label>
-                    </div>
+<!--                         <label class="pill-radio"><input type="radio" name="ent_e_attack" value="CNOT" disabled><span style="padding: 6px 20px;">CNOT</span></label>
+ -->                    </div>
                 </div>
             </div>
         </div>
@@ -617,6 +619,27 @@
         }
         return { num: Math.round(dec * 100), den: 100 };
     }
+    function formatProbabilityPercent(prob) {
+        return (prob * 100).toFixed(3).replace(/\.?0+$/, '') + '%';
+    }
+    function finalStateAttrs(status, prob) {
+        return `data-hover-status="${status}" data-hover-prob="${formatProbabilityPercent(prob)}"`;
+    }
+    function bindFinalStateHoverText() {
+        document.querySelectorAll('#diagram-nodes .pp-final-state').forEach(node => {
+            if (node.dataset.finalHoverBound === 'true') return;
+            node.dataset.finalHoverBound = 'true';
+            const showFinalTooltip = event => {
+                const status = (node.classList.contains('bg-eve') || node.classList.contains('eve-error'))
+                    ? 'Eve detected'
+                    : node.dataset.hoverStatus;
+                showTooltip(event, `${status}<br>Probability: ${node.dataset.hoverProb}`);
+            };
+            node.addEventListener('mouseenter', showFinalTooltip);
+            node.addEventListener('mousemove', showFinalTooltip);
+            node.addEventListener('mouseleave', hideTooltip);
+        });
+    }
     function createFinalProbCircle(x, y, prob) {
         const frac = toFraction(prob);
         const content = frac.den === 1 ? `${frac.num}` : `<div style="border-bottom: 1px solid var(--primary-blue); width: 100%; text-align: center; line-height: 1;">${frac.num}</div><div style="text-align: center; line-height: 1;">${frac.den}</div>`;
@@ -685,8 +708,8 @@
                      </div>`;
             drawArrowedLine(svg, xBobMeas, yStart - yOffset, xBobOut, yStart - yOffset, 0.5); //bob測量結果(上)
             let bobBit0 = (ppSettings.bob.state === 'psi_plus' || ppSettings.bob.state === 'psi_minus') ? '|1⟩' : '|0⟩';
-            html += `<div class="node" style="left: ${xBobOut}%; top: ${yStart - yOffset}px;">
-                        <div class="circle-node bg-bob">${bobBit0}</div>
+            html += `<div class="node pp-final-state-node" style="left: ${xBobOut}%; top: ${yStart - yOffset}px;">
+                        <div class="circle-node bg-bob pp-final-state" ${finalStateAttrs('Passed(Eve undetected)', 0.5)}>${bobBit0}</div>
                      </div>`;
             html += `<div class="node" style="left: ${xEnd+3.5}%; top: ${yStart - yOffset}px;"> 
             <div class="circle-node" style="background-color: #D0E0FF; color: #333; font-size: 26px;">✖</div></div>`;
@@ -713,8 +736,8 @@
                      </div>`;
             drawArrowedLine(svg, xBobMeas, yStart + yOffset, xBobOut, yStart + yOffset, 0.5);//bob測量結果(下)
             let bobBit1 = (ppSettings.bob.state === 'psi_plus' || ppSettings.bob.state === 'psi_minus') ? '|0⟩' : '|1⟩';
-            html += `<div class="node" style="left: ${xBobOut}%; top: ${yStart + yOffset}px;">
-                        <div class="circle-node bg-bob">${bobBit1}</div>
+            html += `<div class="node pp-final-state-node" style="left: ${xBobOut}%; top: ${yStart + yOffset}px;">
+                        <div class="circle-node bg-bob pp-final-state" ${finalStateAttrs('Passed(Eve undetected)', 0.5)}>${bobBit1}</div>
                      </div>`;
             html += `<div class="node" style="left: ${xEnd+3.5}%; top: ${yStart + yOffset}px;">
                         <div class="circle-node" style="background-color: #D0E0FF; color: #333; font-size: 26px;">✖</div></div>`;
@@ -755,8 +778,8 @@
                      </div>`;
             drawArrowedLine(svg, xBobMeas, yStart - yOffset, xBobOut, yStart - yOffset, 0.5);
             let bobBit0 = (ppSettings.bob.state === 'psi_plus' || ppSettings.bob.state === 'psi_minus') ? '|1⟩' : '|0⟩';
-            html += `<div class="node" style="left: ${xBobOut}%; top: ${yStart - yOffset}px;">
-                        <div class="circle-node bg-bob">${bobBit0}</div>
+            html += `<div class="node pp-final-state-node" style="left: ${xBobOut}%; top: ${yStart - yOffset}px;">
+                        <div class="circle-node bg-bob pp-final-state" ${finalStateAttrs('Passed(Eve undetected)', 0.5)}>${bobBit0}</div>
                      </div>`;
             html += createFinalProbCircle(xBobOut, yStart - yOffset, 0.5);
 
@@ -772,8 +795,8 @@
                      </div>`;
             drawArrowedLine(svg, xBobMeas, yStart + yOffset, xBobOut, yStart + yOffset, 0.5);
             let bobBit1 = (ppSettings.bob.state === 'psi_plus' || ppSettings.bob.state === 'psi_minus') ? '|0⟩' : '|1⟩';
-            html += `<div class="node" style="left: ${xBobOut}%; top: ${yStart + yOffset}px;">
-                        <div class="circle-node bg-bob">${bobBit1}</div>
+            html += `<div class="node pp-final-state-node" style="left: ${xBobOut}%; top: ${yStart + yOffset}px;">
+                        <div class="circle-node bg-bob pp-final-state" ${finalStateAttrs('Passed(Eve undetected)', 0.5)}>${bobBit1}</div>
                      </div>`;
             html += createFinalProbCircle(xBobOut, yStart + yOffset, 0.5);
                      
@@ -814,8 +837,8 @@
                     <img src="pictures/b_eyeb.svg" style="width: 70px; height: 70px; object-fit: contain;">
                 </div>`;
             drawArrowedLine(svg, xBobMeas -2, yStart - yOffset, xBobOut-6, yStart - yOffset, 0.5); //Bob測量線+節點(上)
-            html += `<div class="node" style="left: ${xBobOut +2}%; top: ${yStart - yOffset}px;">
-                        <div class="math-box">\\(${state0.bell} = ${state0.latex}\\)</div></div>`;
+            html += `<div class="node pp-final-state-node" style="left: ${xBobOut +2}%; top: ${yStart - yOffset}px;">
+                        <div class="math-box pp-final-state" ${finalStateAttrs('message 0', 0.5)}>\\(${state0.bell} = ${state0.latex}\\)</div></div>`;
             html += createFinalProbCircle(xBobOut + 9.5, yStart - yOffset, 0.5);
 
             // Msg 1 Branch
@@ -838,13 +861,14 @@
                     <img src="pictures/b_eyeb.svg" style="width: 70px; height: 70px; object-fit: contain;">
                 </div>`;
             drawArrowedLine(svg, xBobMeas-2, yStart + yOffset, xBobOut-6, yStart + yOffset, 0.5); //Bob測量線+節點(下)
-            html += `<div class="node" style="left: ${xBobOut +2}%; top: ${yStart + yOffset}px;">
-                        <div class="math-box">\\(${state1.bell} = ${state1.latex}\\)</div>
+            html += `<div class="node pp-final-state-node" style="left: ${xBobOut +2}%; top: ${yStart + yOffset}px;">
+                        <div class="math-box pp-final-state" ${finalStateAttrs('message 1', 0.5)}>\\(${state1.bell} = ${state1.latex}\\)</div>
                      </div>`;
             html += createFinalProbCircle(xBobOut + 9.5, yStart + yOffset, 0.5);
         }
 
         nodes.innerHTML = html;
+        bindFinalStateHoverText();
         if (window.MathJax) {
             MathJax.typesetClear([nodes]);
             MathJax.typesetPromise([nodes]);
