@@ -987,7 +987,7 @@
         return (prob * 100).toFixed(3).replace(/\.?0+$/, '');
     }
 
-    function showEveDetectedCalculation() {
+    function showEveDetectedCalculation(shouldFocus = true) {
         const panel = document.getElementById('calculation-panel');
         const display = document.getElementById('math-display');
         if (!panel || !display) return;
@@ -1056,8 +1056,10 @@
 
         if (window.MathJax) {
             MathJax.typesetClear([display]);
-            MathJax.typesetPromise([display]).then(() => focusCalculationPanel(panel));
-        } else {
+            MathJax.typesetPromise([display]).then(() => {
+                if (shouldFocus) focusCalculationPanel(panel);
+            });
+        } else if (shouldFocus) {
             focusCalculationPanel(panel);
         }
     }
@@ -1272,10 +1274,27 @@
         function getBobStateHoverText(node) {
             const isInactive = node.classList.contains('inactive');
             const isEveError = node.classList.contains('eve-error');
-            if (isInactive && isEveError) return 'Eve Undetected';
-            if (isEveError) return 'Eve Detected';
-            if (isInactive) return 'Discarded';
-            return 'Key Kept';
+            let text = 'Key Kept';
+            if (isInactive && isEveError) text = 'Eve Undetected';
+            else if (isEveError) text = 'Eve Detected';
+            else if (isInactive) text = 'Discarded';
+
+            const probabilityText = getBobNodeProbabilityText(node);
+            return probabilityText ? `${text}<br>Probability: ${probabilityText}` : text;
+        }
+
+        function getBobNodeProbabilityText(node) {
+            const targetId = node?.id || node?.querySelector?.('[id]')?.id;
+            if (!targetId) return '';
+
+            const probNode = document.querySelector(`[data-prob-for="${CSS.escape(targetId)}"]`);
+            if (!probNode || probNode.style.display === 'none') return '';
+
+            const numerator = Number(probNode.querySelector('.fraction-num')?.textContent.trim());
+            const denominator = Number(probNode.querySelector('.fraction-den')?.textContent.trim());
+            if (!Number.isFinite(numerator) || !Number.isFinite(denominator) || denominator === 0) return '';
+
+            return `${formatPercent(numerator / denominator)}%`;
         }
 
         const bobStateNodes = [
@@ -1877,7 +1896,7 @@
         applyBasisModeStateSymbolMapping();
         updateEveDetectedIndicator();
         const calculationPanel = document.getElementById('calculation-panel');
-        if (calculationPanel && calculationPanel.style.display === 'block') showEveDetectedCalculation();
+        if (calculationPanel && calculationPanel.style.display === 'block') showEveDetectedCalculation(false);
     }
 
     function setCnotProb(probNode, numerator, denominator, isError = false, isInactive = false) {
@@ -1985,8 +2004,8 @@
         const calculationPanel = document.getElementById('cnot-calculation-panel');
         const calculationDisplay = document.getElementById('cnot-math-display');
         if (calculationPanel && calculationPanel.style.display === 'block') {
-            if (calculationDisplay && calculationDisplay.dataset.calcType === 'cnot-detected') showCnotEveDetectedCalculation();
-            else showCnotCalculation();
+            if (calculationDisplay && calculationDisplay.dataset.calcType === 'cnot-detected') showCnotEveDetectedCalculation(false);
+            else showCnotCalculation(false);
         }
     }
 
@@ -2015,7 +2034,7 @@
         indicator.innerText = `Eve detected probability: ${formatPercent(activeTotal ? detectedTotal / activeTotal : 0)}%`;
     }
 
-    function showCnotEveDetectedCalculation() {
+    function showCnotEveDetectedCalculation(shouldFocus = true) {
         const panel = document.getElementById('cnot-calculation-panel');
         const display = document.getElementById('cnot-math-display');
         if (!panel || !display) return;
@@ -2039,13 +2058,15 @@
         display.innerHTML = `<div class="eve-calc-wrapper" oncontextmenu="return false;"><div class="eve-calc-main-row"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><mrow><msub><mi>P</mi><mtext>detected</mtext></msub><mo>=</mo></mrow></math><div class="eve-fraction-stack"><div class="eve-fraction-numerator"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><mrow>${detectedTermsMathML}</mrow></math></div><div class="eve-fraction-line"></div><div class="eve-fraction-denominator"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><mrow>${allTermsMathML}</mrow></math></div></div></div><math class="eve-final-row" display="block" xmlns="http://www.w3.org/1998/Math/MathML"><mrow><mtext>Detected probability</mtext><mo>=</mo><mstyle class="eve-calc-red"><mfrac><mn>${totalFrac.num}</mn><mn>${totalFrac.den}</mn></mfrac></mstyle><mo>=</mo><mstyle class="eve-calc-red"><mn>${totalPercent}</mn><mo>%</mo></mstyle></mrow></math></div>`;
         if (window.MathJax) {
             MathJax.typesetClear([display]);
-            MathJax.typesetPromise([display]).then(() => focusCalculationPanel(panel));
-        } else {
+            MathJax.typesetPromise([display]).then(() => {
+                if (shouldFocus) focusCalculationPanel(panel);
+            });
+        } else if (shouldFocus) {
             focusCalculationPanel(panel);
         }
     }
 
-    function showCnotCalculation() {
+    function showCnotCalculation(shouldFocus = true) {
         const panel = document.getElementById('cnot-calculation-panel');
         const display = document.getElementById('cnot-math-display');
         const operationNode = document.getElementById('cnot-operation-node');
@@ -2055,8 +2076,10 @@
         display.innerHTML = `\\[\\begin{aligned}${operationNode.dataset.cnotLatex || '|+\\rangle_A|0\\rangle_E \\xrightarrow{CNOT} |\\unicode{x1D719}^+\\rangle_{AE}'}\\end{aligned}\\]`;
         if (window.MathJax) {
             MathJax.typesetClear([display]);
-            MathJax.typesetPromise([display]).then(() => focusCalculationPanel(panel));
-        } else {
+            MathJax.typesetPromise([display]).then(() => {
+                if (shouldFocus) focusCalculationPanel(panel);
+            });
+        } else if (shouldFocus) {
             focusCalculationPanel(panel);
         }
     }

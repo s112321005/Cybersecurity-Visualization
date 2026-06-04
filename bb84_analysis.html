@@ -1436,12 +1436,29 @@
 
     function getBobStateHoverText(node) {
         if (!node) return '';
-        if (node.classList.contains('state-gray-red')) return 'Eve undetected';
-        if (node.classList.contains('eve-error') && node.classList.contains('inactive')) return 'Undetected';
-        if (node.classList.contains('eve-error') || node.classList.contains('state-red')) return 'Eve detected';
-        if (node.classList.contains('inactive') || node.classList.contains('state-gray')) return 'Discarded';
-        if (node.classList.contains('bob-result') || node.classList.contains('state-blue')) return 'Key kept';
-        return 'Key kept';
+        let text = 'Key kept';
+        if (node.classList.contains('state-gray-red')) text = 'Eve undetected';
+        else if (node.classList.contains('eve-error') && node.classList.contains('inactive')) text = 'Undetected';
+        else if (node.classList.contains('eve-error') || node.classList.contains('state-red')) text = 'Eve detected';
+        else if (node.classList.contains('inactive') || node.classList.contains('state-gray')) text = 'Discarded';
+
+        const probabilityText = getBobNodeProbabilityText(node);
+        return probabilityText ? `${text}<br>Probability: ${probabilityText}` : text;
+    }
+
+    function getBobNodeProbabilityText(node) {
+        const targetId = node?.id || node?.querySelector?.('[id]')?.id;
+        if (!targetId) return '';
+
+        const escapedId = CSS.escape(targetId);
+        const probNode = document.querySelector(`[data-for="${escapedId}"], [data-prob-for="${escapedId}"]`);
+        if (!probNode || probNode.style.display === 'none') return '';
+
+        const numerator = Number(probNode.querySelector('.fraction-num')?.textContent.trim());
+        const denominator = Number(probNode.querySelector('.fraction-den')?.textContent.trim());
+        if (!Number.isFinite(numerator) || !Number.isFinite(denominator) || denominator === 0) return '';
+
+        return `${(numerator / denominator * 100).toFixed(3).replace(/\.?0+$/, '')}%`;
     }
 
     function bindBobStateTooltip(node, stateCircle, text) {
