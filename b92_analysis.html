@@ -630,7 +630,7 @@
             </div>
             </div>
         <div id="calculation-panel" class="eve-calculation-panel">
-            <h4>Calculation Process</h4>
+            <h4>Eve Detection Calculation</h4>
             <div id="math-display" class="eve-calc-display"></div>
         </div>
     </div>
@@ -694,7 +694,7 @@
             </div>
         </div>
         <div id="cnot-calculation-panel" class="eve-calculation-panel">
-            <h4>Calculation Process</h4>
+            <h4>Eve Detection Calculation</h4>
             <div id="cnot-math-display" class="eve-calc-display"></div>
         </div>
     </div>
@@ -1007,7 +1007,10 @@
                 colorClass: isError ? 'eve-calc-red' : (isInactive ? 'eve-calc-gray' : 'eve-calc-blue')
             };
         });
-        const total = terms.filter(term => term.isError).reduce((sum, term) => sum + term.prob, 0);
+        const detectedTotal = terms.filter(term => term.isError).reduce((sum, term) => sum + term.prob, 0);
+        const activeTerms = terms.filter(term => term.colorClass !== 'eve-calc-gray');
+        const activeTotal = activeTerms.reduce((sum, term) => sum + term.prob, 0);
+        const detectionRatio = activeTotal ? detectedTotal / activeTotal : 0;
 
         function termToMathML(term, visibleIndex) {
             const frac = probabilityToFraction(term.prob);
@@ -1020,13 +1023,15 @@
             `;
         }
 
-        const allTermsMathML = terms.map((term, index) => termToMathML(term, index)).join('');
+        const allTermsMathML = activeTerms.length
+            ? activeTerms.map((term, index) => termToMathML(term, index)).join('')
+            : '<mstyle class="eve-calc-gray"><mn>0</mn></mstyle>';
         const detectedTerms = terms.filter(term => term.isError);
         const detectedTermsMathML = detectedTerms.length
             ? detectedTerms.map((term, index) => termToMathML(term, index)).join('')
             : '<mstyle class="eve-calc-gray"><mn>0</mn></mstyle>';
-        const totalFrac = probabilityToFraction(total);
-        const totalPercent = formatPercent(total);
+        const totalFrac = probabilityToFraction(detectionRatio);
+        const totalPercent = formatPercent(detectionRatio);
 
         display.innerHTML = `
             <div class="eve-calc-wrapper" oncontextmenu="return false;">
@@ -1395,12 +1400,16 @@
     function updateEveDetectedIndicator() {
         const indicator = document.getElementById('eve-detected-indicator');
         if (!indicator) return;
-        const total = eveDetectedTerms.reduce((sum, term) => {
+        const totals = eveDetectedTerms.reduce((sum, term) => {
             const target = document.getElementById(term.targetId);
-            const isActiveError = target && target.classList.contains('eve-error') && !target.classList.contains('inactive');
-            return sum + (isActiveError ? term.num / term.den : 0);
-        }, 0);
-        const totalPercent = formatPercent(total);
+            const isInactive = target ? target.classList.contains('inactive') : false;
+            const isActiveError = target && target.classList.contains('eve-error') && !isInactive;
+            const prob = term.num / term.den;
+            if (!isInactive) sum.active += prob;
+            if (isActiveError) sum.detected += prob;
+            return sum;
+        }, { detected: 0, active: 0 });
+        const totalPercent = formatPercent(totals.active ? totals.detected / totals.active : 0);
         indicator.innerText = `Eve detected probability： ${totalPercent}%`;
     }
     function updateB92Visuals(isSameBasis) {
@@ -2000,8 +2009,10 @@
     function updateCnotEveDetectedIndicator() {
         const indicator = document.getElementById('cnot-eve-detected-indicator');
         if (!indicator) return;
-        const total = getCnotDetectedTerms().filter(term => term.isError).reduce((sum, term) => sum + term.prob, 0);
-        indicator.innerText = `Eve detected probability: ${formatPercent(total)}%`;
+        const terms = getCnotDetectedTerms();
+        const detectedTotal = terms.filter(term => term.isError).reduce((sum, term) => sum + term.prob, 0);
+        const activeTotal = terms.filter(term => term.colorClass !== 'eve-calc-gray').reduce((sum, term) => sum + term.prob, 0);
+        indicator.innerText = `Eve detected probability: ${formatPercent(activeTotal ? detectedTotal / activeTotal : 0)}%`;
     }
 
     function showCnotEveDetectedCalculation() {
@@ -2011,17 +2022,20 @@
         panel.style.display = 'block';
         display.dataset.calcType = 'cnot-detected';
         const terms = getCnotDetectedTerms();
-        const total = terms.filter(term => term.isError).reduce((sum, term) => sum + term.prob, 0);
+        const detectedTotal = terms.filter(term => term.isError).reduce((sum, term) => sum + term.prob, 0);
+        const activeTerms = terms.filter(term => term.colorClass !== 'eve-calc-gray');
+        const activeTotal = activeTerms.reduce((sum, term) => sum + term.prob, 0);
+        const detectionRatio = activeTotal ? detectedTotal / activeTotal : 0;
         function termToMathML(term, visibleIndex) {
             const frac = probabilityToFraction(term.prob);
             const sign = visibleIndex === 0 ? '' : '+';
             return `${sign ? `<mo>${sign}</mo>` : ''}<mstyle class="${term.colorClass}"><mfrac><mn>${frac.num}</mn><mn>${frac.den}</mn></mfrac></mstyle>`;
         }
-        const allTermsMathML = terms.length ? terms.map((term, index) => termToMathML(term, index)).join('') : '<mstyle class="eve-calc-gray"><mn>0</mn></mstyle>';
+        const allTermsMathML = activeTerms.length ? activeTerms.map((term, index) => termToMathML(term, index)).join('') : '<mstyle class="eve-calc-gray"><mn>0</mn></mstyle>';
         const detectedTerms = terms.filter(term => term.isError);
         const detectedTermsMathML = detectedTerms.length ? detectedTerms.map((term, index) => termToMathML(term, index)).join('') : '<mstyle class="eve-calc-gray"><mn>0</mn></mstyle>';
-        const totalFrac = probabilityToFraction(total);
-        const totalPercent = formatPercent(total);
+        const totalFrac = probabilityToFraction(detectionRatio);
+        const totalPercent = formatPercent(detectionRatio);
         display.innerHTML = `<div class="eve-calc-wrapper" oncontextmenu="return false;"><div class="eve-calc-main-row"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><mrow><msub><mi>P</mi><mtext>detected</mtext></msub><mo>=</mo></mrow></math><div class="eve-fraction-stack"><div class="eve-fraction-numerator"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><mrow>${detectedTermsMathML}</mrow></math></div><div class="eve-fraction-line"></div><div class="eve-fraction-denominator"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><mrow>${allTermsMathML}</mrow></math></div></div></div><math class="eve-final-row" display="block" xmlns="http://www.w3.org/1998/Math/MathML"><mrow><mtext>Detected probability</mtext><mo>=</mo><mstyle class="eve-calc-red"><mfrac><mn>${totalFrac.num}</mn><mn>${totalFrac.den}</mn></mfrac></mstyle><mo>=</mo><mstyle class="eve-calc-red"><mn>${totalPercent}</mn><mo>%</mo></mstyle></mrow></math></div>`;
         if (window.MathJax) {
             MathJax.typesetClear([display]);

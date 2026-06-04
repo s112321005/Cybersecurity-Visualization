@@ -759,7 +759,7 @@
                 </div>
                 </div>
                 <div id="cnot-calculation-panel" class="eve-calculation-panel">
-                    <h4>Calculation Process</h4>
+                    <h4>Eve Detection Calculation</h4>
                     <div id="cnot-math-display" class="eve-calc-display"></div>
                 </div>
             </div>
@@ -1090,15 +1090,16 @@
 
     function renderDetectedCalculation(display, terms, labelText) {
         const redTerms = terms.filter(term => term.tone === 'red');
+        const activeTerms = terms.filter(term => term.tone === 'red' || term.tone === 'blue');
         const detected = addFractions(redTerms);
-        const denominator = addFractions(terms);
+        const denominator = addFractions(activeTerms);
         const detectedValue = fractionToDecimal(detected);
         const denominatorValue = fractionToDecimal(denominator) || 1;
         const finalValue = detectedValue / denominatorValue;
         const finalFrac = probabilityToFraction(finalValue);
         const totalPercent = (finalValue * 100).toFixed(1).replace('.0', '');
         const numeratorTermsMathML = redTerms.length ? buildColoredTermsMathML(redTerms, true) : '<mstyle class="eve-calc-red"><mn>0</mn></mstyle>';
-        const denominatorTermsMathML = buildColoredTermsMathML(terms);
+        const denominatorTermsMathML = activeTerms.length ? buildColoredTermsMathML(activeTerms) : '<mstyle class="eve-calc-gray"><mn>0</mn></mstyle>';
         const finalProbabilityMathML = finalValue === 0 ? '<mstyle class="eve-calc-red"><mn>0</mn></mstyle>' : `<mstyle class="eve-calc-red"><mfrac><mn>${finalFrac.num}</mn><mn>${finalFrac.den}</mn></mfrac></mstyle>`;
 
         display.innerHTML = `
@@ -1137,6 +1138,14 @@
             if (isDifferentBasis && term.tone === 'red') term.tone = 'gray';
             return term;
         });
+    }
+
+    function detectedPercentFromTerms(terms) {
+        const redTerms = terms.filter(term => term.tone === 'red');
+        const activeTerms = terms.filter(term => term.tone === 'red' || term.tone === 'blue');
+        const detected = fractionToDecimal(addFractions(redTerms));
+        const active = fractionToDecimal(addFractions(activeTerms));
+        return ((active ? detected / active : 0) * 100).toFixed(1).replace('.0', '');
     }
 
     function renderBB84ResendDetectedCalculation(shouldFocus = false) {
@@ -1633,7 +1642,7 @@
         syncBB84ResendProbabilityColors();
         updateBobStateHoverText();
         const resendIndicator = document.getElementById('eve-detected-indicator');
-        if (resendIndicator) resendIndicator.innerText = isBobBasisSameAsAlice ? 'Eve detected probability： 25%' : 'Eve detected probability： 0%';
+        if (resendIndicator) resendIndicator.innerText = `Eve detected probability： ${detectedPercentFromTerms(getBB84ResendDetectedTerms())}%`;
         const panel = document.getElementById('calculation-panel');
         const display = document.getElementById('math-display');
         if (panel && display && panel.style.display === 'block' && display.dataset.calcType === 'eve-detected') {
@@ -1729,7 +1738,10 @@
             bottomCircle.className = `state-circle state-${bottomTone}`;
             setCnotProbability(topProb, 1, 2, topTone);
             setCnotProbability(bottomProb, 1, 2, bottomTone);
-            if (indicator) indicator.innerText = `Eve detected probability: ${isSameBasis ? '50%' : '0% (discarded basis)'}`;
+            if (indicator) {
+                const terms = Array.from(document.querySelectorAll('#view-bb84-eve-cnot .cnot-prob-node')).map(getFractionFromProbNode);
+                indicator.innerText = `Eve detected probability: ${detectedPercentFromTerms(terms)}%`;
+            }
         }
         updateBobStateHoverText();
     }
