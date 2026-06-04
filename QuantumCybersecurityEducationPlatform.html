@@ -17,21 +17,22 @@
         .card-link{text-decoration:none;color:inherit;display:block;align-self:flex-start;height:380px}
         .card{position:relative;width:300px;height:380px;border:var(--border-width) solid var(--dark-border);border-radius:var(--border-radius);box-sizing:border-box;background-color:rgba(255,255,255,0.85);backdrop-filter:blur(10px);flex-shrink:0;box-shadow:8px 8px 0px var(--primary-blue);transition:all 0.2s ease-out}
         .collapsible-card{display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:40px 20px 30px;cursor:pointer}
-        .collapsible-card:hover,#interactive-card:hover{transform:translate(-4px,-4px);box-shadow:12px 12px 0px var(--primary-blue);background-color:rgba(255,255,255,0.95)}
+        .collapsible-card:hover,.expandable-card:hover{transform:translate(-4px,-4px);box-shadow:12px 12px 0px var(--primary-blue);background-color:rgba(255,255,255,0.95)}
         .card-badge{position:absolute;top:-20px;background-color:var(--primary-blue);color:white;padding:8px 18px;border-radius:30px;font-size:14px;border:3px solid var(--dark-border);box-shadow:3px 3px 0px white}
         .card img{width:160px;height:160px;object-fit:contain;margin-top:30px}
         .card-title{font-size:24px;font-weight:900;margin:0;text-align:center;line-height:1.3;color:var(--dark-border)}
-        #interactive-card{cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:40px 20px 30px}
+        .expandable-card{cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:40px 20px 30px}
         .state-front{position:absolute;top:0;left:0;width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:40px 20px 30px;box-sizing:border-box;transition:opacity 0.4s ease}
         .state-expanded{position:absolute;top:0;left:0;width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 20px;box-sizing:border-box;opacity:0;pointer-events:none;transition:opacity 0.4s ease;text-align:center}
         .state-expanded img{width:80%;max-width:200px;margin-bottom:30px;margin-top:0}
         .state-expanded h2{color:var(--dark-border);margin:0;font-size:24px;font-weight:900;line-height:1.2}
-        .right-menu-container{width:0;opacity:0;overflow:hidden;display:flex;flex-direction:column;flex-shrink:0;margin-left:-30px;transition:all var(--transition-speed) var(--easing);position:relative}
+        .right-menu-container{width:0;opacity:0;overflow:hidden;display:none;flex-direction:column;flex-shrink:0;margin-left:-30px;transition:all var(--transition-speed) var(--easing);position:relative}
         .learning-path{display:flex;flex-direction:column;gap:25px;height:520px;overflow:hidden;padding:5px 38px 15px 5px;scroll-behavior:smooth;scrollbar-width:none;touch-action:pan-y}
         .learning-path::-webkit-scrollbar{width:0}
         .learning-path::-webkit-scrollbar-track{background:linear-gradient( to bottom,rgba(91,164,207,.24) 0 32%,rgba(255,255,255,.78) 32% 34%,rgba(91,164,207,.24) 34% 66%,rgba(255,255,255,.78) 66% 68%,rgba(91,164,207,.24) 68% 100% );border-radius:10px;border:2px solid var(--dark-border);margin-block:5px}
         .learning-path::-webkit-scrollbar-thumb{background:var(--primary-blue);border-radius:10px;border:2px solid white}
         .section-rail{position:absolute;top:50%;right:14px;width:14px;height:380px;display:grid;grid-template-rows:repeat(4,1fr);gap:8px;transform:translateY(-70%)}
+        .comparison-menu .section-rail{height:190px;grid-template-rows:repeat(2,1fr)}
         .section-rail-segment{border:3px solid var(--dark-border);border-radius:999px;background:white;transition:background .25s ease,transform .15s ease;cursor:pointer;padding:0}
         .section-rail-segment:hover{transform:scaleX(1.25)}
         .section-rail-segment.is-active{background:var(--dark-border)}
@@ -55,11 +56,11 @@
         .text-content .topic-subtitle{color:#7A8793;font-size:13px;font-weight:800;line-height:1.35;margin:0}
         .text-content .topic-desc{color:#7A8793;font-size:12px;font-weight:700;line-height:1.45;margin:0}
         body.is-expanded .header{opacity:0;transform:translateY(-20px);pointer-events:none}
-        body.is-expanded .collapsible-card{width:0;opacity:0;padding:0;margin:0;border-width:0;pointer-events:none;overflow:hidden}
-        body.is-expanded #interactive-card{transform:none;box-shadow:8px 8px 0px var(--primary-blue);cursor:default}
+        body.is-expanded .collapsible-card,body.is-expanded .expandable-card:not(.is-active-card){width:0;opacity:0;padding:0;margin:0;border-width:0;pointer-events:none;overflow:hidden}
+        body.is-expanded .expandable-card.is-active-card{transform:none;box-shadow:8px 8px 0px var(--primary-blue);cursor:default}
         body.is-expanded .state-front{opacity:0;pointer-events:none}
         body.is-expanded .state-expanded{opacity:1;pointer-events:auto}
-        body.is-expanded .right-menu-container{width:580px;opacity:1;margin-left:0;padding-top:5px}
+        body.is-expanded .right-menu-container.is-active-menu{display:flex;width:580px;opacity:1;margin-left:0;padding-top:5px}
         body.is-expanded .hub-link-wrapper{opacity:0;transform:translateY(14px);pointer-events:none}
         .back-btn-wrapper{position:absolute;left:0;top:400px;width:300px;display:flex;justify-content:center;opacity:0;transform:translateY(14px);pointer-events:none;transition:opacity .35s ease,transform .35s ease}
         body.is-expanded .back-btn-wrapper{opacity:1;transform:translateY(0);pointer-events:auto}
@@ -86,7 +87,7 @@
     </div>
 
     <div class="app-container">
-        <div class="card" id="interactive-card" onclick="expandView()">
+        <div class="card expandable-card" id="learning-card" data-panel="learning" onclick="expandPanel('learning')">
             <div class="state-front">
                 <div class="card-badge">Learning</div>
                 <img src="pictures/introduction.svg" alt="Education Tier Icon">
@@ -101,7 +102,7 @@
             </div>
         </div>
 
-        <div class="right-menu-container">
+        <div class="right-menu-container learning-menu" data-menu="learning">
             <div class="section-rail" aria-label="Protocol category navigation">
                 <button class="section-rail-segment is-active" type="button" aria-label="Show Basics"></button>
                 <button class="section-rail-segment" type="button" aria-label="Show QKD"></button>
@@ -206,13 +207,60 @@
                 <p class="card-title">Security Analysis Verification</p>
             </div>
         </a>
-        <a href="QKDprob.html" class="card-link">
-            <div class="card collapsible-card">
+
+        <div class="card expandable-card" id="comparison-card" data-panel="comparison" onclick="expandPanel('comparison')">
+            <div class="state-front">
                 <div class="card-badge">Comparison</div>
-                <img src="pictures/analyze.svg" alt="Analysis Tier Icon">
+                <img src="pictures/analyze.svg" alt="Comparison Tier Icon">
                 <p class="card-title">Protocol Comparison Evaluation</p>
             </div>
-        </a>
+            <div class="state-expanded">
+                <img src="pictures/analyze.svg" alt="QKD Comparison Tools Icon">
+                <h2>Protocol Comparison Evaluation</h2>
+            </div>
+            <div class="back-btn-wrapper">
+                <button class="back-btn" onclick="event.stopPropagation(); collapseView()">Back</button>
+            </div>
+        </div>
+
+        <div class="right-menu-container comparison-menu" data-menu="comparison">
+            <div class="section-rail" aria-label="Comparison category navigation">
+                <button class="section-rail-segment is-active" type="button" aria-label="Show QKD security analysis"></button>
+                <button class="section-rail-segment" type="button" aria-label="Show QKD discard-rate comparison"></button>
+            </div>
+
+            <div class="learning-path">
+                <div class="path-section section-qkd is-active-section">
+                    <div class="path-header">
+                        <div class="path-badge badge-qkd">QKD</div>
+                        <h3 class="path-title">Security Analysis</h3>
+                    </div>
+                    <div class="path-items">
+                        <a href="VerifySetting.html" class="menu-item">
+                            <div class="text-content">
+                                <p class="en-title">QKD Security Analysis</p>
+                                <p class="topic-desc">Configure QKD protocol settings and verify security-related behavior.</p>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="path-section section-qkd">
+                    <div class="path-header">
+                        <div class="path-badge badge-qkd">QKD</div>
+                        <h3 class="path-title">Discard Rate Comparison</h3>
+                    </div>
+                    <div class="path-items">
+                        <a href="QKDprob.html" class="menu-item">
+                            <div class="text-content">
+                                <p class="en-title">QKD Discard Rate Comparison</p>
+                                <p class="topic-desc">Compare discard-rate behavior across QKD protocol choices.</p>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <div class="hub-link-wrapper">
@@ -220,9 +268,7 @@
     </div>
 
     <script>
-        let activePathSection = 0;
-        let pathWheelLocked = false;
-        let pathTouchStartY = null;
+        const pathMenus = {};
 
         function updateMobileFitScale() {
             const root = document.documentElement;
@@ -238,15 +284,37 @@
             root.style.setProperty('--mobile-fit-height', `${Math.ceil(380 * scale)}px`);
         }
 
-        function expandView() {
+        function expandPanel(panelName) {
             document.body.classList.add('is-expanded');
-            document.querySelector('.state-front').style.display = 'none';
-            document.querySelector('.state-expanded').style.display = 'flex';
+            document.querySelectorAll('.expandable-card').forEach(function (card) {
+                const isActive = card.dataset.panel === panelName;
+                card.classList.toggle('is-active-card', isActive);
+                const front = card.querySelector('.state-front');
+                const expanded = card.querySelector('.state-expanded');
+                if (front) front.style.display = isActive ? 'none' : 'flex';
+                if (expanded) expanded.style.display = isActive ? 'flex' : 'none';
+            });
+            document.querySelectorAll('.right-menu-container').forEach(function (menu) {
+                menu.classList.toggle('is-active-menu', menu.dataset.menu === panelName);
+            });
         }
+
+        function expandView() {
+            expandPanel('learning');
+        }
+
         function collapseView() {
             document.body.classList.remove('is-expanded');
-            document.querySelector('.state-front').style.display = 'flex';
-            document.querySelector('.state-expanded').style.display = 'none';
+            document.querySelectorAll('.expandable-card').forEach(function (card) {
+                card.classList.remove('is-active-card');
+                const front = card.querySelector('.state-front');
+                const expanded = card.querySelector('.state-expanded');
+                if (front) front.style.display = 'flex';
+                if (expanded) expanded.style.display = 'none';
+            });
+            document.querySelectorAll('.right-menu-container').forEach(function (menu) {
+                menu.classList.remove('is-active-menu');
+            });
         }
 
         document.addEventListener('DOMContentLoaded', function () {
@@ -254,84 +322,116 @@
             window.addEventListener('resize', updateMobileFitScale);
             window.addEventListener('orientationchange', updateMobileFitScale);
 
-            const learningPath = document.querySelector('.learning-path');
-            const sections = Array.from(document.querySelectorAll('.path-section'));
-            const railSegments = Array.from(document.querySelectorAll('.section-rail-segment'));
-            const sectionMap = { basics: 0, foundation: 0, foundations: 0, qkd: 1, qss: 2, qsdc: 3 };
-            if (!learningPath || sections.length === 0) return;
+            function initPathMenu(menu, sectionMap) {
+                const panelName = menu.dataset.menu;
+                const learningPath = menu.querySelector('.learning-path');
+                const sections = Array.from(menu.querySelectorAll('.path-section'));
+                const railSegments = Array.from(menu.querySelectorAll('.section-rail-segment'));
+                if (!learningPath || sections.length === 0) return null;
 
-            function setActivePathSection(index) {
-                activePathSection = Math.max(0, Math.min(sections.length - 1, index));
-                sections.forEach(function (section, sectionIndex) {
-                    section.classList.toggle('is-active-section', sectionIndex === activePathSection);
-                });
+                let activePathSection = 0;
+                let pathWheelLocked = false;
+                let pathTouchStartY = null;
+
+                function setActivePathSection(index) {
+                    activePathSection = Math.max(0, Math.min(sections.length - 1, index));
+                    sections.forEach(function (section, sectionIndex) {
+                        section.classList.toggle('is-active-section', sectionIndex === activePathSection);
+                    });
+                    railSegments.forEach(function (segment, segmentIndex) {
+                        segment.classList.toggle('is-active', segmentIndex === activePathSection);
+                        segment.setAttribute('aria-current', segmentIndex === activePathSection ? 'true' : 'false');
+                    });
+                }
+
+                function scrollToPathSection(index) {
+                    setActivePathSection(index);
+                }
+
+                function stepPathSection(direction) {
+                    let nextSection = activePathSection + direction;
+                    if (nextSection >= sections.length) nextSection = 0;
+                    if (nextSection < 0) nextSection = sections.length - 1;
+                    scrollToPathSection(nextSection);
+                }
+
                 railSegments.forEach(function (segment, segmentIndex) {
-                    segment.classList.toggle('is-active', segmentIndex === activePathSection);
-                    segment.setAttribute('aria-current', segmentIndex === activePathSection ? 'true' : 'false');
+                    segment.addEventListener('click', function () {
+                        setActivePathSection(segmentIndex);
+                    });
                 });
+
+                learningPath.addEventListener('wheel', function (event) {
+                    event.preventDefault();
+                    if (pathWheelLocked || Math.abs(event.deltaY) < 8) return;
+
+                    pathWheelLocked = true;
+                    stepPathSection(event.deltaY > 0 ? 1 : -1);
+
+                    window.setTimeout(function () {
+                        pathWheelLocked = false;
+                    }, 520);
+                }, { passive: false });
+
+                learningPath.addEventListener('touchstart', function (event) {
+                    if (!event.touches || event.touches.length === 0) return;
+                    pathTouchStartY = event.touches[0].clientY;
+                }, { passive: true });
+
+                learningPath.addEventListener('touchend', function (event) {
+                    if (pathTouchStartY === null || !event.changedTouches || event.changedTouches.length === 0) return;
+                    const touchDelta = pathTouchStartY - event.changedTouches[0].clientY;
+                    pathTouchStartY = null;
+                    if (pathWheelLocked || Math.abs(touchDelta) < 35) return;
+
+                    pathWheelLocked = true;
+                    stepPathSection(touchDelta > 0 ? 1 : -1);
+
+                    window.setTimeout(function () {
+                        pathWheelLocked = false;
+                    }, 360);
+                }, { passive: true });
+
+                setActivePathSection(0);
+
+                pathMenus[panelName] = {
+                    sectionMap: sectionMap,
+                    setActivePathSection: setActivePathSection
+                };
+
+                return pathMenus[panelName];
             }
 
-            function scrollToPathSection(index) {
-                setActivePathSection(index);
-            }
-
-            function stepPathSection(direction) {
-                let nextSection = activePathSection + direction;
-                if (nextSection >= sections.length) nextSection = 0;
-                if (nextSection < 0) nextSection = sections.length - 1;
-                scrollToPathSection(nextSection);
-            }
-
-            railSegments.forEach(function (segment, segmentIndex) {
-                segment.addEventListener('click', function () {
-                    setActivePathSection(segmentIndex);
-                });
-            });
-
-            learningPath.addEventListener('wheel', function (event) {
-                event.preventDefault();
-                if (pathWheelLocked || Math.abs(event.deltaY) < 8) return;
-
-                pathWheelLocked = true;
-                stepPathSection(event.deltaY > 0 ? 1 : -1);
-
-                window.setTimeout(function () {
-                    pathWheelLocked = false;
-                }, 520);
-            }, { passive: false });
-
-            learningPath.addEventListener('touchstart', function (event) {
-                if (!event.touches || event.touches.length === 0) return;
-                pathTouchStartY = event.touches[0].clientY;
-            }, { passive: true });
-
-            learningPath.addEventListener('touchend', function (event) {
-                if (pathTouchStartY === null || !event.changedTouches || event.changedTouches.length === 0) return;
-                const touchDelta = pathTouchStartY - event.changedTouches[0].clientY;
-                pathTouchStartY = null;
-                if (pathWheelLocked || Math.abs(touchDelta) < 35) return;
-
-                pathWheelLocked = true;
-                stepPathSection(touchDelta > 0 ? 1 : -1);
-
-                window.setTimeout(function () {
-                    pathWheelLocked = false;
-                }, 360);
-            }, { passive: true });
+            initPathMenu(document.querySelector('.learning-menu'), { basics: 0, foundation: 0, foundations: 0, qkd: 1, qss: 2, qsdc: 3 });
+            initPathMenu(document.querySelector('.comparison-menu'), { analysis: 0, security: 0, qkd: 0, discard: 1, discards: 1, probability: 1, comparison: 1 });
 
             function openLinkedSection() {
                 const params = new URLSearchParams(window.location.search);
                 const requestedSection = (params.get('section') || '').toLowerCase();
+                const requestedTool = (params.get('tool') || '').toLowerCase();
                 const shouldOpenLearning = window.location.hash === '#quantum-security-applications';
+                const shouldOpenComparison = window.location.hash === '#protocol-comparison-evaluation';
 
-                if (Object.prototype.hasOwnProperty.call(sectionMap, requestedSection)) {
-                    setActivePathSection(sectionMap[requestedSection]);
-                } else {
-                    setActivePathSection(0);
+                if (pathMenus.learning) {
+                    if (Object.prototype.hasOwnProperty.call(pathMenus.learning.sectionMap, requestedSection)) {
+                        pathMenus.learning.setActivePathSection(pathMenus.learning.sectionMap[requestedSection]);
+                    } else {
+                        pathMenus.learning.setActivePathSection(0);
+                    }
                 }
 
-                if (shouldOpenLearning && Object.prototype.hasOwnProperty.call(sectionMap, requestedSection)) {
-                    expandView();
+                if (pathMenus.comparison && Object.prototype.hasOwnProperty.call(pathMenus.comparison.sectionMap, requestedTool)) {
+                    pathMenus.comparison.setActivePathSection(pathMenus.comparison.sectionMap[requestedTool]);
+                } else if (pathMenus.comparison) {
+                    pathMenus.comparison.setActivePathSection(0);
+                }
+
+                if (shouldOpenLearning && pathMenus.learning && Object.prototype.hasOwnProperty.call(pathMenus.learning.sectionMap, requestedSection)) {
+                    expandPanel('learning');
+                }
+
+                if (shouldOpenComparison) {
+                    expandPanel('comparison');
                 }
             }
 
