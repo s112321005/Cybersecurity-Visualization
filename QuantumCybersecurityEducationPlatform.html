@@ -10,7 +10,7 @@
         :root{--primary-blue:#5BA4CF;--light-blue:#E1F0F8;--dark-border:#2C3E50;--qss-green:#38C98B;--qsdc-purple:#9B66F9;--bg-gradient:linear-gradient(135deg,#E0F2FE 0%,#F5F3FF 50%,#ECFDF5 100%);--border-width:5px;--border-radius:20px;--transition-speed:0.5s;--easing:cubic-bezier(0.25,1,0.3,1);--mobile-fit-scale:1;--mobile-fit-height:380px}
         body{font-family:'Comfortaa','Segoe UI',Tahoma,sans-serif;font-weight:700;background:var(--bg-gradient);background-attachment:fixed;color:var(--dark-border);margin:0;overflow-x:hidden;min-height:100vh;display:flex;flex-direction:column;align-items:center;position:relative}
         body::before{content:"";position:fixed;top:-10%;left:-10%;width:120%;height:120%;background:radial-gradient(circle at 20% 30%,rgba(165,243,252,0.4) 0%,transparent 20%),radial-gradient(circle at 80% 70%,rgba(199,210,254,0.4) 0%,transparent 20%);z-index:-1;filter:blur(60px);animation:moveLight 20s infinite alternate ease-in-out}
-        .header{display:flex;align-items:center;justify-content:center;gap:15px;margin-top:40px;margin-bottom:60px;transition:opacity 0.4s ease,transform 0.4s ease}
+        .header{display:flex;align-items:center;justify-content:center;gap:15px;margin-top:40px;margin-bottom:60px;transition:opacity 0.4s ease,transform 0.4s ease,margin 0.4s ease,height 0.4s ease}
         .header img{width:60px;height:auto}
         .header h1{font-family:'Titan One','Comfortaa','Segoe UI',sans-serif;font-size:3rem;color:var(--dark-border);margin:0;font-weight:400;letter-spacing:1px;text-shadow:3px 3px 0px white}
         .app-container{display:flex;justify-content:center;align-items:flex-start;gap:30px;width:100%;max-width:1150px;height:380px;transition:all var(--transition-speed) var(--easing)}
@@ -23,15 +23,15 @@
         .card-title{font-size:24px;font-weight:900;margin:0;text-align:center;line-height:1.3;color:var(--dark-border)}
         .expandable-card{cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:40px 20px 30px}
         .state-front{position:absolute;top:0;left:0;width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:40px 20px 30px;box-sizing:border-box;transition:opacity 0.4s ease}
-        .state-expanded{position:absolute;top:0;left:0;width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 20px;box-sizing:border-box;opacity:0;pointer-events:none;transition:opacity 0.4s ease;text-align:center}
-        .state-expanded img{width:80%;max-width:200px;margin-bottom:30px;margin-top:0}
-        .state-expanded h2{color:var(--dark-border);margin:0;font-size:24px;font-weight:900;line-height:1.2}
+        .state-expanded{position:absolute;top:0;left:0;width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:40px 20px 30px;box-sizing:border-box;opacity:0;pointer-events:none;transition:opacity 0.4s ease;text-align:center}
+        .state-expanded img{width:160px;height:160px;object-fit:contain;margin-top:30px}
+        .state-expanded h2{color:var(--dark-border);margin:0;font-size:24px;font-weight:900;line-height:1.3}
         .right-menu-container{width:0;opacity:0;overflow:hidden;display:none;flex-direction:column;flex-shrink:0;margin-left:-30px;transition:all var(--transition-speed) var(--easing);position:relative}
-        .learning-path{display:flex;flex-direction:column;gap:25px;height:520px;overflow:hidden;padding:5px 38px 15px 5px;scroll-behavior:smooth;scrollbar-width:none;touch-action:pan-y}
+        .learning-path{display:flex;flex-direction:column;gap:25px;min-height:600px;overflow:visible;padding:5px 38px 15px 5px;scroll-behavior:smooth;scrollbar-width:none;touch-action:pan-y}
         .learning-path::-webkit-scrollbar{width:0}
         .learning-path::-webkit-scrollbar-track{background:linear-gradient( to bottom,rgba(91,164,207,.24) 0 32%,rgba(255,255,255,.78) 32% 34%,rgba(91,164,207,.24) 34% 66%,rgba(255,255,255,.78) 66% 68%,rgba(91,164,207,.24) 68% 100% );border-radius:10px;border:2px solid var(--dark-border);margin-block:5px}
         .learning-path::-webkit-scrollbar-thumb{background:var(--primary-blue);border-radius:10px;border:2px solid white}
-        .section-rail{position:absolute;top:50%;right:14px;width:14px;height:380px;display:grid;grid-template-rows:repeat(4,1fr);gap:8px;transform:translateY(-70%)}
+        .section-rail{position:absolute;top:60%;right:14px;width:14px;height:380px;display:grid;grid-template-rows:repeat(4,1fr);gap:8px;transform:translateY(-70%)}
         .comparison-menu .section-rail{height:190px;grid-template-rows:repeat(2,1fr)}
         .section-rail-segment{border:3px solid var(--dark-border);border-radius:999px;background:white;transition:background .25s ease,transform .15s ease;cursor:pointer;padding:0}
         .section-rail-segment:hover{transform:scaleX(1.25)}
@@ -40,9 +40,10 @@
         .path-section.is-active-section{display:block}
         @keyframes sectionPop{from{opacity:0;transform:translateY(12px) scale(.98)}to{opacity:1;transform:translateY(0) scale(1)}}
         .path-header{display:flex;align-items:center;gap:15px;margin-bottom:20px;border-bottom:3px dashed rgba(44,62,80,0.3);padding-bottom:15px}
+        .path-section-image{display:block;width:calc(100% - 24px);max-width:460px;height:220px;object-fit:contain;margin:0 auto 20px;border:4px solid var(--dark-border);border-radius:18px;background:white;box-shadow:5px 5px 0 rgba(91,164,207,0.55);box-sizing:border-box}
         .path-badge{color:white;padding:6px 14px;border-radius:12px;font-size:16px;font-weight:900;border:3px solid var(--dark-border);box-shadow:3px 3px 0px var(--dark-border)}
         .badge-qkd{background-color:var(--primary-blue);transform:rotate(-4deg)}
-        .badge-qss{background-color:var(--primary-blue);transform:rotate(3deg)}
+        .badge-qss{background-color:var(--primary-blue);transform:rotate(-3deg)}
         .badge-qsdc{background-color:var(--primary-blue);transform:rotate(-2deg)}
         .path-title{font-size:18px;color:var(--dark-border);margin:0;font-weight:900}
         .path-items{display:flex;flex-direction:column;gap:15px}
@@ -55,14 +56,14 @@
         .text-content .en-title{color:#1A567B;font-size:22px;font-weight:bold;margin:0;line-height:1.18}
         .text-content .topic-subtitle{color:#7A8793;font-size:13px;font-weight:800;line-height:1.35;margin:0}
         .text-content .topic-desc{color:#7A8793;font-size:12px;font-weight:700;line-height:1.45;margin:0}
-        body.is-expanded .header{opacity:0;transform:translateY(-20px);pointer-events:none}
+        body.is-expanded .header{height:0;margin-top:12px;margin-bottom:18px;overflow:hidden;opacity:0;transform:translateY(-20px);pointer-events:none}
         body.is-expanded .collapsible-card,body.is-expanded .expandable-card:not(.is-active-card){width:0;opacity:0;padding:0;margin:0;border-width:0;pointer-events:none;overflow:hidden}
-        body.is-expanded .expandable-card.is-active-card{transform:none;box-shadow:8px 8px 0px var(--primary-blue);cursor:default}
+        body.is-expanded .expandable-card.is-active-card{transform:translateY(90px);box-shadow:8px 8px 0px var(--primary-blue);cursor:default}
         body.is-expanded .state-front{opacity:0;pointer-events:none}
         body.is-expanded .state-expanded{opacity:1;pointer-events:auto}
-        body.is-expanded .right-menu-container.is-active-menu{display:flex;width:580px;opacity:1;margin-left:0;padding-top:5px}
+        body.is-expanded .right-menu-container.is-active-menu{display:flex;width:580px;opacity:1;margin-left:0;padding-top:5px;transform:translateY(90px)}
         body.is-expanded .hub-link-wrapper{opacity:0;transform:translateY(14px);pointer-events:none}
-        .back-btn-wrapper{position:absolute;left:0;top:400px;width:300px;display:flex;justify-content:center;opacity:0;transform:translateY(14px);pointer-events:none;transition:opacity .35s ease,transform .35s ease}
+        .back-btn-wrapper{position:absolute;left:0;top:calc(100% + 20px);width:100%;display:flex;justify-content:center;opacity:0;transform:translateY(14px);pointer-events:none;transition:opacity .35s ease,transform .35s ease}
         body.is-expanded .back-btn-wrapper{opacity:1;transform:translateY(0);pointer-events:auto}
         .hub-link-wrapper{margin-top:25px;transition:opacity .35s ease,transform .35s ease}
         .hub-link,.back-btn{display:inline-flex;align-items:center;justify-content:center;text-decoration:none;background:var(--primary-blue);color:white;border:var(--border-width) solid var(--dark-border);border-radius:60px;padding:13px 54px;font-size:22px;font-weight:900;box-shadow:0px 4px 0 var(--dark-border);text-shadow:2px 2px 0 var(--dark-border);transition:transform .15s ease,box-shadow .15s ease;cursor:pointer}
@@ -94,6 +95,7 @@
                 <p class="card-title">Security Protocol Learning</p>
             </div>
             <div class="state-expanded">
+                <div class="card-badge">Learning</div>
                 <img src="pictures/introduction.svg" alt="Quantum Security Applications Icon">
                 <h2>Security Protocol Learning</h2>
             </div>
@@ -144,6 +146,7 @@
                         <div class="path-badge badge-qkd">QKD</div>
                         <h3 class="path-title">Quantum Key Distribution</h3>
                     </div>
+                    <img class="path-section-image" src="pictures/QKDgeneral.png" alt="QKD Icon">
                     <div class="path-items">
                         <a href="BB84overview.html" class="menu-item">
                             <div class="text-content">
@@ -165,6 +168,7 @@
                         <div class="path-badge badge-qss">QSS</div>
                         <h3 class="path-title">Quantum Secret Sharing</h3>
                     </div>
+                    <img class="path-section-image" src="pictures/QSSgeneral.png" alt="QSS Icon">
                     <div class="path-items">
                         <a href="ZLMstep1.html" class="menu-item">
                             <div class="text-content">
@@ -186,6 +190,7 @@
                         <div class="path-badge badge-qsdc">QSDC</div>
                         <h3 class="path-title">Quantum Security Direct Communication</h3>
                     </div>
+                    <img class="path-section-image" src="pictures/QSDCgeneral.png" alt="QSDC Icon">
                     <div class="path-items">
                         <a href="PINGPONGoverview.html" class="menu-item">
                             <div class="text-content">
@@ -221,6 +226,7 @@
                 <p class="card-title">Protocol Comparison Evaluation</p>
             </div>
             <div class="state-expanded">
+                <div class="card-badge">Comparison</div>
                 <img src="pictures/analyze.svg" alt="QKD Comparison Tools Icon">
                 <h2>Protocol Comparison Evaluation</h2>
             </div>
