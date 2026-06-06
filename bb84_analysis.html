@@ -77,7 +77,8 @@
         .btn-back:hover { transform: scale(1.1); background-color: #3E8FBC; color: white; }
         .line-tooltip { position: absolute; background: rgba(0, 0, 0, 0.6); color: #ffffff; padding: 8px 12px; border-radius: 8px; font-size: 14px; opacity: 0; pointer-events: none; z-index: 1000; white-space: nowrap; box-shadow: 0px 4px 6px rgba(0,0,0,0.3); }
         svg.arrows line { cursor: pointer; transition: stroke-width 0.2s ease; pointer-events: stroke !important; }
-        svg.arrows line:hover { stroke-width: 5 !important; }
+        svg.arrows line:not(.line-hit-area):hover, svg.arrows line.line-hover:not(.line-hit-area) { stroke-width: 5 !important; }
+        svg.arrows line.line-hit-area { stroke: rgba(0,0,0,0.001) !important; stroke-width: 18 !important; opacity: 1 !important; marker-end: none !important; pointer-events: stroke !important; transition: none; }
         .page-view { display: none; width: 100%; justify-content: center; }
         .page-view.active-view { display: flex; }
         .avatar-alice { border: 4px solid var(--alice-blue); background-color: transparent; border-radius: 15px; padding: 10px; }
@@ -378,7 +379,7 @@
         .sim-state-display::before { content: "|0\27E9"; animation: stateLabelMorph 4s infinite; }
         @keyframes switchMove { 0%, 40% { left: 2px; } 50%, 90% { left: 83px; } 100% { left: 2px; } }
         @keyframes stateMorph { 0%, 40% { background: var(--primary-blue); } 50%, 90% { background: var(--primary-blue); } 100% { background: var(--primary-blue); } }
-        @keyframes stateLabelMorph { 0%, 40% { content: "|0\27E9"; } 50%, 90% { content: "|→\27E9"; } 100% { content: "| 0 \27E9"; } }
+        @keyframes stateLabelMorph { 0%, 40% { content: "|0\27E9"; } 50%, 90% { content: "|↔\27E9"; } 100% { content: "| 0 \27E9"; } }
 
         .sim-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
         .sim-cell {  width: 50px; height: 50px; background: white; border: 2px solid #ccc; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: bold; color: #555; }
@@ -521,10 +522,10 @@
             <div class="sidebar">
                 <div class="selection-box" id="bb84-options">
                     <h4>Alice Selects Message</h4>
-                    <div class="option-row basis-z" data-state-symbol="|→⟩" onclick="selectStateBB84(this, '|→⟩', 'rectilinear')"><div class="state-btn">| 0 ⟩</div><div class="arrow-icon">➔</div><div class="state-btn">|→⟩</div></div>
-                    <div class="option-row basis-z" data-state-symbol="| ↑ ⟩" onclick="selectStateBB84(this, '| ↑ ⟩', 'rectilinear')"><div class="state-btn">| 1 ⟩</div><div class="arrow-icon">➔</div><div class="state-btn">| ↑ ⟩</div></div>
-                    <div class="option-row basis-x" data-state-symbol="|↗⟩" onclick="selectStateBB84(this, '|↗⟩', 'diagonal')"><div class="state-btn">|十⟩</div><div class="arrow-icon">➔</div><div class="state-btn">|↗⟩</div></div>
-                    <div class="option-row basis-x" data-state-symbol="|↖⟩" onclick="selectStateBB84(this, '|↖⟩', 'diagonal')"><div class="state-btn">|一⟩</div><div class="arrow-icon">➔</div><div class="state-btn">|↖⟩</div></div>
+                    <div class="option-row basis-z" data-state-symbol="|↔⟩" onclick="selectStateBB84(this, '|↔⟩', 'rectilinear')"><div class="state-btn">| 0 ⟩</div><div class="arrow-icon">➔</div><div class="state-btn">|↔⟩</div></div>
+                    <div class="option-row basis-z" data-state-symbol="| ↕ ⟩" onclick="selectStateBB84(this, '| ↕ ⟩', 'rectilinear')"><div class="state-btn">| 1 ⟩</div><div class="arrow-icon">➔</div><div class="state-btn">| ↕ ⟩</div></div>
+                    <div class="option-row basis-x" data-state-symbol="|⤢⟩" onclick="selectStateBB84(this, '|⤢⟩', 'diagonal')"><div class="state-btn">|十⟩</div><div class="arrow-icon">➔</div><div class="state-btn">|⤢⟩</div></div>
+                    <div class="option-row basis-x" data-state-symbol="|⤡⟩" onclick="selectStateBB84(this, '|⤡⟩', 'diagonal')"><div class="state-btn">|一⟩</div><div class="arrow-icon">➔</div><div class="state-btn">|⤡⟩</div></div>
                 </div>                
                 <div class="result-direction" aria-label="Result color legend">
                     <h4>Result Direction</h4>
@@ -551,7 +552,7 @@
                     </svg>
                     <div class="node" style="left: 10%; top: 50%;">
                         <img id="bb84-initial-key-img" src="pictures/a_vertical.svg" class="polarizer-img">
-                        <div class="state-circle" id="bb84-initial-state-text">|→⟩</div>
+                        <div class="state-circle" id="bb84-initial-state-text">|↔⟩</div>
                     </div>
                     <div class="node" style="left: 41%; top: 25%;">
                         <img id="bb84-bob-same" src="pictures/a_vertical.svg" class="polarizer-img">
@@ -560,16 +561,16 @@
                         <img id="bb84-bob-unsame" src="pictures/gray_diagonal.svg" class="polarizer-img inactive">
                     </div>
                     <div class="node" style="left: 75%; top: 25%;">
-                        <div id="bb84-symbol-bobsame" class="state-circle">|→⟩</div>
+                        <div id="bb84-symbol-bobsame" class="state-circle">|↔⟩</div>
                     </div>
                     <div class="node" style="left: 75%; top: 55%;">
                         <div class="state-circle inactive" style="transform: rotate(-45deg); display: flex; align-items: center; justify-content: center;">
-                             <span id="bb84-symbol-bobunsame-1" style="transform: rotate(45deg);">|↖⟩</span>
+                             <span id="bb84-symbol-bobunsame-1" style="transform: rotate(45deg);">|⤡⟩</span>
                         </div>
                     </div>
                     <div class="node" style="left: 75%; top: 85%;">
                          <div class="state-circle inactive" style="transform: rotate(45deg); display: flex; align-items: center; justify-content: center;">
-                             <span id="bb84-symbol-bobunsame-2" style="transform: rotate(-45deg);">|↗⟩</span>
+                             <span id="bb84-symbol-bobunsame-2" style="transform: rotate(-45deg);">|⤢⟩</span>
                         </div>
                     </div>
                     <div class="result-circle" style="left: 90%; top: 25%; width: 50px; height: 50px;">✔</div>
@@ -596,17 +597,17 @@
             <div class="sidebar">
                 <div class="selection-box" id="bb84-eve-options">
                     <h4>Alice Selects Message</h4>
-                    <div class="option-row basis-z" data-state-symbol="|→⟩" onclick="selectStateBB84Eve(this, '|→⟩', 'rectilinear')">
-                        <div class="state-btn">| 0 ⟩</div><div class="arrow-icon">➔</div><div class="state-btn">|→⟩</div>
+                    <div class="option-row basis-z" data-state-symbol="|↔⟩" onclick="selectStateBB84Eve(this, '|↔⟩', 'rectilinear')">
+                        <div class="state-btn">| 0 ⟩</div><div class="arrow-icon">➔</div><div class="state-btn">|↔⟩</div>
                     </div>
-                    <div class="option-row basis-z" data-state-symbol="| ↑ ⟩" onclick="selectStateBB84Eve(this, '| ↑ ⟩', 'rectilinear')">
-                        <div class="state-btn">| 1 ⟩</div><div class="arrow-icon">➔</div><div class="state-btn">| ↑ ⟩</div>
+                    <div class="option-row basis-z" data-state-symbol="| ↕ ⟩" onclick="selectStateBB84Eve(this, '| ↕ ⟩', 'rectilinear')">
+                        <div class="state-btn">| 1 ⟩</div><div class="arrow-icon">➔</div><div class="state-btn">| ↕ ⟩</div>
                     </div>
-                    <div class="option-row basis-x" data-state-symbol="|↗⟩" onclick="selectStateBB84Eve(this, '|↗⟩', 'diagonal')">
-                        <div class="state-btn">|十⟩</div><div class="arrow-icon">➔</div><div class="state-btn">|↗⟩</div>
+                    <div class="option-row basis-x" data-state-symbol="|⤢⟩" onclick="selectStateBB84Eve(this, '|⤢⟩', 'diagonal')">
+                        <div class="state-btn">|十⟩</div><div class="arrow-icon">➔</div><div class="state-btn">|⤢⟩</div>
                     </div>
-                    <div class="option-row basis-x" data-state-symbol="|↖⟩" onclick="selectStateBB84Eve(this, '|↖⟩', 'diagonal')">
-                        <div class="state-btn">|一⟩</div><div class="arrow-icon">➔</div><div class="state-btn">|↖⟩</div>
+                    <div class="option-row basis-x" data-state-symbol="|⤡⟩" onclick="selectStateBB84Eve(this, '|⤡⟩', 'diagonal')">
+                        <div class="state-btn">|一⟩</div><div class="arrow-icon">➔</div><div class="state-btn">|⤡⟩</div>
                     </div>
                 </div>                
                 <div class="result-direction" aria-label="Result color legend">
@@ -657,16 +658,16 @@
                     </svg>
                     <div class="node" style="left: 8%; top: 50%;">
                         <img id="eve-alice-key" src="pictures/a_vertical.svg" class="polarizer-img">
-                        <div class="state-circle" id="eve-alice-state">|→⟩</div>
+                        <div class="state-circle" id="eve-alice-state">|↔⟩</div>
                     </div>
                     <div class="node" style="left: 32%; top: 25%;"><img id="eve-pol-same" src="pictures/red_vertical.svg" class="polarizer-img"></div>
                     <div class="node" style="left: 32%; top: 75%;"><img id="eve-pol-diff" src="pictures/red_diagonal.svg" class="polarizer-img"></div>
-                    <div class="node" style="left: 50%; top: 25%;"><div class="eve-state-circle" id="eve-state-same">|→⟩</div></div>
+                    <div class="node" style="left: 50%; top: 25%;"><div class="eve-state-circle" id="eve-state-same">|↔⟩</div></div>
                     <div class="node" style="left: 50%; top: 60%;">
-                        <div class="eve-state-circle" style="transform: rotate(-45deg);"><span id="eve-state-diff1" style="transform: rotate(45deg); display:block;">|↖⟩</span></div>
+                        <div class="eve-state-circle" style="transform: rotate(-45deg);"><span id="eve-state-diff1" style="transform: rotate(45deg); display:block;">|⤡⟩</span></div>
                     </div>
                     <div class="node" style="left: 50%; top: 90%;">
-                        <div class="eve-state-circle" style="transform: rotate(45deg);"><span id="eve-state-diff2" style="transform: rotate(-45deg); display:block;">|↗⟩</span></div>
+                        <div class="eve-state-circle" style="transform: rotate(45deg);"><span id="eve-state-diff2" style="transform: rotate(-45deg); display:block;">|⤢⟩</span></div>
                     </div>
                     <div class="node bob-same-node" style="left: 72%; top: 15%;"><img id="bob-pol-1" src="pictures/b_vertical.svg" class="polarizer-img"></div>
                     <div class="node bob-diff-node" style="left: 72%; top: 35%;"><img id="bob-pol-2" src="pictures/gray_diagonal.svg" class="polarizer-img inactive"></div>
@@ -674,23 +675,23 @@
                     <div class="node bob-diff-node" style="left: 72%; top: 68%;"><img id="bob-pol-4" src="pictures/gray_diagonal.svg" class="polarizer-img inactive"></div>
                     <div class="node bob-same-node" style="left: 72%; top: 82%;"><img id="bob-pol-5" src="pictures/b_vertical.svg" class="polarizer-img"></div>
                     <div class="node bob-diff-node" style="left: 72%; top: 94%;"><img id="bob-pol-6" src="pictures/gray_diagonal.svg" class="polarizer-img inactive"></div>
-                    <div class="node bob-same-node" style="left: 88%; top: 15%;"><div class="state-circle" id="bob-final-1">|→⟩</div></div>
+                    <div class="node bob-same-node" style="left: 88%; top: 15%;"><div class="state-circle" id="bob-final-1">|↔⟩</div></div>
                     <div class="prob-circle prob-fraction bb84-resend-prob state-gray" data-for="bob-final-1" style="top: 15%;"><div class="fraction-num">1</div><div class="fraction-den">4</div></div>
-                    <div class="node bob-diff-node" style="left: 88%; top: 30%;"><div class="state-circle inactive" id="bob-final-2" style="transform: rotate(-45deg);"><span style="transform: rotate(45deg); display:block;">|↖⟩</span></div></div>
+                    <div class="node bob-diff-node" style="left: 88%; top: 30%;"><div class="state-circle inactive" id="bob-final-2" style="transform: rotate(-45deg);"><span style="transform: rotate(45deg); display:block;">|⤡⟩</span></div></div>
                     <div class="prob-circle prob-fraction bb84-resend-prob state-gray" data-for="bob-final-2" style="top: 30%;"><div class="fraction-num">1</div><div class="fraction-den">8</div></div>
-                    <div class="node bob-diff-node" style="left: 88%; top: 40%;"><div class="state-circle inactive" id="bob-final-3" style="transform: rotate(45deg);"><span style="transform: rotate(-45deg); display:block;">|↗⟩</span></div></div>
+                    <div class="node bob-diff-node" style="left: 88%; top: 40%;"><div class="state-circle inactive" id="bob-final-3" style="transform: rotate(45deg);"><span style="transform: rotate(-45deg); display:block;">|⤢⟩</span></div></div>
                     <div class="prob-circle prob-fraction bb84-resend-prob state-gray" data-for="bob-final-3" style="top: 40%;"><div class="fraction-num">1</div><div class="fraction-den">8</div></div>
-                    <div class="node bob-same-node" style="left: 88%; top: 48%;"><div class="state-circle" id="bob-final-4">|→⟩</div></div>
+                    <div class="node bob-same-node" style="left: 88%; top: 48%;"><div class="state-circle" id="bob-final-4">|↔⟩</div></div>
                     <div class="prob-circle prob-fraction bb84-resend-prob state-gray" data-for="bob-final-4" style="top: 48%;"><div class="fraction-num">1</div><div class="fraction-den">16</div></div>
-                    <div class="node bob-same-node" style="left: 88%; top: 56%;"><div class="state-circle eve-error" id="bob-final-5">|↑⟩</div></div>
+                    <div class="node bob-same-node" style="left: 88%; top: 56%;"><div class="state-circle eve-error" id="bob-final-5">|↕⟩</div></div>
                     <div class="prob-circle prob-fraction bb84-resend-prob state-gray" data-for="bob-final-5" style="top: 56%;"><div class="fraction-num">1</div><div class="fraction-den">16</div></div>
-                    <div class="node bob-diff-node" style="left: 88%; top: 68%;"><div class="state-circle inactive" id="bob-final-6" style="transform: rotate(-45deg);"><span style="transform: rotate(45deg); display:block;">|↖⟩</span></div></div>
+                    <div class="node bob-diff-node" style="left: 88%; top: 68%;"><div class="state-circle inactive" id="bob-final-6" style="transform: rotate(-45deg);"><span style="transform: rotate(45deg); display:block;">|⤡⟩</span></div></div>
                     <div class="prob-circle prob-fraction bb84-resend-prob state-gray" data-for="bob-final-6" style="top: 68%;"><div class="fraction-num">1</div><div class="fraction-den">8</div></div>
-                    <div class="node bob-same-node" style="left: 88%; top: 78%;"><div class="state-circle" id="bob-final-7">|→⟩</div></div>
+                    <div class="node bob-same-node" style="left: 88%; top: 78%;"><div class="state-circle" id="bob-final-7">|↔⟩</div></div>
                     <div class="prob-circle prob-fraction bb84-resend-prob state-gray" data-for="bob-final-7" style="top: 78%;"><div class="fraction-num">1</div><div class="fraction-den">16</div></div>
-                    <div class="node bob-same-node" style="left: 88%; top: 86%;"><div class="state-circle eve-error" id="bob-final-8">|↑⟩</div></div>
+                    <div class="node bob-same-node" style="left: 88%; top: 86%;"><div class="state-circle eve-error" id="bob-final-8">|↕⟩</div></div>
                     <div class="prob-circle prob-fraction bb84-resend-prob state-gray" data-for="bob-final-8" style="top: 86%;"><div class="fraction-num">1</div><div class="fraction-den">16</div></div>
-                    <div class="node bob-diff-node" style="left: 88%; top: 94%;"><div class="state-circle inactive" id="bob-final-9" style="transform: rotate(45deg);"><span style="transform: rotate(-45deg); display:block;">|↗⟩</span></div></div>
+                    <div class="node bob-diff-node" style="left: 88%; top: 94%;"><div class="state-circle inactive" id="bob-final-9" style="transform: rotate(45deg);"><span style="transform: rotate(-45deg); display:block;">|⤢⟩</span></div></div>
                     <div class="prob-circle prob-fraction bb84-resend-prob state-gray" data-for="bob-final-9" style="top: 94%;"><div class="fraction-num">1</div><div class="fraction-den">8</div></div>
                 </div>
                 </div>
@@ -716,10 +717,10 @@
             <div class="sidebar">
                 <div class="selection-box" id="bb84-cnot-options">
                     <h4>Alice Selects Message</h4>
-                    <div class="option-row basis-z" data-state-symbol="|→⟩" data-basis-type="rectilinear" onclick="selectStateBB84Cnot(this, '|→⟩', 'rectilinear')"><div class="state-btn option-state">|0⟩</div><div class="arrow-icon">➔</div><div class="state-btn option-state">|0⟩</div></div>
-                    <div class="option-row basis-z" data-state-symbol="| ↑ ⟩" data-basis-type="rectilinear" onclick="selectStateBB84Cnot(this, '| ↑ ⟩', 'rectilinear')"><div class="state-btn option-state">|1⟩</div><div class="arrow-icon">➔</div><div class="state-btn option-state">|1⟩</div></div>
-                    <div class="option-row basis-x" data-state-symbol="|↗⟩" data-basis-type="diagonal" onclick="selectStateBB84Cnot(this, '|↗⟩', 'diagonal')"><div class="state-btn option-state">|+⟩</div><div class="arrow-icon">➔</div><div class="state-btn option-state">|+⟩</div></div>
-                    <div class="option-row basis-x" data-state-symbol="|↖⟩" data-basis-type="diagonal" onclick="selectStateBB84Cnot(this, '|↖⟩', 'diagonal')"><div class="state-btn option-state">|-⟩</div><div class="arrow-icon">➔</div><div class="state-btn option-state">|-⟩</div></div>
+                    <div class="option-row basis-z" data-state-symbol="|↔⟩" data-basis-type="rectilinear" onclick="selectStateBB84Cnot(this, '|↔⟩', 'rectilinear')"><div class="state-btn option-state">|0⟩</div><div class="arrow-icon">➔</div><div class="state-btn option-state">|0⟩</div></div>
+                    <div class="option-row basis-z" data-state-symbol="| ↕ ⟩" data-basis-type="rectilinear" onclick="selectStateBB84Cnot(this, '| ↕ ⟩', 'rectilinear')"><div class="state-btn option-state">|1⟩</div><div class="arrow-icon">➔</div><div class="state-btn option-state">|1⟩</div></div>
+                    <div class="option-row basis-x" data-state-symbol="|⤢⟩" data-basis-type="diagonal" onclick="selectStateBB84Cnot(this, '|⤢⟩', 'diagonal')"><div class="state-btn option-state">|+⟩</div><div class="arrow-icon">➔</div><div class="state-btn option-state">|+⟩</div></div>
+                    <div class="option-row basis-x" data-state-symbol="|⤡⟩" data-basis-type="diagonal" onclick="selectStateBB84Cnot(this, '|⤡⟩', 'diagonal')"><div class="state-btn option-state">|-⟩</div><div class="arrow-icon">➔</div><div class="state-btn option-state">|-⟩</div></div>
                 </div>
                 <div class="result-direction" aria-label="Result color legend">
                     <h4>Result Direction</h4>
@@ -891,7 +892,7 @@
     let isEveInterceptResend = false; 
     let isEveCnot = false;
     let representationMode = 'polarization';
-    const symbols = { Stype: ['| ↑ ⟩', '|→⟩'],  Dtype: ['|↗⟩', '|↖⟩']};
+    const symbols = { Stype: ['| ↕ ⟩', '|↔⟩'],  Dtype: ['|⤢⟩', '|⤡⟩']};
 
     // 預設的設定值 (不依賴上一頁)
     let currentSettings = {
@@ -906,7 +907,7 @@
     function displayStateSymbol(symbol, forceBasisMode = false) {
         const compact = normalizeStateSymbol(symbol);
         if (!forceBasisMode && representationMode !== 'basis') return symbol;
-        const map = { '|→⟩': '|0⟩', '|↑⟩': '|1⟩', '|↗⟩': '|+⟩', '|↖⟩': '|-⟩' };
+        const map = { '|↔⟩': '|0⟩', '|↕⟩': '|1⟩', '|⤢⟩': '|+⟩', '|⤡⟩': '|-⟩' };
         return map[compact] || symbol;
     }
     function setCnotStateWithSubscript(target, symbol, subscript) {
@@ -1360,18 +1361,40 @@
         // Tooltip 功能綁定
         const tooltip = getLineTooltip();
         document.querySelectorAll('svg.arrows line[data-prob]').forEach(line => {
-            line.addEventListener('mouseenter', (e) => {
-                const probValue = line.getAttribute('data-prob');
-                if (probValue) {
-                    tooltip.innerHTML = `Probability: ${probValue}`;
-                    tooltip.style.opacity = '1';
-                }
+            const hitLine = line.cloneNode(false);
+            hitLine.removeAttribute('id');
+            hitLine.removeAttribute('marker-end');
+            hitLine.removeAttribute('class');
+            hitLine.classList.add('line-hit-area');
+            hitLine.setAttribute('aria-hidden', 'true');
+            line.parentNode.insertBefore(hitLine, line.nextSibling);
+            const syncHitLineDisplay = () => { hitLine.style.display = line.style.display; };
+            syncHitLineDisplay();
+            new MutationObserver(syncHitLineDisplay).observe(line, { attributes: true, attributeFilter: ['style'] });
+
+            [line, hitLine].forEach(targetLine => {
+                targetLine.addEventListener('mouseenter', (e) => {
+                    if (window.getComputedStyle(line).display === 'none') return;
+                    line.classList.add('line-hover');
+                    const probValue = line.getAttribute('data-prob');
+                    if (probValue) {
+                        tooltip.innerHTML = `Probability: ${probValue}`;
+                        tooltip.style.opacity = '1';
+                    }
+                });
+                targetLine.addEventListener('mousemove', (e) => {
+                    if (window.getComputedStyle(line).display === 'none') {
+                        tooltip.style.opacity = '0';
+                        return;
+                    }
+                    tooltip.style.left = (e.pageX + 15) + 'px';
+                    tooltip.style.top = (e.pageY + 15) + 'px';
+                });
+                targetLine.addEventListener('mouseleave', () => {
+                    line.classList.remove('line-hover');
+                    tooltip.style.opacity = '0';
+                });
             });
-            line.addEventListener('mousemove', (e) => {
-                tooltip.style.left = (e.pageX + 15) + 'px';
-                tooltip.style.top = (e.pageY + 15) + 'px';
-            });
-            line.addEventListener('mouseleave', () => { tooltip.style.opacity = '0';});
         });
 
         // 第一次進來時直接執行狀態更新 (套用 currentSettings 預設值)
@@ -1505,14 +1528,14 @@
 
     function updateLines(aliceBasis, bobBasis, protocol) {
         const containerSelector = '#view-bb84';
-        const allLines = document.querySelectorAll(`${containerSelector} line`);
+        const allLines = document.querySelectorAll(`${containerSelector} line:not(.line-hit-area)`);
         allLines.forEach(line => {
             line.classList.add('line-inactive');
             line.setAttribute('stroke-width', '3'); 
         });
         const isSameBasis = (aliceBasis === bobBasis);
         const bb84Target = isSameBasis ? '.TrueRoute' : '.FalseRoute';
-        const activeLines = document.querySelectorAll(`${containerSelector} line${bb84Target}`);
+        const activeLines = document.querySelectorAll(`${containerSelector} line${bb84Target}:not(.line-hit-area)`);
         activeLines.forEach(line => {
             line.classList.remove('line-inactive');
             line.setAttribute('stroke-width', '4'); 
@@ -1673,12 +1696,12 @@
         const basis = isZ ? 'Z' : 'X';
         const intended = displayStateSymbol(stateSymbol, true);
         const data = {
-            '|→⟩': { amp: '|0\\rangle_A|0\\rangle_E', out: '|00\\rangle_{AE}', label: '|00⟩', latex: '|0\\rangle_A|0\\rangle_E \\xrightarrow{CNOT} |00\\rangle_{AE}' },
-            '|↑⟩': { amp: '|1\\rangle_A|0\\rangle_E', out: '|11\\rangle_{AE}', label: '|11⟩', latex: '|1\\rangle_A|0\\rangle_E \\xrightarrow{CNOT} |11\\rangle_{AE}' },
-            '|↗⟩': { amp: '|+\\rangle_A|0\\rangle_E', out: '|\\unicode{x1D719}^+\\rangle_{AE}', label: '|𝜙<sup>+</sup>⟩', latex: '|+\\rangle_A|0\\rangle_E \\xrightarrow{CNOT} \\frac{|00\\rangle+|11\\rangle}{\\sqrt{2}} = |\\unicode{x1D719}^+\\rangle_{AE}' },
-            '|↖⟩': { amp: '|-\\rangle_A|0\\rangle_E', out: '|\\unicode{x1D719}^-\\rangle_{AE}', label: '|𝜙<sup>-</sup>⟩', latex: '|-\\rangle_A|0\\rangle_E \\xrightarrow{CNOT} \\frac{|00\\rangle-|11\\rangle}{\\sqrt{2}} = |\\unicode{x1D719}^-\\rangle_{AE}' }
+            '|↔⟩': { amp: '|0\\rangle_A|0\\rangle_E', out: '|00\\rangle_{AE}', label: '|00⟩', latex: '|0\\rangle_A|0\\rangle_E \\xrightarrow{CNOT} |00\\rangle_{AE}' },
+            '|↕⟩': { amp: '|1\\rangle_A|0\\rangle_E', out: '|11\\rangle_{AE}', label: '|11⟩', latex: '|1\\rangle_A|0\\rangle_E \\xrightarrow{CNOT} |11\\rangle_{AE}' },
+            '|⤢⟩': { amp: '|+\\rangle_A|0\\rangle_E', out: '|\\unicode{x1D719}^+\\rangle_{AE}', label: '|𝜙<sup>+</sup>⟩', latex: '|+\\rangle_A|0\\rangle_E \\xrightarrow{CNOT} \\frac{|00\\rangle+|11\\rangle}{\\sqrt{2}} = |\\unicode{x1D719}^+\\rangle_{AE}' },
+            '|⤡⟩': { amp: '|-\\rangle_A|0\\rangle_E', out: '|\\unicode{x1D719}^-\\rangle_{AE}', label: '|𝜙<sup>-</sup>⟩', latex: '|-\\rangle_A|0\\rangle_E \\xrightarrow{CNOT} \\frac{|00\\rangle-|11\\rangle}{\\sqrt{2}} = |\\unicode{x1D719}^-\\rangle_{AE}' }
         };
-        return { ...(data[compact] || data['|↗⟩']), compact, basis, isZ, intended };
+        return { ...(data[compact] || data['|⤢⟩']), compact, basis, isZ, intended };
     }
 
     function setCnotProbability(probEl, num, den, tone = 'blue') {
@@ -1743,7 +1766,7 @@
             bottomProb.style.display = 'inline-flex';
             let outcomes;
             if (bobBasis === 'Z') outcomes = ['|0⟩', '|1⟩'];
-            else outcomes = stateData.compact === '|↖⟩' ? ['|-⟩', '|+⟩'] : ['|+⟩', '|-⟩'];
+            else outcomes = stateData.compact === '|⤡⟩' ? ['|-⟩', '|+⟩'] : ['|+⟩', '|-⟩'];
             const topError = isSameBasis && outcomes[0] !== stateData.intended;
             const bottomError = isSameBasis && outcomes[1] !== stateData.intended;
             setCnotStateWithSubscript(topCircle, outcomes[0], 'B');
@@ -1779,7 +1802,7 @@
 
     function showCnotEveDetectedCalculation() {
         const active = document.querySelector('#bb84-cnot-options .option-row.active') || document.querySelector('#bb84-cnot-options .option-row');
-        if (active) selectStateBB84Cnot(active, active.dataset.stateSymbol || '|↗⟩', active.dataset.basisType || 'diagonal');
+        if (active) selectStateBB84Cnot(active, active.dataset.stateSymbol || '|⤢⟩', active.dataset.basisType || 'diagonal');
 
         const panel = document.getElementById('cnot-calculation-panel');
         const display = document.getElementById('cnot-math-display');
