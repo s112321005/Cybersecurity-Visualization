@@ -48,6 +48,10 @@
         45%{left:130%}
         100%{left:130%}
         }
+        @keyframes passkey-breathe{
+        0%,100%{transform:translateY(0)}
+        50%{transform:translateY(-5px)}
+        }
         .header{width:min(1000px,95vw);display:flex;align-items:center;justify-content:space-between;margin-bottom:25px;height:60px;gap:16px}
         .header-left{display:flex;align-items:center;gap:15px}
         .btn-back{width:40px;height:40px;background-color:var(--primary-blue);color:white;border-radius:50%;display:flex;justify-content:center;align-items:center;text-decoration:none;font-size:0;transition:all .3s cubic-bezier(0.175,0.885,0.32,1.275);cursor:pointer;border:none;box-shadow:0 2px 6px rgba(0,0,0,.15);flex-shrink:0}
@@ -99,7 +103,7 @@
         .goal-panel{border:2px solid #b7d8f3;border-radius:24px;background:linear-gradient(135deg,var(--goal-bg),#ffffff);padding:15px 20px;box-shadow:0 10px 24px rgba(84,159,208,.10);display:flex;flex-direction:column;justify-content:center;position:relative;overflow:hidden}
         .goal-panel p{margin:0;color:#172033;font-weight:700;font-size:1.05rem;line-height:1.6;position:relative;z-index:1}
         .goal-highlight{color:var(--alice-blue);font-weight:900;background:rgba(84,159,208,.1);padding:2px 8px;border-radius:6px;display:inline-block;font-size:1.28em}
-        .goal-passkey{width:86px;height:86px;object-fit:contain;display:block;margin:10px auto 0;filter:drop-shadow(0 4px 8px rgba(0,74,173,.16))}
+        .goal-passkey{width:90px;height:41px;object-fit:contain;display:block;margin:10px 50px 0;filter:drop-shadow(0 4px 8px rgba(0,74,173,.16));animation:passkey-breathe 2.4s ease-in-out infinite}
         .scene-frame{width:100%;max-width:905px;border:2px solid #cfe4f8;border-radius:28px;background:#ffffff;padding:12px;box-shadow:inset 0 0 20px rgba(84,159,208,.05),0 12px 28px rgba(84,159,208,.12);position:relative}
         .scene-frame img{width:100%;display:block;border-radius:20px;object-fit:contain}
         @media (max-width:860px){
@@ -172,9 +176,9 @@
         </section>
         <section class="goal-panel" aria-label="BB84 protocol goal">
             <div class="panel-head">
-                <h2 class="panel-title">Goal</h2>
+                <h2 class="panel-title">Goal<img class="goal-passkey" src="pictures/passkey.png" alt="Passkey"></h2>
             </div>
-            <p>Create a <span class="goal-highlight">shared secret key</span> by retaining only the matched results.<img class="goal-passkey" src="pictures/passkey.png" alt="Passkey"></p>
+            <p>Create a <span class="goal-highlight">shared secret key</span> by retaining only the matched results.</p>
         </section>
     </div>
     <div class="scene-frame">
