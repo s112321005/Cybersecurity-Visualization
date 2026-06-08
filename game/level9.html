@@ -235,7 +235,7 @@
 <body>
     <div class="header">
         <div class="header-left">
-            <a href="index.html" class="btn-back" title="Back to levels"></a>
+            <a href="game/index.html" class="btn-back" title="Back to levels"></a>
             <div class="page-title">Level 9</div>
         </div>
         <div class="header-center">Photon Direction & Polarizer Game</div>
@@ -283,7 +283,7 @@ const levels = [
 const page = document.querySelector("[data-level-page]");
 const levelIndex = Math.max(0, Number(page.dataset.levelPage || 1) - 1);
 const level = levels[levelIndex] || levels[0];
-const levelFiles = ["level1.html", "level2.html", "level3.html", "level4.html", "level5.html", "level6.html", "level7.html", "level8.html", "level9.html"];
+const levelFiles = ["game/level1.html", "game/level2.html", "game/level3.html", "game/level4.html", "game/level5.html", "game/level6.html", "game/level7.html", "game/level8.html", "game/level9.html"];
 function photonMarkup(id = "", extraClass = "") {
     return `<div class="tutorial-photon ${extraClass}" ${id ? `id="${id}"` : ""}><span></span></div>`;
 }
@@ -422,7 +422,7 @@ ${choicesMarkup}
     }
     function returnToChoice() {
         if (levelModalCard.classList.contains("final-success")) {
-            window.location.href = "index.html";
+            window.location.href = "game/index.html";
             return;
         }
         selected = null;
@@ -468,11 +468,11 @@ ${choicesMarkup}
     });
     document.getElementById("levelModalBtn").addEventListener("click", returnToChoice);
     levelModalSecondaryBtn.addEventListener("click", () => {
-        window.location.href = levelModalCard.classList.contains("error") ? "game/index.html" : "index.html";
+        window.location.href = "game/index.html";
     });
     levelModalClose.addEventListener("click", closeResultModal);
     document.getElementById("nextLevelBtn").addEventListener("click", () => {
-        window.location.href = levelFiles[levelIndex + 1] || "/game/index.html";
+        window.location.href = levelFiles[levelIndex + 1] || "game/index.html";
     });
     startIntro();
 }
