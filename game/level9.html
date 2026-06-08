@@ -426,6 +426,7 @@ ${choicesMarkup}
         document.querySelectorAll(".option-tile").forEach((item) => {
             item.classList.remove("active", "correct", "wrong");
         });
+        startIntro();
     }
     document.querySelectorAll(".option-tile").forEach((btn) => {
         btn.addEventListener("click", () => {
