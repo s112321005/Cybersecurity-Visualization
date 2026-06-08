@@ -812,7 +812,7 @@ body {
     height: 8px;
     border-radius: 999px;
     transform: translateY(-50%);
-    background: linear-gradient(90deg, transparent, var(--minus));
+    background: linear-gradient(90deg, transparent, var(--beam-color));
     opacity: 0;
     z-index: 7;
 }
@@ -830,7 +830,7 @@ body {
     height: 8px;
     border-radius: 999px;
     transform: translateY(-50%);
-    background: linear-gradient(90deg, var(--minus), transparent);
+    background: linear-gradient(90deg, var(--beam-color), transparent);
     opacity: 0;
     z-index: 7;
 }
@@ -845,8 +845,8 @@ body {
     height: 18px;
     margin: -9px 0 0 -9px;
     border-radius: 50%;
-    background: var(--minus);
-    box-shadow: 0 0 18px var(--minus), 0 0 30px color-mix(in srgb,var(--minus) 52%,transparent);
+    background: var(--beam-color);
+    box-shadow: 0 0 18px var(--beam-color), 0 0 30px color-mix(in srgb,var(--beam-color) 52%,transparent);
     opacity: 0;
     z-index: 8;
 }
@@ -884,6 +884,30 @@ body {
 }
 .will-pass .finish-animation .level-three-dot {
     animation: levelThreePhotonFinish 2.4s linear forwards;
+}
+.will-pass .full-animation .level-three-beam {
+    animation: levelThreeBeamIntro 1.7s linear forwards;
+}
+.will-pass .full-animation .level-three-beam-after {
+    animation: levelThreeBeamFinish 2.4s linear 1.55s forwards;
+}
+.will-pass .full-animation .level-three-dot {
+    animation: levelOnePhotonFullPass 3.75s linear forwards;
+}
+.will-pass .full-animation .passed-photon {
+    animation: passedPhotonAppear 0.5s ease-out 3.2s forwards;
+}
+.will-pass .loop-animation .level-three-beam {
+    animation: levelThreeBeamIntro 4.2s linear infinite;
+}
+.will-pass .loop-animation .level-three-beam-after {
+    animation: levelThreeBeamFinish 4.2s linear infinite;
+}
+.will-pass .loop-animation .level-three-dot {
+    animation: levelOnePhotonFullPassLoop 4.2s linear infinite;
+}
+.will-pass .loop-animation .passed-photon {
+    animation: passedPhotonAppearLoop 4.2s linear infinite;
 }
 .will-block .finish-animation .level-three-dot {
     animation: levelThreePhotonBlock 1.15s linear forwards;
@@ -1080,6 +1104,24 @@ body {
     100% { left: calc(100% - 74px); transform: scale(0.9); opacity: 0; }
 }
 
+@keyframes levelOnePhotonFullPass {
+    0% { left: 46px; transform: scale(0.7); opacity: 0; }
+    8% { opacity: 1; }
+    44% { left: 50%; transform: scale(1.05); opacity: 1; }
+    60% { left: calc(50% + 16px); transform: scale(1); opacity: 1; }
+    90% { left: calc(100% - 74px); transform: scale(1); opacity: 1; }
+    100% { left: calc(100% - 74px); transform: scale(0.9); opacity: 0; }
+}
+
+@keyframes levelOnePhotonFullPassLoop {
+    0% { left: 46px; transform: scale(0.7); opacity: 0; }
+    8% { opacity: 1; }
+    42% { left: 50%; transform: scale(1.05); opacity: 1; }
+    58% { left: calc(50% + 16px); transform: scale(1); opacity: 1; }
+    86% { left: calc(100% - 74px); transform: scale(1); opacity: 1; }
+    94%, 100% { left: calc(100% - 74px); transform: scale(0.9); opacity: 0; }
+}
+
 @keyframes levelThreePhotonBlock {
     0% { left: 50%; transform: scale(1.05); opacity: 1; }
     45% { left: 50%; transform: scale(1.12); opacity: 1; }
@@ -1106,6 +1148,13 @@ body {
     0% { opacity: 0; transform: translate(-50%, -50%) scale(0.35); }
     72% { opacity: 1; transform: translate(-50%, -50%) scale(1.12); }
     100% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+}
+
+@keyframes passedPhotonAppearLoop {
+    0%, 76% { opacity: 0; transform: translate(-50%, -50%) scale(0.35); }
+    88% { opacity: 1; transform: translate(-50%, -50%) scale(1.12); }
+    94% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+    100% { opacity: 0; transform: translate(-50%, -50%) scale(0.9); }
 }
 
 @keyframes resultPop {
@@ -1155,7 +1204,7 @@ body {
     <div class="header">
         <div class="header-left">
             <a href="index.html" class="btn-back" title="Back to levels"></a>
-            <div class="page-title">Level1</div>
+            <div class="page-title">Level 1</div>
         </div>
         <div class="header-center">Photon Direction & Polarizer Game</div>
     </div>
@@ -1169,26 +1218,14 @@ const photonTypes = {
 };
 
 const filterTypes = {
-    vertical: { label: "Vertical", image: "pictures/vertical.svg" },
+    vertical: { label: "Vertical", image: "https://s112321005.github.io/Cybersecurity-Visualization/pictures/vertical.svg" },
     diagonal: { label: "Diagonal", image: "https://s112321005.github.io/Cybersecurity-Visualization/pictures/b_diagonal.svg" }
 };
 
-const levels = [
-    { photon: "vertical", filters: ["vertical"], pass: "pass", output: "vertical" },
-    { photon: "horizontal", filters: ["vertical"], pass: "block", output: "none" },
-    { photon: "diagLeft", filters: ["diagonal"], pass: "pass", output: "diagLeft" },
-    { photon: "diagRight", filters: ["diagonal"], pass: "block", output: "none" },
-    { photon: "diagRight", filters: ["vertical"], pass: "split", output: "splitVertical", splitPass: "vertical", splitBlock: "horizontal" },
-    { photon: "diagLeft", filters: ["vertical"], pass: "split", output: "splitVertical", splitPass: "vertical", splitBlock: "horizontal" },
-    { photon: "horizontal", filters: ["diagonal"], pass: "split", output: "splitDiagonal", splitPass: "diagLeft", splitBlock: "diagRight" },
-    { photon: "vertical", filters: ["diagonal"], pass: "split", output: "splitDiagonal", splitPass: "diagLeft", splitBlock: "diagRight" },
-    { photon: "horizontal", filters: ["vertical", "diagonal"], pass: "block", output: "none" }
-];
-
 const page = document.querySelector("[data-level-page]");
-const levelIndex = Math.max(0, Number(page.dataset.levelPage || 1) - 1);
-const level = levels[levelIndex] || levels[0];
-const levelFiles = ["level1.html", "level2.html", "level3.html", "level4.html", "level5.html", "level6.html", "level7.html", "level8.html", "level9.html"];
+const levelIndex = 0;
+const level = { photon: "vertical", filters: ["vertical"], pass: "pass", output: "vertical" };
+const nextLevelHref = "https://s112321005.github.io/Cybersecurity-Visualization/game/level2.html";
 
 function photonMarkup(id = "", extraClass = "") {
     return `<div class="tutorial-photon ${extraClass}" ${id ? `id="${id}"` : ""}><span></span></div>`;
@@ -1258,6 +1295,7 @@ function renderLevel() {
     setPhoton(document.getElementById("levelPhoton"), level.photon);
     setPhoton(document.getElementById("passedPhoton"), passState);
     document.querySelectorAll(".choice-photon").forEach((el) => setPhoton(el, passState));
+    document.querySelector(".level-three-scene").style.setProperty("--beam-color", "#e55d8b");
 
     let selected = null;
     let isAnimating = false;
@@ -1265,6 +1303,7 @@ function renderLevel() {
     let introTimer = null;
     let delayTimer = null;
     let resultTimer = null;
+    let lastCorrect = false;
     const scene = document.querySelector(".level-three-scene");
     const panel = document.getElementById("levelPanel");
     const levelResultModal = document.getElementById("levelResultModal");
@@ -1284,7 +1323,7 @@ function renderLevel() {
         isAnimating = true;
         setOptionDisabled(true);
         levelResultModal.classList.remove("show");
-        scene.classList.remove("intro-animation", "finish-animation");
+        scene.classList.remove("intro-animation", "finish-animation", "full-animation");
         document.querySelectorAll(".option-tile").forEach((item) => {
             item.classList.remove("active", "correct", "wrong");
         });
@@ -1306,6 +1345,13 @@ function renderLevel() {
     }
 
     function returnToChoice() {
+        if (lastCorrect) {
+            levelResultModal.classList.remove("show");
+            scene.classList.remove("intro-animation", "finish-animation", "full-animation", "loop-animation");
+            void scene.offsetWidth;
+            scene.classList.add("loop-animation");
+            return;
+        }
         selected = null;
         isReady = true;
         isAnimating = false;
@@ -1314,7 +1360,7 @@ function renderLevel() {
         delayTimer = null;
         resultTimer = null;
         levelResultModal.classList.remove("show");
-        scene.classList.remove("finish-animation");
+        scene.classList.remove("finish-animation", "full-animation", "loop-animation");
         setOptionDisabled(false);
         document.querySelectorAll(".option-tile").forEach((item) => {
             item.classList.remove("active", "correct", "wrong");
@@ -1334,25 +1380,28 @@ function renderLevel() {
             scene.classList.remove("finish-animation");
 
             delayTimer = window.setTimeout(() => {
+                const correctNow = selected === correctAnswer;
+                scene.classList.remove("finish-animation", "full-animation", "loop-animation");
                 void scene.offsetWidth;
                 scene.classList.add("finish-animation");
 
                 resultTimer = window.setTimeout(() => {
                     const correct = selected === correctAnswer;
+                    lastCorrect = correct;
                     document.querySelectorAll(".option-tile").forEach((item) => {
                         item.classList.toggle("correct", item.dataset.answer === correctAnswer && correct);
                         item.classList.toggle("wrong", item === btn && !correct);
                     });
                     showResultModal(correct);
                     isAnimating = false;
-                }, 2400);
+                }, correctNow ? 2700 : 2400);
             }, 500);
         });
     });
 
     document.getElementById("levelModalBtn").addEventListener("click", returnToChoice);
     document.getElementById("nextLevelBtn").addEventListener("click", () => {
-        window.location.href = levelFiles[levelIndex + 1] || "index.html";
+        window.location.href = nextLevelHref;
     });
     startIntro();
 }
