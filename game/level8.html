@@ -168,6 +168,7 @@
         .option-tile.wrong {background:#fff3f3;box-shadow:0 8px 0 var(--block), 0 14px 24px rgba(217, 67, 67, 0.14)}
         .option-tile:disabled {cursor:default}
         .option-tile>span:last-child {color:#334155;font-size:1rem}
+        .filter-choice-img {width:96px;height:112px;object-fit:contain;display:block}
         .next-level-btn {margin-top:auto;appearance:none;border:5px solid var(--ink);border-radius:999px;background:var(--primary-blue);color:white;min-height:58px;padding:12px 18px;font-weight:950;font-size:1rem;cursor:pointer;box-shadow:0 8px 0 var(--ink), 0 16px 24px rgba(31, 67, 107, 0.1);position:relative;top:0;transition:transform 0.16s ease, box-shadow 0.16s ease, top 0.12s ease}
         .next-level-btn.hidden {display:none}
         .next-level-btn:hover {transform:translateY(-4px) scale(1.03);box-shadow:0 12px 0 var(--ink), 0 20px 30px rgba(31, 67, 107, 0.14)}
@@ -191,20 +192,19 @@
         .level-three-beam-block {position:absolute;left:50%;width:calc(100% - 50% - 74px);top:66%;height:8px;border-radius:999px;transform:translateY(-50%);background:linear-gradient(90deg, var(--split-block-color), transparent);opacity:0;z-index:7}
         .will-split .finish-animation .level-three-beam-block {display:none}
         .level-three-dot {position:absolute;left:46px;top:50%;width:18px;height:18px;margin:-9px 0 0 -9px;border-radius:50%;background:var(--beam-color);box-shadow:0 0 18px var(--beam-color), 0 0 30px color-mix(in srgb, var(--beam-color) 52%, transparent);opacity:0;z-index:8}
-        .result-placeholder {position:absolute;left:calc(100% - 74px);top:50%;width:96px;height:96px;border-radius:50%;border:4px dashed rgba(38, 50, 56, 0.82);transform:translate(-50%, -50%);background:rgba(255, 255, 255, 0.2);z-index:10;pointer-events:none}
-        .will-block .result-placeholder {left:50%}
-        .will-split .result-placeholder {top:50%}
-        .level-three-scene .passed-photon {position:absolute;left:calc(100% - 74px);top:50%;width:82px;height:82px;transform:translate(-50%, -50%) scale(0.35);opacity:0;z-index:9}
-        .will-pass .finish-animation .passed-photon {animation:passedPhotonAppear 0.5s ease-out 1.85s forwards}
+        .filter-placeholder {position:absolute;left:50%;top:50%;width:190px;height:220px;border:4px dashed rgba(38, 50, 56, 0.55);border-radius:22px;transform:translate(-50%, -50%);background:rgba(255, 255, 255, 0.34);z-index:4;pointer-events:none}
+        .level-three-scene .passed-photon {position:absolute;left:calc(100% - 74px);top:50%;width:82px;height:82px;transform:translate(-50%, -50%) scale(1);opacity:1;z-index:12}
+        .will-pass .finish-animation .passed-photon {animation:none}
         .will-split .level-three-scene .passed-photon {top:50%}
         .level-three-scene .blocked-photon {position:absolute;left:50%;top:50%;width:82px;height:82px;transform:translate(-50%, -50%) scale(0.35);opacity:0;z-index:9}
-        .will-split .finish-animation .passed-photon {animation:passedPhotonAppear 0.5s ease-out 1.85s forwards}
+        .will-split .finish-animation .passed-photon {animation:none}
         .will-split .finish-animation .blocked-photon {animation:splitZeroFall 1.25s ease-in forwards}
         .intro-animation .level-three-dot {animation:levelThreePhotonIntro 1.7s linear forwards}
         .will-pass .finish-animation .level-three-dot {animation:levelThreePhotonFinish 2.4s linear forwards}
         .will-split .finish-animation .level-three-dot {animation:levelThreePhotonSplit 2.4s linear forwards}
         .will-block .finish-animation .level-three-dot {animation:levelThreePhotonBlock 1.15s linear forwards}
         .level-three-filter, .level-filter {position:absolute;left:50%;top:50%;width:138px;transform:translate(-50%, -49%);filter:none;z-index:5}
+        .level-filter.hidden {display:none}
         .level-three-filter img, .level-filter img {width:100%;height:auto;display:block}
         .level-filter.second {left:calc(50%+122px);width:116px;opacity:0.92}
         .level-block-mark {position:absolute;left:50%;top:50%;width:70px;height:70px;border-radius:50%;border:5px solid #111111;transform:translate(-50%, -50%) scale(0.35);opacity:0;z-index:9;background:rgba(255, 255, 255, 0.7)}
@@ -327,7 +327,7 @@
     <div class="header">
         <div class="header-left">
             <a href="index.html" class="btn-back" title="Back to levels"></a>
-            <div class="page-title">Level 8</div>
+            <div class="page-title">Level8</div>
         </div>
         <div class="header-center">Photon Direction & Polarizer Game</div>
     </div>
@@ -374,32 +374,18 @@ function renderLevel() {
     const blockState = level.splitBlock || "horizontal";
     const passPhoton = photonTypes[passState] || photon;
     const blockPhoton = photonTypes[blockState] || photonTypes.horizontal;
-    const correctAnswer = level.pass === "split" ? passState : (level.pass === "block" ? "none" : "pass");
+    const correctAnswer = "diagonal";
     const doesLightContinue = level.pass !== "block";
     const stageModeClass = level.pass === "split" ? "will-split" : (doesLightContinue ? "will-pass" : "will-block");
-    const filtersMarkup = level.filters.map((filterName, index) => {
-        const filter = filterTypes[filterName];
-        return `<div class="level-filter ${index > 0 ? "second" : ""}"><img src="${filter.image}" alt=""></div>`;
-    }).join("");
-    const answerStates = ["vertical", "horizontal", "diagRight", "diagLeft"];
-    const answerButtonsMarkup = level.pass === "split"
-        ? `
-                    ${answerStates.map((state) => `
-                    <button class="option-tile" type="button" data-answer="${state}" aria-label="${photonTypes[state].label}">
-                        ${photonMarkup("", "choice-photon hide-symbol")}
-                    </button>`).join("")}
-                    <button class="option-tile" type="button" data-answer="none" aria-label="blocked">
-                        <strong>BLOCK</strong>
-                        <span class="block-choice-icon"></span>
-                    </button>`
-        : `
-                    <button class="option-tile" type="button" data-answer="pass" aria-label="light passes">
-                        <strong>PASS</strong>
-                        ${photonMarkup("", "choice-photon hide-symbol")}
+    const selectedFilterMarkup = `<span class="filter-placeholder"></span><div class="level-filter hidden" id="selectedFilter"><img src="" alt=""></div>`;
+    const answerButtonsMarkup = `
+                    <button class="option-tile" type="button" data-answer="diagonal" aria-label="diagonal polarizer">
+                        <strong>DIAGONAL</strong>
+                        <img class="filter-choice-img" src="${filterTypes.diagonal.image}" alt="">
                     </button>
-                    <button class="option-tile" type="button" data-answer="none" aria-label="blocked">
-                        <strong>BLOCK</strong>
-                        <span class="block-choice-icon"></span>
+                    <button class="option-tile" type="button" data-answer="vertical" aria-label="vertical polarizer">
+                        <strong>VERTICAL</strong>
+                        <img class="filter-choice-img" src="${filterTypes.vertical.image}" alt="">
                     </button>`;
     page.classList.add("level-three-card");
     page.innerHTML = `
@@ -411,10 +397,9 @@ function renderLevel() {
                     <div class="level-three-beam-after"></div>
                     <div class="level-three-beam-block"></div>
                     <div class="level-three-dot"></div>
-                    <span class="result-placeholder"></span>
                     ${photonMarkup("passedPhoton", "passed-photon hide-symbol")}
                     ${photonMarkup("blockedPhoton", "blocked-photon hide-symbol")}
-                    ${filtersMarkup}
+                    ${selectedFilterMarkup}
                     <span class="level-block-mark"></span>
                 </div>
                 <div class="level-modal-overlay" id="levelResultModal">
@@ -430,8 +415,8 @@ function renderLevel() {
             </section>
             <aside class="level-three-panel ready" id="levelPanel">
                 <div class="level-badge-static">Level ${levelNo}</div>
-                <h1 class="question">${level.pass === "split" ? "Pick the photon that passes!" : "Pick one!"}</h1>
-                <div class="level-three-options ${level.pass === "split" ? "split-answer-options" : ""}">
+                <h1 class="question">Pick the middle one!</h1>
+                <div class="level-three-options">
 ${answerButtonsMarkup}
                 </div>
                 <button class="next-level-btn hidden" id="nextLevelBtn" type="button">Next Level</button>
@@ -441,9 +426,6 @@ ${answerButtonsMarkup}
     setPhoton(document.getElementById("levelPhoton"), level.photon);
     setPhoton(document.getElementById("passedPhoton"), passState);
     setPhoton(document.getElementById("blockedPhoton"), blockState);
-    document.querySelectorAll(".option-tile[data-answer] .choice-photon").forEach((el) => {
-        setPhoton(el, el.closest(".option-tile").dataset.answer);
-    });
     const scene = document.querySelector(".level-three-scene");
     scene.style.setProperty("--beam-color", photon.color);
     scene.style.setProperty("--split-pass-color", passPhoton.color);
@@ -463,6 +445,7 @@ ${answerButtonsMarkup}
     const levelModalBtn = document.getElementById("levelModalBtn");
     const nextLevelBtn = document.getElementById("nextLevelBtn");
     const levelModalSecondaryBtn = document.getElementById("levelModalSecondaryBtn");
+    const selectedFilter = document.getElementById("selectedFilter");
     function setOptionDisabled(disabled) {
         document.querySelectorAll(".option-tile").forEach((item) => {
             item.disabled = disabled;
@@ -477,6 +460,8 @@ ${answerButtonsMarkup}
         levelResultModal.classList.remove("show");
         nextLevelBtn.classList.add("hidden");
         scene.classList.remove("intro-animation", "finish-animation");
+        selectedFilter.classList.add("hidden");
+        selectedFilter.querySelector("img").src = "";
         document.querySelectorAll(".option-tile").forEach((item) => {
             item.classList.remove("active", "correct", "wrong");
         });
@@ -504,6 +489,8 @@ ${answerButtonsMarkup}
         levelResultModal.classList.remove("show");
         nextLevelBtn.classList.add("hidden");
         scene.classList.remove("intro-animation", "finish-animation");
+        selectedFilter.querySelector("img").src = filterTypes[correctAnswer].image;
+        selectedFilter.classList.remove("hidden");
         document.querySelectorAll(".option-tile").forEach((item) => {
             item.classList.remove("active", "correct", "wrong");
         });
@@ -555,6 +542,8 @@ ${answerButtonsMarkup}
             isAnimating = true;
             isReady = false;
             const correct = selected === correctAnswer;
+            selectedFilter.querySelector("img").src = filterTypes[selected].image;
+            selectedFilter.classList.remove("hidden");
             document.querySelectorAll(".option-tile").forEach((item) => {
                 item.classList.toggle("active", item === btn);
             });

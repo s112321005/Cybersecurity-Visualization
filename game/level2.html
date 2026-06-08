@@ -154,7 +154,7 @@ to{opacity:1;transform:translateY(0);}
 .option-tile.wrong{background:#fff3f3;box-shadow:0 8px 0 var(--block),0 14px 24px rgba(217,67,67,0.14);}
 .option-tile:disabled{cursor:default;}
 .option-tile>span:last-child{color:#334155;font-size:1rem;}
-.next-level-btn{margin-top:auto;appearance:none;border:5px solid var(--ink);border-radius:999px;background:var(--primary-blue);color:white;min-height:58px;padding:12px 18px;font-weight:950;font-size:1rem;cursor:pointer;box-shadow:0 8px 0 var(--ink),0 16px 24px rgba(31,67,107,0.1);position:relative;top:0;transition:transform 0.16s ease,box-shadow 0.16s ease,top 0.12s ease;}
+.next-level-btn{margin-top:auto;appearance:none;border:5px solid var(--ink);border-radius:999px;background:var(--pass);color:white;min-height:58px;padding:12px 18px;font-weight:950;font-size:1rem;cursor:pointer;box-shadow:0 8px 0 var(--ink),0 16px 24px rgba(31,67,107,0.1);position:relative;top:0;transition:transform 0.16s ease,box-shadow 0.16s ease,top 0.12s ease;}
 .next-level-btn.hidden{display:none;}
 .next-level-btn:hover{transform:translateY(-4px) scale(1.03);box-shadow:0 12px 0 var(--ink),0 20px 30px rgba(31,67,107,0.14);}
 .next-level-btn:active{top:5px;box-shadow:0 3px 0 var(--ink),0 8px 18px rgba(31,67,107,0.1);}
@@ -207,9 +207,13 @@ to{opacity:1;transform:translateY(0);}
 .level-modal-title{margin:0 0 22px;font-size:2rem;font-weight:950;}
 .level-modal-card.success .level-modal-title{color:var(--pass);}
 .level-modal-card.error .level-modal-title{color:var(--block);}
-.level-modal-btn{border:0;border-radius:999px;padding:12px 34px;color:white;font-size:1rem;font-weight:950;cursor:pointer;background:var(--primary-blue);box-shadow:0 5px 12px rgba(0,0,0,0.15);transition:transform 0.18s ease,box-shadow 0.18s ease;}
+.level-modal-actions{display:flex;justify-content:center;gap:10px;flex-wrap:nowrap;}
+.level-modal-btn{border:0;border-radius:999px;padding:12px 34px;color:white;font-size:1rem;font-weight:950;cursor:pointer;background:var(--primary-blue);box-shadow:0 5px 12px rgba(0,0,0,0.15);transition:transform 0.18s ease,box-shadow 0.18s ease;white-space:nowrap;min-width:max-content;}
 .level-modal-card.success .level-modal-btn{background:var(--pass);}
 .level-modal-card.error .level-modal-btn{background:var(--block);}
+.level-modal-card.success .level-modal-btn.secondary{background:var(--pass)!important;color:white;border:0;}
+.level-modal-card.error .level-modal-btn.secondary{background:#c8cbcf!important;color:#000000;border:3px solid #a9b0b9;}
+.level-modal-btn.hidden{display:none;}
 .level-modal-btn:hover{transform:translateY(-3px);box-shadow:0 7px 16px rgba(0,0,0,0.2);}
 @media (max-width:1180px){.level-three-card{height:auto;min-height:auto;}
 .level-three-shell{grid-template-columns:1fr;}
@@ -334,7 +338,10 @@ function renderLevel() {
                     <div class="level-modal-card" id="levelModalCard">
                         <div class="level-modal-icon" id="levelModalIcon">!</div>
                         <h2 class="level-modal-title" id="levelModalTitle">Correct!</h2>
-                        <button class="level-modal-btn" id="levelModalBtn" type="button">OK</button>
+                        <div class="level-modal-actions">
+                            <button class="level-modal-btn" id="levelModalBtn" type="button">OK</button>
+                            <button class="level-modal-btn secondary hidden" id="levelModalSecondaryBtn" type="button">Give up</button>
+                        </div>
                     </div>
                 </div>
             </section>
@@ -372,6 +379,8 @@ function renderLevel() {
     const levelModalCard = document.getElementById("levelModalCard");
     const levelModalIcon = document.getElementById("levelModalIcon");
     const levelModalTitle = document.getElementById("levelModalTitle");
+    const levelModalBtn = document.getElementById("levelModalBtn");
+    const levelModalSecondaryBtn = document.getElementById("levelModalSecondaryBtn");
     const nextLevelBtn = document.getElementById("nextLevelBtn");
     function setOptionDisabled(disabled) {
         document.querySelectorAll(".option-tile").forEach((item) => {
@@ -401,7 +410,12 @@ function renderLevel() {
     function showResultModal(correct) {
         levelModalCard.className = `level-modal-card ${correct ? "success" : "error"}`;
         levelModalIcon.innerHTML = correct ? "&#10003;" : "!";
-        levelModalTitle.textContent = correct ? "Correct!" : "Try again!";
+        levelModalTitle.textContent = correct ? "Correct!" : "Incorrect!";
+        levelModalBtn.textContent = correct ? "OK" : "Try again";
+        levelModalSecondaryBtn.textContent = correct ? "Next Level" : "Give up";
+        levelModalBtn.style.order = correct ? "1" : "2";
+        levelModalSecondaryBtn.style.order = correct ? "2" : "1";
+        levelModalSecondaryBtn.classList.remove("hidden");
         levelResultModal.classList.add("show");
     }
     function returnToChoice() {
@@ -453,7 +467,10 @@ function renderLevel() {
             }, 500);
         });
     });
-    document.getElementById("levelModalBtn").addEventListener("click", returnToChoice);
+    levelModalBtn.addEventListener("click", returnToChoice);
+    levelModalSecondaryBtn.addEventListener("click", () => {
+        window.location.href = lastCorrect ? nextLevelHref : "game/index.html";
+    });
     document.getElementById("nextLevelBtn").addEventListener("click", () => {
         window.location.href = nextLevelHref;
     });
