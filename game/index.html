@@ -99,6 +99,19 @@
       box-shadow: 0 6px 0 #3498DB; 
       cursor: pointer; transition: all 0.3s; 
       text-decoration: none; color: #0F2027; 
+      position: relative;
+    }
+    .level-node::after {
+      content: "";
+      position: absolute;
+      top: 15px;
+      left: 18px;
+      width: 20px;
+      height: 12px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.9);
+      transform: rotate(-24deg);
+      pointer-events: none;
     }
     .level-node:hover:not(.locked) { 
       transform: rotate(5deg) scale(1.1); 
