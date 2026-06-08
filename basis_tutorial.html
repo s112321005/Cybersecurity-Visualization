@@ -46,6 +46,10 @@
         .stage-top .result-badge { display: none; }
         .filter-result-badge { position: absolute; left: 51%; top: calc(34% - 104px); transform: translateX(-50%); z-index: 8; }
         .result-badge.blocked { background: var(--block); box-shadow: 0 8px 24px rgba(217, 67, 67, 0.22); }
+        .certainty-label { position: absolute; left: calc(50% + 150px); top: 32%; transform: translateY(-50%)scale(0.3); min-width: 64px; padding: 5px 12px; border-radius: 999px; background: rgba(255, 255, 255, 0.92); border: 1px solid rgba(32, 164, 100, 0.35); color: var(--pass); font-weight: 950; font-size: 1rem; text-align: center; opacity: 0; z-index: 8; box-shadow: 0 6px 16px rgba(0, 42, 100, 0.08); }
+        .certainty-label.blocked { border-color: rgba(217, 67, 67, 0.35); color: var(--block); }
+        .stage:not(.split-mode) .certainty-label { animation: certaintyPop 4s linear infinite; }
+        .split-mode .certainty-label { display: none; }
         .beam-wrap { position: absolute; inset: 0; pointer-events: none; }
         .source { position: absolute; left: 68px; top: 39%; width: 78px; height: 78px; transform: translateY(-50%); border-radius: 50%; background: radial-gradient(circle, #ffffff 0 47%, color-mix(in srgb, var(--beam-color) 28%, transparent) 48% 54%, transparent 55% 100%); border: 1.5px solid color-mix(in srgb, var(--beam-color) 70%, white); box-shadow: 0 0 18px color-mix(in srgb, var(--beam-color) 38%, transparent); display: grid; place-items: center; z-index: 3; }
         .source::after { content: ""; position: absolute; left: 50%; top: 50%; width: 16px; height: 48px; background: var(--beam-color); transform: translate(-50%, -50%)rotate(var(--state-angle)); box-shadow: 0 0 10px var(--beam-color); clip-path: polygon(50% 0, 100% 18%, 72% 18%, 72% 82%, 100% 82%, 50% 100%, 0 82%, 28% 82%, 28% 18%, 0 18%); }
@@ -109,6 +113,7 @@
         @keyframes photonBlock { 0% { left: 103px; transform: scale(0.7); opacity: 0; } 12% { opacity: 1; } 50% { left: 50%; transform: scale(1); opacity: 1; } 64%, 100% { left: 50%; transform: scale(0.08); opacity: 0; } }
         @keyframes blockFlash { 0%, 50%, 100% { opacity: 0; transform: translate(-50%, -50%)scale(0.6); } 58% { opacity: 1; transform: translate(-50%, -50%)scale(1.18); } 78% { opacity: 1; transform: translate(-50%, -50%)scale(1.18); } 88% { opacity: 0; transform: translate(-50%, -50%)scale(1.55); } }
         @keyframes splitPop { 0%, 50% { opacity: 0; transform: translate(-50%, -50%)scale(0.3); } 60% { opacity: 1; transform: translate(-50%, -50%)scale(1); } 100% { opacity: 1; transform: translate(-50%, -50%)scale(1); } }
+        @keyframes certaintyPop { 0%, 50% { opacity: 0; transform: translateY(-50%)scale(0.3); } 60% { opacity: 1; transform: translateY(-50%)scale(1); } 100% { opacity: 1; transform: translateY(-50%)scale(1); } }
         @keyframes outputBeam { 0%, 50% { opacity: 0; } 60% { opacity: 0.82; } 100% { opacity: 0.82; } }
         @keyframes detectorAppear { 0%, 89% { opacity: 0; transform: translate(-50%, -50%)scale(0.45); } 90% { opacity: 1; transform: translate(-50%, -50%)scale(1); } 100% { opacity: 1; transform: translate(-50%, -50%)scale(1); } }
         @keyframes glow { from { transform: scale(0.92); } to { transform: scale(1.08); } }
@@ -190,6 +195,7 @@
                     <div class="photon-dot"></div>
                     <div class="filter-stand"><img id="filterImage" src="pictures/vertical.svg" alt=""></div>
                     <div class="result-badge filter-result-badge" id="filterResultBadge">PASS</div>
+                    <div class="certainty-label" id="certaintyLabel">100%</div>
                     <div class="split-source split-a"></div>
                     <div class="split-label split-label-a">50%</div>
                     <div class="split-source split-b"></div>
@@ -311,6 +317,7 @@
         const filterImage = document.getElementById("filterImage");
         const formulaPill = document.getElementById("formulaPill");
         const resultBadge = document.getElementById("filterResultBadge");
+        const certaintyLabel = document.getElementById("certaintyLabel");
         const hintLine = document.getElementById("hintLine");
 
         stateGrid.innerHTML = stateOrder.map((key) => {
@@ -358,6 +365,8 @@
             formulaPill.innerHTML = state.formula;
             resultBadge.textContent = passed ? "PASS" : "BLOCK";
             resultBadge.classList.toggle("blocked", !passed);
+            certaintyLabel.textContent = passed ? "100%" : "0%";
+            certaintyLabel.classList.toggle("blocked", !passed);
             const baseHint = `${state.ket} photon ${passed ? "passes" : "is blocked"} by ${filters[currentFilter].label.toLowerCase()} polarizer`;
             hintLine.textContent = baseHint;
             if (split) {
@@ -383,7 +392,7 @@
         }
 
         function replayAnimation() {
-            const animated = beamWrap.querySelectorAll(".photon-dot, .beam.out, .split-source, .block-flash, .detector-source");
+            const animated = beamWrap.querySelectorAll(".photon-dot, .beam.out, .split-source, .split-label, .certainty-label, .block-flash, .detector-source");
             animated.forEach((el) => {
                 el.style.animation = "none";
             });
