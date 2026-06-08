@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <base href="https://s112321005.github.io/Cybersecurity-Visualization/">
     <title>Polarization Basis - Level 4</title>
     <style>
 :root {
@@ -702,6 +703,12 @@ body {
     color: #334155;
     font-size: 1rem;
 }
+.filter-choice-img {
+    width: 96px;
+    height: 112px;
+    object-fit: contain;
+    display: block;
+}
 .next-level-btn {
     margin-top: auto;
     appearance: none;
@@ -718,6 +725,9 @@ body {
     position: relative;
     top: 0;
     transition: transform 0.16s ease, box-shadow 0.16s ease, top 0.12s ease;
+}
+.next-level-btn.hidden {
+    display: none;
 }
 .next-level-btn:hover {
     transform: translateY(-4px) scale(1.03);
@@ -850,21 +860,21 @@ body {
     opacity: 0;
     z-index: 8;
 }
-.result-placeholder {
+.filter-placeholder {
     position: absolute;
-    left: calc(100% - 74px);
+    left: 50%;
     top: 50%;
-    width: 96px;
-    height: 96px;
-    border-radius: 50%;
-    border: 4px dashed rgba(38,50,56,0.82);
+    width: 190px;
+    height: 220px;
+    border: 4px dashed rgba(38,50,56,0.55);
+    border-radius: 22px;
     transform: translate(-50%, -50%);
-    background: rgba(255,255,255,0.2);
-    z-index: 10;
+    background: rgba(255,255,255,0.34);
+    z-index: 4;
     pointer-events: none;
 }
-.will-block .result-placeholder {
-    left: 50%;
+.level-filter.hidden {
+    display: none;
 }
 .level-three-scene .passed-photon {
     position: absolute;
@@ -935,6 +945,9 @@ body {
 }
 .level-block-mark::before { transform: translate(-50%, -50%) rotate(45deg); }
 .level-block-mark::after { transform: translate(-50%, -50%) rotate(-45deg); }
+.will-block .level-block-mark {
+    left: calc(100% - 74px);
+}
 .will-block .finish-animation .level-block-mark {
     animation: levelBlockPop 0.5s ease-out 0.55s forwards;
 }
@@ -1154,8 +1167,8 @@ body {
 <body>
     <div class="header">
         <div class="header-left">
-            <a href="index.html" class="btn-back" title="Back to levels"></a>
-            <div class="page-title">Level4</div>
+            <a href="game/index.html" class="btn-back" title="Back to levels"></a>
+            <div class="page-title">Level 4</div>
         </div>
         <div class="header-center">Photon Direction & Polarizer Game</div>
     </div>
@@ -1170,7 +1183,7 @@ const photonTypes = {
 
 const filterTypes = {
     vertical: { label: "Vertical", image: "pictures/vertical.svg" },
-    diagonal: { label: "Diagonal", image: "https://s112321005.github.io/Cybersecurity-Visualization/pictures/b_diagonal.svg" }
+    diagonal: { label: "Diagonal", image: "pictures/diagonal.svg" }
 };
 
 const levels = [
@@ -1186,9 +1199,9 @@ const levels = [
 ];
 
 const page = document.querySelector("[data-level-page]");
-const levelIndex = Math.max(0, Number(page.dataset.levelPage || 1) - 1);
-const level = levels[levelIndex] || levels[0];
-const levelFiles = ["level1.html", "level2.html", "level3.html", "level4.html", "level5.html", "level6.html", "level7.html", "level8.html", "level9.html"];
+const levelIndex = 3;
+const level = { photon: "diagRight", filters: [], pass: "block", output: "none" };
+const nextLevelHref = "game/level5.html";
 
 function photonMarkup(id = "", extraClass = "") {
     return `<div class="tutorial-photon ${extraClass}" ${id ? `id="${id}"` : ""}><span></span></div>`;
@@ -1204,14 +1217,11 @@ function setPhoton(el, state) {
 function renderLevel() {
     const levelNo = levelIndex + 1;
     const photon = photonTypes[level.photon];
-    const passState = level.splitPass || level.output || level.photon;
+    const passState = level.pass === "block" ? level.photon : (level.splitPass || level.output || level.photon);
     const passPhoton = photonTypes[passState] || photon;
-    const correctAnswer = level.pass === "block" ? "none" : "pass";
+    const correctAnswer = "diagonal";
     const doesLightContinue = level.pass !== "block";
-    const filtersMarkup = level.filters.map((filterName, index) => {
-        const filter = filterTypes[filterName];
-        return `<div class="level-filter ${index > 0 ? "second" : ""}"><img src="${filter.image}" alt=""></div>`;
-    }).join("");
+    const selectedFilterMarkup = `<span class="filter-placeholder"></span><div class="level-filter hidden" id="selectedFilter"><img src="" alt=""></div>`;
 
     page.classList.add("level-three-card");
     page.innerHTML = `
@@ -1222,9 +1232,8 @@ function renderLevel() {
                     <div class="level-three-beam"></div>
                     <div class="level-three-beam-after"></div>
                     <div class="level-three-dot"></div>
-                    <span class="result-placeholder"></span>
                     ${photonMarkup("passedPhoton", "passed-photon hide-symbol")}
-                    ${filtersMarkup}
+                    ${selectedFilterMarkup}
                     <span class="level-block-mark"></span>
                 </div>
                 <div class="level-modal-overlay" id="levelResultModal">
@@ -1238,19 +1247,19 @@ function renderLevel() {
 
             <aside class="level-three-panel ready" id="levelPanel">
                 <div class="level-badge-static">Level ${levelNo}</div>
-                <h1 class="question">Pick one!</h1>
+                <h1 class="question">Pick the middle one!</h1>
 
                 <div class="level-three-options">
-                    <button class="option-tile" type="button" data-answer="pass" aria-label="light passes">
-                        <strong>PASS</strong>
-                        ${photonMarkup("", "choice-photon hide-symbol")}
+                    <button class="option-tile" type="button" data-answer="diagonal" aria-label="diagonal polarizer">
+                        <strong>DIAGONAL</strong>
+                        <img class="filter-choice-img" src="${filterTypes.diagonal.image}" alt="">
                     </button>
-                    <button class="option-tile" type="button" data-answer="none" aria-label="blocked">
-                        <strong>BLOCK</strong>
-                        <span class="block-choice-icon"></span>
+                    <button class="option-tile" type="button" data-answer="vertical" aria-label="vertical polarizer">
+                        <strong>VERTICAL</strong>
+                        <img class="filter-choice-img" src="${filterTypes.vertical.image}" alt="">
                     </button>
                 </div>
-                <button class="next-level-btn" id="nextLevelBtn" type="button">Next Level</button>
+                <button class="next-level-btn hidden" id="nextLevelBtn" type="button">Next Level</button>
             </aside>
         </section>
     `;
@@ -1258,6 +1267,7 @@ function renderLevel() {
     setPhoton(document.getElementById("levelPhoton"), level.photon);
     setPhoton(document.getElementById("passedPhoton"), passState);
     document.querySelectorAll(".choice-photon").forEach((el) => setPhoton(el, passState));
+    document.querySelector(".level-three-scene").style.setProperty("--beam-color", "var(--plus)");
 
     let selected = null;
     let isAnimating = false;
@@ -1265,12 +1275,15 @@ function renderLevel() {
     let introTimer = null;
     let delayTimer = null;
     let resultTimer = null;
+    let lastCorrect = false;
     const scene = document.querySelector(".level-three-scene");
     const panel = document.getElementById("levelPanel");
     const levelResultModal = document.getElementById("levelResultModal");
     const levelModalCard = document.getElementById("levelModalCard");
     const levelModalIcon = document.getElementById("levelModalIcon");
     const levelModalTitle = document.getElementById("levelModalTitle");
+    const selectedFilter = document.getElementById("selectedFilter");
+    const nextLevelBtn = document.getElementById("nextLevelBtn");
 
     function setOptionDisabled(disabled) {
         document.querySelectorAll(".option-tile").forEach((item) => {
@@ -1284,28 +1297,38 @@ function renderLevel() {
         isAnimating = true;
         setOptionDisabled(true);
         levelResultModal.classList.remove("show");
+        nextLevelBtn.classList.add("hidden");
         scene.classList.remove("intro-animation", "finish-animation");
+        selectedFilter.classList.add("hidden");
+        selectedFilter.querySelector("img").src = "";
         document.querySelectorAll(".option-tile").forEach((item) => {
             item.classList.remove("active", "correct", "wrong");
         });
         void scene.offsetWidth;
         scene.classList.add("intro-animation");
         introTimer = window.setTimeout(() => {
-            isReady = true;
-            isAnimating = false;
-            panel.classList.add("ready");
-            setOptionDisabled(false);
+            scene.classList.add("finish-animation");
+            resultTimer = window.setTimeout(() => {
+                isReady = true;
+                isAnimating = false;
+                panel.classList.add("ready");
+                setOptionDisabled(false);
+            }, 1250);
         }, 1800);
     }
 
     function showResultModal(correct) {
         levelModalCard.className = `level-modal-card ${correct ? "success" : "error"}`;
         levelModalIcon.innerHTML = correct ? "&#10003;" : "!";
-        levelModalTitle.textContent = correct ? "Correct!" : "Incorrect!";
+        levelModalTitle.textContent = correct ? "Correct!" : "Try again!";
         levelResultModal.classList.add("show");
     }
 
     function returnToChoice() {
+        if (lastCorrect) {
+            levelResultModal.classList.remove("show");
+            return;
+        }
         selected = null;
         isReady = true;
         isAnimating = false;
@@ -1314,7 +1337,8 @@ function renderLevel() {
         delayTimer = null;
         resultTimer = null;
         levelResultModal.classList.remove("show");
-        scene.classList.remove("finish-animation");
+        selectedFilter.classList.add("hidden");
+        selectedFilter.querySelector("img").src = "";
         setOptionDisabled(false);
         document.querySelectorAll(".option-tile").forEach((item) => {
             item.classList.remove("active", "correct", "wrong");
@@ -1327,32 +1351,30 @@ function renderLevel() {
             selected = btn.dataset.answer;
             isAnimating = true;
             isReady = false;
+            selectedFilter.querySelector("img").src = filterTypes[selected].image;
+            selectedFilter.classList.remove("hidden");
             document.querySelectorAll(".option-tile").forEach((item) => {
                 item.classList.toggle("active", item === btn);
             });
             setOptionDisabled(true);
-            scene.classList.remove("finish-animation");
 
             delayTimer = window.setTimeout(() => {
-                void scene.offsetWidth;
-                scene.classList.add("finish-animation");
-
-                resultTimer = window.setTimeout(() => {
-                    const correct = selected === correctAnswer;
-                    document.querySelectorAll(".option-tile").forEach((item) => {
-                        item.classList.toggle("correct", item.dataset.answer === correctAnswer && correct);
-                        item.classList.toggle("wrong", item === btn && !correct);
-                    });
-                    showResultModal(correct);
-                    isAnimating = false;
-                }, 2400);
-            }, 500);
+                const correct = selected === correctAnswer;
+                lastCorrect = correct;
+                document.querySelectorAll(".option-tile").forEach((item) => {
+                    item.classList.toggle("correct", item.dataset.answer === correctAnswer && correct);
+                    item.classList.toggle("wrong", item === btn && !correct);
+                });
+                nextLevelBtn.classList.toggle("hidden", !correct);
+                showResultModal(correct);
+                isAnimating = false;
+            }, 450);
         });
     });
 
     document.getElementById("levelModalBtn").addEventListener("click", returnToChoice);
     document.getElementById("nextLevelBtn").addEventListener("click", () => {
-        window.location.href = levelFiles[levelIndex + 1] || "index.html";
+        window.location.href = nextLevelHref;
     });
     startIntro();
 }
