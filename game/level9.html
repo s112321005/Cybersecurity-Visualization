@@ -457,7 +457,7 @@ ${choicesMarkup}
     document.getElementById("levelModalBtn").addEventListener("click", returnToChoice);
     levelModalClose.addEventListener("click", closeResultModal);
     document.getElementById("nextLevelBtn").addEventListener("click", () => {
-        window.location.href = levelFiles[levelIndex + 1] || "index.html";
+        window.location.href = levelFiles[levelIndex + 1] || "/game/index.html";
     });
     startIntro();
 }
