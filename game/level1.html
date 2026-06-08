@@ -719,6 +719,9 @@ body {
     top: 0;
     transition: transform 0.16s ease, box-shadow 0.16s ease, top 0.12s ease;
 }
+.next-level-btn.hidden {
+    display: none;
+}
 .next-level-btn:hover {
     transform: translateY(-4px) scale(1.03);
     box-shadow: 0 12px 0 var(--ink), 0 20px 30px rgba(31,67,107,0.14);
@@ -1287,7 +1290,7 @@ function renderLevel() {
                         <span class="block-choice-icon"></span>
                     </button>
                 </div>
-                <button class="next-level-btn" id="nextLevelBtn" type="button">Next Level</button>
+                <button class="next-level-btn hidden" id="nextLevelBtn" type="button">Next Level</button>
             </aside>
         </section>
     `;
@@ -1310,6 +1313,7 @@ function renderLevel() {
     const levelModalCard = document.getElementById("levelModalCard");
     const levelModalIcon = document.getElementById("levelModalIcon");
     const levelModalTitle = document.getElementById("levelModalTitle");
+    const nextLevelBtn = document.getElementById("nextLevelBtn");
 
     function setOptionDisabled(disabled) {
         document.querySelectorAll(".option-tile").forEach((item) => {
@@ -1323,6 +1327,7 @@ function renderLevel() {
         isAnimating = true;
         setOptionDisabled(true);
         levelResultModal.classList.remove("show");
+        nextLevelBtn.classList.add("hidden");
         scene.classList.remove("intro-animation", "finish-animation", "full-animation");
         document.querySelectorAll(".option-tile").forEach((item) => {
             item.classList.remove("active", "correct", "wrong");
@@ -1361,6 +1366,7 @@ function renderLevel() {
         resultTimer = null;
         levelResultModal.classList.remove("show");
         scene.classList.remove("finish-animation", "full-animation", "loop-animation");
+        nextLevelBtn.classList.add("hidden");
         setOptionDisabled(false);
         document.querySelectorAll(".option-tile").forEach((item) => {
             item.classList.remove("active", "correct", "wrong");
@@ -1392,6 +1398,7 @@ function renderLevel() {
                         item.classList.toggle("correct", item.dataset.answer === correctAnswer && correct);
                         item.classList.toggle("wrong", item === btn && !correct);
                     });
+                    nextLevelBtn.classList.toggle("hidden", !correct);
                     showResultModal(correct);
                     isAnimating = false;
                 }, correctNow ? 2700 : 2400);
