@@ -31,7 +31,7 @@ for (let i = 1; i <= 9; i++) {
     const node = document.createElement("a");
     node.className = "level-node";
     node.textContent = i;
-    node.href = `game/level${i}.html`;
+    node.href = `level${i}.html`;
     node.addEventListener("click", () => playSound(popAudio));
     grid.appendChild(node);
 }
