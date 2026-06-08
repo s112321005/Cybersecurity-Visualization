@@ -357,7 +357,7 @@ const levels = [
 const page = document.querySelector("[data-level-page]");
 const levelIndex = Math.max(0, Number(page.dataset.levelPage || 1) - 1);
 const level = levels[levelIndex] || levels[0];
-const levelFiles = ["one.html", "two.html", "three.html", "four.html", "five.html", "six.html", "seven.html", "eight.html", "nine.html"];
+const levelFiles = ["one.html", "two.html", "three.html", "four.html", "five.html", "level6.html", "level7.html", "level8.html", "level9.html"];
 function photonMarkup(id = "", extraClass = "") {
     return `<div class="tutorial-photon ${extraClass}" ${id ? `id="${id}"` : ""}><span></span></div>`;
 }
