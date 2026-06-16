@@ -154,10 +154,11 @@
         .level-three-panel.ready {opacity:1;transform:translateX(0) scale(1);animation:choicesPop 0.36s ease-out both}
         .level-badge-static {align-self:flex-start;border:4px solid var(--ink);border-radius:999px;background:#ffffff;color:var(--ink);padding:10px 16px;font-weight:950;box-shadow:0 6px 0 var(--primary-blue);margin-bottom:14px}
         .level-three-options {display:grid;grid-template-columns:1fr;gap:16px;margin:16px 0}
-        .level-three-options.split-answer-options {grid-template-columns:repeat(2, minmax(0, 1fr));gap:12px}
+        .level-three-options.split-answer-options {grid-template-columns:1fr;gap:14px}
         .option-tile {appearance:none;border:5px solid var(--ink);border-radius:32px;background:linear-gradient(180deg, #ffffff 0%, #f8fcff 100%);color:#263238;min-height:178px;padding:14px;font-weight:950;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;box-shadow:0 8px 0 var(--primary-blue), 0 16px 24px rgba(31, 67, 107, 0.1);position:relative;top:0;transition:transform 0.16s ease, box-shadow 0.16s ease, top 0.12s ease, background 0.16s ease}
         .split-answer-options .option-tile {min-height:112px;border-radius:24px;padding:10px 8px}
         .split-answer-options .choice-photon {width:68px;height:68px;margin:0 auto}
+        .percent-only-options .option-tile {min-height:96px}
         .split-answer-options .block-choice-icon {width:58px;height:58px}
         .split-answer-options .block-choice-icon::before, .split-answer-options .block-choice-icon::after {height:46px;width:7px}
         .answer-percent {display:block;margin-top:8px;color:#17345f;font-size:1.05rem;font-weight:950}
@@ -192,20 +193,20 @@
         .level-three-beam-block {position:absolute;left:50%;width:calc(100% - 50% - 74px);top:66%;height:8px;border-radius:999px;transform:translateY(-50%);background:linear-gradient(90deg, var(--split-block-color), transparent);opacity:0;z-index:7}
         .will-split .finish-animation .level-three-beam-block {display:none}
         .level-three-dot {position:absolute;left:46px;top:50%;width:18px;height:18px;margin:-9px 0 0 -9px;border-radius:50%;background:var(--beam-color);box-shadow:0 0 18px var(--beam-color), 0 0 30px color-mix(in srgb, var(--beam-color) 52%, transparent);opacity:0;z-index:8}
-        .result-placeholder {position:absolute;left:calc(100% - 74px);top:50%;width:96px;height:96px;border-radius:50%;border:4px dashed rgba(38, 50, 56, 0.82);transform:translate(-50%, -50%);background:rgba(255, 255, 255, 0.2);z-index:10;pointer-events:none}
+        .probability-placeholder {position:absolute;left:calc(100% - 74px);top:calc(50% - 82px);transform:translate(-50%, -50%) scale(0.7);min-width:74px;height:42px;border:4px dashed rgba(95,102,115,0.72);border-radius:999px;background:rgba(255,255,255,0.52);opacity:0;z-index:12;pointer-events:none}
+        .level-three-scene.result-photon-ready .probability-placeholder {opacity:1;transform:translate(-50%, -50%) scale(1)}
+        .level-three-scene.result-ready .probability-placeholder {opacity:0}
         .certainty-label {position:absolute;left:calc(100% - 74px);top:calc(50% - 82px);transform:translate(-50%, -50%) scale(0.7);min-width:74px;padding:6px 12px;border:4px solid var(--ink);border-radius:999px;background:#ffffff;color:var(--pass);font-size:1rem;font-weight:950;text-align:center;box-shadow:0 6px 0 var(--pass), 0 12px 20px rgba(31,67,107,0.12);opacity:0;z-index:13;pointer-events:none}
-        .will-block .result-placeholder {left:50%}
-        .will-block .certainty-label {left:50%;color:#5f6673;box-shadow:0 6px 0 #5f6673, 0 12px 20px rgba(31,67,107,0.12)}
-        .will-split .result-placeholder {top:50%}
-        .will-pass .finish-animation .certainty-label {animation:certaintyPop 0.35s ease-out 1.85s forwards}
-        .will-split .finish-animation .certainty-label {animation:certaintyPop 0.35s ease-out 1.85s forwards}
-        .will-block .finish-animation .certainty-label {animation:certaintyPop 0.35s ease-out 0.85s forwards}
+        .will-block .certainty-label,
+        .will-block .probability-placeholder {left:50%}
         .level-three-scene.result-ready .certainty-label {opacity:1;transform:translate(-50%, -50%) scale(1) rotate(0deg)}
         .level-three-scene .passed-photon {position:absolute;left:calc(100% - 74px);top:50%;width:82px;height:82px;transform:translate(-50%, -50%) scale(0.35);opacity:0;z-index:9}
-        .will-pass .finish-animation .passed-photon {animation:passedPhotonAppear 0.5s ease-out 1.85s forwards}
+        .level-three-scene.result-photon-ready .passed-photon {opacity:1;transform:translate(-50%, -50%) scale(1)}
+        .level-three-scene.result-ready .passed-photon {opacity:1;transform:translate(-50%, -50%) scale(1)}
+        .will-pass .finish-animation .passed-photon {animation:none}
         .will-split .level-three-scene .passed-photon {top:50%}
         .level-three-scene .blocked-photon {position:absolute;left:50%;top:50%;width:82px;height:82px;transform:translate(-50%, -50%) scale(0.35);opacity:0;z-index:9}
-        .will-split .finish-animation .passed-photon {animation:passedPhotonAppear 0.5s ease-out 1.85s forwards}
+        .will-split .finish-animation .passed-photon {animation:none}
         .will-split .finish-animation .blocked-photon {animation:splitZeroFall 1.25s ease-in forwards}
         .intro-animation .level-three-dot {animation:levelThreePhotonIntro 1.7s linear forwards}
         .will-pass .finish-animation .level-three-dot {animation:levelThreePhotonFinish 2.4s linear forwards}
@@ -269,11 +270,11 @@
         100% {left:50%;transform:scale(0.08);opacity:0}
         }
         @keyframes levelThreePhotonSplit{
-        0% {left:50%;top:50%;transform:scale(1.05);opacity:1;background:var(--beam-color)}
+        0% {left:50%;top:50%;transform:scale(1.05);opacity:1;background:var(--beam-color);box-shadow:0 0 18px var(--beam-color), 0 0 30px color-mix(in srgb, var(--beam-color) 52%, transparent)}
         18% {left:calc(50%+16px);top:50%;transform:scale(1);opacity:1}
-        34% {left:calc(62% - 20px);top:50%;transform:scale(1);opacity:1;background:var(--split-pass-color)}
-        92% {left:calc(100% - 74px);top:50%;transform:scale(1);opacity:1;background:var(--split-pass-color)}
-        100% {left:calc(100% - 74px);top:50%;transform:scale(0.9);opacity:0;background:var(--split-pass-color)}
+        34% {left:calc(62% - 20px);top:50%;transform:scale(1);opacity:1;background:var(--split-pass-color);box-shadow:0 0 18px var(--split-pass-color), 0 0 30px color-mix(in srgb, var(--split-pass-color) 52%, transparent)}
+        92% {left:calc(100% - 74px);top:50%;transform:scale(1);opacity:1;background:var(--split-pass-color);box-shadow:0 0 18px var(--split-pass-color), 0 0 30px color-mix(in srgb, var(--split-pass-color) 52%, transparent)}
+        100% {left:calc(100% - 74px);top:50%;transform:scale(0.9);opacity:0;background:var(--split-pass-color);box-shadow:0 0 18px var(--split-pass-color), 0 0 30px color-mix(in srgb, var(--split-pass-color) 52%, transparent)}
         }
         @keyframes splitZeroFall{
         0% {opacity:0;transform:translate(-50%, -50%) scale(0.35)}
@@ -381,7 +382,7 @@ function renderLevel() {
     const blockState = level.splitBlock || "horizontal";
     const passPhoton = photonTypes[passState] || photon;
     const blockPhoton = photonTypes[blockState] || photonTypes.horizontal;
-    const correctAnswer = level.pass === "split" ? `${passState}:50` : (level.pass === "block" ? "none:100" : "pass:100");
+    const correctAnswer = level.pass === "split" ? "50" : (level.pass === "block" ? "0" : "100");
     const resultPercent = level.pass === "split" ? "50%" : (level.pass === "block" ? "0%" : "100%");
     const doesLightContinue = level.pass !== "block";
     const stageModeClass = level.pass === "split" ? "will-split" : (doesLightContinue ? "will-pass" : "will-block");
@@ -389,24 +390,19 @@ function renderLevel() {
         const filter = filterTypes[filterName];
         return `<div class="level-filter ${index > 0 ? "second" : ""}"><img src="${filter.image}" alt=""></div>`;
     }).join("");
-    const answerChoices = [
-        { state: "vertical", label: "1", percents: ["100", "50"] },
-        { state: "diagLeft", label: "-", percents: ["0", "50"] },
-        { state: "none", label: "BLOCK", percents: ["100", "0"] }
-    ];
+    const answerPercents = ["0", "50", "100"];
     const answerButtonsMarkup = level.pass === "split"
         ? `
-                    ${answerChoices.flatMap((choice) => choice.percents.map((percent) => `
-                    <button class="option-tile" type="button" data-answer="${choice.state}:${percent}" data-state="${choice.state}" data-percent="${percent}" aria-label="${choice.label} ${percent}%">
-                        ${choice.state === "none" ? `<strong>BLOCK</strong><span class="block-choice-icon"></span>` : photonMarkup("", "choice-photon hide-symbol")}
+                    ${answerPercents.map((percent) => `
+                    <button class="option-tile" type="button" data-answer="${percent}" data-percent="${percent}" aria-label="${percent}%">
                         <span class="answer-percent">${percent}%</span>
-                    </button>`)).join("")}`
+                    </button>`).join("")}`
         : `
-                    <button class="option-tile" type="button" data-answer="pass:100" aria-label="light passes">
+                    <button class="option-tile" type="button" data-answer="100" aria-label="light passes">
                         <strong>PASS</strong>
                         ${photonMarkup("", "choice-photon hide-symbol")}
                     </button>
-                    <button class="option-tile" type="button" data-answer="none:100" aria-label="blocked">
+                    <button class="option-tile" type="button" data-answer="0" aria-label="blocked">
                         <strong>BLOCK</strong>
                         <span class="block-choice-icon"></span>
                     </button>`;
@@ -420,7 +416,7 @@ function renderLevel() {
                     <div class="level-three-beam-after"></div>
                     <div class="level-three-beam-block"></div>
                     <div class="level-three-dot"></div>
-                    <span class="result-placeholder"></span>
+                    <span class="probability-placeholder"></span>
                     <span class="certainty-label">${resultPercent}</span>
                     ${photonMarkup("passedPhoton", "passed-photon hide-symbol")}
                     ${photonMarkup("blockedPhoton", "blocked-photon hide-symbol")}
@@ -440,8 +436,8 @@ function renderLevel() {
             </section>
             <aside class="level-three-panel ready" id="levelPanel">
                 <div class="level-badge-static">Level ${levelNo}</div>
-                <h1 class="question">${level.pass === "split" ? "Pick the photon that passes!" : "Pick one!"}</h1>
-                <div class="level-three-options ${level.pass === "split" ? "split-answer-options" : ""}">
+                <h1 class="question">${level.pass === "split" ? "Pick the probability!" : "Pick one!"}</h1>
+                <div class="level-three-options ${level.pass === "split" ? "split-answer-options percent-only-options" : ""}">
 ${answerButtonsMarkup}
                 </div>
                 <button class="next-level-btn hidden" id="nextLevelBtn" type="button">Next Level</button>
@@ -464,6 +460,7 @@ ${answerButtonsMarkup}
     let introTimer = null;
     let delayTimer = null;
     let resultTimer = null;
+    let modalTimer = null;
     let lastCorrect = false;
     const panel = document.getElementById("levelPanel");
     const levelResultModal = document.getElementById("levelResultModal");
@@ -484,36 +481,11 @@ ${answerButtonsMarkup}
         isReady = false;
         isAnimating = true;
         setOptionDisabled(true);
+        if (modalTimer) window.clearTimeout(modalTimer);
+        modalTimer = null;
         levelResultModal.classList.remove("show");
         nextLevelBtn.classList.add("hidden");
-        scene.classList.remove("intro-animation", "finish-animation", "result-ready");
-        document.querySelectorAll(".option-tile").forEach((item) => {
-            item.classList.remove("active", "correct", "wrong");
-        });
-        void scene.offsetWidth;
-        scene.classList.add("intro-animation");
-        introTimer = window.setTimeout(() => {
-            isReady = true;
-            isAnimating = false;
-            panel.classList.add("ready");
-            setOptionDisabled(false);
-        }, 1800);
-    }
-    function replayFullAnimation() {
-        if (introTimer) window.clearTimeout(introTimer);
-        if (delayTimer) window.clearTimeout(delayTimer);
-        if (resultTimer) window.clearTimeout(resultTimer);
-        introTimer = null;
-        delayTimer = null;
-        resultTimer = null;
-        selected = correctAnswer;
-        lastCorrect = true;
-        isReady = false;
-        isAnimating = true;
-        setOptionDisabled(true);
-        levelResultModal.classList.remove("show");
-        nextLevelBtn.classList.add("hidden");
-        scene.classList.remove("intro-animation", "finish-animation", "result-ready");
+        scene.classList.remove("intro-animation", "finish-animation", "result-ready", "result-photon-ready");
         document.querySelectorAll(".option-tile").forEach((item) => {
             item.classList.remove("active", "correct", "wrong");
         });
@@ -522,15 +494,12 @@ ${answerButtonsMarkup}
         introTimer = window.setTimeout(() => {
             scene.classList.add("finish-animation");
             resultTimer = window.setTimeout(() => {
-                lastCorrect = true;
+                scene.classList.add("result-photon-ready");
                 isReady = true;
                 isAnimating = false;
+                panel.classList.add("ready");
                 setOptionDisabled(false);
-                nextLevelBtn.classList.remove("hidden");
-                document.querySelectorAll(".option-tile").forEach((item) => {
-                    item.classList.toggle("correct", item.dataset.answer === correctAnswer);
-                });
-            }, 2400);
+            }, 2500);
         }, 1800);
     }
     function showResultModal(correct) {
@@ -548,15 +517,15 @@ ${answerButtonsMarkup}
         if (introTimer) window.clearTimeout(introTimer);
         if (delayTimer) window.clearTimeout(delayTimer);
         if (resultTimer) window.clearTimeout(resultTimer);
+        if (modalTimer) window.clearTimeout(modalTimer);
         introTimer = null;
         delayTimer = null;
         resultTimer = null;
+        modalTimer = null;
         levelResultModal.classList.remove("show");
         if (!lastCorrect) {
             startIntro();
-            return;
         }
-        replayFullAnimation();
     }
     document.querySelectorAll(".option-tile").forEach((btn) => {
         btn.addEventListener("click", () => {
@@ -569,7 +538,7 @@ ${answerButtonsMarkup}
                 item.classList.toggle("active", item === btn);
             });
             setOptionDisabled(true);
-            scene.classList.remove("finish-animation", "result-ready");
+            scene.classList.remove("result-ready");
             if (!correct) {
                 lastCorrect = false;
                 nextLevelBtn.classList.add("hidden");
@@ -579,22 +548,18 @@ ${answerButtonsMarkup}
                 return;
             }
             delayTimer = window.setTimeout(() => {
-                void scene.offsetWidth;
-                scene.classList.add("finish-animation");
-                window.setTimeout(() => {
-                    scene.classList.add("result-ready");
-                }, 1900);
-                resultTimer = window.setTimeout(() => {
-                    lastCorrect = correct;
-                    document.querySelectorAll(".option-tile").forEach((item) => {
-                        item.classList.toggle("correct", item.dataset.answer === correctAnswer && correct);
-                        item.classList.toggle("wrong", item === btn && !correct);
-                    });
-                    nextLevelBtn.classList.toggle("hidden", !correct);
+                lastCorrect = correct;
+                scene.classList.add("result-ready");
+                document.querySelectorAll(".option-tile").forEach((item) => {
+                    item.classList.toggle("correct", item.dataset.answer === correctAnswer && correct);
+                    item.classList.toggle("wrong", item === btn && !correct);
+                });
+                nextLevelBtn.classList.toggle("hidden", !correct);
+                isAnimating = false;
+                modalTimer = window.setTimeout(() => {
                     showResultModal(correct);
-                    isAnimating = false;
-                }, 3200);
-            }, 500);
+                }, 850);
+            }, 250);
         });
     });
     levelModalBtn.addEventListener("click", returnToChoice);
