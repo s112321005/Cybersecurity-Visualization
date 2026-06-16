@@ -160,6 +160,7 @@
         .split-answer-options .choice-photon {width:68px;height:68px;margin:0 auto}
         .split-answer-options .block-choice-icon {width:58px;height:58px}
         .split-answer-options .block-choice-icon::before, .split-answer-options .block-choice-icon::after {height:46px;width:7px}
+        .answer-percent {display:block;margin-top:8px;color:#17345f;font-size:1.05rem;font-weight:950}
         .option-tile strong {display:block;color:var(--ink);font-size:1.2rem;font-weight:950;margin-bottom:12px}
         .option-tile:hover {transform:translateY(-5px) rotate(-2deg) scale(1.03);box-shadow:0 13px 0 var(--primary-blue), 0 20px 30px rgba(31, 67, 107, 0.14)}
         .option-tile:active {top:5px;box-shadow:0 3px 0 var(--primary-blue), 0 8px 18px rgba(31, 67, 107, 0.1)}
@@ -192,8 +193,14 @@
         .will-split .finish-animation .level-three-beam-block {display:none}
         .level-three-dot {position:absolute;left:46px;top:50%;width:18px;height:18px;margin:-9px 0 0 -9px;border-radius:50%;background:var(--beam-color);box-shadow:0 0 18px var(--beam-color), 0 0 30px color-mix(in srgb, var(--beam-color) 52%, transparent);opacity:0;z-index:8}
         .result-placeholder {position:absolute;left:calc(100% - 74px);top:50%;width:96px;height:96px;border-radius:50%;border:4px dashed rgba(38, 50, 56, 0.82);transform:translate(-50%, -50%);background:rgba(255, 255, 255, 0.2);z-index:10;pointer-events:none}
+        .certainty-label {position:absolute;left:calc(100% - 74px);top:calc(50% - 82px);transform:translate(-50%, -50%) scale(0.7);min-width:74px;padding:6px 12px;border:4px solid var(--ink);border-radius:999px;background:#ffffff;color:var(--pass);font-size:1rem;font-weight:950;text-align:center;box-shadow:0 6px 0 var(--pass), 0 12px 20px rgba(31,67,107,0.12);opacity:0;z-index:13;pointer-events:none}
         .will-block .result-placeholder {left:50%}
+        .will-block .certainty-label {left:50%;color:#5f6673;box-shadow:0 6px 0 #5f6673, 0 12px 20px rgba(31,67,107,0.12)}
         .will-split .result-placeholder {top:50%}
+        .will-pass .finish-animation .certainty-label {animation:certaintyPop 0.35s ease-out 1.85s forwards}
+        .will-split .finish-animation .certainty-label {animation:certaintyPop 0.35s ease-out 1.85s forwards}
+        .will-block .finish-animation .certainty-label {animation:certaintyPop 0.35s ease-out 0.85s forwards}
+        .level-three-scene.result-ready .certainty-label {opacity:1;transform:translate(-50%, -50%) scale(1) rotate(0deg)}
         .level-three-scene .passed-photon {position:absolute;left:calc(100% - 74px);top:50%;width:82px;height:82px;transform:translate(-50%, -50%) scale(0.35);opacity:0;z-index:9}
         .will-pass .finish-animation .passed-photon {animation:passedPhotonAppear 0.5s ease-out 1.85s forwards}
         .will-split .level-three-scene .passed-photon {top:50%}
@@ -374,30 +381,32 @@ function renderLevel() {
     const blockState = level.splitBlock || "horizontal";
     const passPhoton = photonTypes[passState] || photon;
     const blockPhoton = photonTypes[blockState] || photonTypes.horizontal;
-    const correctAnswer = level.pass === "split" ? passState : (level.pass === "block" ? "none" : "pass");
+    const correctAnswer = level.pass === "split" ? `${passState}:50` : (level.pass === "block" ? "none:100" : "pass:100");
+    const resultPercent = level.pass === "split" ? "50%" : (level.pass === "block" ? "0%" : "100%");
     const doesLightContinue = level.pass !== "block";
     const stageModeClass = level.pass === "split" ? "will-split" : (doesLightContinue ? "will-pass" : "will-block");
     const filtersMarkup = level.filters.map((filterName, index) => {
         const filter = filterTypes[filterName];
         return `<div class="level-filter ${index > 0 ? "second" : ""}"><img src="${filter.image}" alt=""></div>`;
     }).join("");
-    const answerStates = ["vertical", "horizontal", "diagRight", "diagLeft"];
+    const answerChoices = [
+        { state: "vertical", label: "1", percents: ["100", "50"] },
+        { state: "diagLeft", label: "-", percents: ["0", "50"] },
+        { state: "none", label: "BLOCK", percents: ["100", "0"] }
+    ];
     const answerButtonsMarkup = level.pass === "split"
         ? `
-                    ${answerStates.map((state) => `
-                    <button class="option-tile" type="button" data-answer="${state}" aria-label="${photonTypes[state].label}">
-                        ${photonMarkup("", "choice-photon hide-symbol")}
-                    </button>`).join("")}
-                    <button class="option-tile" type="button" data-answer="none" aria-label="blocked">
-                        <strong>BLOCK</strong>
-                        <span class="block-choice-icon"></span>
-                    </button>`
+                    ${answerChoices.flatMap((choice) => choice.percents.map((percent) => `
+                    <button class="option-tile" type="button" data-answer="${choice.state}:${percent}" data-state="${choice.state}" data-percent="${percent}" aria-label="${choice.label} ${percent}%">
+                        ${choice.state === "none" ? `<strong>BLOCK</strong><span class="block-choice-icon"></span>` : photonMarkup("", "choice-photon hide-symbol")}
+                        <span class="answer-percent">${percent}%</span>
+                    </button>`)).join("")}`
         : `
-                    <button class="option-tile" type="button" data-answer="pass" aria-label="light passes">
+                    <button class="option-tile" type="button" data-answer="pass:100" aria-label="light passes">
                         <strong>PASS</strong>
                         ${photonMarkup("", "choice-photon hide-symbol")}
                     </button>
-                    <button class="option-tile" type="button" data-answer="none" aria-label="blocked">
+                    <button class="option-tile" type="button" data-answer="none:100" aria-label="blocked">
                         <strong>BLOCK</strong>
                         <span class="block-choice-icon"></span>
                     </button>`;
@@ -412,6 +421,7 @@ function renderLevel() {
                     <div class="level-three-beam-block"></div>
                     <div class="level-three-dot"></div>
                     <span class="result-placeholder"></span>
+                    <span class="certainty-label">${resultPercent}</span>
                     ${photonMarkup("passedPhoton", "passed-photon hide-symbol")}
                     ${photonMarkup("blockedPhoton", "blocked-photon hide-symbol")}
                     ${filtersMarkup}
@@ -441,8 +451,8 @@ ${answerButtonsMarkup}
     setPhoton(document.getElementById("levelPhoton"), level.photon);
     setPhoton(document.getElementById("passedPhoton"), passState);
     setPhoton(document.getElementById("blockedPhoton"), blockState);
-    document.querySelectorAll(".option-tile[data-answer] .choice-photon").forEach((el) => {
-        setPhoton(el, el.closest(".option-tile").dataset.answer);
+    document.querySelectorAll(".option-tile[data-state] .choice-photon").forEach((el) => {
+        setPhoton(el, el.closest(".option-tile").dataset.state);
     });
     const scene = document.querySelector(".level-three-scene");
     scene.style.setProperty("--beam-color", photon.color);
@@ -476,7 +486,7 @@ ${answerButtonsMarkup}
         setOptionDisabled(true);
         levelResultModal.classList.remove("show");
         nextLevelBtn.classList.add("hidden");
-        scene.classList.remove("intro-animation", "finish-animation");
+        scene.classList.remove("intro-animation", "finish-animation", "result-ready");
         document.querySelectorAll(".option-tile").forEach((item) => {
             item.classList.remove("active", "correct", "wrong");
         });
@@ -503,7 +513,7 @@ ${answerButtonsMarkup}
         setOptionDisabled(true);
         levelResultModal.classList.remove("show");
         nextLevelBtn.classList.add("hidden");
-        scene.classList.remove("intro-animation", "finish-animation");
+        scene.classList.remove("intro-animation", "finish-animation", "result-ready");
         document.querySelectorAll(".option-tile").forEach((item) => {
             item.classList.remove("active", "correct", "wrong");
         });
@@ -559,7 +569,7 @@ ${answerButtonsMarkup}
                 item.classList.toggle("active", item === btn);
             });
             setOptionDisabled(true);
-            scene.classList.remove("finish-animation");
+            scene.classList.remove("finish-animation", "result-ready");
             if (!correct) {
                 lastCorrect = false;
                 nextLevelBtn.classList.add("hidden");
@@ -571,6 +581,9 @@ ${answerButtonsMarkup}
             delayTimer = window.setTimeout(() => {
                 void scene.offsetWidth;
                 scene.classList.add("finish-animation");
+                window.setTimeout(() => {
+                    scene.classList.add("result-ready");
+                }, 1900);
                 resultTimer = window.setTimeout(() => {
                     lastCorrect = correct;
                     document.querySelectorAll(".option-tile").forEach((item) => {
@@ -580,7 +593,7 @@ ${answerButtonsMarkup}
                     nextLevelBtn.classList.toggle("hidden", !correct);
                     showResultModal(correct);
                     isAnimating = false;
-                }, 2400);
+                }, 3200);
             }, 500);
         });
     });
