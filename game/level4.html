@@ -822,7 +822,7 @@ body {
     height: 8px;
     border-radius: 999px;
     transform: translateY(-50%);
-    background: linear-gradient(90deg, transparent, var(--minus));
+    background: linear-gradient(90deg, transparent, #F0A92D);
     opacity: 0;
     z-index: 7;
 }
@@ -855,8 +855,8 @@ body {
     height: 18px;
     margin: -9px 0 0 -9px;
     border-radius: 50%;
-    background: var(--minus);
-    box-shadow: 0 0 18px var(--minus), 0 0 30px color-mix(in srgb,var(--minus) 52%,transparent);
+    background: #F0A92D;
+    box-shadow: 0 0 18px #F0A92D, 0 0 30px color-mix(in srgb,#F0A92D 52%,transparent);
     opacity: 0;
     z-index: 8;
 }
@@ -888,6 +888,35 @@ body {
 }
 .will-pass .finish-animation .passed-photon {
     animation: passedPhotonAppear 0.5s ease-out 1.85s forwards;
+}
+.certainty-label {
+    position: absolute;
+    left: calc(100% - 74px);
+    top: calc(50% - 82px);
+    transform: translate(-50%, -50%) scale(0.7);
+    min-width: 74px;
+    padding: 6px 12px;
+    border: 4px solid var(--ink);
+    border-radius: 999px;
+    background: #ffffff;
+    color: var(--pass);
+    font-size: 1rem;
+    font-weight: 950;
+    text-align: center;
+    box-shadow: 0 6px 0 var(--pass), 0 12px 20px rgba(31,67,107,0.12);
+    opacity: 0;
+    z-index: 13;
+    pointer-events: none;
+}
+.will-block .certainty-label {
+    color: #5f6673;
+    box-shadow: 0 6px 0 #5f6673, 0 12px 20px rgba(31,67,107,0.12);
+}
+.will-pass .finish-animation .certainty-label {
+    animation: certaintyPop 0.35s ease-out 1.85s forwards;
+}
+.will-block .finish-animation .certainty-label {
+    animation: certaintyPop 0.35s ease-out 0.85s forwards;
 }
 .intro-animation .level-three-dot {
     animation: levelThreePhotonIntro 1.7s linear forwards;
@@ -1047,6 +1076,12 @@ body {
 }
 .level-modal-card.success .level-modal-title { color: var(--pass); }
 .level-modal-card.error .level-modal-title { color: var(--block); }
+.level-modal-actions {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: nowrap;
+}
 .level-modal-btn {
     border: 0;
     border-radius: 999px;
@@ -1058,9 +1093,14 @@ body {
     background: var(--primary-blue);
     box-shadow: 0 5px 12px rgba(0,0,0,0.15);
     transition: transform 0.18s ease, box-shadow 0.18s ease;
+    white-space: nowrap;
+    min-width: max-content;
 }
 .level-modal-card.success .level-modal-btn { background: var(--pass); }
 .level-modal-card.error .level-modal-btn { background: var(--block); }
+.level-modal-card.success .level-modal-btn.secondary { background: var(--pass) !important; color: white; border: 0; }
+.level-modal-card.error .level-modal-btn.secondary { background: #c8cbcf !important; color: #000000; border: 3px solid #a9b0b9; }
+.level-modal-btn.hidden { display: none; }
 .level-modal-btn:hover {
     transform: translateY(-3px);
     box-shadow: 0 7px 16px rgba(0,0,0,0.2);
@@ -1119,6 +1159,12 @@ body {
     0% { opacity: 0; transform: translate(-50%, -50%) scale(0.35); }
     72% { opacity: 1; transform: translate(-50%, -50%) scale(1.12); }
     100% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+}
+
+@keyframes certaintyPop {
+    0% { opacity: 0; transform: translate(-50%, -50%) scale(0.7) rotate(-3deg); }
+    70% { opacity: 1; transform: translate(-50%, -50%) scale(1.08) rotate(2deg); }
+    100% { opacity: 1; transform: translate(-50%, -50%) scale(1) rotate(0deg); }
 }
 
 @keyframes resultPop {
@@ -1233,6 +1279,7 @@ function renderLevel() {
                     <div class="level-three-beam-after"></div>
                     <div class="level-three-dot"></div>
                     ${photonMarkup("passedPhoton", "passed-photon hide-symbol")}
+                    <span class="certainty-label">100%</span>
                     ${selectedFilterMarkup}
                     <span class="level-block-mark"></span>
                 </div>
@@ -1240,7 +1287,10 @@ function renderLevel() {
                     <div class="level-modal-card" id="levelModalCard">
                         <div class="level-modal-icon" id="levelModalIcon">!</div>
                         <h2 class="level-modal-title" id="levelModalTitle">Correct!</h2>
-                        <button class="level-modal-btn" id="levelModalBtn" type="button">OK</button>
+                        <div class="level-modal-actions">
+                            <button class="level-modal-btn" id="levelModalBtn" type="button">OK</button>
+                            <button class="level-modal-btn secondary hidden" id="levelModalSecondaryBtn" type="button">Give up</button>
+                        </div>
                     </div>
                 </div>
             </section>
@@ -1282,6 +1332,8 @@ function renderLevel() {
     const levelModalCard = document.getElementById("levelModalCard");
     const levelModalIcon = document.getElementById("levelModalIcon");
     const levelModalTitle = document.getElementById("levelModalTitle");
+    const levelModalBtn = document.getElementById("levelModalBtn");
+    const levelModalSecondaryBtn = document.getElementById("levelModalSecondaryBtn");
     const selectedFilter = document.getElementById("selectedFilter");
     const nextLevelBtn = document.getElementById("nextLevelBtn");
 
@@ -1320,7 +1372,12 @@ function renderLevel() {
     function showResultModal(correct) {
         levelModalCard.className = `level-modal-card ${correct ? "success" : "error"}`;
         levelModalIcon.innerHTML = correct ? "&#10003;" : "!";
-        levelModalTitle.textContent = correct ? "Correct!" : "Try again!";
+        levelModalTitle.textContent = correct ? "Correct!" : "Incorrect!";
+        levelModalBtn.textContent = correct ? "Next Level" : "Try again";
+        levelModalSecondaryBtn.textContent = correct ? "OK" : "Give up";
+        levelModalBtn.style.order = correct ? "2" : "2";
+        levelModalSecondaryBtn.style.order = correct ? "1" : "1";
+        levelModalSecondaryBtn.classList.remove("hidden");
         levelResultModal.classList.add("show");
     }
 
@@ -1372,8 +1429,21 @@ function renderLevel() {
         });
     });
 
-    document.getElementById("levelModalBtn").addEventListener("click", returnToChoice);
-    document.getElementById("nextLevelBtn").addEventListener("click", () => {
+    levelModalBtn.addEventListener("click", () => {
+        if (lastCorrect) {
+            window.location.href = nextLevelHref;
+            return;
+        }
+        returnToChoice();
+    });
+    levelModalSecondaryBtn.addEventListener("click", () => {
+        if (lastCorrect) {
+            levelResultModal.classList.remove("show");
+            return;
+        }
+        window.location.href = "game/index.html";
+    });
+    nextLevelBtn.addEventListener("click", () => {
         window.location.href = nextLevelHref;
     });
     startIntro();
@@ -1384,3 +1454,6 @@ renderLevel();
     </script>
 </body>
 </html>
+
+
+
