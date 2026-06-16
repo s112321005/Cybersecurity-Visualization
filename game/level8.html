@@ -183,17 +183,20 @@
         .level-top-btn:active {top:4px;box-shadow:0 2px 0 var(--ink)}
         .level-three-scene {position:absolute;left:52px;right:52px;top:38%;height:160px;transform:translateY(-50%)}
         .level-three-scene .tutorial-photon {position:absolute;left:0;top:50%;width:92px;height:92px;transform:translateY(-50%);z-index:6}
-        .level-three-beam {position:absolute;left:82px;width:calc(50% - 82px);top:50%;height:8px;border-radius:999px;transform:translateY(-50%);background:linear-gradient(90deg, transparent, var(--minus));opacity:0;z-index:7}
+        .level-three-beam {position:absolute;left:82px;width:calc(50% - 82px);top:50%;height:8px;border-radius:999px;transform:translateY(-50%);background:linear-gradient(90deg, transparent, var(--beam-color));opacity:0;z-index:7}
         .intro-animation .level-three-beam {animation:levelThreeBeamIntro 1.7s linear forwards}
         .finish-animation .level-three-beam {opacity:0.82}
-        .level-three-beam-after {position:absolute;left:50%;width:calc(100% - 50% - 74px);top:50%;height:8px;border-radius:999px;transform:translateY(-50%);background:linear-gradient(90deg, var(--minus), transparent);opacity:0;z-index:7}
+        .level-three-beam-after {position:absolute;left:50%;width:calc(100% - 50% - 74px);top:50%;height:8px;border-radius:999px;transform:translateY(-50%);background:linear-gradient(90deg, var(--split-pass-color), transparent);opacity:0;z-index:7}
         .will-pass .finish-animation .level-three-beam-after {animation:levelThreeBeamFinish 2.4s linear forwards}
         .will-split .finish-animation .level-three-beam-after {background:linear-gradient(90deg, var(--split-pass-color), transparent);animation:levelThreeSplitBeamPass 2.4s linear forwards}
         .level-three-beam-block {position:absolute;left:50%;width:calc(100% - 50% - 74px);top:66%;height:8px;border-radius:999px;transform:translateY(-50%);background:linear-gradient(90deg, var(--split-block-color), transparent);opacity:0;z-index:7}
         .will-split .finish-animation .level-three-beam-block {display:none}
         .level-three-dot {position:absolute;left:46px;top:50%;width:18px;height:18px;margin:-9px 0 0 -9px;border-radius:50%;background:var(--beam-color);box-shadow:0 0 18px var(--beam-color), 0 0 30px color-mix(in srgb, var(--beam-color) 52%, transparent);opacity:0;z-index:8}
+        .certainty-label {position:absolute;left:calc(100% - 74px);top:calc(50% - 82px);transform:translate(-50%, -50%) scale(0.7);min-width:74px;padding:6px 12px;border:4px solid var(--ink);border-radius:999px;background:#ffffff;color:var(--pass);font-size:1rem;font-weight:950;text-align:center;box-shadow:0 6px 0 var(--pass), 0 12px 20px rgba(31,67,107,0.12);opacity:0;z-index:13;pointer-events:none}
+        .level-three-scene.result-ready .certainty-label {opacity:1;transform:translate(-50%, -50%) scale(1) rotate(0deg)}
         .filter-placeholder {position:absolute;left:50%;top:50%;width:190px;height:220px;border:4px dashed rgba(38, 50, 56, 0.55);border-radius:22px;transform:translate(-50%, -50%);background:rgba(255, 255, 255, 0.34);z-index:4;pointer-events:none}
-        .level-three-scene .passed-photon {position:absolute;left:calc(100% - 74px);top:50%;width:82px;height:82px;transform:translate(-50%, -50%) scale(1);opacity:1;z-index:12}
+        .level-three-scene .passed-photon {position:absolute;left:calc(100% - 74px);top:50%;width:82px;height:82px;transform:translate(-50%, -50%) scale(0.7);opacity:0;z-index:12}
+        .level-three-scene.result-ready .passed-photon {opacity:1;transform:translate(-50%, -50%) scale(1)}
         .will-pass .finish-animation .passed-photon {animation:none}
         .will-split .level-three-scene .passed-photon {top:50%}
         .level-three-scene .blocked-photon {position:absolute;left:50%;top:50%;width:82px;height:82px;transform:translate(-50%, -50%) scale(0.35);opacity:0;z-index:9}
@@ -264,9 +267,9 @@
         @keyframes levelThreePhotonSplit{
         0% {left:50%;top:50%;transform:scale(1.05);opacity:1;background:var(--beam-color)}
         18% {left:calc(50%+16px);top:50%;transform:scale(1);opacity:1}
-        34% {left:calc(62% - 20px);top:50%;transform:scale(1);opacity:1;background:var(--split-pass-color)}
-        92% {left:calc(100% - 74px);top:50%;transform:scale(1);opacity:1;background:var(--split-pass-color)}
-        100% {left:calc(100% - 74px);top:50%;transform:scale(0.9);opacity:0;background:var(--split-pass-color)}
+        34% {left:calc(62% - 20px);top:50%;transform:scale(1);opacity:1;background:var(--split-pass-color);box-shadow:0 0 18px #23a9a5, 0 0 30px color-mix(in srgb, #23a9a5 52%, transparent)}
+        92% {left:calc(100% - 74px);top:50%;transform:scale(1);opacity:1;background:var(--split-pass-color);box-shadow:0 0 18px #23a9a5, 0 0 30px color-mix(in srgb, #23a9a5 52%, transparent)}
+        100% {left:calc(100% - 74px);top:50%;transform:scale(0.9);opacity:0;background:var(--split-pass-color);box-shadow:0 0 18px #23a9a5, 0 0 30px color-mix(in srgb, #23a9a5 52%, transparent)}
         }
         @keyframes splitZeroFall{
         0% {opacity:0;transform:translate(-50%, -50%) scale(0.35)}
@@ -397,6 +400,7 @@ function renderLevel() {
                     <div class="level-three-beam-after"></div>
                     <div class="level-three-beam-block"></div>
                     <div class="level-three-dot"></div>
+                    <span class="certainty-label">50%</span>
                     ${photonMarkup("passedPhoton", "passed-photon hide-symbol")}
                     ${photonMarkup("blockedPhoton", "blocked-photon hide-symbol")}
                     ${selectedFilterMarkup}
@@ -459,7 +463,7 @@ ${answerButtonsMarkup}
         setOptionDisabled(true);
         levelResultModal.classList.remove("show");
         nextLevelBtn.classList.add("hidden");
-        scene.classList.remove("intro-animation", "finish-animation");
+        scene.classList.remove("intro-animation", "finish-animation", "result-ready");
         selectedFilter.classList.add("hidden");
         selectedFilter.querySelector("img").src = "";
         document.querySelectorAll(".option-tile").forEach((item) => {
@@ -468,10 +472,14 @@ ${answerButtonsMarkup}
         void scene.offsetWidth;
         scene.classList.add("intro-animation");
         introTimer = window.setTimeout(() => {
-            isReady = true;
-            isAnimating = false;
-            panel.classList.add("ready");
-            setOptionDisabled(false);
+            scene.classList.add("finish-animation");
+            resultTimer = window.setTimeout(() => {
+                scene.classList.add("result-ready");
+                isReady = true;
+                isAnimating = false;
+                panel.classList.add("ready");
+                setOptionDisabled(false);
+            }, 2500);
         }, 1800);
     }
     function replayFullAnimation() {
@@ -488,7 +496,7 @@ ${answerButtonsMarkup}
         setOptionDisabled(true);
         levelResultModal.classList.remove("show");
         nextLevelBtn.classList.add("hidden");
-        scene.classList.remove("intro-animation", "finish-animation");
+        scene.classList.remove("intro-animation", "finish-animation", "result-ready");
         selectedFilter.querySelector("img").src = filterTypes[correctAnswer].image;
         selectedFilter.classList.remove("hidden");
         document.querySelectorAll(".option-tile").forEach((item) => {
@@ -500,6 +508,7 @@ ${answerButtonsMarkup}
             scene.classList.add("finish-animation");
             resultTimer = window.setTimeout(() => {
                 lastCorrect = true;
+                scene.classList.add("result-ready");
                 isReady = true;
                 isAnimating = false;
                 setOptionDisabled(false);
@@ -548,7 +557,7 @@ ${answerButtonsMarkup}
                 item.classList.toggle("active", item === btn);
             });
             setOptionDisabled(true);
-            scene.classList.remove("finish-animation");
+            scene.classList.remove("finish-animation", "result-ready");
             if (!correct) {
                 lastCorrect = false;
                 nextLevelBtn.classList.add("hidden");
@@ -562,6 +571,7 @@ ${answerButtonsMarkup}
                 scene.classList.add("finish-animation");
                 resultTimer = window.setTimeout(() => {
                     lastCorrect = correct;
+                    scene.classList.add("result-ready");
                     document.querySelectorAll(".option-tile").forEach((item) => {
                         item.classList.toggle("correct", item.dataset.answer === correctAnswer && correct);
                         item.classList.toggle("wrong", item === btn && !correct);
