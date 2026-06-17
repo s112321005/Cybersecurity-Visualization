@@ -202,7 +202,7 @@
         .level-modal-card.success .level-modal-btn{background:var(--pass);}
         .level-modal-card.error .level-modal-btn{background:var(--block);}
         .level-modal-card.final-success .level-modal-btn{background:var(--minus);}
-        .level-modal-card.success .level-modal-btn.secondary,.level-modal-card.final-success .level-modal-btn.secondary{background:var(--pass)!important;color:white;border:0;}
+        .level-modal-card.success .level-modal-btn.secondary,.level-modal-card.final-success .level-modal-btn.secondary{background:var(--minus)!important;color:white;border:0;}
         .level-modal-card.error .level-modal-btn.secondary{background:#c8cbcf!important;color:#000000;border:3px solid #a9b0b9;}
         .level-modal-btn.hidden{display:none;}
         .level-modal-btn:hover{transform:translateY(-3px);box-shadow:0 7px 16px rgba(0,0,0,0.2);}
@@ -345,10 +345,8 @@ function renderLevel() {
             <aside class="level-three-panel ready" id="levelPanel">
                 <div class="level-badge-static">Level ${levelNo}</div>
                 <h1 class="question">${level.question || "Pick one!"}</h1>
-                <div class="level-three-options">
-${choicesMarkup}
-                </div>
-                <button class="next-level-btn" id="nextLevelBtn" type="button">Back to Map</button>
+                <div class="level-three-options">${choicesMarkup}</div>
+                <button class="next-level-btn" id="homeBtn" type="button">Home</button>
             </aside>
         </section>
     `;
@@ -405,7 +403,7 @@ ${choicesMarkup}
         levelModalIcon.innerHTML = correct ? "&#10029;" : "!";
         levelModalTitle.textContent = correct ? (level.successTitle || "Correct!") : (level.errorTitle || "Incorrect!");
         levelModalBtn.textContent = correct ? "OK" : "Try again";
-        levelModalSecondaryBtn.textContent = correct ? "Back to Map" : "Give up";
+        levelModalSecondaryBtn.textContent = correct ? "Home" : "Give up";
         levelModalBtn.style.order = correct ? "1" : "2";
         levelModalSecondaryBtn.style.order = correct ? "2" : "1";
         levelModalSecondaryBtn.classList.remove("hidden");
@@ -475,8 +473,8 @@ ${choicesMarkup}
         window.location.href = "game/index.html";
     });
     levelModalClose.addEventListener("click", closeResultModal);
-    document.getElementById("nextLevelBtn").addEventListener("click", () => {
-        window.location.href = levelFiles[levelIndex + 1] || "game/index.html";
+    document.getElementById("homeBtn").addEventListener("click", () => {
+        window.location.href = "QuantumCybersecurityEducationPlatform.html?section=basics#quantum-security-applications";
     });
     startIntro();
 }
