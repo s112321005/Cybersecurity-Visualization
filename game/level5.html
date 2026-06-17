@@ -6,7 +6,7 @@
     <title>Polarization Basis - Level 5</title>
     <base href="https://s112321005.github.io/Cybersecurity-Visualization/">
     <style>
-        :root {--primary-blue:#549FD0;--ink:#263238;--bg-gradient:linear-gradient(135deg, #E0F2FE 0%, #F5F3FF 50%, #ECFDF5 100%);--muted:#667085;--paper:#ffffff;--line:#d7e3f5;--pass:#20a464;--block:#d94343;--zero:#3d7df2;--one:#e55d8b;--plus:#f0a92d;--minus:#23a9a5;--off:#9aa4b2}
+        :root {--primary-blue:#549FD0;--ink:#263238;--bg-gradient:linear-gradient(135deg, #E0F2FE 0%, #F5F3FF 50%, #ECFDF5 100%);--muted:#667085;--paper:#ffffff;--line:#d7e3f5;--pass:#20a464;--block:#d94343;--zero: #99b3e5; --one: #3d7df2; --plus: #EBBA7C; --minus: #E8890A;--off:#9aa4b2}
         * {box-sizing:border-box}
         body {font-family:"Segoe UI", "Noto Sans TC", sans-serif;display:flex;flex-direction:column;align-items:center;min-height:100vh;padding:34px 18px;background:var(--bg-gradient);color:var(--ink);margin:0}
         .header {width:min(1080px, 95vw);display:flex;align-items:center;justify-content:space-between;gap:18px;margin-bottom:20px;animation:fadeIn 0.65s ease-out both}
@@ -225,7 +225,7 @@
         .result-pop.show {opacity:1;animation:resultPop 0.35s ease-out both}
         .result-pop.good {box-shadow:0 9px 0 var(--pass), 0 18px 30px rgba(31, 67, 107, 0.16)}
         .result-pop.bad {box-shadow:0 9px 0 var(--block), 0 18px 30px rgba(31, 67, 107, 0.16)}
-        .level-modal-overlay {position:absolute;inset:0;z-index:30;display:flex;align-items:center;justify-content:center;background:rgba(7, 21, 46, 0.28);backdrop-filter:blur(4px);opacity:0;visibility:hidden;transition:opacity 0.25s ease, visibility 0.25s ease}
+        .level-modal-overlay{position:absolute;inset:0;z-index:30;display:flex;align-items:center;justify-content:center;background:rgba(7,21,46,0.28);backdrop-filter:blur(4px);border-radius:19px;overflow:hidden;opacity:0;visibility:hidden;transition:opacity 0.25s ease,visibility 0.25s ease;}
         .level-modal-overlay.show {opacity:1;visibility:visible}
         .level-modal-card {width:min(340px, 82%);border:5px solid #ddd;border-radius:28px;background:white;padding:30px 28px;text-align:center;box-shadow:0 15px 40px rgba(0, 0, 0, 0.24);transform:scale(0.78) translateY(20px);transition:transform 0.38s cubic-bezier(0.175, 0.885, 0.32, 1.275)}
         .level-modal-overlay.show .level-modal-card {transform:scale(1) translateY(0)}

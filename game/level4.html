@@ -1015,19 +1015,8 @@ body {
 .result-pop.bad {
     box-shadow: 0 9px 0 var(--block), 0 18px 30px rgba(31,67,107,0.16);
 }
-.level-modal-overlay {
-    position: absolute;
-    inset: 0;
-    z-index: 30;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: rgba(7,21,46,0.28);
-    backdrop-filter: blur(4px);
-    opacity: 0;
-    visibility: hidden;
-    transition: opacity 0.25s ease, visibility 0.25s ease;
-}
+.level-modal-overlay{position:absolute;inset:0;z-index:30;display:flex;align-items:center;justify-content:center;background:rgba(7,21,46,0.28);backdrop-filter:blur(4px);border-radius:19px;overflow:hidden;opacity:0;visibility:hidden;transition:opacity 0.25s ease,visibility 0.25s ease;}
+
 .level-modal-overlay.show {
     opacity: 1;
     visibility: visible;
