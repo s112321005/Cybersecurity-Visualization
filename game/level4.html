@@ -108,22 +108,22 @@
         .level-three-scene{position:absolute;left:52px;right:52px;top:38%;height:160px;transform:translateY(-50%);}
         .level-three-scene .tutorial-photon{position:absolute;left:0;top:50%;width:92px;height:92px;transform:translateY(-50%);z-index:6;}
         .level-three-beam{position:absolute;left:82px;width:calc(50% - 82px);top:50%;height:8px;border-radius:999px;transform:translateY(-50%);background:linear-gradient(90deg,transparent,#F0A92D);opacity:0;z-index:7;}
-        .intro-animation .level-three-beam{animation:levelThreeBeamIntro 1.7s linear forwards;}
+        .intro-animation .level-three-beam{animation:levelThreeBeamIntro 1.15s linear forwards;}
         .finish-animation .level-three-beam{opacity:0.82;}
         .level-three-beam-after{position:absolute;left:50%;width:calc(100% - 50% - 74px);top:50%;height:8px;border-radius:999px;transform:translateY(-50%);background:linear-gradient(90deg,var(--minus),transparent);opacity:0;z-index:7;}
-        .will-pass .finish-animation .level-three-beam-after{animation:levelThreeBeamFinish 2.4s linear forwards;}
+        .will-pass .finish-animation .level-three-beam-after{animation:levelThreeBeamFinish 1.55s linear forwards;}
         .level-three-dot{position:absolute;left:46px;top:50%;width:18px;height:18px;margin:-9px 0 0 -9px;border-radius:50%;background:#F0A92D;box-shadow:0 0 18px #F0A92D,0 0 30px color-mix(in srgb,#F0A92D 52%,transparent);opacity:0;z-index:8;}
         .filter-placeholder{position:absolute;left:50%;top:50%;width:190px;height:220px;border:4px dashed rgba(38,50,56,0.55);border-radius:22px;transform:translate(-50%,-50%);background:rgba(255,255,255,0.34);z-index:4;pointer-events:none;}
         .level-filter.hidden{display:none;}
         .level-three-scene .passed-photon{position:absolute;left:calc(100% - 74px);top:50%;width:82px;height:82px;transform:translate(-50%,-50%) scale(0.35);opacity:0;z-index:9;}
-        .will-pass .finish-animation .passed-photon{animation:passedPhotonAppear 0.5s ease-out 1.85s forwards;}
+        .will-pass .finish-animation .passed-photon{animation:passedPhotonAppear 0.35s ease-out 1.2s forwards;}
         .certainty-label{position:absolute;left:calc(100% - 74px);top:calc(50% - 82px);transform:translate(-50%,-50%) scale(0.7);min-width:74px;padding:6px 12px;border:4px solid var(--ink);border-radius:999px;background:#ffffff;color:var(--pass);font-size:1rem;font-weight:950;text-align:center;box-shadow:0 6px 0 var(--pass),0 12px 20px rgba(31,67,107,0.12);opacity:0;z-index:13;pointer-events:none;}
         .will-block .certainty-label{color:#5f6673;box-shadow:0 6px 0 #5f6673,0 12px 20px rgba(31,67,107,0.12);}
-        .will-pass .finish-animation .certainty-label{animation:certaintyPop 0.35s ease-out 1.85s forwards;}
-        .will-block .finish-animation .certainty-label{animation:certaintyPop 0.35s ease-out 0.85s forwards;}
-        .intro-animation .level-three-dot{animation:levelThreePhotonIntro 1.7s linear forwards;}
-        .will-pass .finish-animation .level-three-dot{animation:levelThreePhotonFinish 2.4s linear forwards;}
-        .will-block .finish-animation .level-three-dot{animation:levelThreePhotonBlock 1.15s linear forwards;}
+        .will-pass .finish-animation .certainty-label{animation:certaintyPop 0.3s ease-out 1.2s forwards;}
+        .will-block .finish-animation .certainty-label{animation:certaintyPop 0.3s ease-out 0.55s forwards;}
+        .intro-animation .level-three-dot{animation:levelThreePhotonIntro 1.15s linear forwards;}
+        .will-pass .finish-animation .level-three-dot{animation:levelThreePhotonFinish 1.55s linear forwards;}
+        .will-block .finish-animation .level-three-dot{animation:levelThreePhotonBlock 0.8s linear forwards;}
         .level-three-filter,.level-filter{position:absolute;left:50%;top:50%;width:138px;transform:translate(-50%,-49%);filter:none;z-index:5;}
         .level-three-filter img,.level-filter img{width:100%;height:auto;display:block;}
         .level-filter.second{left:calc(50% + 122px);width:116px;opacity:0.92;}
@@ -132,7 +132,7 @@
         .level-block-mark::before{transform:translate(-50%,-50%) rotate(45deg);}
         .level-block-mark::after{transform:translate(-50%,-50%) rotate(-45deg);}
         .will-block .level-block-mark{left:calc(100% - 74px);}
-        .will-block .finish-animation .level-block-mark{animation:levelBlockPop 0.5s ease-out 0.55s forwards;}
+        .will-block .finish-animation .level-block-mark{animation:levelBlockPop 0.4s ease-out 0.35s forwards;}
         .level-three-stage .explain-card{position:absolute;left:70px;right:70px;bottom:48px;}
         .result-pop{position:absolute;left:50%;top:70%;transform:translate(-50%,-50%) scale(0.7);z-index:14;min-width:170px;padding:16px 24px;border:5px solid var(--ink);border-radius:28px;background:white;color:var(--ink);font-size:1.55rem;font-weight:950;text-align:center;box-shadow:0 9px 0 var(--primary-blue),0 18px 30px rgba(31,67,107,0.16);opacity:0;pointer-events:none;}
         .result-pop.show{opacity:1;animation:resultPop 0.35s ease-out both;}
@@ -390,8 +390,8 @@ function renderLevel() {
                 isAnimating = false;
                 panel.classList.add("ready");
                 setOptionDisabled(false);
-            }, 1250);
-        }, 1800);
+            }, 850);
+        }, 1200);
     }
 
     function showResultModal(correct) {
@@ -411,20 +411,14 @@ function renderLevel() {
             levelResultModal.classList.remove("show");
             return;
         }
-        selected = null;
-        isReady = true;
-        isAnimating = false;
+        if (introTimer) window.clearTimeout(introTimer);
         if (delayTimer) window.clearTimeout(delayTimer);
         if (resultTimer) window.clearTimeout(resultTimer);
+        introTimer = null;
         delayTimer = null;
         resultTimer = null;
         levelResultModal.classList.remove("show");
-        selectedFilter.classList.add("hidden");
-        selectedFilter.querySelector("img").src = "";
-        setOptionDisabled(false);
-        document.querySelectorAll(".option-tile").forEach((item) => {
-            item.classList.remove("active", "correct", "wrong");
-        });
+        startIntro();
     }
 
     document.querySelectorAll(".option-tile").forEach((btn) => {
@@ -433,15 +427,20 @@ function renderLevel() {
             selected = btn.dataset.answer;
             isAnimating = true;
             isReady = false;
-            selectedFilter.querySelector("img").src = filterTypes[selected].image;
-            selectedFilter.classList.remove("hidden");
+            const correct = selected === correctAnswer;
+            if (correct) {
+                selectedFilter.querySelector("img").src = filterTypes[selected].image;
+                selectedFilter.classList.remove("hidden");
+            } else {
+                selectedFilter.classList.add("hidden");
+                selectedFilter.querySelector("img").src = "";
+            }
             document.querySelectorAll(".option-tile").forEach((item) => {
                 item.classList.toggle("active", item === btn);
             });
             setOptionDisabled(true);
 
             delayTimer = window.setTimeout(() => {
-                const correct = selected === correctAnswer;
                 lastCorrect = correct;
                 document.querySelectorAll(".option-tile").forEach((item) => {
                     item.classList.toggle("correct", item.dataset.answer === correctAnswer && correct);
