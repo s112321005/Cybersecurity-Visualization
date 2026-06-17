@@ -357,7 +357,7 @@ const levels = [
     { photon: "diagRight", filters: ["diagonal"], pass: "block", output: "none" },
     { photon: "diagRight", filters: ["vertical"], pass: "split", output: "splitVertical", splitPass: "vertical", splitBlock: "horizontal" },
     { photon: "diagLeft", filters: ["vertical"], pass: "split", output: "splitVertical", splitPass: "vertical", splitBlock: "horizontal" },
-    { photon: "horizontal", filters: ["diagonal"], pass: "split", output: "splitDiagonal", splitPass: "diagLeft", splitBlock: "diagRight" },
+    { photon: "vertical", filters: ["diagonal"], pass: "split", output: "splitDiagonal", splitPass: "diagLeft", splitBlock: "diagRight" },
     { photon: "vertical", filters: ["diagonal"], pass: "split", output: "splitDiagonal", splitPass: "diagLeft", splitBlock: "diagRight" },
     { photon: "horizontal", filters: ["vertical", "diagonal"], pass: "block", output: "none" }
 ];
@@ -390,7 +390,7 @@ function renderLevel() {
         return `<div class="level-filter ${index > 0 ? "second" : ""}"><img src="${filter.image}" alt=""></div>`;
     }).join("");
     const answerChoices = [
-        { state: "horizontal", label: "0" },
+        { state: "vertical", label: "1" },
         { state: "diagLeft", label: "-" },
         { state: "none", label: "BLOCK" }
     ];

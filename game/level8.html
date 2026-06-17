@@ -354,7 +354,7 @@ const levels = [
     { photon: "diagRight", filters: ["vertical"], pass: "split", output: "splitVertical", splitPass: "vertical", splitBlock: "horizontal" },
     { photon: "diagLeft", filters: ["vertical"], pass: "split", output: "splitVertical", splitPass: "vertical", splitBlock: "horizontal" },
     { photon: "horizontal", filters: ["diagonal"], pass: "split", output: "splitDiagonal", splitPass: "diagLeft", splitBlock: "diagRight" },
-    { photon: "vertical", filters: ["diagonal"], pass: "split", output: "splitDiagonal", splitPass: "diagLeft", splitBlock: "diagRight" },
+    { photon: "horizontal", filters: ["diagonal"], pass: "split", output: "splitDiagonal", splitPass: "diagLeft", splitBlock: "diagRight" },
     { photon: "horizontal", filters: ["vertical", "diagonal"], pass: "block", output: "none" }
 ];
 const page = document.querySelector("[data-level-page]");
