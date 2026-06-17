@@ -48,7 +48,18 @@
         .path-title{font-size:18px;color:var(--dark-border);margin:0;font-weight:900}
         .path-items{display:flex;flex-direction:column;gap:15px}
         .menu-item{border:3px solid var(--dark-border);border-radius:15px;padding:15px 20px;text-decoration:none;background-color:white;transition:all 0.2s ease-out}
+        .photon-game-item{position:relative;overflow:hidden;background:#eaf8ff;box-shadow:none}
+        .photon-game-item::before{content:"";position:absolute;inset:-60% -20%;background:linear-gradient(115deg,transparent 36%,rgba(255,255,255,0.7) 50%,transparent 64%);transform:translateX(-65%) rotate(8deg);animation:gameShine 2.4s ease-in-out infinite;pointer-events:none}
+        .photon-game-item::after{content:"";position:absolute;right:22px;top:43%;width:22px;height:22px;border-radius:50%;background:#ffe45c;box-shadow:0 0 16px #ffe45c,0 0 34px rgba(255,228,92,0.9),-46px 0 18px rgba(255,228,92,0.42);animation:photonFly 1.65s linear infinite;pointer-events:none}
+        .photon-game-item .text-content{position:relative;z-index:1;padding-right:74px}
+        .photon-game-item .en-title{color:#14577d;text-shadow:2px 2px 0 white}
+        .photon-game-item .topic-desc{color:#477384;font-size:13px;text-shadow:none;white-space:nowrap}
+        .photon-game-badge{display:inline-flex;align-items:center;width:max-content;margin-bottom:2px;padding:4px 10px;border:2px solid white;border-radius:999px;background:#ffcf3f;color:#10233f;font-size:12px;font-weight:900;box-shadow:2px 2px 0 var(--dark-border);letter-spacing:0}
+        @keyframes gamePulse{0%,100%{filter:saturate(1);box-shadow:0 0 0 4px rgba(91,164,207,0.22)}50%{filter:saturate(1.08);box-shadow:0 0 0 7px rgba(91,164,207,0.34)}}
+        @keyframes gameShine{0%{transform:translateX(-70%) rotate(8deg)}48%,100%{transform:translateX(72%) rotate(8deg)}}
+        @keyframes photonFly{0%{transform:translate(-84px,-50%) scale(0.8);opacity:0}14%{opacity:1}70%{transform:translate(-22px,-50%) scale(1.12);opacity:1}100%{transform:translate(10px,-50%) scale(0.72);opacity:0}}
         .section-basics .menu-item:hover{transform:translate(-2px,-2px);box-shadow:6px 6px 0px var(--primary-blue)}
+        .section-basics .photon-game-item:hover{transform:translate(-3px,-3px) scale(1.02);animation:none;box-shadow:7px 7px 0px var(--dark-border),0 0 0 7px rgba(91,164,207,0.36)}
         .section-qkd .menu-item:hover{transform:translate(-2px,-2px);box-shadow:6px 6px 0px var(--primary-blue)}
         .section-qss .menu-item:hover{transform:translate(-2px,-2px);box-shadow:6px 6px 0px var(--primary-blue)}
         .section-qsdc .menu-item:hover{transform:translate(-2px,-2px);box-shadow:6px 6px 0px var(--primary-blue)}
@@ -120,6 +131,13 @@
                         <h3 class="path-title">Quantum Foundations</h3>
                     </div>
                     <div class="path-items">
+                        <a href="game/index.html" class="menu-item photon-game-item">
+                            <div class="text-content">
+                                <span class="photon-game-badge">PLAY NOW</span>
+                                <p class="en-title">Photon Game</p>
+                                <p class="topic-desc">Challenge photon directions and polarizers through animated levels.</p>
+                            </div>
+                        </a>
                         <a href="basis_tutorial.html" class="menu-item">
                             <div class="text-content">
                                 <p class="en-title">Photon Direction &amp; Polarization Basis</p>
