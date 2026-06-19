@@ -28,7 +28,9 @@
         .state-btn:hover, .filter-btn:hover { transform: translateY(-2px); border-color: #94b9ee; }
         .state-btn.active, .filter-btn.active { border-color: var(--primary-blue); background: #edf5ff; box-shadow: 0 8px 22px rgba(0, 74, 173, 0.16); }
         .state-symbol { display: block; font-size: 1.75rem; line-height: 1; font-weight: 900; }
-        .state-name { display: block; margin-top: 6px; color: var(--muted); font-size: 0.82rem; font-weight: 700; min-height: 26px; display: flex; align-items: center; justify-content: center; text-align: center; }
+        .state-photon { position: relative; display: block; width: 60px; height: 60px; margin: 0 auto 7px; border-radius: 50%; border: 1.5px solid color-mix(in srgb, var(--state-color) 70%, white); background: radial-gradient(circle, #fff 0 47%, color-mix(in srgb, var(--state-color) 28%, transparent) 48% 54%, transparent 55% 100%); box-shadow: 0 0 18px color-mix(in srgb, var(--state-color) 38%, transparent); }
+        .state-photon::after { content: ""; position: absolute; left: 50%; top: 50%; width: 12px; height: 38px; background: var(--state-color); transform: translate(-50%, -50%) rotate(var(--state-angle)); box-shadow: 0 0 10px var(--state-color); clip-path: polygon(50% 0, 100% 18%, 72% 18%, 72% 82%, 100% 82%, 50% 100%, 0 82%, 28% 82%, 28% 18%, 0 18%); }
+        .state-name { display: block; margin-top: 4px; color: var(--muted); font-size: 1rem; font-weight: 900; min-height: 20px; text-align: center; }
         .mini-polar { width: 48px; height: 48px; margin: 0 auto 8px; position: relative; border: 2px solid #a8bfdc; border-radius: 50%; background: #fff; }
         .mini-polar::after { content: ""; position: absolute; left: 50%; top: 8px; width: 6px; height: 30px; border-radius: 999px; transform: translateX(-50%)rotate(var(--angle)); background: var(--primary-blue); }
         .filter-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; }
@@ -320,12 +322,14 @@
         const certaintyLabel = document.getElementById("certaintyLabel");
         const hintLine = document.getElementById("hintLine");
 
+        const stateLabels = { zero: "|0⟩", one: "|1⟩", plus: "|+⟩", minus: "|−⟩" };
+
         stateGrid.innerHTML = stateOrder.map((key) => {
             const item = states[key];
             return `
                 <button class="state-btn ${key === currentState ? "active" : ""}" type="button" data-state="${key}">
-                    <span class="state-symbol" style="color:${item.color}">${item.symbol}</span>
-                    <span class="state-name">${item.name}</span>
+                    <span class="state-photon" style="--state-color:${item.color}; --state-angle:${item.angle}" aria-hidden="true"></span>
+                    <span class="state-name">${stateLabels[key]}</span>
                 </button>
             `;
         }).join("");
