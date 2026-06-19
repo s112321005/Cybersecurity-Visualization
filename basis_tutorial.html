@@ -17,6 +17,12 @@
         .page-title { border: 2px solid var(--primary-blue); color: #07152e; padding: 10px 24px; border-radius: 10px; font-size: 20px; font-weight: 800; background: white; white-space: nowrap; }
         .header-center { flex: 1; text-align: center; font-weight: 800; font-size: 1.15rem; color: var(--ink); }
         .header-right { min-width: 120px; display: flex; justify-content: flex-end; }
+        .view-toggle { position: relative; display: grid; grid-template-columns: 1fr 1fr; width: 250px; height: 42px; padding: 3px; border: 2px solid var(--primary-blue); border-radius: 999px; background: #eef7ff; overflow: hidden; box-shadow: 0 4px 12px rgba(0, 74, 173, 0.1); }
+        .view-toggle::before { content: ""; position: absolute; left: 3px; top: 3px; width: calc((100% - 6px) / 2); height: calc(100% - 6px); border-radius: 999px; background: var(--primary-blue); transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); }
+        .view-toggle.photon-active::before { transform: translateX(100%); }
+        .view-toggle-btn { position: relative; z-index: 1; border: 0; background: transparent; color: var(--primary-blue); font-weight: 850; cursor: pointer; transition: color 0.2s ease; }
+        .view-toggle:not(.photon-active) .view-toggle-btn:first-child,
+        .view-toggle.photon-active .view-toggle-btn:last-child { color: white; }
         .nav-btn { border: 2px solid var(--primary-blue); background: white; color: var(--primary-blue); padding: 10px 18px; border-radius: 999px; font-weight: 800; font-size: 0.95rem; cursor: pointer; transition: 0.2s ease; }
         .nav-btn:hover { background: var(--primary-blue); color: white; }
         .main-card { width: min(1080px, 95vw); height: 710px; min-height: 710px; border: 3px solid var(--primary-blue); border-radius: 28px; position: relative; background: var(--paper); overflow: hidden; padding: 18px; animation: fadeIn 0.75s ease-out both; }
@@ -28,6 +34,12 @@
         .state-btn:hover, .filter-btn:hover { transform: translateY(-2px); border-color: #94b9ee; }
         .state-btn.active, .filter-btn.active { border-color: var(--primary-blue); background: #edf5ff; box-shadow: 0 8px 22px rgba(0, 74, 173, 0.16); }
         .state-symbol { display: block; font-size: 1.75rem; line-height: 1; font-weight: 900; }
+        .state-basis-view { display: none; min-height: 80px; flex-direction: column; align-items: center; justify-content: center; }
+        .state-basis-view .state-symbol { color: var(--state-color); font-size: 2.4rem; }
+        .state-basis-view .state-name { margin-top: 8px; font-size: 0.76rem; font-weight: 750; }
+        body.symbol-view .state-basis-view { display: flex; }
+        body.symbol-view .state-photon-view { display: none; }
+        .state-photon-view { display: block; }
         .state-photon { position: relative; display: block; width: 60px; height: 60px; margin: 0 auto 7px; border-radius: 50%; border: 1.5px solid color-mix(in srgb, var(--state-color) 70%, white); background: radial-gradient(circle, #fff 0 47%, color-mix(in srgb, var(--state-color) 28%, transparent) 48% 54%, transparent 55% 100%); box-shadow: 0 0 18px color-mix(in srgb, var(--state-color) 38%, transparent); }
         .state-photon::after { content: ""; position: absolute; left: 50%; top: 50%; width: 12px; height: 38px; background: var(--state-color); transform: translate(-50%, -50%) rotate(var(--state-angle)); box-shadow: 0 0 10px var(--state-color); clip-path: polygon(50% 0, 100% 18%, 72% 18%, 72% 82%, 100% 82%, 50% 100%, 0 82%, 28% 82%, 28% 18%, 0 18%); }
         .state-name { display: block; margin-top: 4px; color: var(--muted); font-size: 1rem; font-weight: 900; min-height: 20px; text-align: center; }
@@ -157,7 +169,13 @@
             <a href="QuantumCybersecurityEducationPlatform.html?section=basics#quantum-security-applications" class="btn-back" title="Back home">&#x25C0;&#xFE0E;</a>
             <div class="page-title">Polarization Basis</div>
         </div>
-        <div class="header-center">See photon direction and quantum states through pass / block results</div>
+        <div class="header-center">Determine photon direction from pass/block results</div>
+        <div class="header-right">
+            <div class="view-toggle photon-active" id="viewToggle" role="group" aria-label="Photon choice display">
+                <button class="view-toggle-btn" id="symbolViewBtn" type="button">State</button>
+                <button class="view-toggle-btn" id="photonViewBtn" type="button">Photon</button>
+            </div>
+        </div>
     </div>
 
     <main class="main-card">
@@ -328,8 +346,14 @@
             const item = states[key];
             return `
                 <button class="state-btn ${key === currentState ? "active" : ""}" type="button" data-state="${key}">
-                    <span class="state-photon" style="--state-color:${item.color}; --state-angle:${item.angle}" aria-hidden="true"></span>
-                    <span class="state-name">${stateLabels[key]}</span>
+                    <span class="state-basis-view" style="--state-color:${item.color}">
+                        <span class="state-symbol">${stateLabels[key]}</span>
+                        <span class="state-name">${item.name}</span>
+                    </span>
+                    <span class="state-photon-view">
+                        <span class="state-photon" style="--state-color:${item.color}; --state-angle:${item.angle}" aria-hidden="true"></span>
+                        <span class="state-name">${stateLabels[key]}</span>
+                    </span>
                 </button>
             `;
         }).join("");
@@ -424,6 +448,22 @@
             });
         });
 
+        const viewToggle = document.getElementById("viewToggle");
+        const symbolViewBtn = document.getElementById("symbolViewBtn");
+        const photonViewBtn = document.getElementById("photonViewBtn");
+
+        function setChoiceView(mode) {
+            const photonMode = mode === "photon";
+            document.body.classList.toggle("symbol-view", !photonMode);
+            viewToggle.classList.toggle("photon-active", photonMode);
+            symbolViewBtn.setAttribute("aria-pressed", String(!photonMode));
+            photonViewBtn.setAttribute("aria-pressed", String(photonMode));
+        }
+
+        symbolViewBtn.addEventListener("click", () => setChoiceView("symbol"));
+        photonViewBtn.addEventListener("click", () => setChoiceView("photon"));
+
+        setChoiceView("photon");
         render();
     </script>
 </body>
