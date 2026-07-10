@@ -103,7 +103,7 @@
             let card = document.getElementById(cardId);
             
             let borderColor = 'var(--primary-blue)';
-            if (n === 65) borderColor = 'var(--red)';
+            if (n === 73) borderColor = 'var(--red)';
             else if (type === 'solved') borderColor = 'var(--green)';
             else if (type === 'user') borderColor = 'var(--yellow)';
 
@@ -176,7 +176,7 @@
             const radii = [];
             for (let i = 1; i <= maxN; i++) {
                 let color = '#549FD0', r = 4;
-                if (i === 65) { color = '#FF0000'; r = 7; } 
+                if (i === 73) { color = '#FF0000'; r = 7; } 
                 else if (selectedPoints.get(i) === 'solved') { color = '#28a745'; r = 6; }
                 else if (selectedPoints.get(i) === 'user') { color = '#FFD700'; r = 6; }
                 bgColors.push(color); radii.push(r);
