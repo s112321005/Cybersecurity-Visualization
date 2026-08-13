@@ -70,6 +70,8 @@
         .dot { width: 14px; height: 180px; border: 4px solid var(--border-color); border-radius: 20px; transition: all 0.3s ease; cursor: pointer; background-color: white; position: relative; overflow: hidden; }
         .dot::after { content: ''; position: absolute; left: 0; top: 0; width: 100%; height: 50%; background-color: var(--shadow-color); border-radius: 12px; transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); transform: translateY(0); }
         .dot.idx-1::after { transform: translateY(100%); }
+        .dot.single { cursor: default; background-color: var(--shadow-color); }
+        .dot.single::after { display: none; }
         .dot.active { } 
         .dot.out-of-range { display: none; } 
         
@@ -159,7 +161,7 @@
     <script>
         const quantumData = [
             { mode: "QKD", fullName: "Quantum Key Distribution", description: "QKD：Jointly Establish a Secure Key", protocols: [{ name: "BB84", link: "bb84_analysis.html" }, { name: "B92", link: "b92_analysis.html" }]},
-            { mode: "QSS", fullName: "Quantum Secret Sharing", description: "QSS：Secret Sharing, Cooperative Recovery", protocols: [ { name: "ZhangLiMan", link: "zlm_analysis.html" }/*, { name: "ZhangMan", link: "zm_analysis.html" }*/]},
+            { mode: "QSS", fullName: "Quantum Secret Sharing", description: "QSS：Secret Sharing, Cooperative Recovery", protocols: [ { name: "ZhangLiMan", link: "zlm_analysis.html" } /*, { name: "ZhangMan", link: "zm_analysis.html" }*/]},
             { mode: "QSDC", fullName: "Quantum Security Direct Communication", description: "QSDC：Secure Quantum Message Transmission", protocols: [ { name: "pingpong", link: "pingpong_analysis.html" }]}
         ];
         
@@ -204,19 +206,23 @@
         function updateDots() {
             const container = document.getElementById('dotContainer');
             container.innerHTML = ''; 
-            
-            const arrowUp = document.createElement('div');
-            arrowUp.className = 'arrow-hint up';
-            arrowUp.onclick = () => changeProtocol(-1);
-            container.appendChild(arrowUp);
 
             const protocols = quantumData[modeIdx].protocols;
             const total = protocols.length;
 
+            if (total > 1) {
+                const arrowUp = document.createElement('div');
+                arrowUp.className = 'arrow-hint up';
+                arrowUp.onclick = () => changeProtocol(-1);
+                container.appendChild(arrowUp);
+            }
+
             const track = document.createElement('div');
-            track.className = `dot idx-${protoIdx} active`; 
+            track.className = `dot idx-${protoIdx} active${total === 1 ? ' single' : ''}`; 
 
             track.onclick = (e) => {
+                if (total === 1) return;
+
                 const rect = track.getBoundingClientRect();
                 const clickY = e.clientY - rect.top; 
                 
@@ -227,10 +233,12 @@
             };
             container.appendChild(track);
 
-            const arrowDown = document.createElement('div');
-            arrowDown.className = 'arrow-hint down';
-            arrowDown.onclick = () => changeProtocol(1);
-            container.appendChild(arrowDown);
+            if (total > 1) {
+                const arrowDown = document.createElement('div');
+                arrowDown.className = 'arrow-hint down';
+                arrowDown.onclick = () => changeProtocol(1);
+                container.appendChild(arrowDown);
+            }
         }
 
         function changeMode(dir) {
