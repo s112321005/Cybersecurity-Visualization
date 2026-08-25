@@ -120,297 +120,33 @@
         @media (min-width: 1180px) { body { padding-right: 450px !important; } }
         @media (max-width: 1179px) { .bb84-image-dock { width: min(94vw, 840px); height: 320px; } .bb84-image-viewport { height: 320px; } .bb84-image-viewport::before, .bb84-image-viewport::after { height: 320px; } .bb84-image-window { height: 320px; } .bb84-image-list { gap: 14px; height: 320px; padding: 0 24px; } .bb84-image-card { width: 270px; min-height: 52px; } .bb84-image-card.is-current { width: 305px; min-height: 250px; margin: 0 10px; } .bb84-image-card.is-current img { max-width: 275px; max-height: 220px; } }
     
-        /* Responsive layout: keep the whole learning screen visible on tablets/phones */
+        /* Keep the desktop composition identical; uniformly scale it on smaller screens. */
         @media (max-width: 1179px) {
             html, body {
                 width: 100%;
-                max-width: 100%;
+                min-height: 100%;
                 overflow-x: hidden;
+                overflow-y: auto;
             }
 
             body {
+                padding: 40px 20px;
                 box-sizing: border-box;
-                padding: 20px 12px 30px;
+                align-items: flex-start;
             }
 
-            .header {
-                width: 100%;
-                max-width: 100%;
-                gap: 10px;
-                margin-bottom: 15px;
-                flex-wrap: wrap;
-            }
-
-            .header-left {
-                min-width: 0;
-                gap: 8px;
-            }
-
-            .title-pill {
-                padding: 7px 12px;
-                font-size: .9rem;
-                white-space: nowrap;
-            }
-
-            .header-center {
-                order: 3;
-                flex-basis: 100%;
-                margin-left: 0;
-                font-size: 1rem;
-            }
-
-            .header-right {
-                gap: 6px;
-            }
-
-            .nav-btn {
-                padding: 8px 12px;
-                font-size: .9rem;
-            }
-
-            .main-card {
-                width: 100%;
-                max-width: 100%;
-                height: auto;
-                min-height: 520px;
-                padding: 25px 12px 75px;
-                border-radius: 25px;
-            }
-
-            .decision-grid {
-                width: 100%;
-                max-width: 100%;
-                gap: 8px;
-                transform-origin: top center;
-            }
-
-            .decision-grid > .col {
-                min-width: 0 !important;
-            }
-
-            .decision-grid > .col:nth-child(1) {
-                flex: 1 1 22%;
-            }
-
-            .decision-grid > .col:nth-child(2) {
-                flex: 0 1 8%;
-            }
-
-            .decision-grid > .col:nth-child(3) {
-                flex: 1 1 30%;
-            }
-
-            .decision-grid > .col:nth-child(4) {
-                flex: 0 1 12%;
-            }
-
-            .decision-grid > .col:nth-child(5) {
-                flex: 1 1 28%;
-            }
-
-            .connector.active.full-width,
-            #conn-1.connector.active.full-width {
-                width: 100%;
-                transform: none;
-            }
-
-            .result-capsule {
-                min-width: 0;
-                width: 100%;
-                padding: 8px 8px;
-                font-size: .85rem;
-            }
-
-            .output-group {
-                grid-template-columns: minmax(0, 1fr) 24px;
-                column-gap: 5px;
-                width: 100%;
-            }
-
-            #results-area {
-                min-width: 0;
-                width: 100%;
-                transform: none;
-            }
-
-            .bob-choices {
-                gap: 4px;
-            }
-
-            .bob-choice-btn {
-                padding: 5px;
-            }
-
-            .bob-choice-btn img {
-                width: 55px;
-                max-width: 100%;
-                height: auto;
-            }
-
-            .basis-circle {
-                width: 36px;
-                height: 36px;
-                font-size: 1.1rem;
-            }
-
-            .character-avatar {
-                width: 85px;
-                height: 85px;
-                top: -100px;
-            }
-
-            .explanation-box {
-                width: calc(100% - 24px);
-                padding: 14px 16px;
-                bottom: 12px;
-            }
-
-            .explain-title {
-                font-size: 1rem;
-            }
-
-            .explain-desc {
-                font-size: .9rem;
-            }
-
-            .bottom-hint {
-                bottom: 22px;
-                width: calc(100% - 24px);
-                text-align: center;
-                font-size: .9rem;
-            }
-
-            /* Step image panel becomes a full-width panel below the main card. */
-            .bb84-image-dock {
-                position: relative;
-                right: auto;
-                top: auto;
-                width: 100%;
-                max-width: 100%;
-                height: 300px;
-                margin: 15px auto 5px;
-            }
-
-            .bb84-image-viewport {
-                width: 100%;
-                max-width: 100%;
-                height: 300px;
-            }
-
-            .bb84-image-window {
-                width: 100%;
-                height: 300px;
-                margin-left: 0;
-            }
-
-            .bb84-image-list {
-                width: max-content;
-                max-width: none;
-                height: 300px;
-                gap: 12px;
-                padding: 0 20px;
-            }
-
-            .bb84-image-card {
-                width: 250px;
-                min-height: 52px;
-            }
-
-            .bb84-image-card.is-current {
-                width: min(305px, calc(100vw - 55px));
-                min-height: 250px;
-                margin: 0 8px;
-            }
-
-            .bb84-image-card.is-current img {
-                max-width: min(275px, calc(100vw - 85px));
-                max-height: 220px;
-            }
-        }
-
-        @media (max-width: 600px) {
-            body {
-                padding: 12px 8px 20px;
-            }
-
-            .header-left {
-                flex: 1 1 auto;
-            }
-
-            .btn-back {
-                width: 34px;
-                height: 34px;
-                flex: 0 0 auto;
-            }
-
-            .title-pill {
-                font-size: .78rem;
-                padding: 6px 9px;
-            }
-
-            .header-right {
-                flex: 0 0 auto;
-            }
-
-            .nav-btn {
-                padding: 7px 9px;
-                font-size: .78rem;
-            }
-
-            .main-card {
-                min-height: 470px;
-                padding-left: 6px;
-                padding-right: 6px;
-            }
-
-            .decision-grid {
-                gap: 3px;
-            }
-
-            .flow-label {
-                font-size: .7rem;
-            }
-
-            .result-capsule {
-                font-size: .68rem;
-                padding: 6px 4px;
-            }
-
-            .character-avatar {
-                width: 65px;
-                height: 65px;
-                top: -78px;
-            }
-
-            .bob-choice-btn img {
-                width: 42px;
-            }
-
-            .basis-circle {
-                width: 30px;
-                height: 30px;
-                font-size: .9rem;
-            }
-
-            .bb84-image-dock,
-            .bb84-image-viewport,
-            .bb84-image-window,
-            .bb84-image-list {
-                height: 270px;
-            }
-
-            .bb84-image-card.is-current {
-                min-height: 225px;
-            }
-
-            .bb84-image-card.is-current img {
-                max-height: 195px;
+            .bb84-responsive-canvas {
+                width: 1450px;
+                min-width: 1450px;
+                transform-origin: top left;
             }
         }
 
     </style>
 </head>
 <body>
+    <div class="bb84-responsive-canvas">
+
 
 <aside class="bb84-image-dock" aria-label="BB84 current-step image preview">
     <div class="bb84-image-viewport">
@@ -844,5 +580,39 @@ document.addEventListener('DOMContentLoaded', function () {
     window.addEventListener('resize', window.lockBb84ImageToCurrentStep);
 });
 </script>
+
+    </div>
 </body>
+
+<script>
+(function () {
+    function fitDesktopCanvas() {
+        const canvas = document.querySelector('.bb84-responsive-canvas');
+        if (!canvas) return;
+
+        if (window.innerWidth >= 1180) {
+            canvas.style.transform = '';
+            document.body.style.minHeight = '';
+            return;
+        }
+
+        const baseWidth = 1450;
+        const sidePadding = 20;
+        const availableWidth = Math.max(320, window.innerWidth - sidePadding * 2);
+        const scale = Math.min(1, availableWidth / baseWidth);
+
+        canvas.style.transform = 'scale(' + scale + ')';
+        canvas.style.transformOrigin = 'top left';
+
+        // Reserve the scaled canvas height so the page can still scroll normally.
+        const height = canvas.scrollHeight * scale;
+        document.body.style.minHeight = (height + 40) + 'px';
+    }
+
+    window.addEventListener('load', fitDesktopCanvas);
+    window.addEventListener('resize', fitDesktopCanvas);
+    fitDesktopCanvas();
+})();
+</script>
+
 </html>
