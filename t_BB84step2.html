@@ -1,0 +1,848 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <base href="https://s112321005.github.io/Cybersecurity-Visualization/">
+    <title>Learning | QKD: BB84</title>
+    <style>
+        :root { --primary-blue: #549FD0; --alice-blue: #004aad; --dark-text: #333333; --bg-color: #f8f9fa; --bg-gradient: linear-gradient(135deg, #E0F2FE 0%, #F5F3FF 50%, #ECFDF5 100%); --photon-yellow: #ffeb3b; --photon-gold: #ffd54f; --match-green: #28a745; --mismatch-red: #dc3545;  --zero: #99b3e5; --one: #3d7df2; --plus: #EBBA7C; --minus: #E8890A; }
+        body { font-family: 'Segoe UI', sans-serif; display: flex; flex-direction: column; align-items: center; padding: 40px 20px; background: var(--bg-gradient); margin: 0; overflow-y: scroll; }
+        .header { width: min(1000px, 95vw); display: flex; align-items: center; justify-content: space-between; margin-bottom: 25px; animation: fadeIn 0.5s ease-out forwards; }
+        .header-left { display: flex; align-items: center; gap: 15px; }
+        .btn-back { width: 40px; height: 40px; background-color: var(--primary-blue); color: white; border-radius: 50%; display: flex; justify-content: center; align-items: center; text-decoration: none; font-size: 0; transition: transform 0.2s; cursor: pointer; border: none; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .btn-back::before { content: ""; width: 0; height: 0; border-top: 7px solid transparent; border-bottom: 7px solid transparent; border-right: 11px solid currentColor; margin-left: -2px; }
+        .btn-back:hover { transform: scale(1.1); }
+        .title-pill { border: 2px solid var(--primary-blue); padding: 8px 20px; border-radius: 30px; font-weight: bold; background: white; color: var(--dark-text); }
+        .header-center { flex-grow: 1; margin-left: 20px; font-weight: bold; font-size: 1.2rem; color: var(--dark-text); text-align: center; }
+        .header-right { display: flex; gap: 15px; }
+        .nav-btn { border: 2px solid var(--primary-blue); background: white; color: var(--dark-text); padding: 10px 25px; border-radius: 30px; font-weight: bold; font-size: 1rem; cursor: pointer; transition: all 0.2s; }
+        .nav-btn:hover { background: var(--primary-blue); color: white; }
+        .main-card { width: min(1000px, 95vw); height: 560px; border: 3px solid var(--primary-blue); border-radius: 35px; position: relative; background: white; box-sizing: border-box; overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; padding-top: 25px; padding-bottom: 50px; animation: fadeIn 0.5s ease-out forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .decision-grid { --flow-center: 108px; --branch-center-gap: 71px; display: flex; align-items: flex-start; justify-content: center; gap: 30px; width: 100%; height: 180px; }
+        .col { display: flex; flex-direction: column; justify-content: flex-start; align-items: center; position: relative; min-height: 180px; }
+        .character-avatar { position: absolute; top: -140px; margin-bottom: 0; z-index: 10; width: 120px; height: 120px; object-fit: contain; }
+        .flow-label { color: gray; font-weight: bold; margin: 0; height: 18px; font-size: 0.9rem; text-align: center; }
+        #input-state { margin-top: calc(var(--flow-center) - 40.5px); }
+        .result-capsule { padding: 9px 20px; border-radius: 31px; border: 2px solid var(--primary-blue); color: var(--primary-blue); font-weight: bold; font-size: 1.05rem; background: white; display: flex; align-items: center; justify-content: center; gap: 9px; min-height: 36px; min-width: 142px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); box-sizing: border-box; }
+        .result-capsule.active { background: var(--primary-blue); color: white; }
+        #input-state.result-capsule.active { background: var(--alice-blue); border-color: var(--alice-blue); }
+        .result-capsule.error { border-color: #999; color: #555; opacity: 0; transition: opacity 0.3s; }
+        .basis-circle { width: 45px; height: 45px; border-radius: 50%; background: #4c80c5; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1.5rem; margin-top: 10px; box-shadow: 0 4px 10px rgba(0, 74, 173, 0.3); }
+        .bob-interactive { display: flex; flex-direction: column; align-items: center; gap: 10px; transition: opacity 0.3s ease; }
+        .bob-choices { display: flex; gap: 20px; }
+        .bob-choice-btn { display: flex; flex-direction: column; align-items: center; cursor: pointer; padding: 10px; border-radius: 15px; border: 2px solid transparent; transition: all 0.2s; background: white; }
+        .bob-choice-btn:hover { background-color: #e6f0ff; border-color: #80d8ff; transform: scale(1.05); }
+        .pulse { animation: pulse-anim 1.2s infinite; }
+        @keyframes pulse-anim { 0% { box-shadow: 0 0 0 0 rgba(0, 74, 173, 0.4); } 70% { box-shadow: 0 0 0 15px rgba(0, 74, 173, 0); } 100% { box-shadow: 0 0 0 0 rgba(0, 74, 173, 0); } }
+        .bob-active-basis { display: none; flex-direction: column; align-items: center; animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+        @keyframes popIn { 0% { transform: scale(0.5); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+        .connector { position: relative; display: flex; align-items: center; height: 50px; width: 0; opacity: 0; transition: width 0.32s ease-out, opacity 0.15s ease; }
+        .connector::before { content: ""; position: absolute; top: 50%; left: 0; width: 100%; height: 3px; background-color: var(--primary-blue); transform: translateY(-50%); }
+        .arrow-connector::after { content: ""; position: absolute; top: 50%; right: -2px; width: 0; height: 0; border-top: 8px solid transparent; border-bottom: 8px solid transparent; border-left: 14px solid var(--primary-blue); transform: translateY(-50%); opacity: 0; transition: opacity 0.15s ease 0.22s; }
+        .connector.active { opacity: 1; width: 70px; }
+        .connector.active.full-width { width: 100%; }
+        #conn-1.connector.active.full-width { width: calc(100% + 30px); transform: translateX(20px); }
+        .decision-grid > .col > .connector.active.full-width { margin-top: calc(var(--flow-center) - 20px); }
+        .arrow-connector.active::after { opacity: 1; }
+        .col-connectors { position: relative; width: 60px; height: 180px; }
+        .arrow-single { position: absolute; left: 0; top: calc(var(--flow-center) + 5px); transform: translateY(-50%); }
+        .arrow-branch-up { position: absolute; left: -30px; top: calc(var(--flow-center) + 5px); transform-origin: left center; transform: translateY(-50%) rotate(-33deg); }
+        .arrow-branch-down { position: absolute; left: -30px; top: calc(var(--flow-center) + 5px); transform-origin: left center; transform: translateY(-50%) rotate(33deg); }
+        .result-icon { font-size: 2rem; font-weight: bold; margin-left: 0; width: 34px; text-align: center; line-height: 1; }
+        .result-icon.match { color: var(--match-green); }
+        .result-icon.mismatch { color: var(--mismatch-red); opacity: 0; transition: opacity 0.3s; }
+        .output-group { display: grid; grid-template-columns: 210px 34px; align-items: center; column-gap: 14px; }
+        #results-area { min-width: 180px; height: 180px; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; position: relative; transform: translateX(-8px); }
+        #results-area-title { color: gray; font-weight: bold; margin: 0; height: 18px; font-size: 0.9rem; }
+        #photon-landing-spot { position: absolute; width: 1px; height: 1px; top: calc(var(--flow-center) + 5px); left: 0; pointer-events: none; }
+        #match-container { margin-top: calc(var(--flow-center) - 40.5px); }
+        #output-match { margin-top: 0 !important; }
+        #output-mismatch { margin-top: 25px !important; }
+        .show-result .result-capsule.error { opacity: 1; }
+        .show-result .result-icon.mismatch { opacity: 1; }
+        .explanation-box { position: absolute; bottom: 25px; width: 85%; background: #f8fbff; border-left: 6px solid var(--primary-blue); padding: 18px 30px; border-radius: 15px; box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08); display: flex; flex-direction: column; gap: 8px; box-sizing: border-box; opacity: 0; transform: translateY(20px); pointer-events: none; transition: all 0.32s ease; }
+        .explanation-box.show { opacity: 1; transform: translateY(0); pointer-events: auto; }
+        .explain-header { display: flex; justify-content: space-between; align-items: center; }
+        .explain-title { font-weight: bold; font-size: 1.25rem; margin: 0; display: flex; align-items: center; gap: 8px; }
+        .explain-desc { color: #555; font-size: 1.05rem; margin: 0; line-height: 1.4; }
+        .highlight-keep { color: var(--match-green); font-weight: bold; }
+        .highlight-discard { color: var(--mismatch-red); font-weight: bold; }
+        .retry-btn { padding: 8px 20px; border-radius: 20px; border: 2px solid #ccc; background: white; color: #555; cursor: pointer; font-weight: bold; transition: all 0.2s; font-size: 0.95rem; }
+        .retry-btn:hover { background: #f0f0f0; border-color: #999; color: black; transform: scale(1.05); }
+        .bottom-hint { position: absolute; bottom: 30px; color: gray; font-weight: bold; font-size: 1.1rem; transition: opacity 0.3s; }
+        @keyframes shoot-to-bob { 0% { transform: translate(0, 0) scale(0); opacity: 1; } 20% { transform: translate(calc(var(--tx-bob) * 0.2), calc(var(--ty-bob) * 0.2)) scale(1.3); } 100% { transform: translate(var(--tx-bob), var(--ty-bob)) scale(1); opacity: 1; } }
+        @keyframes shoot-bob-to-outcome { 0% { transform: translate(var(--tx-bob), var(--ty-bob)) scale(1); opacity: 1; } 100% { transform: translate(var(--tx-out), var(--ty-out)) scale(1); opacity: 1; } }
+        @keyframes shoot-collapse { 0% { transform: translate(var(--tx-bob), var(--ty-bob)) scale(1); opacity: 1; } 100% { transform: translate(var(--tx-bob), var(--ty-bob)) scale(0); opacity: 0; } }
+        @keyframes announce-basis-to-outcome { 0% { left: calc(11% - 10px); top: var(--announce-row-y, 96px); opacity: 0; transform: translate(-50%, -50%) scale(.82); } 14% { opacity: 1; } 62% { left: calc(58% - 10px); top: var(--announce-row-y, 96px); transform: translate(-50%, -50%) scale(1.04); } 100% { left: calc(82% - 20px); top: var(--announce-row-y, 96px); opacity: 1; transform: translate(-50%, -50%) scale(1); } }
+        @keyframes announce-wave { 0%,100% { opacity: .25; transform: scaleX(.65); } 50% { opacity: 1; transform: scaleX(1); } }
+        .state-photon { --beam-color: var(--zero); --state-angle: 90deg; position: relative; width: 40px; height: 40px; border-radius: 50%; background: radial-gradient(circle, #ffffff 0 52%, color-mix(in srgb, var(--beam-color) 30%, #ffffff) 53% 72%, #ffffff 73% 100%); border: 3px solid #ffffff; box-shadow: 0 0 20px color-mix(in srgb, var(--beam-color) 45%, transparent), 0 0 0 1px color-mix(in srgb, var(--beam-color) 20%, #ffffff); color: transparent; display: inline-flex; justify-content: center; align-items: center; font-size: 0; font-weight: bold; flex: 0 0 auto; box-sizing: border-box; }
+        .state-photon::after { content: ""; position: absolute; left: 50%; top: 50%; width: 11px; height: 31px; background: var(--beam-color); transform: translate(-50%, -50%) rotate(var(--state-angle)); box-shadow: 0 0 6px var(--beam-color); clip-path: polygon(50% 0, 100% 18%, 72% 18%, 72% 82%, 100% 82%, 50% 100%, 0 82%, 28% 82%, 28% 18%, 0 18%); }
+        #bob-active-img { margin-top: calc(var(--flow-center) - 68px); }
+        .photon-particle { --beam-color: var(--zero); --state-angle: 90deg; position: absolute; width: 62px; height: 62px; border-radius: 50%; background: radial-gradient(circle, #ffffff 0 52%, color-mix(in srgb, var(--beam-color) 30%, #ffffff) 53% 72%, #ffffff 73% 100%); border: 3px solid #ffffff; box-shadow: 0 0 20px color-mix(in srgb, var(--beam-color) 45%, transparent), 0 0 0 1px color-mix(in srgb, var(--beam-color) 20%, #ffffff); display: flex; justify-content: center; align-items: center; color: transparent; font-size: 0; font-weight: bold; pointer-events: none; z-index: 100; box-sizing: border-box; }
+        .photon-particle::after { content: ""; position: absolute; left: 50%; top: 50%; width: 17px; height: 46px; background: var(--beam-color); transform: translate(-50%, -50%) rotate(var(--state-angle)); box-shadow: 0 0 8px var(--beam-color); clip-path: polygon(50% 0, 100% 18%, 72% 18%, 72% 82%, 100% 82%, 50% 100%, 0 82%, 28% 82%, 28% 18%, 0 18%); }
+        .basis-announcer { position: absolute; z-index: 110; left: calc(11% - 10px); top: 96px; display: none; flex-direction: column; align-items: center; justify-content: center; gap: 4px; min-width: 142px; padding: 8px 13px; border: 2px solid #004AAD; border-radius: 18px; background: #f4f8ff; color: #004AAD; font-weight: 900; font-size: .9rem; line-height: 1.15; text-align: center; box-shadow: 0 7px 16px rgba(0,74,173,.16); pointer-events: none; transform: translate(-50%, -50%) scale(.82); opacity: 0; }
+        .basis-announcer.show { display: inline-flex; animation: announce-basis-to-outcome 1s cubic-bezier(.22,.8,.22,1) forwards; }
+        .basis-announcer-icon { font-size: 2.15rem; line-height: 1; animation: announce-wave .35s ease-in-out .15s 4; }
+        .basis-announcer-text { white-space: nowrap; }
+        .photon-s1 { --beam-color: var(--one); --state-angle: 0deg; }
+        .photon-s0 { --beam-color: var(--zero); --state-angle: 90deg; }
+        .photon-d1 { --beam-color: var(--minus); --state-angle: -45deg; }
+        .photon-d0 { --beam-color: var(--plus); --state-angle: 45deg; }
+        .bb84-image-dock { position: fixed; right: 18px; top: 0; width: 330px; height: 100vh; z-index: 900; pointer-events: none; display: flex; justify-content: center; overflow: visible; isolation: isolate; }
+        .bb84-image-viewport { position: relative; width: 285px; height: 100vh; background: #ffffff; box-sizing: border-box; box-shadow: 0 12px 26px rgba(0, 0, 0, 0.12); overflow: visible; z-index: 1; }
+        .bb84-image-viewport::before, .bb84-image-viewport::after { content: ""; position: absolute; top: 0; width: 14px; height: 100vh; background: #d9d9d9; z-index: 1; pointer-events: none; }
+        .bb84-image-viewport::before { left: 0; }
+        .bb84-image-viewport::after { right: 0; }
+        .bb84-image-window { position: relative; width: 393px; height: 100vh; margin-left: -54px; overflow: hidden; z-index: 10; }
+        .bb84-image-list { position: relative; display: flex; flex-direction: column; align-items: center; gap: 34px; padding: 24px 0 34px; box-sizing: border-box; width: 393px; transform: translateY(0); transition: transform .3s ease; z-index: 20; }
+        .bb84-image-card { position: relative; width: 232px; min-height: 245px; padding: 12px; box-sizing: border-box; background: #ffffff; border: 0 solid transparent; border-radius: 30px; display: flex; align-items: center; justify-content: center; flex: 0 0 auto; transition: filter .18s ease, opacity .18s ease, transform .18s ease, width .18s ease, min-height .18s ease, box-shadow .18s ease; z-index: 20; }
+        .bb84-image-card:not(.is-current) { filter: grayscale(1) saturate(0); opacity: .42; transform: scale(.9); }
+        .bb84-image-card.is-current { width: 340px; min-height: 390px; padding: 16px; border: 11px solid #549FD0; border-radius: 36px; box-shadow: 0 12px 28px rgba(84, 159, 208, .28); filter: none; opacity: 1; transform: scale(1); margin: 8px 0; z-index: 100; }
+        .bb84-image-card img { position: relative; z-index: 101; width: 100%; height: 100%; max-width: 208px; max-height: 276px; object-fit: contain; display: block; }
+        .bb84-image-card.is-current img { max-width: 305px; max-height: 350px; }
+        @media (min-width: 1180px) { body { padding-right: 350px !important; } }
+        @media (max-width: 1179px) { .bb84-image-dock { position: relative; right: auto; top: auto; width: min(94vw, 760px); height: 285px; margin: 18px auto 10px; overflow: visible; } .bb84-image-viewport { width: 100%; height: 285px; } .bb84-image-viewport::before, .bb84-image-viewport::after { width: 10px; height: 285px; } .bb84-image-window { width: 100%; height: 285px; margin-left: 0; overflow: hidden; } .bb84-image-list { flex-direction: row; align-items: center; gap: 22px; width: max-content; height: 285px; padding: 0 18px; } .bb84-image-card { width: 220px; min-height: 226px; } .bb84-image-card.is-current { width: 305px; min-height: 258px; margin: 0 10px; z-index: 100; } .bb84-image-card.is-current img { max-width: 270px; max-height: 230px; } }
+        .bb84-image-dock { right: 16px; width: 430px; font-family:'Arial Rounded MT Bold','Arial Rounded MT','Arial',sans-serif; }
+        .bb84-image-viewport { width: 330px; }
+        .bb84-image-window { width: 500px; margin-left: -85px; }
+        .bb84-image-list { gap: 12px; padding: 52px 0 42px; width: 500px; transition: transform .35s cubic-bezier(.22,.8,.22,1); }
+        .bb84-image-card { width: 350px; min-height: 52px; padding: 0 18px; border: 6px solid var(--primary-blue); border-radius: 16px; filter: none; opacity: 1; transform: scale(1); transition: width .35s cubic-bezier(.22,.8,.22,1), min-height .35s cubic-bezier(.22,.8,.22,1), padding .35s cubic-bezier(.22,.8,.22,1), border-width .35s cubic-bezier(.22,.8,.22,1), border-radius .35s cubic-bezier(.22,.8,.22,1), box-shadow .35s cubic-bezier(.22,.8,.22,1), filter .22s ease, opacity .22s ease, transform .35s cubic-bezier(.22,.8,.22,1); }
+        .bb84-image-card:not(.is-current) { filter: none; opacity: 1; transform: scale(1); }
+        .bb84-image-card.is-current { width: 365px; min-height: 365px; padding: 14px; border: 7px solid var(--primary-blue); border-radius: 20px; box-shadow: 0 12px 28px rgba(84,159,208,.28); margin: 6px 0; }
+        .bb84-step-summary { display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; height: 100%; color: #111; font-weight: 900; font-size: 1rem; letter-spacing: .02em; white-space: nowrap; transition: opacity .22s ease, transform .22s ease; }
+        .bb84-step-number { width: 22px; height: 22px; border-radius: 50%; background: var(--primary-blue); color: #ffffff; display: inline-flex; align-items: center; justify-content: center; font-size: .86rem; line-height: 1; flex: 0 0 auto; }
+        .bb84-step-title { display: inline-block; line-height: 1; }
+        .bb84-image-card img { max-width: 0; max-height: 0; opacity: 0; transform: scale(.92); transition: opacity .18s ease .12s, transform .3s cubic-bezier(.22,.8,.22,1) .08s, max-width .35s cubic-bezier(.22,.8,.22,1), max-height .35s cubic-bezier(.22,.8,.22,1); }
+        .bb84-image-card.is-current .bb84-step-summary { opacity: 0; transform: translateY(-8px); position: absolute; pointer-events: none; }
+        .bb84-image-card.is-current img { max-width: 318px; max-height: 320px; opacity: 1; transform: scale(1); }
+        @media (min-width: 1180px) { body { padding-right: 450px !important; } }
+        @media (max-width: 1179px) { .bb84-image-dock { width: min(94vw, 840px); height: 320px; } .bb84-image-viewport { height: 320px; } .bb84-image-viewport::before, .bb84-image-viewport::after { height: 320px; } .bb84-image-window { height: 320px; } .bb84-image-list { gap: 14px; height: 320px; padding: 0 24px; } .bb84-image-card { width: 270px; min-height: 52px; } .bb84-image-card.is-current { width: 305px; min-height: 250px; margin: 0 10px; } .bb84-image-card.is-current img { max-width: 275px; max-height: 220px; } }
+    
+        /* Responsive layout: keep the whole learning screen visible on tablets/phones */
+        @media (max-width: 1179px) {
+            html, body {
+                width: 100%;
+                max-width: 100%;
+                overflow-x: hidden;
+            }
+
+            body {
+                box-sizing: border-box;
+                padding: 20px 12px 30px;
+            }
+
+            .header {
+                width: 100%;
+                max-width: 100%;
+                gap: 10px;
+                margin-bottom: 15px;
+                flex-wrap: wrap;
+            }
+
+            .header-left {
+                min-width: 0;
+                gap: 8px;
+            }
+
+            .title-pill {
+                padding: 7px 12px;
+                font-size: .9rem;
+                white-space: nowrap;
+            }
+
+            .header-center {
+                order: 3;
+                flex-basis: 100%;
+                margin-left: 0;
+                font-size: 1rem;
+            }
+
+            .header-right {
+                gap: 6px;
+            }
+
+            .nav-btn {
+                padding: 8px 12px;
+                font-size: .9rem;
+            }
+
+            .main-card {
+                width: 100%;
+                max-width: 100%;
+                height: auto;
+                min-height: 520px;
+                padding: 25px 12px 75px;
+                border-radius: 25px;
+            }
+
+            .decision-grid {
+                width: 100%;
+                max-width: 100%;
+                gap: 8px;
+                transform-origin: top center;
+            }
+
+            .decision-grid > .col {
+                min-width: 0 !important;
+            }
+
+            .decision-grid > .col:nth-child(1) {
+                flex: 1 1 22%;
+            }
+
+            .decision-grid > .col:nth-child(2) {
+                flex: 0 1 8%;
+            }
+
+            .decision-grid > .col:nth-child(3) {
+                flex: 1 1 30%;
+            }
+
+            .decision-grid > .col:nth-child(4) {
+                flex: 0 1 12%;
+            }
+
+            .decision-grid > .col:nth-child(5) {
+                flex: 1 1 28%;
+            }
+
+            .connector.active.full-width,
+            #conn-1.connector.active.full-width {
+                width: 100%;
+                transform: none;
+            }
+
+            .result-capsule {
+                min-width: 0;
+                width: 100%;
+                padding: 8px 8px;
+                font-size: .85rem;
+            }
+
+            .output-group {
+                grid-template-columns: minmax(0, 1fr) 24px;
+                column-gap: 5px;
+                width: 100%;
+            }
+
+            #results-area {
+                min-width: 0;
+                width: 100%;
+                transform: none;
+            }
+
+            .bob-choices {
+                gap: 4px;
+            }
+
+            .bob-choice-btn {
+                padding: 5px;
+            }
+
+            .bob-choice-btn img {
+                width: 55px;
+                max-width: 100%;
+                height: auto;
+            }
+
+            .basis-circle {
+                width: 36px;
+                height: 36px;
+                font-size: 1.1rem;
+            }
+
+            .character-avatar {
+                width: 85px;
+                height: 85px;
+                top: -100px;
+            }
+
+            .explanation-box {
+                width: calc(100% - 24px);
+                padding: 14px 16px;
+                bottom: 12px;
+            }
+
+            .explain-title {
+                font-size: 1rem;
+            }
+
+            .explain-desc {
+                font-size: .9rem;
+            }
+
+            .bottom-hint {
+                bottom: 22px;
+                width: calc(100% - 24px);
+                text-align: center;
+                font-size: .9rem;
+            }
+
+            /* Step image panel becomes a full-width panel below the main card. */
+            .bb84-image-dock {
+                position: relative;
+                right: auto;
+                top: auto;
+                width: 100%;
+                max-width: 100%;
+                height: 300px;
+                margin: 15px auto 5px;
+            }
+
+            .bb84-image-viewport {
+                width: 100%;
+                max-width: 100%;
+                height: 300px;
+            }
+
+            .bb84-image-window {
+                width: 100%;
+                height: 300px;
+                margin-left: 0;
+            }
+
+            .bb84-image-list {
+                width: max-content;
+                max-width: none;
+                height: 300px;
+                gap: 12px;
+                padding: 0 20px;
+            }
+
+            .bb84-image-card {
+                width: 250px;
+                min-height: 52px;
+            }
+
+            .bb84-image-card.is-current {
+                width: min(305px, calc(100vw - 55px));
+                min-height: 250px;
+                margin: 0 8px;
+            }
+
+            .bb84-image-card.is-current img {
+                max-width: min(275px, calc(100vw - 85px));
+                max-height: 220px;
+            }
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 12px 8px 20px;
+            }
+
+            .header-left {
+                flex: 1 1 auto;
+            }
+
+            .btn-back {
+                width: 34px;
+                height: 34px;
+                flex: 0 0 auto;
+            }
+
+            .title-pill {
+                font-size: .78rem;
+                padding: 6px 9px;
+            }
+
+            .header-right {
+                flex: 0 0 auto;
+            }
+
+            .nav-btn {
+                padding: 7px 9px;
+                font-size: .78rem;
+            }
+
+            .main-card {
+                min-height: 470px;
+                padding-left: 6px;
+                padding-right: 6px;
+            }
+
+            .decision-grid {
+                gap: 3px;
+            }
+
+            .flow-label {
+                font-size: .7rem;
+            }
+
+            .result-capsule {
+                font-size: .68rem;
+                padding: 6px 4px;
+            }
+
+            .character-avatar {
+                width: 65px;
+                height: 65px;
+                top: -78px;
+            }
+
+            .bob-choice-btn img {
+                width: 42px;
+            }
+
+            .basis-circle {
+                width: 30px;
+                height: 30px;
+                font-size: .9rem;
+            }
+
+            .bb84-image-dock,
+            .bb84-image-viewport,
+            .bb84-image-window,
+            .bb84-image-list {
+                height: 270px;
+            }
+
+            .bb84-image-card.is-current {
+                min-height: 225px;
+            }
+
+            .bb84-image-card.is-current img {
+                max-height: 195px;
+            }
+        }
+
+    </style>
+</head>
+<body>
+
+<aside class="bb84-image-dock" aria-label="BB84 current-step image preview">
+    <div class="bb84-image-viewport">
+        <div class="bb84-image-window">
+            <div class="bb84-image-list">
+                <div class="bb84-image-card" data-bb84-step="1"><div class="bb84-step-summary"><span class="bb84-step-number">1</span><span class="bb84-step-title">PREPARE</span></div><img src="pictures/bb84-1.png" alt="BB84 Step 1"></div>
+                <div class="bb84-image-card is-current" data-bb84-step="2" aria-current="step"><div class="bb84-step-summary"><span class="bb84-step-number">2</span><span class="bb84-step-title">TRANSMIT</span></div><img src="pictures/bb84-2.png" alt="BB84 Step 2"></div>
+                <div class="bb84-image-card" data-bb84-step="3"><div class="bb84-step-summary"><span class="bb84-step-number">3</span><span class="bb84-step-title">MEASURE</span></div><img src="pictures/bb84-3.png" alt="BB84 Step 3"></div>
+                <div class="bb84-image-card" data-bb84-step="4"><div class="bb84-step-summary"><span class="bb84-step-number">4</span><span class="bb84-step-title">SIFTING</span></div><img src="pictures/bb84-4.png" alt="BB84 Step 4"></div>
+                <div class="bb84-image-card" data-bb84-step="5"><div class="bb84-step-summary"><span class="bb84-step-number">5</span><span class="bb84-step-title">KEY</span></div><img src="pictures/bb84-5.png" alt="BB84 Step 5"></div>
+            </div>
+        </div>
+    </div>
+</aside>
+
+<div class="header">
+    <div class="header-left">
+        <a href="QuantumCybersecurityEducationPlatform.html?section=qkd#quantum-security-applications" class="btn-back" title="back home">&#x25C0;&#xFE0E;</a>
+        <div class="title-pill">QKD : BB84 Protocol</div>
+    </div>
+    <div class="header-center" id="step-title">STEP 2 : TRANSMIT</div>
+    <div class="header-right">
+        <button class="nav-btn" onclick="prevStep()">Back</button>
+        <button class="nav-btn" onclick="nextStep()">Next</button>
+    </div>
+</div>
+
+<div class="main-card" id="stage">
+    
+    <div class="decision-grid" id="grid-container">
+        
+        <div class="col" style="min-width: 150px;">
+            <img src="pictures/cat_alice.svg" width="120" alt="Alice" class="character-avatar">
+            <p class="flow-label">Alice Sent</p>
+            <div class="result-capsule active" id="input-state">-</div>
+        </div>
+
+        <div class="col" style="width: 50px;">
+            <div class="connector active full-width" id="conn-1"></div> 
+        </div>
+
+        <div class="col" style="min-width: 230px;" id="bob-col">
+            <img src="pictures/cat_bob.svg" width="120" alt="Bob" class="character-avatar">
+            
+            <div class="bob-interactive" id="bob-interactive">
+                <p style="margin:0; font-weight:bold; color:var(--primary-blue);">Choose a basis!</p>
+                <div class="bob-choices">
+                    <div class="bob-choice-btn pulse" onclick="startMeasurementProcess('S')">
+                        <img src="pictures/vertical.svg" width="80" alt="S basis">
+                        <div class="basis-circle">S</div>
+                    </div>
+                    <div class="bob-choice-btn pulse" onclick="startMeasurementProcess('D')">
+                        <img src="pictures/diagonal.svg" width="80" alt="D basis">
+                        <div class="basis-circle">D</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bob-active-basis" id="bob-active-basis">
+                <p class="flow-label">Bob Measured</p>
+                <img id="bob-active-img" src="" width="80" style="margin-bottom: 10px;" alt="Key">
+                <div class="basis-circle" style="margin-top:0;" id="bob-key-label">-</div>
+            </div>
+        </div>
+
+        <div class="col col-connectors" id="connectors-area">
+            <div class="connector arrow-connector arrow-single" id="arrow-match"></div>
+            <div class="connector arrow-connector arrow-branch-up" id="arrow-mis-up"></div>
+            <div class="connector arrow-connector arrow-branch-down" id="arrow-mis-down"></div>
+        </div>
+
+        <div class="col" id="results-area">
+            <p id="results-area-title">Outcome</p>
+            
+            <div id="match-container" style="display: none; flex-direction: column; align-items: center; width: 100%;">
+                <div id="photon-landing-spot"></div>
+                <div class="output-group" id="output-match" style="margin-top: 14px; opacity: 0; transition: opacity 0.5s ease; transform: translateX(14px);">
+                    <div class="result-capsule active" id="match-state"> Waiting... </div>
+                    <div class="result-icon match">✔</div>
+                </div>
+            </div>
+
+            <div id="output-mismatch" style="display: none; flex-direction: column; gap: 22px; margin-top: 8px; transform: translateX(14px);">
+                <div class="output-group">
+                    <div class="result-capsule error" id="mis-state-up"> Waiting... </div>
+                    <div class="result-icon mismatch">✖</div>
+                </div>
+                <div class="output-group">
+                    <div class="result-capsule error" id="mis-state-down"> Waiting... </div>
+                    <div class="result-icon mismatch">✖</div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <p class="bottom-hint" id="hint-text">Help Bob measure the incoming photon</p>
+
+    <div class="basis-announcer" id="basis-announcer" aria-live="polite">
+        <span class="basis-announcer-icon" aria-hidden="true">📢</span>
+        <span class="basis-announcer-text" id="basis-announcer-text">Alice Announced Basis : Z</span>
+    </div>
+
+    <div class="explanation-box" id="explain-box">
+        <div class="explain-header">
+            <p class="explain-title" id="explain-title">Analyzing Result...</p>
+            <button class="retry-btn" onclick="resetBob()">↺ Try Another Basis</button>
+        </div>
+        <p class="explain-desc" id="explain-desc">Loading explanation...</p>
+    </div>
+
+</div>
+
+<script>
+    let alicePhotonStr = ""; 
+    let aliceBasisStr = ""; 
+    
+    const photonConfig = {
+        's1': { display: 'Qubit: |1⟩', label: 'Qubit: |1⟩', symbol: '↑', ket: '↑', stateKet: '|↑⟩' },
+        's0': { display: 'Qubit: |0⟩', label: 'Qubit: |0⟩', symbol: '→', ket: '→', stateKet: '|→⟩' },
+        'd1': { display: 'Qubit: |-⟩', label: 'Qubit: |-⟩', symbol: '↖', ket: '↖', stateKet: '|↖⟩' },
+        'd0': { display: 'Qubit: |+⟩', label: 'Qubit: |+⟩', symbol: '↗', ket: '↗', stateKet: '|↗⟩' }
+    };
+
+    function createPhotonDisplay(ket, className = '') {
+        const classAttr = className ? ` class="${className}"` : '';
+        return `<div${classAttr}>${ket}</div>`;
+    }
+
+    function setPhotonLabel(elementId, photonKey) {
+        const target = document.getElementById(elementId);
+        if (!target) return;
+        const photon = photonConfig[photonKey];
+        target.innerHTML = createPhotonDisplay(photon.ket, `state-photon photon-${photonKey}`) + `<span>${photon.label}</span>`;
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+        const params = new URLSearchParams(window.location.search);
+        const urlType = params.get("aliceBasis");
+        const urlMsg = params.get("aliceMsg");
+        const hasFreshStep1Data = Boolean(urlType && urlMsg !== null);
+        const savedData = localStorage.getItem('qkdStepData');
+        let parsedData = null;
+
+        try {
+            parsedData = savedData ? JSON.parse(savedData) : null;
+        } catch (error) {
+            localStorage.removeItem('qkdStepData');
+        }
+
+        if (hasFreshStep1Data) {
+            localStorage.removeItem('qkdStepData');
+            setupAliceState(urlType, urlMsg);
+            return;
+        }
+
+        if (parsedData && parsedData.aliceState && parsedData.aliceBasis) {
+            const isBit1 = parsedData.aliceState === '↑' || parsedData.aliceState === '↖';
+            setupAliceState(parsedData.aliceBasis, isBit1 ? "1" : "0");
+
+            if (parsedData.bobBasis) {
+                requestAnimationFrame(() => {
+                    startMeasurementProcess(parsedData.bobBasis, true);
+                });
+            }
+            return;
+        }
+
+        setupAliceState("S", "0");
+    });
+
+    // 獨立出 Alice 設定邏輯
+    function setupAliceState(type, msg) {
+        msg = String(msg);
+        if (type === "rectilinear" || type === "S") {
+            aliceBasisStr = "S";
+            alicePhotonStr = (msg === "0") ? "s0" : "s1";
+        } else {
+            aliceBasisStr = "D";
+            alicePhotonStr = (msg === "0") ? "d0" : "d1";
+        }
+        setPhotonLabel("input-state", alicePhotonStr);
+    }
+
+    // 加入 skipAnimation 參數，如果為 true 就跳過動畫直接顯示
+    function startMeasurementProcess(bobChosenBasis, skipAnimation = false) {
+        if (window.showBb84ImageStep) window.showBb84ImageStep(3);
+        document.getElementById("bob-interactive").style.display = "none";
+        document.getElementById("hint-text").style.opacity = "0"; 
+        
+        const activeBasisUI = document.getElementById("bob-active-basis");
+        activeBasisUI.style.display = "flex";
+        
+        if (bobChosenBasis === "S") {
+            document.getElementById("bob-active-img").src = "pictures/vertical.svg";
+            document.getElementById("bob-key-label").textContent = "S";
+        } else {
+            document.getElementById("bob-active-img").src = "pictures/diagonal.svg";
+            document.getElementById("bob-key-label").textContent = "D";
+        }
+
+        const isMatch = (aliceBasisStr === bobChosenBasis);
+        document.getElementById("results-area").classList.remove("show-result");
+        
+        if (isMatch) {
+            setPhotonLabel("match-state", alicePhotonStr);
+            document.getElementById("match-container").style.display = "flex";
+            document.getElementById("output-mismatch").style.display = "none";
+            document.getElementById("output-match").style.opacity = "0"; 
+        } else {
+            setPhotonLabel("mis-state-up", (bobChosenBasis === "S") ? 's1' : 'd1');
+            setPhotonLabel("mis-state-down", (bobChosenBasis === "S") ? 's0' : 'd0');
+            document.getElementById("match-container").style.display = "none";
+            document.getElementById("output-mismatch").style.display = "flex";
+        }
+
+        if (skipAnimation) {
+            displayFinalResult(isMatch);
+        } else {
+            animateMeasurement(isMatch);
+        }
+    }
+    function animateMeasurement(isMatch) {
+        const stage = document.getElementById('stage');
+        const sourceEl = document.getElementById('input-state');
+        const bobEl = document.getElementById('bob-active-img');
+        const particle = document.createElement('div');
+        particle.className = `photon-particle photon-${alicePhotonStr}`;
+        particle.textContent = photonConfig[alicePhotonStr].ket;
+        const stageRect = stage.getBoundingClientRect();
+        const srcRect = sourceEl.getBoundingClientRect();
+        const bobRect = bobEl.getBoundingClientRect();
+        const landingSpot = isMatch ? document.getElementById('photon-landing-spot') : document.getElementById('results-area');
+        const outRect = landingSpot.getBoundingClientRect();
+        const photonHalf = 29;
+        const startX = srcRect.left - stageRect.left + srcRect.width / 2 - photonHalf;
+        const startY = srcRect.top - stageRect.top + srcRect.height / 2 - photonHalf;
+        const toBobX = bobRect.left - stageRect.left + bobRect.width / 2 - photonHalf;
+        const toBobY = bobRect.top - stageRect.top + bobRect.height / 2 - photonHalf;
+        const toOutX = outRect.left - stageRect.left + outRect.width / 2 - photonHalf;
+        const toOutY = outRect.top - stageRect.top + outRect.height / 2 - photonHalf;
+        particle.style.left = startX + 'px';
+        particle.style.top = startY + 'px';
+        particle.style.setProperty('--tx-bob', (toBobX - startX) + 'px');
+        particle.style.setProperty('--ty-bob', (toBobY - startY) + 'px');
+        particle.style.setProperty('--tx-out', (toOutX - startX) + 'px');
+        particle.style.setProperty('--ty-out', (toOutY - startY) + 'px');
+        stage.appendChild(particle);
+        requestAnimationFrame(() => { particle.style.animation = 'shoot-to-bob 0.9s forwards cubic-bezier(0.4, 0, 0.2, 1)'; });
+        setTimeout(() => {
+            if (isMatch) {
+                particle.style.animation = 'shoot-bob-to-outcome 0.5s forwards ease-out';
+                setTimeout(() => {
+                    particle.remove();
+                    displayFinalResult(true);
+                }, 500);
+            } else {
+                particle.style.animation = 'shoot-collapse 0.2s forwards ease-in';
+                setTimeout(() => {
+                    particle.remove();
+                    displayFinalResult(false);
+                }, 200);
+            }
+        }, 1100); 
+    }
+    function displayFinalResult(isMatch) {
+        const resultsArea = document.getElementById("results-area");
+        const explainBox = document.getElementById("explain-box");
+        const explainTitle = document.getElementById("explain-title");
+        const explainDesc = document.getElementById("explain-desc");
+        const announcer = document.getElementById("basis-announcer");
+        const announcerText = document.getElementById("basis-announcer-text");
+        const aliceSymbol = photonConfig[alicePhotonStr].symbol;
+        const bobBasisLabel = document.getElementById("bob-key-label").textContent;
+        const bitValue = (aliceSymbol === '↑' || aliceSymbol === '↖') ? '1' : '0';
+        if (announcer && announcerText) {
+            const basisLabel = aliceBasisStr === "S" ? "Z" : "X";
+            const stage = document.getElementById("stage");
+            const aliceAvatar = document.querySelector('#grid-container .character-avatar[alt="Alice"]');
+            const stageRect = stage.getBoundingClientRect();
+            const aliceRect = aliceAvatar.getBoundingClientRect();
+            const aliceCenterY = aliceRect.top - stageRect.top + aliceRect.height / 2;
+            announcerText.textContent = "Alice Announced Basis : " + basisLabel;
+            announcer.style.setProperty("--announce-row-y", aliceCenterY + "px");
+            announcer.classList.remove("show");
+            void announcer.offsetWidth;
+            announcer.classList.add("show");
+        }
+        if (isMatch) {
+            explainBox.style.borderLeftColor = "var(--match-green)";
+            explainBox.style.backgroundColor = "#f0fdf4";
+            explainTitle.style.color = "var(--match-green)";
+
+            const polarizerKet = bobBasisLabel === "S" ? "↑" : "↖";
+            const isBlockedCase =
+                (bobBasisLabel === "S" && alicePhotonStr === "s0") ||
+                (bobBasisLabel === "D" && alicePhotonStr === "d0");
+
+            if (isBlockedCase) {
+                explainTitle.innerHTML = "🟢 Record";
+                explainDesc.innerHTML = `After Alice announces the basis, Bob confirms they used the <b>same basis</b>.<br>No light passed through the <b>${polarizerKet}</b> polarizer, so <b>Bob identifies ${photonConfig[alicePhotonStr].label.replace('Qubit: ', '')}</b>. <span class='highlight-keep'>Record Bit ${bitValue}</span>.`;
+            } else {
+                explainTitle.innerHTML = "🟢 Record";
+                explainDesc.innerHTML = `After Alice announces the basis, Bob confirms they used the <b>same basis</b>.<br>Light passed through the <b>${polarizerKet}</b> polarizer, so <b>Bob identifies ${photonConfig[alicePhotonStr].label.replace('Qubit: ', '')}</b>. <span class='highlight-keep'>Record Bit ${bitValue}</span>.`;
+            }
+        } else {
+            explainBox.style.borderLeftColor = "var(--mismatch-red)";
+            explainBox.style.backgroundColor = "#fff5f5";
+            explainTitle.style.color = "var(--mismatch-red)";
+            explainTitle.innerHTML = "🔴 Discard";
+            explainDesc.innerHTML = `After Alice announces the basis, Bob finds they used a <b>different basis</b>.<br>Bob's result is random, so this bit is <span class='highlight-discard'>discarded</span>.`;
+        }
+        let aliceBasisType = (aliceSymbol === '↑' || aliceSymbol === '→') ? 'S' : 'D';
+        const qkdData = {
+            aliceState: aliceSymbol,
+            aliceBasis: aliceBasisType, 
+            bobBasis: bobBasisLabel     
+        };
+        localStorage.setItem('qkdStepData', JSON.stringify(qkdData));
+
+        setTimeout(() => {
+            if (isMatch) {
+                document.getElementById("arrow-match").classList.add("active");
+                document.getElementById("output-match").style.opacity = "1";
+            } else {
+                document.getElementById("arrow-mis-up").classList.add("active");
+                document.getElementById("arrow-mis-down").classList.add("active");
+            }
+            resultsArea.classList.add("show-result");
+            explainBox.classList.add("show");
+        }, 1000);
+    }
+    function resetBob() {
+        if (window.showBb84ImageStep) window.showBb84ImageStep(2);
+        document.getElementById("explain-box").classList.remove("show");
+        document.getElementById("basis-announcer").classList.remove("show");
+        document.getElementById("results-area").classList.remove("show-result");
+        document.getElementById("arrow-match").classList.remove("active");
+        document.getElementById("arrow-mis-up").classList.remove("active");
+        document.getElementById("arrow-mis-down").classList.remove("active");
+        const oldPhoton = document.querySelector('.photon-particle');
+        if(oldPhoton) oldPhoton.remove();
+        localStorage.removeItem('qkdStepData'); // 按下重試時清除舊紀錄
+        setTimeout(() => {
+            document.getElementById("bob-active-basis").style.display = "none";
+            document.getElementById("match-container").style.display = "none";
+            document.getElementById("output-mismatch").style.display = "none";
+            document.getElementById("bob-interactive").style.display = "flex";
+            document.getElementById("hint-text").style.opacity = "1";
+        }, 200);
+    }
+    function prevStep() { window.location.href = 'BB84step1.html'; }
+    function nextStep() { window.location.href = 'BB84step5.html'; }
+/*     function nextStep() { window.location.href = 'BB84step4.html'; }
+ */
+</script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const dock = document.querySelector('.bb84-image-dock');
+    const windowBox = document.querySelector('.bb84-image-window');
+    const list = document.querySelector('.bb84-image-list');
+    let currentCard = document.querySelector('.bb84-image-card.is-current');
+    if (dock) {
+        dock.addEventListener('wheel', function (event) {
+            event.preventDefault();
+        }, { passive: false });
+    }
+
+    function getReferenceOffset(isHorizontal) {
+        const stepValue = currentCard ? currentCard.dataset.bb84Step : '2';
+        const referenceCard = document.querySelector('.bb84-image-card[data-bb84-step="3"]');
+        const shouldUseStep3Reference = stepValue === '2' || stepValue === '3';
+
+        if (!shouldUseStep3Reference || !referenceCard) {
+            if (isHorizontal) {
+                return (windowBox.clientWidth / 2) - currentCard.offsetLeft - (currentCard.offsetWidth / 2);
+            }
+            const centeredOffset = (windowBox.clientHeight / 2) - currentCard.offsetTop - (currentCard.offsetHeight / 2);
+            return Math.max(0, centeredOffset);
+        }
+
+        const activeBefore = currentCard;
+        const ariaBefore = activeBefore ? activeBefore.getAttribute('aria-current') : null;
+        const referenceWasCurrent = referenceCard.classList.contains('is-current');
+
+        if (!referenceWasCurrent) {
+            activeBefore.classList.remove('is-current');
+            activeBefore.removeAttribute('aria-current');
+            referenceCard.classList.add('is-current');
+            referenceCard.setAttribute('aria-current', 'step');
+        }
+
+        const offset = isHorizontal
+            ? (windowBox.clientWidth / 2) - referenceCard.offsetLeft - (referenceCard.offsetWidth / 2)
+            : Math.max(0, (windowBox.clientHeight / 2) - referenceCard.offsetTop - (referenceCard.offsetHeight / 2));
+
+        if (!referenceWasCurrent) {
+            referenceCard.classList.remove('is-current');
+            referenceCard.removeAttribute('aria-current');
+            activeBefore.classList.add('is-current');
+            if (ariaBefore) activeBefore.setAttribute('aria-current', ariaBefore);
+        }
+
+        return offset;
+    }
+
+    window.lockBb84ImageToCurrentStep = function () {
+        if (!windowBox || !list || !currentCard) return;
+        const isHorizontal = window.matchMedia('(max-width: 1179px)').matches;
+        const offset = getReferenceOffset(isHorizontal);
+        list.style.transform = isHorizontal ? 'translateX(' + offset + 'px)' : 'translateY(' + offset + 'px)';
+    };
+
+    window.showBb84ImageStep = function (step) {
+        const stepValue = String(step);
+        const nextCard = document.querySelector('.bb84-image-card[data-bb84-step="' + stepValue + '"]');
+        if (!nextCard) return;
+        document.querySelectorAll('.bb84-image-card').forEach(card => {
+            card.classList.remove('is-current');
+            card.removeAttribute('aria-current');
+        });
+        nextCard.classList.add('is-current');
+        nextCard.setAttribute('aria-current', 'step');
+        currentCard = nextCard;
+        const stepTitle = document.getElementById('step-title');
+        if (stepTitle) stepTitle.textContent = stepValue === '3' ? 'STEP 3 : MEASURE' : 'STEP 2 : TRANSMIT';
+        requestAnimationFrame(window.lockBb84ImageToCurrentStep);
+    };
+
+    window.lockBb84ImageToCurrentStep();
+    window.addEventListener('resize', window.lockBb84ImageToCurrentStep);
+});
+</script>
+</body>
+</html>
