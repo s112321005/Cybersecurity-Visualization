@@ -120,24 +120,30 @@
         @media (min-width: 1180px) { body { padding-right: 450px !important; } }
         @media (max-width: 1179px) { .bb84-image-dock { width: min(94vw, 840px); height: 320px; } .bb84-image-viewport { height: 320px; } .bb84-image-viewport::before, .bb84-image-viewport::after { height: 320px; } .bb84-image-window { height: 320px; } .bb84-image-list { gap: 14px; height: 320px; padding: 0 24px; } .bb84-image-card { width: 270px; min-height: 52px; } .bb84-image-card.is-current { width: 305px; min-height: 250px; margin: 0 10px; } .bb84-image-card.is-current img { max-width: 275px; max-height: 220px; } }
     
-        /* Keep the desktop composition identical; uniformly scale it on smaller screens. */
-        @media (max-width: 1179px) {
+        /* Tablet: preserve the exact desktop composition and scale the whole page
+           uniformly so nothing is rearranged or cropped. */
+        @media (min-width: 768px) and (max-width: 1470px) {
             html, body {
-                width: 100%;
-                min-height: 100%;
-                overflow-x: hidden;
-                overflow-y: auto;
+                overflow-x: hidden !important;
             }
 
             body {
-                padding: 40px 20px;
+                width: 1470px !important;
+                min-width: 1470px !important;
                 box-sizing: border-box;
-                align-items: flex-start;
+                transform-origin: top left;
+            }
+        }
+
+        @media (max-width: 767px) {
+            html, body {
+                overflow-x: hidden !important;
             }
 
-            .bb84-responsive-canvas {
-                width: 1450px;
-                min-width: 1450px;
+            body {
+                width: 1470px !important;
+                min-width: 1470px !important;
+                box-sizing: border-box;
                 transform-origin: top left;
             }
         }
@@ -145,8 +151,6 @@
     </style>
 </head>
 <body>
-    <div class="bb84-responsive-canvas">
-
 
 <aside class="bb84-image-dock" aria-label="BB84 current-step image preview">
     <div class="bb84-image-viewport">
@@ -580,38 +584,32 @@ document.addEventListener('DOMContentLoaded', function () {
     window.addEventListener('resize', window.lockBb84ImageToCurrentStep);
 });
 </script>
-
-    </div>
 </body>
 
 <script>
 (function () {
-    function fitDesktopCanvas() {
-        const canvas = document.querySelector('.bb84-responsive-canvas');
-        if (!canvas) return;
+    function fitOriginalDesktopLayout() {
+        const w = window.innerWidth;
+        const baseWidth = 1470; // original desktop canvas: main content + right image dock
+        const scale = Math.min(1, w / baseWidth);
 
-        if (window.innerWidth >= 1180) {
-            canvas.style.transform = '';
-            document.body.style.minHeight = '';
-            return;
+        if (w < baseWidth) {
+            // Use CSS zoom instead of transform so fixed-position elements such as
+            // the right-side BB84 image dock remain part of the same visual canvas.
+            document.body.style.zoom = scale;
+            document.body.style.height = (window.innerHeight / scale) + 'px';
+        } else {
+            document.body.style.zoom = '';
+            document.body.style.height = '';
         }
-
-        const baseWidth = 1450;
-        const sidePadding = 20;
-        const availableWidth = Math.max(320, window.innerWidth - sidePadding * 2);
-        const scale = Math.min(1, availableWidth / baseWidth);
-
-        canvas.style.transform = 'scale(' + scale + ')';
-        canvas.style.transformOrigin = 'top left';
-
-        // Reserve the scaled canvas height so the page can still scroll normally.
-        const height = canvas.scrollHeight * scale;
-        document.body.style.minHeight = (height + 40) + 'px';
     }
 
-    window.addEventListener('load', fitDesktopCanvas);
-    window.addEventListener('resize', fitDesktopCanvas);
-    fitDesktopCanvas();
+    window.addEventListener('load', fitOriginalDesktopLayout);
+    window.addEventListener('resize', fitOriginalDesktopLayout);
+    window.addEventListener('orientationchange', function () {
+        setTimeout(fitOriginalDesktopLayout, 100);
+    });
+    fitOriginalDesktopLayout();
 })();
 </script>
 
