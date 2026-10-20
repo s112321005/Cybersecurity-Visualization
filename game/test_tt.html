@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <base href="https://s112321005.github.io/Cybersecurity-Visualization/">
+    <title>Learning | QKD: BB84</title>
+    <style>
+        :root { --primary-blue: #549FD0; --alice-blue: #004aad; --dark-text: #333333; --bg-color: #f8f9fa; --bg-gradient: linear-gradient(135deg, #E0F2FE 0%, #F5F3FF 50%, #ECFDF5 100%); --active-blue: #e3f2fd; --photon-yellow: #ffeb3b; --photon-gold: #ffd54f; --zero: #99b3e5; --one: #3d7df2; --plus: #EBBA7C; --minus: #E8890A; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes pulse-anim { 0% { box-shadow: 0 0 0 0 rgba(0, 74, 173, 0.4); } 70% { box-shadow: 0 0 0 15px rgba(0, 74, 173, 0); } 100% { box-shadow: 0 0 0 0 rgba(0, 74, 173, 0); } }
+        @keyframes float-anim { 0% { transform: translateY(0px); } 50% { transform: translateY(-8px); } 100% { transform: translateY(0px); } }
+        @keyframes gentle-glow { 0% { box-shadow: 0 0 5px rgba(0, 74, 173, 0.2); transform: scale(1); } 100% { box-shadow: 0 0 15px rgba(0, 74, 173, 0.6); transform: scale(1.05); } }
+        body { font-family: 'Segoe UI', sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; background: var(--bg-gradient); margin: 0; animation: fadeIn 0.8s ease-out; overflow-x: hidden; }
+        .app-wrapper { display: flex; flex-direction: row; align-items: center; justify-content: center; gap: 40px; width: 100%; max-width: 1500px; zoom: 1; }
+        .left-panel { display: flex; flex-direction: column; align-items: center; flex: 1; max-width: 1000px; min-width: 650px; }
+        .header { width: 100%; display: flex; align-items: center; justify-content: space-between; margin-bottom: 25px; height: 60px; }
+        .header-left { display: flex; align-items: center; gap: 15px; }
+        .btn-back { width: 40px; height: 40px; background-color: var(--primary-blue); color: white; border-radius: 50%; display: flex; justify-content: center; align-items: center; text-decoration: none; font-size: 0; transition: transform 0.2s; cursor: pointer; border: none; box-shadow: 0 2px 6px rgba(0,0,0,0.15); padding: 0; margin: 0; box-sizing: border-box; flex-shrink: 0; }
+        .btn-back::before { content: ""; width: 0; height: 0; border-top: 7px solid transparent; border-bottom: 7px solid transparent; border-right: 11px solid currentColor; margin-left: -2px; }
+        .btn-back:hover { transform: scale(1.1); }
+        .title-pill { border: 2px solid var(--primary-blue); height: 48px; padding: 0 25px; border-radius: 30px; font-weight: bold; background: white; display: flex; align-items: center; justify-content: center; box-sizing: border-box; white-space: nowrap; font-size: 1.1rem; }
+        .step-text { font-weight: bold; font-size: 1.1rem; margin: 0; color: var(--dark-text); }
+        .nav-btn { border: 2px solid var(--primary-blue); background: white; padding: 0 30px; border-radius: 30px; font-weight: bold; cursor: pointer; transition: all 0.3s; opacity: 0.3; pointer-events: none; height: 48px; display: flex; align-items: center; box-sizing: border-box; font-size: 1.1rem; }
+        .nav-btn.ready { opacity: 1; pointer-events: auto; background: var(--primary-blue); color: white; box-shadow: 0 4px 15px rgba(0, 74, 173, 0.3); }
+        .main-card { width: 100%; height: 620px; border: 3px solid var(--primary-blue); border-radius: 35px; position: relative; background: white; display: flex; flex-direction: column; justify-content: flex-start; align-items: center; overflow: hidden; padding-top: 25px; box-sizing: border-box; }
+        .character-alice { margin-bottom: 5px; animation: float-anim 3.5s ease-in-out infinite; }
+        .alice-interactive { display: flex; flex-direction: column; align-items: center; z-index: 5; width: 100%; }
+        .prompt-text { margin: 0 0 20px 0; font-weight: bold; color: var(--alice-blue); font-size: 1.3rem; letter-spacing: 0.5px; }
+        .selector-area { display: flex; align-items: flex-start; gap: 60px; }
+        .basis-column { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+        .basis-title { font-weight: bold; color: var(--alice-blue); font-size: 1.2rem; margin-bottom: 5px; }
+        .options-row { display: flex; gap: 20px; }
+        .state-btn { cursor: pointer; padding: 12px; border: 2px solid #eee; border-radius: 20px; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); display: flex; flex-direction: column; align-items: center; gap: 5px; width: 115px; background: white; position: relative; animation: pulse-anim 2s infinite; }
+        .state-btn:hover { transform: translateY(-5px); border-color: #bbdefb; background: #fafcff; }
+        .state-btn.active { border-color: var(--alice-blue); background: var(--active-blue); transform: scale(1.08); animation: none; box-shadow: 0 0 15px rgba(0, 74, 173, 0.4); }
+        .photon-display { --beam-color: var(--zero); --state-angle: 90deg; position: relative; width: 78px; height: 78px; border-radius: 50%; background: radial-gradient(circle, #ffffff 0 47%, color-mix(in srgb, var(--beam-color) 28%, transparent) 48% 54%, transparent 55% 100%); border: 1.5px solid color-mix(in srgb, var(--beam-color) 70%, white); box-shadow: 0 0 18px color-mix(in srgb, var(--beam-color) 38%, transparent); display: grid; place-items: center; margin-bottom: 2px; color: transparent; font-size: 0; overflow: visible; }
+        .photon-display::after { content: ""; position: absolute; left: 50%; top: 50%; width: 16px; height: 48px; background: var(--beam-color); transform: translate(-50%, -50%) rotate(var(--state-angle)); box-shadow: 0 0 10px var(--beam-color); clip-path: polygon(50% 0, 100% 18%, 72% 18%, 72% 82%, 100% 82%, 50% 100%, 0 82%, 28% 82%, 28% 18%, 0 18%); }
+        .photon-display::before { display: none; }
+        .photon-display.photon-s1 { --beam-color: var(--one); --state-angle: 0deg; }
+        .photon-display.photon-s0 { --beam-color: var(--zero); --state-angle: 90deg; }
+        .photon-display.photon-d1 { --beam-color: var(--minus); --state-angle: -45deg; }
+        .photon-display.photon-d0 { --beam-color: var(--plus); --state-angle: 45deg; }
+        .braket { font-size: 1.35rem; font-weight: bold; color: var(--alice-blue); margin-bottom: 2px; }
+        .bit-label { font-size: 0.85rem; color: #666; font-weight: bold; }
+        .explanation-area { display: flex; justify-content: center; align-items: center; margin-top: 20px; padding: 10px; }
+        .explanation-text { color: #888; font-weight: bold; font-size: 1rem; margin: 0; text-align: center; }
+        .logic-footer { position: absolute; bottom: 0; left: 0; width: 100%; background-color: #f8fbff; border-top: 2px dashed #d0e3ff; padding: 18px 0; display: flex; justify-content: center; align-items: center; }
+        .logic-container { display: flex; align-items: center; gap: 12px; font-weight: bold; font-size: 1.05rem; }
+        .logic-label { color: #888; font-size: 0.9rem; margin-right: 8px; text-transform: uppercase; letter-spacing: 1px; }
+        .logic-pill { background: white; border: 2px solid #b3d4ff; padding: 6px 16px; border-radius: 20px; color: var(--primary-blue); box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
+        .logic-operator { color: #aaa; font-weight: bold; font-size: 1.4rem; }
+        .logic-pill.result { background: var(--primary-blue); color: white; border-color: var(--primary-blue); animation: gentle-glow 1.5s infinite alternate; }
+        .bb84-image-dock { position: relative; width: 430px; height: 720px; font-family: 'Arial Rounded MT Bold','Arial Rounded MT','Arial',sans-serif; z-index: 900; pointer-events: none; display: flex; justify-content: center; align-items: center; overflow: visible; isolation: isolate; flex-shrink: 0; }
+        .bb84-image-viewport { position: relative; width: 330px; height: 100%; background: #ffffff; box-sizing: border-box; box-shadow: 0 12px 26px rgba(0, 0, 0, 0.12); overflow: visible; z-index: 1; }
+        .bb84-image-viewport::before, .bb84-image-viewport::after { content: ""; position: absolute; top: 0; width: 14px; height: 100%; background: #d9d9d9; z-index: 1; pointer-events: none; }
+        .bb84-image-viewport::before { left: 0; }
+        .bb84-image-viewport::after { right: 0; }
+        .bb84-image-window { position: relative; width: 500px; height: 100%; margin-left: -85px; overflow: hidden; z-index: 10; }
+        .bb84-image-list { position: relative; display: flex; flex-direction: column; align-items: center; gap: 12px; padding: 52px 0 42px; box-sizing: border-box; width: 500px; transform: translateY(0); transition: transform .55s cubic-bezier(.22,.8,.22,1); z-index: 20; }
+        .bb84-image-card { position: relative; width: 350px; min-height: 52px; padding: 0 18px; border: 6px solid var(--primary-blue); border-radius: 16px; box-sizing: border-box; background: #ffffff; display: flex; align-items: center; justify-content: center; flex: 0 0 auto; z-index: 20; transition: width .55s cubic-bezier(.22,.8,.22,1), min-height .55s cubic-bezier(.22,.8,.22,1), padding .55s cubic-bezier(.22,.8,.22,1), border-width .55s cubic-bezier(.22,.8,.22,1), border-radius .55s cubic-bezier(.22,.8,.22,1), box-shadow .55s cubic-bezier(.22,.8,.22,1), filter .35s ease, opacity .35s ease, transform .55s cubic-bezier(.22,.8,.22,1); }
+        .bb84-image-card:not(.is-current) { filter: grayscale(1) saturate(0); opacity: .42; transform: scale(.9); }
+        .bb84-image-card.is-current { width: 365px; min-height: 365px; padding: 14px; border: 7px solid var(--primary-blue); border-radius: 20px; box-shadow: 0 12px 28px rgba(84,159,208,.28); margin: 6px 0; filter: none; opacity: 1; transform: scale(1); z-index: 100; }
+        .bb84-image-card img { position: relative; z-index: 101; width: 100%; height: 100%; object-fit: contain; display: block; max-width: 0; max-height: 0; opacity: 0; transform: scale(.92); transition: opacity .28s ease .2s, transform .45s cubic-bezier(.22,.8,.22,1) .12s, max-width .55s cubic-bezier(.22,.8,.22,1), max-height .55s cubic-bezier(.22,.8,.22,1); }
+        .bb84-image-card.is-current img { max-width: 318px; max-height: 320px; opacity: 1; transform: scale(1); }
+        .bb84-step-summary { display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; height: 100%; color: #111; font-weight: 900; font-size: 1rem; letter-spacing: .02em; white-space: nowrap; transition: opacity .22s ease, transform .22s ease; }
+        .bb84-step-number { width: 22px; height: 22px; border-radius: 50%; background: var(--primary-blue); color: #ffffff; display: inline-flex; align-items: center; justify-content: center; font-size: .86rem; line-height: 1; flex: 0 0 auto; }
+        .bb84-step-title { display: inline-block; line-height: 1; }
+        .bb84-image-card.is-current .bb84-step-summary { opacity: 0; transform: translateY(-8px); position: absolute; pointer-events: none; }
+        @media (max-width: 1450px) { .app-wrapper { zoom: 0.9; } }
+        @media (max-width: 1250px) { .app-wrapper { zoom: 0.8; } }
+        @media (max-width: 1100px) { .app-wrapper { zoom: 0.7; } }
+        @media (max-width: 950px) { .app-wrapper { zoom: 0.6; } }
+        @media (max-width: 800px) { .app-wrapper { zoom: 0.5; } }
+        @media (max-width: 650px) { .app-wrapper { zoom: 0.4; } }
+    </style>
+</head>
+<body>
+
+<div class="app-wrapper">
+    <div class="left-panel">
+        <div class="header">
+            <div class="header-left">
+                <a href="QuantumCybersecurityEducationPlatform.html?section=qkd#quantum-security-applications" class="btn-back"  title="back home">&#x25C0;&#xFE0E;</a>
+                <div class="title-pill">QKD : BB84 Protocol</div>
+            </div>
+            <div class="header-center"><p class="step-text">STEP 1 : PREPARE</p></div>
+            <div class="header-right">
+                <button id="next-btn" class="nav-btn" onclick="nextStep()" disabled>Next</button>
+            </div>
+        </div>
+        
+        <div class="main-card">
+            <div class="alice-interactive">
+                <div class="character-alice"><img src="pictures/cat_alice.svg" alt="Alice" width="120"></div>
+                <p class="prompt-text">Choose a state!</p>
+                <div class="selector-area">
+                    <div class="basis-column">
+                        <div class="basis-title">Z Basis (Rectilinear)</div>
+                        <div class="options-row">
+                            <div class="state-btn" onclick="selectState('rectilinear', '1', this)">
+                                <div class="photon-display photon-s1" aria-label="Photon |↑⟩"></div>
+                                <span class="bit-label">Bit 1</span>
+                            </div>
+                            <div class="state-btn" onclick="selectState('rectilinear', '0', this)">
+                                <div class="photon-display photon-s0" aria-label="Photon |→⟩"></div>
+                                <span class="bit-label">Bit 0</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="width: 2px; height: 160px; background: #eee; align-self: center;"></div>
+                    <div class="basis-column">
+                        <div class="basis-title">X Basis (Diagonal)</div>
+                        <div class="options-row">
+                            <div class="state-btn" onclick="selectState('diagonal', '1', this)">
+                                <div class="photon-display photon-d1" aria-label="Photon |↖⟩"></div>
+                                <span class="bit-label">Bit 1</span>
+                            </div>
+                            <div class="state-btn" onclick="selectState('diagonal', '0', this)">
+                                <div class="photon-display photon-d0" aria-label="Photon |↗⟩"></div>
+                                <span class="bit-label">Bit 0</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="explanation-area"><p class="explanation-text">Click a state to confirm selection</p></div>
+            </div>
+            <div class="logic-footer">
+                <div class="logic-container">
+                    <span class="logic-label">Encoding Logic</span>
+                    <span class="logic-pill">Polarization Basis</span>
+                    <span class="logic-operator">+</span>
+                    <span class="logic-pill">Message Bit</span>
+                    <span class="logic-operator">=</span>
+                    <span class="logic-pill result">Photon Direction</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <aside class="bb84-image-dock" aria-label="BB84 current-step image preview">
+        <div class="bb84-image-viewport">
+            <div class="bb84-image-window">
+                <div class="bb84-image-list">
+                    <div class="bb84-image-card is-current" data-bb84-step="1" aria-current="step"><div class="bb84-step-summary"><span class="bb84-step-number">1</span><span class="bb84-step-title">PREPARE</span></div><img src="pictures/bb84-1.png" alt="BB84 Step 1"></div>
+                    <div class="bb84-image-card" data-bb84-step="2"><div class="bb84-step-summary"><span class="bb84-step-number">2</span><span class="bb84-step-title">TRANSMIT</span></div><img src="pictures/bb84-2.png" alt="BB84 Step 2"></div>
+                    <div class="bb84-image-card" data-bb84-step="3"><div class="bb84-step-summary"><span class="bb84-step-number">3</span><span class="bb84-step-title">MEASURE</span></div><img src="pictures/bb84-3.png" alt="BB84 Step 3"></div>
+                    <div class="bb84-image-card" data-bb84-step="4"><div class="bb84-step-summary"><span class="bb84-step-number">4</span><span class="bb84-step-title">SIFTING</span></div><img src="pictures/bb84-4.png" alt="BB84 Step 4"></div>
+                    <div class="bb84-image-card" data-bb84-step="5"><div class="bb84-step-summary"><span class="bb84-step-number">5</span><span class="bb84-step-title">KEY</span></div><img src="pictures/bb84-5.png" alt="BB84 Step 5"></div>
+                </div>
+            </div>
+        </div>
+    </aside>
+</div>
+
+<script>
+    let selectedBasis = null;
+    let selectedMsg = null;
+    function selectState(basis, bit, el) {
+        document.querySelectorAll('.state-btn').forEach(btn => btn.classList.remove('active'));
+        el.classList.add('active');
+        document.querySelector('.prompt-text').textContent = "State Selected!";
+        document.querySelector('.prompt-text').style.color = "#28a745"; 
+        selectedBasis = basis;
+        selectedMsg = bit;
+        const nextBtn = document.getElementById('next-btn');
+        nextBtn.disabled = false;
+        nextBtn.classList.add('ready');
+    }
+    function nextStep() {
+        if (!selectedBasis) return;        
+        localStorage.removeItem('qssStepData'); 
+        localStorage.removeItem('qssStep3Data'); 
+        localStorage.removeItem('qkdStepData'); 
+        window.location.href = `BB84step2.html?aliceBasis=${selectedBasis}&aliceMsg=${selectedMsg}`;
+    }
+</script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const dock = document.querySelector('.bb84-image-dock');
+    const windowBox = document.querySelector('.bb84-image-window');
+    const list = document.querySelector('.bb84-image-list');
+    let currentCard = document.querySelector('.bb84-image-card.is-current');
+
+    if (dock) {
+        dock.addEventListener('wheel', function (event) {
+            event.preventDefault();
+        }, { passive: false });
+    }
+
+    function getStep2CollapsedStep1ReferenceOffset() {
+        const step1Card = document.querySelector('.bb84-image-card[data-bb84-step="1"]');
+        const step3Card = document.querySelector('.bb84-image-card[data-bb84-step="3"]');
+        
+        if (!step1Card || !step3Card || !currentCard) {
+            return Math.max(0, (windowBox.clientHeight / 2) - currentCard.offsetTop - (currentCard.offsetHeight / 2));
+        }
+
+        const ariaBefore = currentCard.getAttribute('aria-current');
+
+        currentCard.classList.remove('is-current');
+        currentCard.removeAttribute('aria-current');
+        step3Card.classList.add('is-current');
+        step3Card.setAttribute('aria-current', 'step');
+
+        const targetEdge = step1Card.offsetTop;
+
+        step3Card.classList.remove('is-current');
+        step3Card.removeAttribute('aria-current');
+        currentCard.classList.add('is-current');
+        if (ariaBefore) currentCard.setAttribute('aria-current', ariaBefore);
+
+        const currentEdge = currentCard.offsetTop;
+        return targetEdge - currentEdge;
+    }
+
+    function lockToCurrentStep() {
+        if (!windowBox || !list || !currentCard) return;
+        const offset = getStep2CollapsedStep1ReferenceOffset();
+        list.style.transform = 'translateY(' + offset + 'px)';
+    }
+
+    setTimeout(lockToCurrentStep, 50);
+    window.addEventListener('resize', lockToCurrentStep);
+});
+</script>
+</body>
+</html>
