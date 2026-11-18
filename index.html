@@ -1,476 +1,465 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=1200, initial-scale=1.0">
-    <base href="https://s112321005.github.io/Cybersecurity-Visualization/">
-    <title>Quantum Cybersecurity Education Platform</title>
-    <link href="https://fonts.googleapis.com/css2?family=Titan+One&display=swap" rel="stylesheet">
-    <style>
-        :root{--primary-blue:#5BA4CF;--light-blue:#E1F0F8;--dark-border:#2C3E50;--qss-green:#38C98B;--qsdc-purple:#9B66F9;--bg-gradient:linear-gradient(135deg,#E0F2FE 0%,#F5F3FF 50%,#ECFDF5 100%);--border-width:5px;--border-radius:20px;--transition-speed:0.5s;--easing:cubic-bezier(0.25,1,0.3,1);--mobile-fit-scale:1;--mobile-fit-height:380px}
-        body{font-family:'Comfortaa','Segoe UI',Tahoma,sans-serif;font-weight:700;background:var(--bg-gradient);background-attachment:fixed;color:var(--dark-border);margin:0;overflow-x:hidden;min-height:100vh;display:flex;flex-direction:column;align-items:center;position:relative}
-        body::before{content:"";position:fixed;top:-10%;left:-10%;width:120%;height:120%;background:radial-gradient(circle at 20% 30%,rgba(165,243,252,0.4) 0%,transparent 20%),radial-gradient(circle at 80% 70%,rgba(199,210,254,0.4) 0%,transparent 20%);z-index:-1;filter:blur(60px);animation:moveLight 20s infinite alternate ease-in-out}
-        .header{display:flex;align-items:center;justify-content:center;gap:15px;margin-top:40px;margin-bottom:60px;transition:opacity 0.4s ease,transform 0.4s ease,margin 0.4s ease,height 0.4s ease}
-        .header img{width:60px;height:auto}
-        .header h1{font-family:'Titan One','Comfortaa','Segoe UI',sans-serif;font-size:3rem;color:var(--dark-border);margin:0;font-weight:400;letter-spacing:1px;text-shadow:3px 3px 0px white}
-        .app-container{display:flex;justify-content:center;align-items:flex-start;gap:30px;width:100%;max-width:1150px;height:380px;transition:all var(--transition-speed) var(--easing)}
-        .card-link{text-decoration:none;color:inherit;display:block;align-self:flex-start;height:380px}
-        .card{position:relative;width:300px;height:380px;border:var(--border-width) solid var(--dark-border);border-radius:var(--border-radius);box-sizing:border-box;background-color:rgba(255,255,255,0.85);backdrop-filter:blur(10px);flex-shrink:0;box-shadow:8px 8px 0px var(--primary-blue);transition:all 0.2s ease-out}
-        .collapsible-card{display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:40px 20px 30px;cursor:pointer}
-        .collapsible-card:hover,.expandable-card:hover{transform:translate(-4px,-4px);box-shadow:12px 12px 0px var(--primary-blue);background-color:rgba(255,255,255,0.95)}
-        .card-badge{position:absolute;top:-20px;background-color:var(--primary-blue);color:white;padding:8px 18px;border-radius:30px;font-size:14px;border:3px solid var(--dark-border);box-shadow:3px 3px 0px white}
-        .card img{width:160px;height:160px;object-fit:contain;margin-top:30px}
-        .card-title{font-size:24px;font-weight:900;margin:0;text-align:center;line-height:1.3;color:var(--dark-border)}
-        .expandable-card{cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:40px 20px 30px}
-        .state-front{position:absolute;top:0;left:0;width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:40px 20px 30px;box-sizing:border-box;transition:opacity 0.4s ease}
-        .state-expanded{position:absolute;top:0;left:0;width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:40px 20px 30px;box-sizing:border-box;opacity:0;pointer-events:none;transition:opacity 0.4s ease;text-align:center}
-        .state-expanded img{width:160px;height:160px;object-fit:contain;margin-top:30px}
-        .state-expanded h2{color:var(--dark-border);margin:0;font-size:24px;font-weight:900;line-height:1.3}
-        .right-menu-container{width:0;opacity:0;overflow:hidden;display:none;flex-direction:column;flex-shrink:0;margin-left:-30px;transition:all var(--transition-speed) var(--easing);position:relative}
-        .learning-path{display:flex;flex-direction:column;gap:25px;min-height:600px;overflow:visible;padding:5px 38px 15px 5px;scroll-behavior:smooth;scrollbar-width:none;touch-action:pan-y}
-        .learning-path::-webkit-scrollbar{width:0}
-        .learning-path::-webkit-scrollbar-track{background:linear-gradient( to bottom,rgba(91,164,207,.24) 0 32%,rgba(255,255,255,.78) 32% 34%,rgba(91,164,207,.24) 34% 66%,rgba(255,255,255,.78) 66% 68%,rgba(91,164,207,.24) 68% 100% );border-radius:10px;border:2px solid var(--dark-border);margin-block:5px}
-        .learning-path::-webkit-scrollbar-thumb{background:var(--primary-blue);border-radius:10px;border:2px solid white}
-        .section-rail{position:absolute;top:60%;right:14px;width:14px;height:380px;display:grid;grid-template-rows:repeat(4,1fr);gap:8px;transform:translateY(-70%)}
-        .comparison-menu .section-rail{height:190px;grid-template-rows:repeat(2,1fr)}
-        .section-rail-segment{border:3px solid var(--dark-border);border-radius:999px;background:white;transition:background .25s ease,transform .15s ease;cursor:pointer;padding:0}
-        .section-rail-segment:hover{transform:scaleX(1.25)}
-        .section-rail-segment.is-active{background:var(--dark-border)}
-        .path-section{background:rgba(255,255,255,0.65);backdrop-filter:blur(5px);border:var(--border-width) solid var(--dark-border);border-radius:var(--border-radius);padding:20px;box-shadow:6px 6px 0px rgba(0,0,0,0.05);position:relative;display:none;animation:sectionPop .32s ease-out}
-        .path-section.is-active-section{display:block}
-        @keyframes sectionPop{from{opacity:0;transform:translateY(12px) scale(.98)}to{opacity:1;transform:translateY(0) scale(1)}}
-        .path-header{display:flex;align-items:center;gap:15px;margin-bottom:20px;border-bottom:3px dashed rgba(44,62,80,0.3);padding-bottom:15px}
-        .path-section-image{display:block;width:calc(100% - 24px);max-width:460px;height:220px;object-fit:contain;margin:0 auto 20px;border:4px solid var(--dark-border);border-radius:18px;background:white;box-shadow:5px 5px 0 rgba(91,164,207,0.55);box-sizing:border-box}
-        .path-badge{color:white;padding:6px 14px;border-radius:12px;font-size:16px;font-weight:900;border:3px solid var(--dark-border);box-shadow:3px 3px 0px var(--dark-border)}
-        .badge-qkd{background-color:var(--primary-blue);transform:rotate(-4deg)}
-        .badge-qss{background-color:var(--primary-blue);transform:rotate(-3deg)}
-        .badge-qsdc{background-color:var(--primary-blue);transform:rotate(-2deg)}
-        .path-title{font-size:18px;color:var(--dark-border);margin:0;font-weight:900}
-        .path-items{display:flex;flex-direction:column;gap:15px}
-        .menu-item{border:3px solid var(--dark-border);border-radius:15px;padding:15px 20px;text-decoration:none;background-color:white;transition:all 0.2s ease-out}
-        .photon-game-item{position:relative;overflow:hidden;background:#eaf8ff;box-shadow:none}
-        .photon-game-item::before{content:"";position:absolute;inset:-60% -20%;background:linear-gradient(115deg,transparent 36%,rgba(255,255,255,0.7) 50%,transparent 64%);transform:translateX(-65%) rotate(8deg);animation:gameShine 2.4s ease-in-out infinite;pointer-events:none}
-        .photon-game-item::after{content:"";position:absolute;right:22px;top:43%;width:22px;height:22px;border-radius:50%;background:#ffe45c;box-shadow:0 0 16px #ffe45c,0 0 34px rgba(255,228,92,0.9),-46px 0 18px rgba(255,228,92,0.42);animation:photonFly 1.65s linear infinite;pointer-events:none}
-        .photon-game-item .text-content{position:relative;z-index:1;padding-right:74px}
-        .photon-game-item .en-title{color:#14577d;text-shadow:2px 2px 0 white}
-        .photon-game-item .topic-desc{color:#477384;font-size:13px;text-shadow:none;white-space:nowrap}
-        .photon-game-badge{display:inline-flex;align-items:center;width:max-content;margin-bottom:2px;padding:4px 10px;border:2px solid white;border-radius:999px;background:#ffcf3f;color:#10233f;font-size:12px;font-weight:900;box-shadow:2px 2px 0 var(--dark-border);letter-spacing:0}
-        @keyframes gamePulse{0%,100%{filter:saturate(1);box-shadow:0 0 0 4px rgba(91,164,207,0.22)}50%{filter:saturate(1.08);box-shadow:0 0 0 7px rgba(91,164,207,0.34)}}
-        @keyframes gameShine{0%{transform:translateX(-70%) rotate(8deg)}48%,100%{transform:translateX(72%) rotate(8deg)}}
-        @keyframes photonFly{0%{transform:translate(-84px,-50%) scale(0.8);opacity:0}14%{opacity:1}70%{transform:translate(-22px,-50%) scale(1.12);opacity:1}100%{transform:translate(10px,-50%) scale(0.72);opacity:0}}
-        .section-basics .menu-item:hover{transform:translate(-2px,-2px);box-shadow:6px 6px 0px var(--primary-blue)}
-        .section-basics .photon-game-item:hover{transform:translate(-3px,-3px) scale(1.02);animation:none;box-shadow:7px 7px 0px var(--dark-border),0 0 0 7px rgba(91,164,207,0.36)}
-        .section-qkd .menu-item:hover{transform:translate(-2px,-2px);box-shadow:6px 6px 0px var(--primary-blue)}
-        .section-qss .menu-item:hover{transform:translate(-2px,-2px);box-shadow:6px 6px 0px var(--primary-blue)}
-        .section-qsdc .menu-item:hover{transform:translate(-2px,-2px);box-shadow:6px 6px 0px var(--primary-blue)}
-        .text-content{display:flex;flex-direction:column;gap:6px}
-        .text-content .en-title{color:#1A567B;font-size:22px;font-weight:bold;margin:0;line-height:1.18}
-        .text-content .topic-subtitle{color:#7A8793;font-size:13px;font-weight:800;line-height:1.35;margin:0}
-        .text-content .topic-desc{color:#7A8793;font-size:12px;font-weight:700;line-height:1.45;margin:0}
-        body.is-expanded .header{height:0;margin-top:12px;margin-bottom:18px;overflow:hidden;opacity:0;transform:translateY(-20px);pointer-events:none}
-        body.is-expanded .collapsible-card,body.is-expanded .expandable-card:not(.is-active-card){width:0;opacity:0;padding:0;margin:0;border-width:0;pointer-events:none;overflow:hidden}
-        body.is-expanded .expandable-card.is-active-card{transform:translateY(90px);box-shadow:8px 8px 0px var(--primary-blue);cursor:default}
-        body.is-expanded .state-front{opacity:0;pointer-events:none}
-        body.is-expanded .state-expanded{opacity:1;pointer-events:auto}
-        body.is-expanded .right-menu-container.is-active-menu{display:flex;width:580px;opacity:1;margin-left:0;padding-top:5px;transform:translateY(90px)}
-        body.is-expanded .hub-link-wrapper{opacity:0;transform:translateY(14px);pointer-events:none}
-        .back-btn-wrapper{position:absolute;left:0;top:calc(100% + 20px);width:100%;display:flex;justify-content:center;opacity:0;transform:translateY(14px);pointer-events:none;transition:opacity .35s ease,transform .35s ease}
-        body.is-expanded .back-btn-wrapper{opacity:1;transform:translateY(0);pointer-events:auto}
-        .hub-link-wrapper{margin-top:25px;transition:opacity .35s ease,transform .35s ease}
-        .hub-link,.back-btn{display:inline-flex;align-items:center;justify-content:center;text-decoration:none;background:var(--primary-blue);color:white;border:var(--border-width) solid var(--dark-border);border-radius:60px;padding:13px 54px;font-size:22px;font-weight:900;box-shadow:0px 4px 0 var(--dark-border);text-shadow:2px 2px 0 var(--dark-border);transition:transform .15s ease,box-shadow .15s ease;cursor:pointer}
-        .hub-link:hover,.back-btn:hover{transform:translate(-3px,-3px);box-shadow:0px 3px 0 var(--dark-border)}
-        .hub-link:active,.back-btn:active{transform:translate(2px,2px);box-shadow:0px 2px 0 var(--dark-border)}
-        @media (max-width:700px){
-            body{min-height:100dvh;overflow-x:hidden}
-            .header{gap:8px;margin-top:24px;margin-bottom:32px;padding:0 10px;box-sizing:border-box;width:100%}
-            .header img{width:30px;flex-shrink:0}
-            .header h1{font-size:clamp(0.86rem,3.65vw,1.35rem);letter-spacing:0;text-shadow:2px 2px 0 white;white-space:nowrap}
-            .app-container{width:960px;max-width:none;height:var(--mobile-fit-height);transform:scale(var(--mobile-fit-scale));transform-origin:top center}
-            .hub-link-wrapper{margin-top:18px}
-            .hub-link,.back-btn{font-size:18px;padding:11px 42px}
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <base href="https://s112321005.github.io/Cybersecurity-Visualization/">
+  <meta name="theme-color" content="#e8f4fb">
+  <title>Quantum Cybersecurity Education Platform</title>
+  <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;600;700&family=Titan+One&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --ink: #2c3e50;
+      --blue: #5ba4cf;
+      --blue-soft: #eaf6fc;
+      --green: #38b98c;
+      --green-soft: #e9fbf3;
+      --purple: #9265dc;
+      --purple-soft: #f2edff;
+      --orange: #e39a42;
+      --orange-soft: #fff4e5;
+      --paper: rgba(255,255,255,.9);
+      --line: 4px solid var(--ink);
+      --radius: 20px;
+      --shadow: 7px 7px 0 var(--blue);
+      --ease: cubic-bezier(.2,.8,.2,1);
+    }
+    * { box-sizing: border-box; }
+    body {
+      min-height: 100vh; margin: 0; color: var(--ink);
+      background: linear-gradient(135deg,#e0f2fe 0%,#f5f3ff 52%,#ecfdf5 100%);
+      background-attachment: fixed;
+      font-family: Comfortaa, "Segoe UI", sans-serif; font-weight: 700;
+    }
+    body::before {
+      content: ""; position: fixed; inset: -12%; z-index: -1; pointer-events: none;
+      background: radial-gradient(circle at 18% 24%,rgba(165,243,252,.38),transparent 22%),
+                  radial-gradient(circle at 82% 72%,rgba(199,210,254,.38),transparent 24%);
+      filter: blur(48px);
+    }
+    button, input { font: inherit; }
+    button, a { -webkit-tap-highlight-color: transparent; }
+    a { color: inherit; }
+    .site-header {
+      width: min(1180px, calc(100% - 40px)); margin: 28px auto 0;
+      display: flex; align-items: center; justify-content: space-between; gap: 20px;
+    }
+    .brand { display: flex; align-items: center; gap: 14px; text-decoration: none; min-width: 0; }
+    .brand img { width: 54px; height: 54px; object-fit: contain; }
+    .brand-copy { min-width: 0; }
+    .brand h1 { margin: 0; font: 400 clamp(1.1rem,2.5vw,2rem)/1.15 "Titan One", Comfortaa, sans-serif; letter-spacing: .2px; }
+    .brand p { margin: 6px 0 0; color: #607184; font-size: 12px; letter-spacing: .04em; }
+    .player-bar {
+      width: min(900px, 100%); margin: 0 auto 30px; padding: 18px 26px;
+      display: flex; align-items: center; justify-content: space-between; gap: 18px;
+      border: 5px solid var(--ink); border-radius: 24px; background: white;
+      box-shadow: 9px 9px 0 var(--ink);
+    }
+    .player-main { display: flex; align-items: center; gap: 16px; min-width: 0; }
+    .player-avatar { display: grid; place-items: center; width: 64px; height: 64px; flex: 0 0 auto; overflow: hidden; border: 3px solid var(--ink); border-radius: 50%; background: #eaf6fc; font-size: 32px; }
+    .player-avatar img { width: 100%; height: 100%; object-fit: cover; }
+    #display-username { overflow: hidden; color: var(--ink); text-overflow: ellipsis; font-size: 22px; font-weight: 900; }
+    .player-role { margin-top: 4px; color: #8793a0; font-size: 11px; font-weight: 800; letter-spacing: .15em; text-transform: uppercase; }
+    .player-actions { display: flex; align-items: center; gap: 10px; flex: 0 0 auto; }
+    .game-btn { border: 3px solid var(--ink); border-radius: 999px; padding: 8px 18px; font-size: 12px; font-weight: 900; cursor: pointer; box-shadow: 3px 3px 0 var(--ink); transition: transform .15s, box-shadow .15s; }
+    .game-btn:hover { transform: translate(-2px,-2px); box-shadow: 5px 5px 0 var(--ink); }
+    .btn-blue { background: var(--blue); color: white; }
+    .btn-logout { background: #fff; color: var(--ink); }
+    main { width: min(1180px, calc(100% - 40px)); margin: 28px auto 70px; }
+    .welcome { margin: 0 0 25px; }
+    .eyebrow { margin: 0 0 8px; color: #477b99; font-size: 12px; letter-spacing: .14em; text-transform: uppercase; }
+    .welcome h2 { margin: 0; font-size: clamp(24px,3.2vw,34px); line-height: 1.2; }
+    .welcome > p:last-child { margin: 10px 0 0; color: #637283; font-size: 14px; line-height: 1.7; font-weight: 600; }
+    .home-grid { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 22px; }
+    .entry-card {
+      --accent: var(--blue); --tint: var(--blue-soft);
+      position: relative; display: flex; flex-direction: column; min-height: 300px;
+      padding: 23px 23px 21px; border: var(--line); border-radius: var(--radius);
+      background: var(--paper); box-shadow: var(--shadow); text-decoration: none;
+      overflow: hidden; transition: transform .18s var(--ease), box-shadow .18s var(--ease);
+    }
+    .entry-card:hover { transform: translate(-4px,-4px); box-shadow: 11px 11px 0 var(--accent); }
+    .entry-card:focus-visible, button:focus-visible, a:focus-visible, input:focus-visible { outline: 3px solid #ffbd45; outline-offset: 4px; }
+    .entry-card.learning { --accent: var(--blue); --tint: var(--blue-soft); box-shadow: 7px 7px 0 var(--blue); }
+    .entry-card.verification { --accent: var(--green); --tint: var(--green-soft); box-shadow: 7px 7px 0 var(--green); }
+    .entry-card.comparison { --accent: var(--purple); --tint: var(--purple-soft); box-shadow: 7px 7px 0 var(--purple); }
+    .entry-card::after { content: ""; position: absolute; width: 145px; height: 145px; border-radius: 50%; right: -46px; top: 75px; background: var(--tint); }
+    .card-top { display: flex; align-items: center; justify-content: space-between; position: relative; z-index: 1; }
+    .card-number { color: #758392; font-size: 12px; letter-spacing: .1em; }
+    .card-label { border: 2px solid var(--ink); border-radius: 999px; background: var(--accent); color: white; padding: 5px 11px; font-size: 11px; }
+    .card-icon { position: relative; z-index: 1; display: grid; place-items: center; width: 88px; height: 88px; margin: 20px 0 17px; border: 3px solid var(--ink); border-radius: 25px; background: var(--tint); box-shadow: 4px 4px 0 var(--ink); font-size: 44px; }
+    .entry-card h3 { position: relative; z-index: 1; margin: 0; font-size: 21px; line-height: 1.35; }
+    .entry-card .purpose { position: relative; z-index: 1; margin: 9px 0 20px; color: #627183; font-size: 13px; line-height: 1.65; font-weight: 600; }
+    .card-cta { position: relative; z-index: 1; display: flex; justify-content: space-between; align-items: center; margin-top: auto; padding-top: 13px; border-top: 2px dashed rgba(44,62,80,.22); color: var(--accent); font-size: 13px; }
+    .card-cta b { font-size: 20px; }
+    .workspace { display: none; }
+    .workspace.is-visible { display: block; animation: enter .28s var(--ease); }
+    @keyframes enter { from { opacity: 0; transform: translateY(9px); } to { opacity: 1; transform: translateY(0); } }
+    .workspace-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 18px; margin: 0 0 20px; }
+    .back-button { display: inline-flex; align-items: center; gap: 8px; border: 0; padding: 0; background: transparent; color: #526b7d; cursor: pointer; font-size: 13px; }
+    .back-button:hover { color: var(--ink); }
+    .breadcrumb { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; margin: 13px 0 10px; color: #758392; font-size: 12px; }
+    .breadcrumb .crumb-home { text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+    .breadcrumb .current { color: var(--ink); }
+    .location-pill { display: inline-flex; align-items: center; gap: 7px; padding: 6px 10px; border: 2px solid var(--ink); border-radius: 999px; background: #fff; font-size: 11px; }
+    .location-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent, var(--blue)); }
+    .workspace-heading { margin: 0; font-size: clamp(25px,3vw,33px); line-height: 1.2; }
+    .workspace-description { max-width: 760px; margin: 8px 0 0; color: #637283; font-size: 14px; line-height: 1.7; font-weight: 600; }
+    .category-nav { display: flex; gap: 10px; overflow-x: auto; padding: 5px 3px 12px; margin: 0 0 13px; scrollbar-width: thin; }
+    .category-tab { --tab: var(--blue); --tab-bg: var(--blue-soft); display: inline-flex; align-items: center; gap: 8px; white-space: nowrap; border: 3px solid var(--ink); border-radius: 14px; padding: 10px 14px; background: rgba(255,255,255,.85); box-shadow: 3px 3px 0 rgba(44,62,80,.22); cursor: pointer; color: var(--ink); transition: transform .15s, background .15s; }
+    .category-tab:hover { transform: translateY(-2px); }
+    .category-tab[aria-selected="true"] { background: var(--tab-bg); box-shadow: 4px 4px 0 var(--tab); }
+    .category-tab[data-category="qss"] { --tab: var(--purple); --tab-bg: var(--purple-soft); }
+    .category-tab[data-category="qsdc"] { --tab: var(--orange); --tab-bg: var(--orange-soft); }
+    .category-tab[data-category="qkd"] { --tab: var(--green); --tab-bg: var(--green-soft); }
+    .tab-index { color: var(--tab); font-size: 11px; }
+    .section-panel { --accent: var(--blue); --tint: var(--blue-soft); border: var(--line); border-radius: var(--radius); padding: clamp(17px,3vw,26px); background: rgba(255,255,255,.68); box-shadow: 6px 6px 0 rgba(44,62,80,.12); }
+    .section-panel[data-category="qkd"], .section-panel[data-category="analysis"] { --accent: var(--green); --tint: var(--green-soft); }
+    .section-panel[data-category="qss"], .section-panel[data-category="comparison"] { --accent: var(--purple); --tint: var(--purple-soft); }
+    .section-panel[data-category="qsdc"] { --accent: var(--orange); --tint: var(--orange-soft); }
+    .section-heading { display: flex; align-items: center; gap: 13px; margin: 0 0 8px; padding-bottom: 15px; border-bottom: 3px dashed rgba(44,62,80,.23); }
+    .section-code { flex: 0 0 auto; padding: 7px 12px; border: 3px solid var(--ink); border-radius: 12px; background: var(--accent); color: white; box-shadow: 3px 3px 0 var(--ink); font-size: 13px; }
+    .section-heading h3 { margin: 0; font-size: clamp(17px,2.3vw,21px); line-height: 1.35; }
+    .section-summary { margin: 13px 0 18px; color: #607184; font-size: 13px; line-height: 1.7; font-weight: 600; }
+    .section-image { display: block; width: min(100%,460px); height: 200px; object-fit: contain; margin: 0 auto 18px; border: 3px solid var(--ink); border-radius: 16px; background: #fff; box-shadow: 4px 4px 0 var(--tint); }
+    .item-list { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 13px; }
+    .menu-item { display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; min-height: 112px; padding: 16px; border: 3px solid var(--ink); border-radius: 15px; background: #fff; text-decoration: none; transition: transform .16s, box-shadow .16s; }
+    .menu-item:hover { transform: translate(-2px,-2px); box-shadow: 5px 5px 0 var(--accent); }
+    .menu-item h4 { margin: 0 0 7px; color: #1a567b; font-size: 17px; line-height: 1.3; }
+    .menu-item p { margin: 0; color: #697989; font-size: 12px; line-height: 1.6; font-weight: 600; }
+    .item-arrow { flex: 0 0 auto; color: var(--accent); font-size: 20px; }
+    .game-item { background: #eaf8ff; }
+    .game-tag { display: inline-flex; margin-bottom: 6px; padding: 4px 8px; border: 2px solid var(--ink); border-radius: 999px; background: #ffcf3f; color: #21344a; font-size: 10px; }
+    .empty-note { padding: 20px; border: 2px dashed rgba(44,62,80,.3); border-radius: 14px; color: #647386; line-height: 1.7; }
+    .page-footer { margin-top: 29px; color: #718091; text-align: center; font-size: 11px; font-weight: 600; }
+    dialog { width: min(520px,calc(100% - 28px)); max-height: calc(100% - 28px); padding: 0; border: 4px solid var(--ink); border-radius: 22px; background: #fdfefe; color: var(--ink); box-shadow: 10px 10px 0 rgba(44,62,80,.3); }
+    dialog::backdrop { background: rgba(34,52,69,.45); backdrop-filter: blur(3px); }
+    .profile-form { padding: 22px; }
+    .profile-form-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 17px; }
+    .profile-form h2 { margin: 0; font-size: 24px; }
+    .profile-form-head p { margin: 6px 0 0; color: #697989; font-size: 12px; line-height: 1.55; font-weight: 600; }
+    .close-button { border: 2px solid var(--ink); border-radius: 50%; width: 34px; height: 34px; background: white; cursor: pointer; font-size: 18px; }
+    .photo-row { display: flex; align-items: center; gap: 15px; padding: 13px; border: 2px dashed rgba(44,62,80,.25); border-radius: 15px; background: #f5faff; margin-bottom: 15px; }
+    .photo-preview { display: grid; place-items: center; width: 70px; height: 70px; overflow: hidden; border: 3px solid var(--ink); border-radius: 50%; background: white; font-size: 32px; }
+    .photo-preview img { width: 100%; height: 100%; object-fit: cover; }
+    .photo-controls label { display: block; margin-bottom: 6px; font-size: 13px; }
+    .photo-controls input { max-width: 100%; font-size: 11px; }
+    .field { display: block; margin: 12px 0; }
+    .field span { display: block; margin-bottom: 6px; font-size: 12px; }
+    .field input { width: 100%; border: 2px solid #b7c4cf; border-radius: 10px; padding: 11px 12px; background: white; color: var(--ink); font-size: 14px; }
+    .field input:focus { border-color: var(--blue); }
+    .privacy-note { margin: 12px 0 18px; padding: 10px 12px; border-radius: 10px; background: #eef7fb; color: #587084; font-size: 11px; line-height: 1.6; font-weight: 600; }
+    .form-actions { display: flex; justify-content: flex-end; gap: 10px; }
+    .form-actions button { border: 3px solid var(--ink); border-radius: 999px; padding: 9px 17px; cursor: pointer; }
+    .cancel-button { background: white; }
+    .save-button { background: var(--blue); color: white; box-shadow: 3px 3px 0 var(--ink); }
+    .toast { position: fixed; left: 50%; bottom: 22px; z-index: 5; transform: translate(-50%,20px); opacity: 0; pointer-events: none; padding: 11px 16px; border: 2px solid var(--ink); border-radius: 999px; background: white; box-shadow: 3px 3px 0 var(--ink); font-size: 12px; transition: .2s; }
+    .toast.is-visible { opacity: 1; transform: translate(-50%,0); }
+    @media (max-width: 780px) {
+      .home-grid { grid-template-columns: 1fr; gap: 17px; }
+      .entry-card { min-height: 235px; padding: 18px; }
+      .card-icon { width: 70px; height: 70px; margin: 15px 0 12px; border-radius: 20px; font-size: 36px; }
+      .entry-card h3 { font-size: 19px; }
+      .entry-card .purpose { max-width: 500px; margin-bottom: 14px; }
+      .site-header, main { width: min(100% - 28px,620px); }
+      .site-header { margin-top: 16px; }
+      .brand img { width: 42px; height: 42px; }
+      .brand p { font-size: 10px; }
+      main { margin-top: 28px; }
+      .player-bar { padding: 14px; gap: 10px; border-width: 4px; border-radius: 19px; box-shadow: 6px 6px 0 var(--ink); }
+      .player-main { gap: 10px; }
+      .player-avatar { width: 52px; height: 52px; font-size: 26px; }
+      #display-username { font-size: 18px; }
+      .player-role { font-size: 9px; letter-spacing: .1em; }
+      .player-actions { gap: 7px; }
+      .game-btn { padding: 7px 12px; font-size: 10px; }
+      .item-list { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 430px) {
+      .brand { gap: 8px; }
+      .brand img { width: 34px; height: 34px; }
+      .brand h1 { max-width: 215px; font-size: 15px; }
+      .brand p { display: none; }
+      .player-bar { align-items: flex-start; }
+      .player-main { gap: 8px; }
+      .player-avatar { width: 44px; height: 44px; font-size: 23px; }
+      .player-actions { flex-direction: column; align-items: stretch; }
+      .game-btn { min-width: 78px; padding: 6px 9px; }
+      .workspace-top { display: block; }
+      .workspace-top .location-pill { margin-top: 12px; }
+      .section-heading { align-items: flex-start; }
+    }
+    @media (prefers-reduced-motion: reduce) { *,*::before,*::after { scroll-behavior: auto !important; animation-duration: .01ms !important; transition-duration: .01ms !important; } }
+  </style>
 </head>
 <body>
+  <header class="site-header">
+    <a class="brand" href="#home" id="brandHome" aria-label="Return to Home">
+      <img src="pictures/computer.svg" alt="">
+      <div class="brand-copy">
+        <h1>Quantum Cybersecurity</h1>
+        <p>Explore quantum security, protocols, and verification tools</p>
+      </div>
+    </a>
+  </header>
 
-    <div class="header">
-        <img src="pictures/computer.svg" alt="Computer Icon">
-        <h1>Quantum Cybersecurity Education Platform</h1>
-    </div>
-
-    <div class="app-container">
-        <div class="card expandable-card" id="learning-card" data-panel="learning" onclick="expandPanel('learning')">
-            <div class="state-front">
-                <div class="card-badge">Learning</div>
-                <img src="pictures/introduction.svg" alt="Education Tier Icon">
-                <p class="card-title">Security Protocol Learning</p>
-            </div>
-            <div class="state-expanded">
-                <div class="card-badge">Learning</div>
-                <img src="pictures/introduction.svg" alt="Quantum Security Applications Icon">
-                <h2>Security Protocol Learning</h2>
-            </div>
-            <div class="back-btn-wrapper">
-                <button class="back-btn" onclick="event.stopPropagation(); collapseView()">Back</button>
-            </div>
+  <main>
+    <section id="hub" class="player-bar" aria-label="Player profile">
+      <div class="player-main">
+        <div id="player-avatar" class="player-avatar" aria-hidden="true">🐱</div>
+        <div>
+          <div id="display-username">User</div>
+          <div class="player-role">Cat Explorer</div>
         </div>
-
-        <div class="right-menu-container learning-menu" data-menu="learning">
-            <div class="section-rail" aria-label="Protocol category navigation">
-                <button class="section-rail-segment is-active" type="button" aria-label="Show Basics"></button>
-                <button class="section-rail-segment" type="button" aria-label="Show QKD"></button>
-                <button class="section-rail-segment" type="button" aria-label="Show QSS"></button>
-                <button class="section-rail-segment" type="button" aria-label="Show QSDC"></button>
-            </div>
-
-            <div class="learning-path">
-
-                <div class="path-section section-basics is-active-section">
-                    <div class="path-header">
-                        <div class="path-badge badge-qkd">Basics</div>
-                        <h3 class="path-title">Quantum Foundations</h3>
-                    </div>
-                    <div class="path-items">
-                        <a href="game/index.html" class="menu-item photon-game-item">
-                            <div class="text-content">
-                                <span class="photon-game-badge">PLAY NOW</span>
-                                <p class="en-title">Photon Game</p>
-                                <p class="topic-desc">Challenge photon directions and polarizers through animated levels.</p>
-                            </div>
-                        </a>
-                        <a href="basis_tutorial.html" class="menu-item">
-                            <div class="text-content">
-                                <p class="en-title">Photon Direction &amp; Polarization Basis</p>
-                                <p class="topic-desc">Learn how photon directions, polarizers, and qubit states work before entering QKD protocols.</p>
-                            </div>
-                        </a>
-                        <a href="entanglement_tutorial.html" class="menu-item">
-                            <div class="text-content">
-                                <p class="en-title">Entanglement Swapping</p>
-                                <p class="topic-desc">Learn how Bell states and Bell-state measurements create new entangled particle pairs.</p>
-                            </div>
-                        </a>
-                        <a href="entanglement_analysis.html" class="menu-item">
-                            <div class="text-content">
-                                <p class="en-title">Entanglement Tool</p>
-                                <p class="topic-desc">Learn how Bell states and Bell-state measurements create new entangled particle pairs.</p>
-                            </div>
-                        </a>
-                    </div>
-                </div>
-
-                <div class="path-section section-qkd">
-                    <div class="path-header">
-                        <div class="path-badge badge-qkd">QKD</div>
-                        <h3 class="path-title">Quantum Key Distribution</h3>
-                    </div>
-                    <img class="path-section-image" src="pictures/QKDgeneral.png" alt="QKD Icon">
-                    <div class="path-items">
-                        <a href="BB84overview.html" class="menu-item">
-                            <div class="text-content">
-                                <p class="en-title">BB84 Protocol</p>
-                                <p class="topic-desc">Learn how Alice and Bob use random basis, compare choices, and keep matching measurement results.</p>
-                            </div>
-                        </a>
-                        <a href="B92overview.html" class="menu-item">
-                            <div class="text-content">
-                                <p class="en-title">B92 Protocol</p>
-                                <p class="topic-desc">Learn how Bob uses conclusive results to infer Alice's state and discard uncertain rounds.</p>
-                            </div>
-                        </a>
-                    </div>
-                </div>
-
-                <div class="path-section section-qss">
-                    <div class="path-header">
-                        <div class="path-badge badge-qss">QSS</div>
-                        <h3 class="path-title">Quantum Secret Sharing</h3>
-                    </div>
-                    <img class="path-section-image" src="pictures/QSSgeneral.png" alt="QSS Icon">
-                    <div class="path-items">
-                        <a href="ZLMstep1.html" class="menu-item">
-                            <div class="text-content">
-                                <p class="en-title">ZhangLiMan Protocol</p>
-                                <p class="topic-desc">Learn how multiple participants cooperate so that a secret can be recovered only through shared information.</p>
-                            </div>
-                        </a>
-                        <a href="ZMoverview.html" class="menu-item">
-                            <div class="text-content">
-                                <p class="en-title">ZhangMan Protocol</p>
-                                <p class="topic-desc">Explore the extended structure of Quantum Secret Sharing for varied security scenarios.</p>
-                            </div>
-                        </a>
-                    </div>
-                </div>
-
-                <div class="path-section section-qsdc">
-                    <div class="path-header">
-                        <div class="path-badge badge-qsdc">QSDC</div>
-                        <h3 class="path-title">Quantum Security Direct Communication</h3>
-                    </div>
-                    <img class="path-section-image" src="pictures/QSDCgeneral.png" alt="QSDC Icon">
-                    <div class="path-items">
-                        <a href="PINGPONGoverview.html" class="menu-item">
-                            <div class="text-content">
-                                <p class="en-title">Ping-Pong Protocol</p>
-                                <p class="topic-desc">Learn how control mode and message mode support secure two-way quantum communication.</p>
-                            </div>
-                        </a>
-                        <!-- <a href="#" class="menu-item">
-                            <div class="text-content">
-                                <p class="en-title">Improved Ping-Pong</p>
-                                <p class="topic-desc">Understand how the improved protocol mitigates attacks and ensures higher channel security.</p>
-                            </div>
-                        </a> -->
-                    </div>
-                </div>
-
-            </div>
-            
-        </div>
-        
-        <a href="VerifySetting.html" class="card-link">
-            <div class="card collapsible-card">
-                <div class="card-badge">Analysis</div>
-                <img src="pictures/calculate.svg" alt="Design Tier Icon">
-                <p class="card-title">Security Analysis Verification</p>
-            </div>
+      </div>
+      <div class="player-actions">
+        <button id="edit-profile-btn" type="button" class="game-btn btn-blue" aria-haspopup="dialog">EDIT</button>
+        <button id="logout-btn" type="button" class="game-btn btn-logout">LOGOUT</button>
+      </div>
+    </section>
+    <section id="homeView" aria-labelledby="homeTitle">
+      <div class="welcome">
+        <p class="eyebrow">QUANTUM SECURITY LEARNING HUB</p>
+        <h2 id="homeTitle">Where would you like to start?</h2>
+        <p>Choose a goal to get started. Your current area and topic will stay clearly marked as you explore.</p>
+      </div>
+      <div class="home-grid">
+        <a class="entry-card learning" href="#learning" data-open="learning">
+          <div class="card-top"><span class="card-number">01 / LEARN</span><span class="card-label">LEARNING PATH</span></div>
+          <div class="card-icon" aria-hidden="true">✦</div>
+          <h3>Security Protocol Learning</h3>
+          <p class="purpose">Start with photons and quantum foundations, then explore QKD, quantum secret sharing, and direct communication.</p>
+          <div class="card-cta"><span>Explore concepts and protocols</span><b aria-hidden="true">→</b></div>
         </a>
+        <a class="entry-card verification" href="VerifySetting.html">
+          <div class="card-top"><span class="card-number">02 / VERIFY</span><span class="card-label">SETUP & CHECKS</span></div>
+          <div class="card-icon" aria-hidden="true">✓</div>
+          <h3>Security Analysis Verification</h3>
+          <p class="purpose">Configure analysis settings and verify security-related behavior with the verification tools.</p>
+          <div class="card-cta"><span>Open verification tool</span><b aria-hidden="true">↗</b></div>
+        </a>
+        <a class="entry-card comparison" href="#comparison" data-open="comparison">
+          <div class="card-top"><span class="card-number">03 / COMPARE</span><span class="card-label">COMPARE & EVALUATE</span></div>
+          <div class="card-icon" aria-hidden="true">⇄</div>
+          <h3>Protocol Comparison & Evaluation</h3>
+          <p class="purpose">Compare QKD security and discard rates, then open the analysis tool that fits your goal.</p>
+          <div class="card-cta"><span>Explore comparison tools</span><b aria-hidden="true">→</b></div>
+        </a>
+      </div>
+    </section>
 
-        <div class="card expandable-card" id="comparison-card" data-panel="comparison" onclick="expandPanel('comparison')">
-            <div class="state-front">
-                <div class="card-badge">Comparison</div>
-                <img src="pictures/analyze.svg" alt="Comparison Tier Icon">
-                <p class="card-title">Protocol Comparison Evaluation</p>
-            </div>
-            <div class="state-expanded">
-                <div class="card-badge">Comparison</div>
-                <img src="pictures/analyze.svg" alt="QKD Comparison Tools Icon">
-                <h2>Protocol Comparison Evaluation</h2>
-            </div>
-            <div class="back-btn-wrapper">
-                <button class="back-btn" onclick="event.stopPropagation(); collapseView()">Back</button>
-            </div>
+    <section class="workspace" id="workspace" aria-live="polite" aria-labelledby="workspaceTitle">
+      <div class="workspace-top">
+        <div>
+          <button class="back-button" id="backHome" type="button"><span aria-hidden="true">←</span> Back to Home</button>
+          <nav class="breadcrumb" aria-label="Current location">
+            <a class="crumb-home" id="breadcrumbHome" href="#home">Home</a><span aria-hidden="true">/</span>
+            <span class="current" id="breadcrumbCurrent">Security Protocol Learning</span>
+            <span id="breadcrumbCategoryWrap" hidden><span aria-hidden="true">/</span> <span class="current" id="breadcrumbCategory"></span></span>
+          </nav>
+          <span class="location-pill"><span class="location-dot"></span><span id="locationLabel">You are here: Security Protocol Learning</span></span>
         </div>
+      </div>
+      <h2 class="workspace-heading" id="workspaceTitle">Security Protocol Learning</h2>
+      <p class="workspace-description" id="workspaceDescription"></p>
+      <nav class="category-nav" id="categoryNav" aria-label="Categories in this section"></nav>
+      <article class="section-panel" id="sectionPanel" data-category="basics" aria-live="polite"></article>
+    </section>
+    <p class="page-footer">Quantum Cybersecurity Education Platform · Select a category to explore its topics</p>
+  </main>
 
-        <div class="right-menu-container comparison-menu" data-menu="comparison">
-            <div class="section-rail" aria-label="Comparison category navigation">
-                <button class="section-rail-segment is-active" type="button" aria-label="Show QKD security analysis"></button>
-                <button class="section-rail-segment" type="button" aria-label="Show QKD discard-rate comparison"></button>
-            </div>
+  <dialog id="profileDialog" aria-labelledby="profileTitle">
+    <form class="profile-form" id="profileForm">
+      <div class="profile-form-head">
+        <div><h2 id="profileTitle">Profile</h2><p>Update your display name and profile photo.</p></div>
+        <button class="close-button" id="closeProfile" type="button" aria-label="Close">×</button>
+      </div>
+      <div class="photo-row">
+        <div class="photo-preview" id="photoPreview" aria-label="Photo preview">🐱</div>
+        <div class="photo-controls"><label for="photoInput">Profile photo</label><input id="photoInput" type="file" accept="image/*"></div>
+      </div>
+      <label class="field"><span>Name</span><input id="nameInput" name="name" maxlength="40" autocomplete="name" placeholder="Enter a display name"></label>
+      <label class="field"><span>Password (optional)</span><input id="passwordInput" name="password" type="password" autocomplete="new-password" placeholder="Enter a password if you wish to set one"></label>
+      <label class="field"><span>Confirm password</span><input id="confirmInput" name="confirm" type="password" autocomplete="new-password" placeholder="Re-enter your password"></label>
+      <p class="privacy-note">This page has no account backend. Your name and photo are stored only in this browser. The password fields only check that both entries match; your password is never uploaded or saved.</p>
+      <div class="form-actions"><button class="cancel-button" id="cancelProfile" type="button">Cancel</button><button class="save-button" type="submit">Save profile</button></div>
+    </form>
+  </dialog>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
-            <div class="learning-path">
-                <div class="path-section section-qkd is-active-section">
-                    <div class="path-header">
-                        <div class="path-badge badge-qkd">QKD</div>
-                        <h3 class="path-title">Security Analysis</h3>
-                    </div>
-                    <div class="path-items">
-                        <a href="QKDprob.html" class="menu-item">
-                            <div class="text-content">
-                                <p class="en-title">QKD Security Analysis</p>
-                                <p class="topic-desc">Configure QKD protocol settings and verify security-related behavior.</p>
-                            </div>
-                        </a>
-                    </div>
-                </div>
+  <script>
+    const content = {
+      learning: {
+        title: 'Security Protocol Learning',
+        description: 'Explore the core ideas of quantum communication step by step. Choose a category below; the page title and location indicator will update with it.',
+        categories: [
+          { id:'basics', label:'Quantum Foundations', code:'START', title:'Quantum Foundations', summary:'Start with photon directions, polarization, and entanglement—the foundations for understanding quantum security protocols.', items:[
+            { title:'Photon Game', desc:'Practice photon directions and polarizers through interactive levels.', href:'game/index.html', game:true },
+            { title:'Photon Direction & Polarization Basis', desc:'Learn how photon directions, polarization bases, and qubit states work.', href:'basis_tutorial.html' },
+            { title:'Entanglement Swapping', desc:'Explore how Bell states and Bell-state measurements create new entangled particle pairs.', href:'entanglement_tutorial.html' },
+            { title:'Entanglement Tool', desc:'Use the tool to analyze quantum entanglement and related states.', href:'entanglement_analysis.html' }
+          ]},
+          { id:'qkd', label:'QKD Key Distribution', code:'QKD', title:'Quantum Key Distribution', summary:'Learn how to establish shared keys over quantum channels and understand each protocol’s measurement and sifting process.', image:'pictures/QKDgeneral.png', items:[
+            { title:'BB84 Protocol', desc:'See how Alice and Bob choose bases at random, compare their choices, and keep matching results.', href:'BB84overview.html' },
+            { title:'B92 Protocol', desc:'See how Bob infers Alice’s state from conclusive results and discards uncertain rounds.', href:'B92overview.html' }
+          ]},
+          { id:'qss', label:'QSS Secret Sharing', code:'QSS', title:'Quantum Secret Sharing', summary:'Explore how a secret can be split among participants and recovered through collaboration.', image:'pictures/QSSgeneral.png', items:[
+            { title:'ZhangLiMan Protocol', desc:'Learn how multiple participants work together to recover a shared secret.', href:'ZLMstep1.html' },
+            { title:'ZhangMan Protocol', desc:'Explore extended quantum secret-sharing protocols and different security scenarios.', href:'ZMoverview.html' }
+          ]},
+          { id:'qsdc', label:'QSDC Direct Communication', code:'QSDC', title:'Quantum Secure Direct Communication', summary:'Learn how quantum communication can send messages directly without first establishing a key, including its control procedures.', image:'pictures/QSDCgeneral.png', items:[
+            { title:'Ping-Pong Protocol', desc:'Learn how control and message modes support secure two-way quantum communication.', href:'PINGPONGoverview.html' }
+          ]}
+        ]
+      },
+      comparison: {
+        title: 'Protocol Comparison & Evaluation',
+        description: 'This area contains comparison and evaluation tools—not concept lessons. Choose an analysis goal to open the right tool.',
+        categories: [
+          { id:'analysis', label:'Security Analysis', code:'CHECK', title:'QKD Security Analysis', summary:'Configure QKD protocol settings and review security-related behavior and analysis results.', items:[
+            { title:'QKD Security Analysis', desc:'Configure a QKD protocol and verify its security-related behavior.', href:'QKDprob.html' }
+          ]},
+          { id:'comparison', label:'Discard Rate Comparison', code:'COMPARE', title:'QKD Discard Rate Comparison', summary:'Compare discard-rate behavior across different QKD protocol choices.', items:[
+            { title:'QKD Discard Rate Comparison', desc:'Compare how much data is discarded during sifting across QKD protocols.', href:'QKD_compare.html' }
+          ]}
+        ]
+      }
+    };
+    let currentView = null;
+    let activeCategory = 0;
+    let chosenPhoto = '';
+    const homeView = document.getElementById('homeView');
+    const workspace = document.getElementById('workspace');
+    const profileDialog = document.getElementById('profileDialog');
+    const storageKey = 'quantumCybersecurityProfile';
 
-                <div class="path-section section-qkd">
-                    <div class="path-header">
-                        <div class="path-badge badge-qkd">QKD</div>
-                        <h3 class="path-title">Discard Rate Comparison</h3>
-                    </div>
-                    <div class="path-items">
-                        <a href="QKD_compare.html" class="menu-item">
-                            <div class="text-content">
-                                <p class="en-title">QKD Discard Rate Comparison</p>
-                                <p class="topic-desc">Compare discard-rate behavior across QKD protocol choices.</p>
-                            </div>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+    function renderItems(items) {
+      return `<div class="item-list">${items.map(item => `
+        <a class="menu-item${item.game ? ' game-item' : ''}" href="${item.href}">
+          <div>${item.game ? '<span class="game-tag">INTERACTIVE</span>' : ''}<h4>${item.title}</h4><p>${item.desc}</p></div><span class="item-arrow" aria-hidden="true">↗</span>
+        </a>`).join('')}</div>`;
+    }
+    function renderCategory(index) {
+      const data = content[currentView];
+      const category = data.categories[index];
+      activeCategory = index;
+      document.querySelectorAll('.category-tab').forEach((tab, i) => tab.setAttribute('aria-selected', String(i === index)));
+      document.getElementById('breadcrumbCategory').textContent = category.label;
+      document.getElementById('breadcrumbCategoryWrap').hidden = false;
+      document.getElementById('locationLabel').textContent = `You are here: ${data.title} / ${category.label}`;
+      const panel = document.getElementById('sectionPanel');
+      panel.dataset.category = category.id;
+      panel.innerHTML = `<div class="section-heading"><span class="section-code">${category.code}</span><h3>${category.title}</h3></div><p class="section-summary">${category.summary}</p>${category.image ? `<img class="section-image" src="${category.image}" alt="${category.title} illustration">` : ''}${renderItems(category.items)}`;
+    }
+    function openView(view, categoryId) {
+      if (!content[view]) return;
+      currentView = view;
+      const data = content[view];
+      homeView.hidden = true;
+      workspace.classList.add('is-visible');
+      document.getElementById('workspaceTitle').textContent = data.title;
+      document.getElementById('workspaceDescription').textContent = data.description;
+      document.getElementById('breadcrumbCurrent').textContent = data.title;
+      document.getElementById('breadcrumbCategoryWrap').hidden = true;
+      document.getElementById('locationLabel').textContent = `You are here: ${data.title}`;
+      document.querySelector('.location-dot').style.background = view === 'learning' ? 'var(--blue)' : 'var(--purple)';
+      const nav = document.getElementById('categoryNav');
+      nav.innerHTML = data.categories.map((category, i) => `<button type="button" class="category-tab" data-category="${category.id}" role="tab" aria-selected="false"><span class="tab-index">0${i + 1}</span>${category.label}</button>`).join('');
+      nav.querySelectorAll('.category-tab').forEach((tab, i) => tab.addEventListener('click', () => renderCategory(i)));
+      const categoryAliases = {foundation:'basics', foundations:'basics', security:'analysis', qkd:'analysis', discard:'comparison', discards:'comparison', probability:'comparison'};
+      const normalizedCategory = categoryAliases[(categoryId || '').toLowerCase()] || (categoryId || '').toLowerCase();
+      const requestedIndex = normalizedCategory ? data.categories.findIndex(category => category.id === normalizedCategory) : -1;
+      renderCategory(requestedIndex >= 0 ? requestedIndex : 0);
+      history.replaceState({view, category: activeCategory}, '', `#${view}`);
+      document.getElementById('backHome').focus({preventScroll:true});
+      window.scrollTo({top:0,behavior:'smooth'});
+    }
+    function goHome(updateHash = true) {
+      currentView = null;
+      workspace.classList.remove('is-visible');
+      homeView.hidden = false;
+      if (updateHash) history.replaceState({}, '', location.pathname + location.search);
+      window.scrollTo({top:0,behavior:'smooth'});
+    }
+    document.querySelectorAll('[data-open]').forEach(link => link.addEventListener('click', event => { event.preventDefault(); openView(link.dataset.open); }));
+    document.getElementById('backHome').addEventListener('click', () => goHome());
+    document.getElementById('breadcrumbHome').addEventListener('click', event => { event.preventDefault(); goHome(); });
+    document.getElementById('brandHome').addEventListener('click', event => { event.preventDefault(); goHome(); });
+    document.getElementById('categoryNav').addEventListener('keydown', event => {
+      if (!['ArrowRight','ArrowLeft'].includes(event.key)) return;
+      const tabs = [...event.currentTarget.querySelectorAll('.category-tab')];
+      const index = tabs.indexOf(document.activeElement);
+      if (index < 0) return;
+      event.preventDefault();
+      const next = (index + (event.key === 'ArrowRight' ? 1 : tabs.length - 1)) % tabs.length;
+      tabs[next].focus(); tabs[next].click();
+    });
 
-    <div class="hub-link-wrapper">
-        <a class="hub-link" href="https://x1000fish.github.io/CatsPlayground/login.html">Hub</a>
-    </div>
-
-    <script>
-        const pathMenus = {};
-
-        function updateMobileFitScale() {
-            const root = document.documentElement;
-            const isMobile = window.matchMedia('(max-width: 700px)').matches;
-            if (!isMobile) {
-                root.style.setProperty('--mobile-fit-scale', '1');
-                root.style.setProperty('--mobile-fit-height', '380px');
-                return;
-            }
-
-            const scale = Math.min(1, Math.max(0.28, (window.innerWidth - 8) / 960));
-            root.style.setProperty('--mobile-fit-scale', scale.toFixed(4));
-            root.style.setProperty('--mobile-fit-height', `${Math.ceil(380 * scale)}px`);
-        }
-
-        function expandPanel(panelName) {
-            document.body.classList.add('is-expanded');
-            document.querySelectorAll('.expandable-card').forEach(function (card) {
-                const isActive = card.dataset.panel === panelName;
-                card.classList.toggle('is-active-card', isActive);
-                const front = card.querySelector('.state-front');
-                const expanded = card.querySelector('.state-expanded');
-                if (front) front.style.display = isActive ? 'none' : 'flex';
-                if (expanded) expanded.style.display = isActive ? 'flex' : 'none';
-            });
-            document.querySelectorAll('.right-menu-container').forEach(function (menu) {
-                menu.classList.toggle('is-active-menu', menu.dataset.menu === panelName);
-            });
-        }
-
-        function expandView() {
-            expandPanel('learning');
-        }
-
-        function collapseView() {
-            document.body.classList.remove('is-expanded');
-            document.querySelectorAll('.expandable-card').forEach(function (card) {
-                card.classList.remove('is-active-card');
-                const front = card.querySelector('.state-front');
-                const expanded = card.querySelector('.state-expanded');
-                if (front) front.style.display = 'flex';
-                if (expanded) expanded.style.display = 'none';
-            });
-            document.querySelectorAll('.right-menu-container').forEach(function (menu) {
-                menu.classList.remove('is-active-menu');
-            });
-        }
-
-        document.addEventListener('DOMContentLoaded', function () {
-            updateMobileFitScale();
-            window.addEventListener('resize', updateMobileFitScale);
-            window.addEventListener('orientationchange', updateMobileFitScale);
-
-            function initPathMenu(menu, sectionMap) {
-                const panelName = menu.dataset.menu;
-                const learningPath = menu.querySelector('.learning-path');
-                const sections = Array.from(menu.querySelectorAll('.path-section'));
-                const railSegments = Array.from(menu.querySelectorAll('.section-rail-segment'));
-                if (!learningPath || sections.length === 0) return null;
-
-                let activePathSection = 0;
-                let pathWheelLocked = false;
-                let pathTouchStartY = null;
-
-                function setActivePathSection(index) {
-                    activePathSection = Math.max(0, Math.min(sections.length - 1, index));
-                    sections.forEach(function (section, sectionIndex) {
-                        section.classList.toggle('is-active-section', sectionIndex === activePathSection);
-                    });
-                    railSegments.forEach(function (segment, segmentIndex) {
-                        segment.classList.toggle('is-active', segmentIndex === activePathSection);
-                        segment.setAttribute('aria-current', segmentIndex === activePathSection ? 'true' : 'false');
-                    });
-                }
-
-                function scrollToPathSection(index) {
-                    setActivePathSection(index);
-                }
-
-                function stepPathSection(direction) {
-                    let nextSection = activePathSection + direction;
-                    if (nextSection >= sections.length) nextSection = 0;
-                    if (nextSection < 0) nextSection = sections.length - 1;
-                    scrollToPathSection(nextSection);
-                }
-
-                railSegments.forEach(function (segment, segmentIndex) {
-                    segment.addEventListener('click', function () {
-                        setActivePathSection(segmentIndex);
-                    });
-                });
-
-                learningPath.addEventListener('wheel', function (event) {
-                    event.preventDefault();
-                    if (pathWheelLocked || Math.abs(event.deltaY) < 8) return;
-
-                    pathWheelLocked = true;
-                    stepPathSection(event.deltaY > 0 ? 1 : -1);
-
-                    window.setTimeout(function () {
-                        pathWheelLocked = false;
-                    }, 520);
-                }, { passive: false });
-
-                learningPath.addEventListener('touchstart', function (event) {
-                    if (!event.touches || event.touches.length === 0) return;
-                    pathTouchStartY = event.touches[0].clientY;
-                }, { passive: true });
-
-                learningPath.addEventListener('touchend', function (event) {
-                    if (pathTouchStartY === null || !event.changedTouches || event.changedTouches.length === 0) return;
-                    const touchDelta = pathTouchStartY - event.changedTouches[0].clientY;
-                    pathTouchStartY = null;
-                    if (pathWheelLocked || Math.abs(touchDelta) < 35) return;
-
-                    pathWheelLocked = true;
-                    stepPathSection(touchDelta > 0 ? 1 : -1);
-
-                    window.setTimeout(function () {
-                        pathWheelLocked = false;
-                    }, 360);
-                }, { passive: true });
-
-                setActivePathSection(0);
-
-                pathMenus[panelName] = {
-                    sectionMap: sectionMap,
-                    setActivePathSection: setActivePathSection
-                };
-
-                return pathMenus[panelName];
-            }
-
-            initPathMenu(document.querySelector('.learning-menu'), { basics: 0, foundation: 0, foundations: 0, qkd: 1, qss: 2, qsdc: 3 });
-            initPathMenu(document.querySelector('.comparison-menu'), { analysis: 0, security: 0, qkd: 0, discard: 1, discards: 1, probability: 1, comparison: 1 });
-
-            function openLinkedSection() {
-                const params = new URLSearchParams(window.location.search);
-                const requestedSection = (params.get('section') || '').toLowerCase();
-                const requestedTool = (params.get('tool') || '').toLowerCase();
-                const shouldOpenLearning = window.location.hash === '#quantum-security-applications';
-                const shouldOpenComparison = window.location.hash === '#protocol-comparison-evaluation';
-
-                if (pathMenus.learning) {
-                    if (Object.prototype.hasOwnProperty.call(pathMenus.learning.sectionMap, requestedSection)) {
-                        pathMenus.learning.setActivePathSection(pathMenus.learning.sectionMap[requestedSection]);
-                    } else {
-                        pathMenus.learning.setActivePathSection(0);
-                    }
-                }
-
-                if (pathMenus.comparison && Object.prototype.hasOwnProperty.call(pathMenus.comparison.sectionMap, requestedTool)) {
-                    pathMenus.comparison.setActivePathSection(pathMenus.comparison.sectionMap[requestedTool]);
-                } else if (pathMenus.comparison) {
-                    pathMenus.comparison.setActivePathSection(0);
-                }
-
-                if (shouldOpenLearning && pathMenus.learning && Object.prototype.hasOwnProperty.call(pathMenus.learning.sectionMap, requestedSection)) {
-                    expandPanel('learning');
-                }
-
-                if (shouldOpenComparison) {
-                    expandPanel('comparison');
-                }
-            }
-
-            openLinkedSection();
-
-            window.addEventListener('hashchange', openLinkedSection);
-            window.addEventListener('popstate', openLinkedSection);
-        });
-    </script>
-
+    function loadProfile() {
+      try {
+        const profile = JSON.parse(localStorage.getItem(storageKey) || '{}');
+        document.getElementById('display-username').textContent = profile.name || 'User';
+        document.getElementById('player-avatar').innerHTML = profile.photo ? `<img src="${profile.photo}" alt="">` : '🐱';
+        document.getElementById('photoPreview').innerHTML = profile.photo ? `<img src="${profile.photo}" alt="Photo preview">` : '🐱';
+        document.getElementById('nameInput').value = profile.name || '';
+      } catch { /* If saved profile data cannot be read, the default avatar will be used. */ }
+    }
+    function showToast(message) {
+      const toast = document.getElementById('toast'); toast.textContent = message; toast.classList.add('is-visible');
+      window.setTimeout(() => toast.classList.remove('is-visible'), 2400);
+    }
+    function openProfileEditor() { loadProfile(); chosenPhoto = ''; profileDialog.showModal(); }
+    function handleLogout() {
+      if (!window.confirm('Logging out will remove the name and photo saved in this browser and return you to guest mode. Continue?')) return;
+      localStorage.removeItem(storageKey);
+      document.getElementById('passwordInput').value = '';
+      document.getElementById('confirmInput').value = '';
+      document.getElementById('photoInput').value = '';
+      chosenPhoto = '';
+      loadProfile();
+      goHome();
+      showToast('You are logged out and browsing as a guest.');
+    }
+    document.getElementById('edit-profile-btn').addEventListener('click', openProfileEditor);
+    document.getElementById('logout-btn').addEventListener('click', handleLogout);
+    function closeProfile() { profileDialog.close(); }
+    document.getElementById('closeProfile').addEventListener('click', closeProfile);
+    document.getElementById('cancelProfile').addEventListener('click', closeProfile);
+    document.getElementById('photoInput').addEventListener('change', event => {
+      const file = event.target.files && event.target.files[0]; if (!file) return;
+      if (!file.type.startsWith('image/')) { showToast('Please choose an image file.'); return; }
+      if (file.size > 2 * 1024 * 1024) { showToast('Choose a photo smaller than 2 MB.'); event.target.value = ''; return; }
+      const reader = new FileReader();
+      reader.onload = () => { chosenPhoto = String(reader.result); document.getElementById('photoPreview').innerHTML = `<img src="${chosenPhoto}" alt="Photo preview">`; };
+      reader.readAsDataURL(file);
+    });
+    document.getElementById('profileForm').addEventListener('submit', event => {
+      event.preventDefault();
+      const password = document.getElementById('passwordInput').value;
+      const confirm = document.getElementById('confirmInput').value;
+      if (password && password !== confirm) { showToast('The passwords do not match. Please check and try again.'); document.getElementById('confirmInput').focus(); return; }
+      const name = document.getElementById('nameInput').value.trim();
+      try {
+        const old = JSON.parse(localStorage.getItem(storageKey) || '{}');
+        localStorage.setItem(storageKey, JSON.stringify({name, photo: chosenPhoto || old.photo || ''}));
+      } catch { showToast('This browser could not save your profile. Check your browser storage settings.'); return; }
+      document.getElementById('passwordInput').value = '';
+      document.getElementById('confirmInput').value = '';
+      loadProfile(); closeProfile(); showToast('Your profile has been saved in this browser.');
+    });
+    window.addEventListener('popstate', () => {
+      const hash = location.hash.slice(1);
+      if (content[hash]) openView(hash);
+      else goHome(false);
+    });
+    loadProfile();
+    const initialHash = location.hash.slice(1);
+    const params = new URLSearchParams(location.search);
+    const legacyLearning = initialHash === 'quantum-security-applications';
+    const legacyComparison = initialHash === 'protocol-comparison-evaluation';
+    if (content[initialHash]) openView(initialHash);
+    else if (legacyLearning) openView('learning', (params.get('section') || '').toLowerCase());
+    else if (legacyComparison) openView('comparison', (params.get('tool') || '').toLowerCase() === 'discard' ? 'comparison' : 'analysis');
+  </script>
 </body>
 </html>
