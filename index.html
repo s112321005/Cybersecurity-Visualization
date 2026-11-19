@@ -29,7 +29,7 @@
       min-height: 100vh; margin: 0; color: var(--ink);
       background: linear-gradient(135deg,#e0f2fe 0%,#f5f3ff 52%,#ecfdf5 100%);
       background-attachment: fixed;
-      font-family:'Comfortaa','Segoe UI',Tahoma,sans-serif; font-weight: 700;
+      font-family: Comfortaa, "Segoe UI", sans-serif; font-weight: 700;
     }
     body::before {
       content: ""; position: fixed; inset: -12%; z-index: -1; pointer-events: none;
@@ -49,12 +49,35 @@
     .brand-copy { min-width: 0; }
     .brand h1 { margin: 0; font: 400 clamp(1.1rem,2.5vw,2rem)/1.15 "Titan One", Comfortaa, sans-serif; letter-spacing: .2px; }
     .brand p { margin: 6px 0 0; color: #607184; font-size: 12px; letter-spacing: .04em; }
+    body:not(.is-authenticated) > .site-header, body:not(.is-authenticated) > main { display: none; }
+    .auth-gate { position: fixed; inset: 0; z-index: 1000; display: grid; place-items: center; overflow-y: auto; padding: 24px; background: linear-gradient(135deg,#e0f2fe 0%,#f5f3ff 52%,#ecfdf5 100%); }
+    .auth-gate[hidden] { display: none; }
+    .auth-card { width: min(460px,100%); padding: clamp(22px,5vw,38px); border: 5px solid var(--ink); border-radius: 25px; background: rgba(255,255,255,.96); box-shadow: 10px 10px 0 var(--ink); }
+    .auth-eyebrow { margin: 0 0 8px; color: #477b99; font-size: 11px; letter-spacing: .15em; }
+    .auth-card h1 { margin: 0; font: 400 clamp(26px,7vw,34px)/1.15 "Titan One", Comfortaa, sans-serif; }
+    .auth-intro { margin: 10px 0 21px; color: #637283; font-size: 13px; line-height: 1.7; font-weight: 600; }
+    .auth-field { display: block; margin: 14px 0; }
+    .auth-field span { display: block; margin-bottom: 7px; font-size: 12px; }
+    .auth-field input { width: 100%; border: 3px solid #b7c4cf; border-radius: 12px; padding: 12px 13px; background: white; color: var(--ink); font-size: 15px; }
+    .auth-field input:focus { border-color: var(--blue); }
+    .auth-submit { width: 100%; margin-top: 8px; border: 3px solid var(--ink); border-radius: 999px; padding: 12px 18px; background: var(--blue); color: white; box-shadow: 4px 4px 0 var(--ink); font-weight: 900; cursor: pointer; }
+    .auth-submit:disabled { opacity: .65; cursor: wait; }
+    .auth-error { min-height: 20px; margin: 10px 0 0; color: #a23b45; font-size: 12px; line-height: 1.5; }
+    .auth-register { margin: 14px 0 0; color: #607184; text-align: center; font-size: 12px; line-height: 1.6; font-weight: 600; }
+    .auth-register a { color: #276a95; font-weight: 900; text-underline-offset: 3px; }
+    .photo-adjustments { display: grid; gap: 8px; margin: 0 0 15px; padding: 12px; border-radius: 12px; background: #eef7fb; }
+    .photo-adjustments label { display: grid; grid-template-columns: 58px 1fr; align-items: center; gap: 9px; color: #526b7d; font-size: 11px; }
+    .photo-adjustments input { width: 100%; accent-color: var(--blue); }
+    .player-bar-row { width: min(980px, 100%); margin: 0 auto 30px; display: flex; align-items: center; gap: 14px; }
     .player-bar {
-      width: min(900px, 100%); margin: 0 auto 30px; padding: 18px 26px;
+      width: auto; min-width: 0; flex: 1; margin: 0; padding: 18px 26px;
       display: flex; align-items: center; justify-content: space-between; gap: 18px;
       border: 5px solid var(--ink); border-radius: 24px; background: white;
       box-shadow: 9px 9px 0 var(--ink);
     }
+    .hub-button { display: grid; place-items: center; width: 64px; height: 64px; flex: 0 0 auto; border: 3px solid var(--ink); border-radius: 50%; background: #f1f7fb; color: var(--ink); box-shadow: 3px 3px 0 var(--ink); text-decoration: none; transition: transform .15s, box-shadow .15s, background .15s; }
+    .hub-button:hover { transform: translate(-2px,-2px); background: var(--blue-soft); box-shadow: 5px 5px 0 var(--blue); }
+    .hub-button svg { width: 29px; height: 29px; }
     .player-main { display: flex; align-items: center; gap: 16px; min-width: 0; }
     .player-avatar { display: grid; place-items: center; width: 64px; height: 64px; flex: 0 0 auto; overflow: hidden; border: 3px solid var(--ink); border-radius: 50%; background: #eaf6fc; font-size: 32px; }
     .player-avatar img { width: 100%; height: 100%; object-fit: cover; }
@@ -80,8 +103,8 @@
     }
     .entry-card:hover { transform: translate(-4px,-4px); box-shadow: 11px 11px 0 var(--accent); }
     .entry-card:focus-visible, button:focus-visible, a:focus-visible, input:focus-visible { outline: 3px solid #ffbd45; outline-offset: 4px; }
-    .entry-card.learning { --accent: var(--blue); --tint: var(--blue-soft); box-shadow: 7px 7px 0 var(--blue); }
-    .entry-card.verification { --accent: var(--green); --tint: var(--green-soft); box-shadow: 7px 7px 0 var(--green); }
+    .entry-card.learning { --accent: var(--green); --tint: var(--green-soft); box-shadow: 7px 7px 0 var(--green); }
+    .entry-card.verification { --accent: var(--blue); --tint: var(--blue-soft); box-shadow: 7px 7px 0 var(--blue); }
     .entry-card.comparison { --accent: var(--purple); --tint: var(--purple-soft); box-shadow: 7px 7px 0 var(--purple); }
     .entry-card::after { content: ""; position: absolute; width: 145px; height: 145px; border-radius: 50%; right: -46px; top: 75px; background: var(--tint); }
     .card-top { display: flex; align-items: center; justify-content: space-between; position: relative; z-index: 1; }
@@ -96,27 +119,22 @@
     .workspace.is-visible { display: block; animation: enter .28s var(--ease); }
     @keyframes enter { from { opacity: 0; transform: translateY(9px); } to { opacity: 1; transform: translateY(0); } }
     .workspace-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 18px; margin: 0 0 20px; }
-    .back-button { display: inline-flex; align-items: center; gap: 8px; border: 0; padding: 0; background: transparent; color: #526b7d; cursor: pointer; font-size: 13px; }
-    .back-button:hover { color: var(--ink); }
-    .breadcrumb { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; margin: 13px 0 10px; color: #758392; font-size: 12px; }
+    .breadcrumb { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; margin: 13px 0 10px; color: #758392; font-size: 15px; font-weight: 800; }
     .breadcrumb .crumb-home { text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
     .breadcrumb .current { color: var(--ink); }
-    .location-pill { display: inline-flex; align-items: center; gap: 7px; padding: 6px 10px; border: 2px solid var(--ink); border-radius: 999px; background: #fff; font-size: 11px; }
-    .location-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent, var(--blue)); }
     .workspace-heading { margin: 0; font-size: clamp(25px,3vw,33px); line-height: 1.2; }
     .workspace-description { max-width: 760px; margin: 8px 0 0; color: #637283; font-size: 14px; line-height: 1.7; font-weight: 600; }
     .category-nav { display: flex; gap: 10px; overflow-x: auto; padding: 5px 3px 12px; margin: 0 0 13px; scrollbar-width: thin; }
     .category-tab { --tab: var(--blue); --tab-bg: var(--blue-soft); display: inline-flex; align-items: center; gap: 8px; white-space: nowrap; border: 3px solid var(--ink); border-radius: 14px; padding: 10px 14px; background: rgba(255,255,255,.85); box-shadow: 3px 3px 0 rgba(44,62,80,.22); cursor: pointer; color: var(--ink); transition: transform .15s, background .15s; }
     .category-tab:hover { transform: translateY(-2px); }
     .category-tab[aria-selected="true"] { background: var(--tab-bg); box-shadow: 4px 4px 0 var(--tab); }
-    .category-tab[data-category="qss"] { --tab: var(--purple); --tab-bg: var(--purple-soft); }
-    .category-tab[data-category="qsdc"] { --tab: var(--orange); --tab-bg: var(--orange-soft); }
-    .category-tab[data-category="qkd"] { --tab: var(--green); --tab-bg: var(--green-soft); }
+    .category-nav[data-view="learning"] .category-tab { --tab: var(--green); --tab-bg: var(--green-soft); }
+    .category-nav[data-view="comparison"] .category-tab[data-category="analysis"] { --tab: var(--green); --tab-bg: var(--green-soft); }
+    .category-nav[data-view="comparison"] .category-tab[data-category="comparison"] { --tab: var(--purple); --tab-bg: var(--purple-soft); }
     .tab-index { color: var(--tab); font-size: 11px; }
     .section-panel { --accent: var(--blue); --tint: var(--blue-soft); border: var(--line); border-radius: var(--radius); padding: clamp(17px,3vw,26px); background: rgba(255,255,255,.68); box-shadow: 6px 6px 0 rgba(44,62,80,.12); }
-    .section-panel[data-category="qkd"], .section-panel[data-category="analysis"] { --accent: var(--green); --tint: var(--green-soft); }
-    .section-panel[data-category="qss"], .section-panel[data-category="comparison"] { --accent: var(--purple); --tint: var(--purple-soft); }
-    .section-panel[data-category="qsdc"] { --accent: var(--orange); --tint: var(--orange-soft); }
+    .section-panel[data-view="learning"], .section-panel[data-view="comparison"][data-category="analysis"] { --accent: var(--green); --tint: var(--green-soft); }
+    .section-panel[data-view="comparison"][data-category="comparison"] { --accent: var(--purple); --tint: var(--purple-soft); }
     .section-heading { display: flex; align-items: center; gap: 13px; margin: 0 0 8px; padding-bottom: 15px; border-bottom: 3px dashed rgba(44,62,80,.23); }
     .section-code { flex: 0 0 auto; padding: 7px 12px; border: 3px solid var(--ink); border-radius: 12px; background: var(--accent); color: white; box-shadow: 3px 3px 0 var(--ink); font-size: 13px; }
     .section-heading h3 { margin: 0; font-size: clamp(17px,2.3vw,21px); line-height: 1.35; }
@@ -131,7 +149,6 @@
     .game-item { background: #eaf8ff; }
     .game-tag { display: inline-flex; margin-bottom: 6px; padding: 4px 8px; border: 2px solid var(--ink); border-radius: 999px; background: #ffcf3f; color: #21344a; font-size: 10px; }
     .empty-note { padding: 20px; border: 2px dashed rgba(44,62,80,.3); border-radius: 14px; color: #647386; line-height: 1.7; }
-    .page-footer { margin-top: 29px; color: #718091; text-align: center; font-size: 11px; font-weight: 600; }
     dialog { width: min(520px,calc(100% - 28px)); max-height: calc(100% - 28px); padding: 0; border: 4px solid var(--ink); border-radius: 22px; background: #fdfefe; color: var(--ink); box-shadow: 10px 10px 0 rgba(44,62,80,.3); }
     dialog::backdrop { background: rgba(34,52,69,.45); backdrop-filter: blur(3px); }
     .profile-form { padding: 22px; }
@@ -166,7 +183,10 @@
       .brand img { width: 42px; height: 42px; }
       .brand p { font-size: 10px; }
       main { margin-top: 28px; }
+      .player-bar-row { gap: 10px; }
       .player-bar { padding: 14px; gap: 10px; border-width: 4px; border-radius: 19px; box-shadow: 6px 6px 0 var(--ink); }
+      .hub-button { width: 52px; height: 52px; }
+      .hub-button svg { width: 24px; height: 24px; }
       .player-main { gap: 10px; }
       .player-avatar { width: 52px; height: 52px; font-size: 26px; }
       #display-username { font-size: 18px; }
@@ -180,19 +200,35 @@
       .brand img { width: 34px; height: 34px; }
       .brand h1 { max-width: 215px; font-size: 15px; }
       .brand p { display: none; }
+      .player-bar-row { gap: 7px; }
       .player-bar { align-items: flex-start; }
+      .hub-button { width: 44px; height: 44px; border-width: 2px; }
+      .hub-button svg { width: 21px; height: 21px; }
       .player-main { gap: 8px; }
       .player-avatar { width: 44px; height: 44px; font-size: 23px; }
       .player-actions { flex-direction: column; align-items: stretch; }
       .game-btn { min-width: 78px; padding: 6px 9px; }
       .workspace-top { display: block; }
-      .workspace-top .location-pill { margin-top: 12px; }
+      .breadcrumb { font-size: 14px; }
       .section-heading { align-items: flex-start; }
     }
     @media (prefers-reduced-motion: reduce) { *,*::before,*::after { scroll-behavior: auto !important; animation-duration: .01ms !important; transition-duration: .01ms !important; } }
   </style>
 </head>
 <body>
+  <section class="auth-gate" id="auth-gate" aria-labelledby="authTitle">
+    <form class="auth-card" id="loginForm">
+      <p class="auth-eyebrow">QUANTUM SECURITY LEARNING HUB</p>
+      <h1 id="authTitle">Sign in to continue</h1>
+      <p class="auth-intro">Use the same username and password as your Cat's Playground account. Sign in to view your profile and continue to the learning tools.</p>
+      <label class="auth-field"><span>Username</span><input id="loginUsername" name="username" type="text" autocomplete="username" required maxlength="60" placeholder="Your username"></label>
+      <label class="auth-field"><span>Password</span><input id="loginPassword" name="password" type="password" autocomplete="current-password" required placeholder="Your password"></label>
+      <button class="auth-submit" id="loginSubmit" type="submit">SIGN IN</button>
+      <p class="auth-error" id="authError" role="alert" aria-live="polite"></p>
+      <p class="auth-register">New to Cat's Playground? <a href="https://x1000fish.github.io/CatsPlayground/login.html" target="_blank" rel="noopener noreferrer">Create an account</a>, then sign in here.</p>
+    </form>
+  </section>
+
   <header class="site-header">
     <a class="brand" href="#home" id="brandHome" aria-label="Return to Home">
       <img src="pictures/computer.svg" alt="">
@@ -204,7 +240,11 @@
   </header>
 
   <main>
-    <section id="hub" class="player-bar" aria-label="Player profile">
+    <div class="player-bar-row">
+      <a class="hub-button" href="https://x1000fish.github.io/CatsPlayground/login.html" aria-label="Back to Cat's Playground Hub" title="Cat's Playground Hub">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 10 9-7 9 7"/><path d="M5.5 9v11h13V9M9.5 20v-6h5v6"/></svg>
+      </a>
+      <section id="hub" class="player-bar" aria-label="Player profile">
       <div class="player-main">
         <div id="player-avatar" class="player-avatar" aria-hidden="true">🐱</div>
         <div>
@@ -216,12 +256,12 @@
         <button id="edit-profile-btn" type="button" class="game-btn btn-blue" aria-haspopup="dialog">EDIT</button>
         <button id="logout-btn" type="button" class="game-btn btn-logout">LOGOUT</button>
       </div>
-    </section>
+      </section>
+    </div>
     <section id="homeView" aria-labelledby="homeTitle">
       <div class="welcome">
         <p class="eyebrow">QUANTUM SECURITY LEARNING HUB</p>
         <h2 id="homeTitle">Where would you like to start?</h2>
-        <p>Choose a goal to get started. Your current area and topic will stay clearly marked as you explore.</p>
       </div>
       <div class="home-grid">
         <a class="entry-card learning" href="#learning" data-open="learning">
@@ -250,22 +290,17 @@
 
     <section class="workspace" id="workspace" aria-live="polite" aria-labelledby="workspaceTitle">
       <div class="workspace-top">
-        <div>
-          <button class="back-button" id="backHome" type="button"><span aria-hidden="true">←</span> Back to Home</button>
-          <nav class="breadcrumb" aria-label="Current location">
-            <a class="crumb-home" id="breadcrumbHome" href="#home">Home</a><span aria-hidden="true">/</span>
-            <span class="current" id="breadcrumbCurrent">Security Protocol Learning</span>
-            <span id="breadcrumbCategoryWrap" hidden><span aria-hidden="true">/</span> <span class="current" id="breadcrumbCategory"></span></span>
-          </nav>
-          <span class="location-pill"><span class="location-dot"></span><span id="locationLabel">You are here: Security Protocol Learning</span></span>
-        </div>
+        <nav class="breadcrumb" aria-label="Current location">
+          <a class="crumb-home" id="breadcrumbHome" href="#home">Home</a><span aria-hidden="true">/</span>
+          <span class="current" id="breadcrumbCurrent">Security Protocol Learning</span>
+          <span id="breadcrumbCategoryWrap" hidden><span aria-hidden="true">/</span> <span class="current" id="breadcrumbCategory"></span></span>
+        </nav>
       </div>
-      <h2 class="workspace-heading" id="workspaceTitle">Security Protocol Learning</h2>
+      <h2 class="workspace-heading" id="workspaceTitle" tabindex="-1">Security Protocol Learning</h2>
       <p class="workspace-description" id="workspaceDescription"></p>
       <nav class="category-nav" id="categoryNav" aria-label="Categories in this section"></nav>
       <article class="section-panel" id="sectionPanel" data-category="basics" aria-live="polite"></article>
     </section>
-    <p class="page-footer">Quantum Cybersecurity Education Platform · Select a category to explore its topics</p>
   </main>
 
   <dialog id="profileDialog" aria-labelledby="profileTitle">
@@ -279,9 +314,14 @@
         <div class="photo-controls"><label for="photoInput">Profile photo</label><input id="photoInput" type="file" accept="image/*"></div>
       </div>
       <label class="field"><span>Name</span><input id="nameInput" name="name" maxlength="40" autocomplete="name" placeholder="Enter a display name"></label>
-      <label class="field"><span>Password (optional)</span><input id="passwordInput" name="password" type="password" autocomplete="new-password" placeholder="Enter a password if you wish to set one"></label>
-      <label class="field"><span>Confirm password</span><input id="confirmInput" name="confirm" type="password" autocomplete="new-password" placeholder="Re-enter your password"></label>
-      <p class="privacy-note">This page has no account backend. Your name and photo are stored only in this browser. The password fields only check that both entries match; your password is never uploaded or saved.</p>
+      <div class="photo-adjustments" aria-label="Photo positioning">
+        <label for="photoX"><span>Horizontal</span><input id="photoX" type="range" min="0" max="100" value="50"></label>
+        <label for="photoY"><span>Vertical</span><input id="photoY" type="range" min="0" max="100" value="50"></label>
+        <label for="photoScale"><span>Zoom</span><input id="photoScale" type="range" min="1" max="2.5" step="0.05" value="1"></label>
+      </div>
+      <label class="field"><span>New password (optional)</span><input id="passwordInput" name="password" type="password" autocomplete="new-password" placeholder="Leave blank to keep your current password"></label>
+      <label class="field"><span>Confirm new password</span><input id="confirmInput" name="confirm" type="password" autocomplete="new-password" placeholder="Re-enter your new password"></label>
+      <p class="privacy-note">Your profile changes are saved to your existing Cat's Playground account. Passwords are sent to its account service only when you choose to change them.</p>
       <div class="form-actions"><button class="cancel-button" id="cancelProfile" type="button">Cancel</button><button class="save-button" type="submit">Save profile</button></div>
     </form>
   </dialog>
@@ -291,7 +331,7 @@
     const content = {
       learning: {
         title: 'Security Protocol Learning',
-        description: 'Explore the core ideas of quantum communication step by step. Choose a category below; the page title and location indicator will update with it.',
+        description: '',
         categories: [
           { id:'basics', label:'Quantum Foundations', code:'START', title:'Quantum Foundations', summary:'Start with photon directions, polarization, and entanglement—the foundations for understanding quantum security protocols.', items:[
             { title:'Photon Game', desc:'Practice photon directions and polarizers through interactive levels.', href:'game/index.html', game:true },
@@ -314,7 +354,7 @@
       },
       comparison: {
         title: 'Protocol Comparison & Evaluation',
-        description: 'This area contains comparison and evaluation tools—not concept lessons. Choose an analysis goal to open the right tool.',
+        description: '',
         categories: [
           { id:'analysis', label:'Security Analysis', code:'CHECK', title:'QKD Security Analysis', summary:'Configure QKD protocol settings and review security-related behavior and analysis results.', items:[
             { title:'QKD Security Analysis', desc:'Configure a QKD protocol and verify its security-related behavior.', href:'QKDprob.html' }
@@ -328,10 +368,78 @@
     let currentView = null;
     let activeCategory = 0;
     let chosenPhoto = '';
+    let accountSession = null;
     const homeView = document.getElementById('homeView');
     const workspace = document.getElementById('workspace');
     const profileDialog = document.getElementById('profileDialog');
-    const storageKey = 'quantumCybersecurityProfile';
+    const authGate = document.getElementById('auth-gate');
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxsOdnjfzdpZPaLEojtMJFNjs8t2EJaoPYib4kVj6GrCXKMwt9Fj6iV6swJbicaM28QOw/exec';
+    const sessionKey = 'quantumCybersecurityAccountSession';
+
+    function showLogin(message = '') {
+      accountSession = null;
+      document.body.classList.remove('is-authenticated');
+      authGate.hidden = false;
+      document.getElementById('authError').textContent = message;
+    }
+    function showAuthenticatedApp() {
+      document.body.classList.add('is-authenticated');
+      authGate.hidden = true;
+      loadProfile();
+    }
+    function persistAccountSession(profile) {
+      const clamp = (value, min, max, fallback) => {
+        const number = Number(value);
+        return Number.isFinite(number) ? Math.min(max, Math.max(min, number)) : fallback;
+      };
+      accountSession = {
+        username: profile.username,
+        photo: profile.photo || '',
+        photoX: clamp(profile.photoX, 0, 100, 50),
+        photoY: clamp(profile.photoY, 0, 100, 50),
+        photoScale: clamp(profile.photoScale, 1, 2.5, 1),
+        meowtopiaLevel: Number(profile.meowtopiaLevel) || 1,
+        placementLevel: Number(profile.placementLevel) || 1
+      };
+      sessionStorage.setItem(sessionKey, JSON.stringify(accountSession));
+      showAuthenticatedApp();
+    }
+    document.getElementById('loginForm').addEventListener('submit', async event => {
+      event.preventDefault();
+      const username = document.getElementById('loginUsername').value.trim();
+      const password = document.getElementById('loginPassword').value;
+      if (!username || !password) return;
+      const button = document.getElementById('loginSubmit');
+      const error = document.getElementById('authError');
+      button.disabled = true;
+      button.textContent = 'SIGNING IN…';
+      error.textContent = '';
+      try {
+        const response = await fetch(SCRIPT_URL, {
+          method: 'POST',
+          body: JSON.stringify({action:'auth', username, password})
+        });
+        const data = await response.json();
+        if (data.status === 'success') {
+          document.getElementById('loginPassword').value = '';
+          persistAccountSession({username, ...data});
+          const hash = location.hash.slice(1);
+          const params = new URLSearchParams(location.search);
+          if (content[hash]) openView(hash);
+          else if (hash === 'quantum-security-applications') openView('learning', (params.get('section') || '').toLowerCase());
+          else if (hash === 'protocol-comparison-evaluation') openView('comparison', (params.get('tool') || '').toLowerCase() === 'discard' ? 'comparison' : 'analysis');
+        } else if (data.status === 'wrong_password') {
+          error.textContent = 'Incorrect password. Please try again.';
+        } else {
+          error.textContent = 'Account not found. Create an account on Cat\'s Playground first.';
+        }
+      } catch {
+        error.textContent = 'Could not connect to the account service. Please try again.';
+      } finally {
+        button.disabled = false;
+        button.textContent = 'SIGN IN';
+      }
+    });
 
     function renderItems(items) {
       return `<div class="item-list">${items.map(item => `
@@ -346,7 +454,6 @@
       document.querySelectorAll('.category-tab').forEach((tab, i) => tab.setAttribute('aria-selected', String(i === index)));
       document.getElementById('breadcrumbCategory').textContent = category.label;
       document.getElementById('breadcrumbCategoryWrap').hidden = false;
-      document.getElementById('locationLabel').textContent = `You are here: ${data.title} / ${category.label}`;
       const panel = document.getElementById('sectionPanel');
       panel.dataset.category = category.id;
       panel.innerHTML = `<div class="section-heading"><span class="section-code">${category.code}</span><h3>${category.title}</h3></div><p class="section-summary">${category.summary}</p>${category.image ? `<img class="section-image" src="${category.image}" alt="${category.title} illustration">` : ''}${renderItems(category.items)}`;
@@ -358,12 +465,14 @@
       homeView.hidden = true;
       workspace.classList.add('is-visible');
       document.getElementById('workspaceTitle').textContent = data.title;
-      document.getElementById('workspaceDescription').textContent = data.description;
+      const description = document.getElementById('workspaceDescription');
+      description.textContent = data.description;
+      description.hidden = !data.description;
       document.getElementById('breadcrumbCurrent').textContent = data.title;
       document.getElementById('breadcrumbCategoryWrap').hidden = true;
-      document.getElementById('locationLabel').textContent = `You are here: ${data.title}`;
-      document.querySelector('.location-dot').style.background = view === 'learning' ? 'var(--blue)' : 'var(--purple)';
       const nav = document.getElementById('categoryNav');
+      nav.dataset.view = view;
+      document.getElementById('sectionPanel').dataset.view = view;
       nav.innerHTML = data.categories.map((category, i) => `<button type="button" class="category-tab" data-category="${category.id}" role="tab" aria-selected="false"><span class="tab-index">0${i + 1}</span>${category.label}</button>`).join('');
       nav.querySelectorAll('.category-tab').forEach((tab, i) => tab.addEventListener('click', () => renderCategory(i)));
       const categoryAliases = {foundation:'basics', foundations:'basics', security:'analysis', qkd:'analysis', discard:'comparison', discards:'comparison', probability:'comparison'};
@@ -371,7 +480,7 @@
       const requestedIndex = normalizedCategory ? data.categories.findIndex(category => category.id === normalizedCategory) : -1;
       renderCategory(requestedIndex >= 0 ? requestedIndex : 0);
       history.replaceState({view, category: activeCategory}, '', `#${view}`);
-      document.getElementById('backHome').focus({preventScroll:true});
+      document.getElementById('workspaceTitle').focus({preventScroll:true});
       window.scrollTo({top:0,behavior:'smooth'});
     }
     function goHome(updateHash = true) {
@@ -382,7 +491,6 @@
       window.scrollTo({top:0,behavior:'smooth'});
     }
     document.querySelectorAll('[data-open]').forEach(link => link.addEventListener('click', event => { event.preventDefault(); openView(link.dataset.open); }));
-    document.getElementById('backHome').addEventListener('click', () => goHome());
     document.getElementById('breadcrumbHome').addEventListener('click', event => { event.preventDefault(); goHome(); });
     document.getElementById('brandHome').addEventListener('click', event => { event.preventDefault(); goHome(); });
     document.getElementById('categoryNav').addEventListener('keydown', event => {
@@ -396,29 +504,65 @@
     });
 
     function loadProfile() {
-      try {
-        const profile = JSON.parse(localStorage.getItem(storageKey) || '{}');
-        document.getElementById('display-username').textContent = profile.name || 'User';
-        document.getElementById('player-avatar').innerHTML = profile.photo ? `<img src="${profile.photo}" alt="">` : '🐱';
-        document.getElementById('photoPreview').innerHTML = profile.photo ? `<img src="${profile.photo}" alt="Photo preview">` : '🐱';
-        document.getElementById('nameInput').value = profile.name || '';
-      } catch { /* If saved profile data cannot be read, the default avatar will be used. */ }
+      const profile = accountSession;
+      document.getElementById('display-username').textContent = profile?.username || 'User';
+      document.getElementById('player-avatar').innerHTML = profile?.photo ? `<img src="${profile.photo}" alt="" style="object-position:${profile.photoX}% ${profile.photoY}%;transform:scale(${profile.photoScale});">` : '🐱';
+      document.getElementById('photoPreview').innerHTML = profile?.photo ? `<img src="${profile.photo}" alt="Photo preview">` : '🐱';
+      document.getElementById('nameInput').value = profile?.username || '';
+      document.getElementById('photoX').value = profile?.photoX ?? 50;
+      document.getElementById('photoY').value = profile?.photoY ?? 50;
+      document.getElementById('photoScale').value = profile?.photoScale ?? 1;
+      renderPhotoPreview();
     }
     function showToast(message) {
       const toast = document.getElementById('toast'); toast.textContent = message; toast.classList.add('is-visible');
       window.setTimeout(() => toast.classList.remove('is-visible'), 2400);
     }
-    function openProfileEditor() { loadProfile(); chosenPhoto = ''; profileDialog.showModal(); }
+    function readPhotoInput(input) {
+      const file = input?.files?.[0];
+      if (!file) return Promise.resolve('');
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onerror = reject;
+        reader.onload = () => {
+          const image = new Image();
+          image.onerror = reject;
+          image.onload = () => {
+            const maxSize = 420;
+            const scale = Math.min(1, maxSize / Math.max(image.width, image.height));
+            const canvas = document.createElement('canvas');
+            canvas.width = Math.max(1, Math.round(image.width * scale));
+            canvas.height = Math.max(1, Math.round(image.height * scale));
+            const context = canvas.getContext('2d');
+            if (!context) return reject(new Error('Canvas is unavailable'));
+            context.drawImage(image, 0, 0, canvas.width, canvas.height);
+            resolve(canvas.toDataURL('image/jpeg', .75));
+          };
+          image.src = reader.result;
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+    function renderPhotoPreview() {
+      const image = document.querySelector('#photoPreview img');
+      if (!image) return;
+      image.style.objectPosition = `${document.getElementById('photoX').value}% ${document.getElementById('photoY').value}%`;
+      image.style.transform = `scale(${document.getElementById('photoScale').value})`;
+    }
+    function openProfileEditor() {
+      if (!accountSession) return showLogin('Please sign in to edit your profile.');
+      loadProfile(); chosenPhoto = ''; profileDialog.showModal();
+    }
     function handleLogout() {
-      if (!window.confirm('Logging out will remove the name and photo saved in this browser and return you to guest mode. Continue?')) return;
-      localStorage.removeItem(storageKey);
+      if (!window.confirm('Log out of your Cat\'s Playground account on this page?')) return;
+      sessionStorage.removeItem(sessionKey);
       document.getElementById('passwordInput').value = '';
       document.getElementById('confirmInput').value = '';
       document.getElementById('photoInput').value = '';
       chosenPhoto = '';
-      loadProfile();
+      if (profileDialog.open) profileDialog.close();
       goHome();
-      showToast('You are logged out and browsing as a guest.');
+      showLogin('You have been signed out. Sign in to continue.');
     }
     document.getElementById('edit-profile-btn').addEventListener('click', openProfileEditor);
     document.getElementById('logout-btn').addEventListener('click', handleLogout);
@@ -428,38 +572,82 @@
     document.getElementById('photoInput').addEventListener('change', event => {
       const file = event.target.files && event.target.files[0]; if (!file) return;
       if (!file.type.startsWith('image/')) { showToast('Please choose an image file.'); return; }
-      if (file.size > 2 * 1024 * 1024) { showToast('Choose a photo smaller than 2 MB.'); event.target.value = ''; return; }
-      const reader = new FileReader();
-      reader.onload = () => { chosenPhoto = String(reader.result); document.getElementById('photoPreview').innerHTML = `<img src="${chosenPhoto}" alt="Photo preview">`; };
-      reader.readAsDataURL(file);
+      if (file.size > 8 * 1024 * 1024) { showToast('Choose a photo smaller than 8 MB.'); event.target.value = ''; return; }
+      readPhotoInput(event.target).then(photo => {
+        chosenPhoto = photo;
+        document.getElementById('photoPreview').innerHTML = `<img src="${photo}" alt="Photo preview">`;
+        renderPhotoPreview();
+      }).catch(() => showToast('Could not read that photo. Please choose another file.'));
     });
+    ['photoX','photoY','photoScale'].forEach(id => document.getElementById(id).addEventListener('input', renderPhotoPreview));
     document.getElementById('profileForm').addEventListener('submit', event => {
       event.preventDefault();
+      if (!accountSession) return showLogin('Your session has expired. Please sign in again.');
       const password = document.getElementById('passwordInput').value;
       const confirm = document.getElementById('confirmInput').value;
-      if (password && password !== confirm) { showToast('The passwords do not match. Please check and try again.'); document.getElementById('confirmInput').focus(); return; }
-      const name = document.getElementById('nameInput').value.trim();
-      try {
-        const old = JSON.parse(localStorage.getItem(storageKey) || '{}');
-        localStorage.setItem(storageKey, JSON.stringify({name, photo: chosenPhoto || old.photo || ''}));
-      } catch { showToast('This browser could not save your profile. Check your browser storage settings.'); return; }
-      document.getElementById('passwordInput').value = '';
-      document.getElementById('confirmInput').value = '';
-      loadProfile(); closeProfile(); showToast('Your profile has been saved in this browser.');
+      if (password !== confirm) { showToast('The passwords do not match. Please check and try again.'); document.getElementById('confirmInput').focus(); return; }
+      const username = document.getElementById('nameInput').value.trim();
+      if (!username) { showToast('Please enter a username.'); document.getElementById('nameInput').focus(); return; }
+      const button = document.querySelector('#profileForm .save-button');
+      button.disabled = true; button.textContent = 'SAVING…';
+      const payload = {
+        action: 'updateProfile',
+        currentUsername: accountSession.username,
+        username,
+        password,
+        photo: chosenPhoto || accountSession.photo || '',
+        photoX: Number(document.getElementById('photoX').value) || 50,
+        photoY: Number(document.getElementById('photoY').value) || 50,
+        photoScale: Number(document.getElementById('photoScale').value) || 1
+      };
+      fetch(SCRIPT_URL, {method:'POST', body:JSON.stringify(payload)})
+        .then(response => response.json())
+        .then(data => {
+          if (data.status === 'success') {
+            persistAccountSession({
+              ...accountSession,
+              username: data.username || username,
+              photo: data.photo || payload.photo,
+              photoX: data.photoX ?? payload.photoX,
+              photoY: data.photoY ?? payload.photoY,
+              photoScale: data.photoScale ?? payload.photoScale
+            });
+            document.getElementById('passwordInput').value = '';
+            document.getElementById('confirmInput').value = '';
+            closeProfile(); showToast('Your account profile has been updated.');
+          } else if (data.status === 'exists') {
+            showToast('That username is already taken.');
+          } else {
+            showToast('Profile update failed. Please try again.');
+          }
+        })
+        .catch(() => showToast('Could not connect to the account service. Please try again.'))
+        .finally(() => { button.disabled = false; button.textContent = 'Save profile'; });
     });
     window.addEventListener('popstate', () => {
+      if (!accountSession) return showLogin('Please sign in to continue.');
       const hash = location.hash.slice(1);
       if (content[hash]) openView(hash);
       else goHome(false);
     });
-    loadProfile();
-    const initialHash = location.hash.slice(1);
-    const params = new URLSearchParams(location.search);
-    const legacyLearning = initialHash === 'quantum-security-applications';
-    const legacyComparison = initialHash === 'protocol-comparison-evaluation';
-    if (content[initialHash]) openView(initialHash);
-    else if (legacyLearning) openView('learning', (params.get('section') || '').toLowerCase());
-    else if (legacyComparison) openView('comparison', (params.get('tool') || '').toLowerCase() === 'discard' ? 'comparison' : 'analysis');
+    try {
+      const saved = JSON.parse(sessionStorage.getItem(sessionKey) || 'null');
+      if (saved && typeof saved.username === 'string' && saved.username.trim()) {
+        accountSession = saved;
+        showAuthenticatedApp();
+        const initialHash = location.hash.slice(1);
+        const params = new URLSearchParams(location.search);
+        if (content[initialHash]) openView(initialHash);
+        else if (initialHash === 'quantum-security-applications') openView('learning', (params.get('section') || '').toLowerCase());
+        else if (initialHash === 'protocol-comparison-evaluation') openView('comparison', (params.get('tool') || '').toLowerCase() === 'discard' ? 'comparison' : 'analysis');
+      } else {
+        sessionStorage.removeItem(sessionKey);
+        showLogin();
+      }
+    } catch {
+      sessionStorage.removeItem(sessionKey);
+      showLogin();
+    }
   </script>
 </body>
 </html>
