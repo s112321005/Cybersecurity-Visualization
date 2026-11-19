@@ -63,21 +63,19 @@
     .auth-submit { width: 100%; margin-top: 8px; border: 3px solid var(--ink); border-radius: 999px; padding: 12px 18px; background: var(--blue); color: white; box-shadow: 4px 4px 0 var(--ink); font-weight: 900; cursor: pointer; }
     .auth-submit:disabled { opacity: .65; cursor: wait; }
     .auth-error { min-height: 20px; margin: 10px 0 0; color: #a23b45; font-size: 12px; line-height: 1.5; }
-    .auth-register { margin: 14px 0 0; color: #607184; text-align: center; font-size: 12px; line-height: 1.6; font-weight: 600; }
-    .auth-register a { color: #276a95; font-weight: 900; text-underline-offset: 3px; }
+    .auth-switch { display: block; width: 100%; margin: 14px 0 0; border: 0; padding: 7px; background: transparent; color: #276a95; text-align: center; font-size: 12px; font-weight: 900; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+    .auth-switch:hover { color: var(--ink); }
+    .auth-error.is-success { color: #27835b; }
+    .auth-field input[type="file"] { padding: 9px; font-size: 12px; }
     .photo-adjustments { display: grid; gap: 8px; margin: 0 0 15px; padding: 12px; border-radius: 12px; background: #eef7fb; }
     .photo-adjustments label { display: grid; grid-template-columns: 58px 1fr; align-items: center; gap: 9px; color: #526b7d; font-size: 11px; }
     .photo-adjustments input { width: 100%; accent-color: var(--blue); }
-    .player-bar-row { width: min(980px, 100%); margin: 0 auto 30px; display: flex; align-items: center; gap: 14px; }
     .player-bar {
-      width: auto; min-width: 0; flex: 1; margin: 0; padding: 18px 26px;
+      width: min(900px, 100%); margin: 0 auto 30px; padding: 18px 26px;
       display: flex; align-items: center; justify-content: space-between; gap: 18px;
       border: 5px solid var(--ink); border-radius: 24px; background: white;
       box-shadow: 9px 9px 0 var(--ink);
     }
-    .hub-button { display: grid; place-items: center; width: 64px; height: 64px; flex: 0 0 auto; border: 3px solid var(--ink); border-radius: 50%; background: #f1f7fb; color: var(--ink); box-shadow: 3px 3px 0 var(--ink); text-decoration: none; transition: transform .15s, box-shadow .15s, background .15s; }
-    .hub-button:hover { transform: translate(-2px,-2px); background: var(--blue-soft); box-shadow: 5px 5px 0 var(--blue); }
-    .hub-button svg { width: 29px; height: 29px; }
     .player-main { display: flex; align-items: center; gap: 16px; min-width: 0; }
     .player-avatar { display: grid; place-items: center; width: 64px; height: 64px; flex: 0 0 auto; overflow: hidden; border: 3px solid var(--ink); border-radius: 50%; background: #eaf6fc; font-size: 32px; }
     .player-avatar img { width: 100%; height: 100%; object-fit: cover; }
@@ -183,10 +181,7 @@
       .brand img { width: 42px; height: 42px; }
       .brand p { font-size: 10px; }
       main { margin-top: 28px; }
-      .player-bar-row { gap: 10px; }
       .player-bar { padding: 14px; gap: 10px; border-width: 4px; border-radius: 19px; box-shadow: 6px 6px 0 var(--ink); }
-      .hub-button { width: 52px; height: 52px; }
-      .hub-button svg { width: 24px; height: 24px; }
       .player-main { gap: 10px; }
       .player-avatar { width: 52px; height: 52px; font-size: 26px; }
       #display-username { font-size: 18px; }
@@ -200,10 +195,7 @@
       .brand img { width: 34px; height: 34px; }
       .brand h1 { max-width: 215px; font-size: 15px; }
       .brand p { display: none; }
-      .player-bar-row { gap: 7px; }
       .player-bar { align-items: flex-start; }
-      .hub-button { width: 44px; height: 44px; border-width: 2px; }
-      .hub-button svg { width: 21px; height: 21px; }
       .player-main { gap: 8px; }
       .player-avatar { width: 44px; height: 44px; font-size: 23px; }
       .player-actions { flex-direction: column; align-items: stretch; }
@@ -217,16 +209,35 @@
 </head>
 <body>
   <section class="auth-gate" id="auth-gate" aria-labelledby="authTitle">
-    <form class="auth-card" id="loginForm">
-      <p class="auth-eyebrow">QUANTUM SECURITY LEARNING HUB</p>
-      <h1 id="authTitle">Sign in to continue</h1>
-      <p class="auth-intro">Use the same username and password as your Cat's Playground account. Sign in to view your profile and continue to the learning tools.</p>
-      <label class="auth-field"><span>Username</span><input id="loginUsername" name="username" type="text" autocomplete="username" required maxlength="60" placeholder="Your username"></label>
-      <label class="auth-field"><span>Password</span><input id="loginPassword" name="password" type="password" autocomplete="current-password" required placeholder="Your password"></label>
-      <button class="auth-submit" id="loginSubmit" type="submit">SIGN IN</button>
-      <p class="auth-error" id="authError" role="alert" aria-live="polite"></p>
-      <p class="auth-register">New to Cat's Playground? <a href="https://x1000fish.github.io/CatsPlayground/login.html" target="_blank" rel="noopener noreferrer">Create an account</a>, then sign in here.</p>
-    </form>
+    <div class="auth-card">
+      <div id="loginPanel">
+        <p class="auth-eyebrow">QUANTUM SECURITY LEARNING HUB</p>
+        <h1 id="authTitle">Sign in to continue</h1>
+        <p class="auth-intro">Use your existing Cat's Playground account, or create a new account here.</p>
+        <form id="loginForm">
+          <label class="auth-field"><span>Username</span><input id="loginUsername" name="username" type="text" autocomplete="username" required maxlength="60" placeholder="Your username"></label>
+          <label class="auth-field"><span>Password</span><input id="loginPassword" name="password" type="password" autocomplete="current-password" required placeholder="Your password"></label>
+          <button class="auth-submit" id="loginSubmit" type="submit">SIGN IN</button>
+          <p class="auth-error" id="authError" role="alert" aria-live="polite"></p>
+        </form>
+        <button class="auth-switch" id="showRegister" type="button">New here? Create a new account</button>
+      </div>
+
+      <div id="registerPanel" hidden>
+        <p class="auth-eyebrow">ADVENTURE PASS</p>
+        <h1 id="registerTitle">Create an account</h1>
+        <p class="auth-intro">Set up your account to continue to the learning tools.</p>
+        <form id="registerForm">
+          <label class="auth-field"><span>Identity · Username</span><input id="registerUsername" name="username" type="text" autocomplete="username" required maxlength="60" placeholder="Name your account"></label>
+          <label class="auth-field"><span>Secret · Password</span><input id="registerPassword" name="password" type="password" autocomplete="new-password" required placeholder="Enter a password"></label>
+          <label class="auth-field"><span>Confirm password</span><input id="registerConfirm" name="confirmPassword" type="password" autocomplete="new-password" required placeholder="Repeat your password"></label>
+          <label class="auth-field"><span>Profile photo · Optional</span><input id="registerPhoto" name="photo" type="file" accept="image/*"></label>
+          <button class="auth-submit" id="registerSubmit" type="submit">JOIN NOW!</button>
+          <p class="auth-error" id="registerError" role="alert" aria-live="polite"></p>
+        </form>
+        <button class="auth-switch" id="backToLogin" type="button">Go back to login</button>
+      </div>
+    </div>
   </section>
 
   <header class="site-header">
@@ -240,11 +251,7 @@
   </header>
 
   <main>
-    <div class="player-bar-row">
-      <a class="hub-button" href="https://x1000fish.github.io/CatsPlayground/login.html" aria-label="Back to Cat's Playground Hub" title="Cat's Playground Hub">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 10 9-7 9 7"/><path d="M5.5 9v11h13V9M9.5 20v-6h5v6"/></svg>
-      </a>
-      <section id="hub" class="player-bar" aria-label="Player profile">
+    <section id="hub" class="player-bar" aria-label="Player profile">
       <div class="player-main">
         <div id="player-avatar" class="player-avatar" aria-hidden="true">🐱</div>
         <div>
@@ -256,8 +263,7 @@
         <button id="edit-profile-btn" type="button" class="game-btn btn-blue" aria-haspopup="dialog">EDIT</button>
         <button id="logout-btn" type="button" class="game-btn btn-logout">LOGOUT</button>
       </div>
-      </section>
-    </div>
+    </section>
     <section id="homeView" aria-labelledby="homeTitle">
       <div class="welcome">
         <p class="eyebrow">QUANTUM SECURITY LEARNING HUB</p>
@@ -376,10 +382,22 @@
     const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxsOdnjfzdpZPaLEojtMJFNjs8t2EJaoPYib4kVj6GrCXKMwt9Fj6iV6swJbicaM28QOw/exec';
     const sessionKey = 'quantumCybersecurityAccountSession';
 
+    function setAuthMode(mode) {
+      const registering = mode === 'register';
+      document.getElementById('loginPanel').hidden = registering;
+      document.getElementById('registerPanel').hidden = !registering;
+      authGate.setAttribute('aria-labelledby', registering ? 'registerTitle' : 'authTitle');
+      document.getElementById('authError').textContent = '';
+      document.getElementById('authError').classList.remove('is-success');
+      document.getElementById('registerError').textContent = '';
+      if (registering) document.getElementById('registerUsername').focus();
+      else document.getElementById('loginUsername').focus();
+    }
     function showLogin(message = '') {
       accountSession = null;
       document.body.classList.remove('is-authenticated');
       authGate.hidden = false;
+      setAuthMode('login');
       document.getElementById('authError').textContent = message;
     }
     function showAuthenticatedApp() {
@@ -414,6 +432,7 @@
       button.disabled = true;
       button.textContent = 'SIGNING IN…';
       error.textContent = '';
+      error.classList.remove('is-success');
       try {
         const response = await fetch(SCRIPT_URL, {
           method: 'POST',
@@ -431,13 +450,63 @@
         } else if (data.status === 'wrong_password') {
           error.textContent = 'Incorrect password. Please try again.';
         } else {
-          error.textContent = 'Account not found. Create an account on Cat\'s Playground first.';
+          error.textContent = 'Account not found. Create an account here to get started.';
         }
       } catch {
         error.textContent = 'Could not connect to the account service. Please try again.';
       } finally {
         button.disabled = false;
         button.textContent = 'SIGN IN';
+      }
+    });
+    document.getElementById('showRegister').addEventListener('click', () => setAuthMode('register'));
+    document.getElementById('backToLogin').addEventListener('click', () => setAuthMode('login'));
+    document.getElementById('registerForm').addEventListener('submit', async event => {
+      event.preventDefault();
+      const username = document.getElementById('registerUsername').value.trim();
+      const password = document.getElementById('registerPassword').value.trim();
+      const confirm = document.getElementById('registerConfirm').value.trim();
+      const error = document.getElementById('registerError');
+      const button = document.getElementById('registerSubmit');
+      const photoInput = document.getElementById('registerPhoto');
+      const photoFile = photoInput.files?.[0];
+      error.textContent = '';
+      if (!username || !password || !confirm) { error.textContent = 'Please complete all required fields.'; return; }
+      if (password !== confirm) { error.textContent = 'Passwords do not match.'; document.getElementById('registerConfirm').focus(); return; }
+      if (photoFile && !photoFile.type.startsWith('image/')) { error.textContent = 'Please choose an image file for your profile photo.'; return; }
+      if (photoFile && photoFile.size > 8 * 1024 * 1024) { error.textContent = 'Choose a photo smaller than 8 MB.'; return; }
+      button.disabled = true;
+      button.textContent = 'CREATING ACCOUNT…';
+      try {
+        const photo = await readPhotoInput(photoInput);
+        const response = await fetch(SCRIPT_URL, {
+          method: 'POST',
+          body: JSON.stringify({action:'register', username, password, photo})
+        });
+        const responseText = await response.text();
+        let result;
+        try { result = JSON.parse(responseText); } catch { result = {status: responseText.trim()}; }
+        const status = typeof result === 'string' ? result : result?.status;
+        if (status === 'success') {
+          document.getElementById('loginUsername').value = username;
+          document.getElementById('loginPassword').value = '';
+          document.getElementById('registerPassword').value = '';
+          document.getElementById('registerConfirm').value = '';
+          photoInput.value = '';
+          setAuthMode('login');
+          const loginError = document.getElementById('authError');
+          loginError.classList.add('is-success');
+          loginError.textContent = 'Account created successfully. Please sign in.';
+        } else if (status === 'exists') {
+          error.textContent = 'That username is already taken. Please choose another.';
+        } else {
+          error.textContent = 'Registration failed. Please try again.';
+        }
+      } catch {
+        error.textContent = 'Could not connect to the account service. Please try again.';
+      } finally {
+        button.disabled = false;
+        button.textContent = 'JOIN NOW!';
       }
     });
 
