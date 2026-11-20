@@ -296,7 +296,7 @@
             </svg>
           </div>
           <h3>Security Protocol Learning</h3>
-          <p class="purpose">Start with photons and quantum foundations, then explore QKD, quantum secret sharing, and direct communication.</p>
+          <p class="purpose">Start with photons and quantum foundations, then explore QKD, QSS, and QSDC.</p>
           <div class="card-cta"><span>Explore concepts and protocols</span><b aria-hidden="true">→</b></div>
         </a>
         <a class="entry-card verification" href="VerifySetting.html">
@@ -321,7 +321,7 @@
             </svg>
           </div>
           <h3>Protocol Comparison & Evaluation</h3>
-          <p class="purpose">Compare QKD security and discard rates, then open the analysis tool that fits your goal.</p>
+          <p class="purpose">Compare security and discard rates, then open the analysis tool that fits your goal.</p>
           <div class="card-cta"><span>Explore comparison tools</span><b aria-hidden="true">→</b></div>
         </a>
       </div>
@@ -371,7 +371,7 @@
     const content = {
       learning: {
         title: 'Security Protocol Learning',
-        description: 'Explore the core ideas of quantum communication step by step. Choose a category below; the page title and location indicator will update with it.',
+        description: '',
         categories: [
           { id:'basics', label:'Quantum Foundations', code:'START', title:'Quantum Foundations', summary:'Start with photon directions, polarization, and entanglement—the foundations for understanding quantum security protocols.', items:[
             { title:'Photon Game', desc:'Practice photon directions and polarizers through interactive levels.', href:'game/index.html', game:true },
@@ -387,20 +387,20 @@
             { title:'ZhangLiMan Protocol', desc:'Learn how multiple participants work together to recover a shared secret.', href:'ZLMstep1.html' },
             { title:'ZhangMan Protocol', desc:'Explore extended quantum secret-sharing protocols and different security scenarios.', href:'ZMoverview.html' }
           ]},
-          { id:'qsdc', label:'QSDC Direct Communication', code:'QSDC', title:'Quantum Secure Direct Communication', summary:'Learn how quantum communication can send messages directly without first establishing a key, including its control procedures.', image:'pictures/QSDCgeneral.png', items:[
+          { id:'qsdc', label:'QSDC Secure Direct Communication', code:'QSDC', title:'Quantum Secure Direct Communication', summary:'Learn how quantum communication can send messages directly without first establishing a key, including its control procedures.', image:'pictures/QSDCgeneral.png', items:[
             { title:'Ping-Pong Protocol', desc:'Learn how control and message modes support secure two-way quantum communication.', href:'PINGPONGoverview.html' }
           ]}
         ]
       },
       comparison: {
         title: 'Protocol Comparison & Evaluation',
-        description: 'This area contains comparison and evaluation tools—not concept lessons. Choose an analysis goal to open the right tool.',
+        description: '',
         categories: [
           { id:'analysis', label:'Security Analysis', code:'CHECK', title:'QKD Security Analysis', summary:'Configure QKD protocol settings and review security-related behavior and analysis results.', items:[
             { title:'QKD Security Analysis', desc:'Configure a QKD protocol and verify its security-related behavior.', href:'QKDprob.html' }
           ]},
           { id:'comparison', label:'Discard Rate Comparison', code:'COMPARE', title:'QKD Discard Rate Comparison', summary:'Compare discard-rate behavior across different QKD protocol choices.', items:[
-            { title:'QKD Discard Rate Comparison', desc:'Compare how much data is discarded during sifting across QKD protocols.', href:'QKD_compare.html' }
+            { title:'QKD Discard Rate Comparison', desc:'Compare how much data is discarded during sifting across protocols.', href:'QKD_compare.html' }
           ]}
         ]
       }
