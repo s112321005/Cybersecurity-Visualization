@@ -52,7 +52,13 @@
     body:not(.is-authenticated) > .site-header, body:not(.is-authenticated) > main { display: none; }
     .auth-gate { position: fixed; inset: 0; z-index: 1000; display: grid; place-items: center; overflow-y: auto; padding: 24px; background: linear-gradient(135deg,#e0f2fe 0%,#f5f3ff 52%,#ecfdf5 100%); }
     .auth-gate[hidden] { display: none; }
-    .auth-card { width: min(460px,100%); padding: clamp(22px,5vw,38px); border: 5px solid var(--ink); border-radius: 25px; background: rgba(255,255,255,.96); box-shadow: 10px 10px 0 var(--ink); }
+    .auth-card { width: min(460px,100%); height: 540px; perspective: 1200px; transition: height .62s cubic-bezier(.2,.75,.25,1); }
+    .auth-flip-inner { position: relative; width: 100%; height: 100%; transform-style: preserve-3d; transition: transform .72s cubic-bezier(.2,.75,.25,1); }
+    .auth-card.is-registering .auth-flip-inner { transform: rotateY(180deg); }
+    .auth-face { position: absolute; inset: 0; overflow-y: auto; border: 5px solid var(--ink); border-radius: 25px; background: rgba(255,255,255,.96); box-shadow: 10px 10px 0 var(--ink); backface-visibility: hidden; -webkit-backface-visibility: hidden; }
+    .auth-face-front { transform: rotateY(0); }
+    .auth-face-back { transform: rotateY(180deg); }
+    .auth-face-content { padding: clamp(22px,5vw,38px); }
     .auth-eyebrow { margin: 0 0 8px; color: #477b99; font-size: 11px; letter-spacing: .15em; }
     .auth-card h1 { margin: 0; font: 400 clamp(26px,7vw,34px)/1.15 "Titan One", Comfortaa, sans-serif; }
     .auth-intro { margin: 10px 0 21px; color: #637283; font-size: 13px; line-height: 1.7; font-weight: 600; }
@@ -204,38 +210,44 @@
       .breadcrumb { font-size: 14px; }
       .section-heading { align-items: flex-start; }
     }
-    @media (prefers-reduced-motion: reduce) { *,*::before,*::after { scroll-behavior: auto !important; animation-duration: .01ms !important; transition-duration: .01ms !important; } }
+    @media (prefers-reduced-motion: reduce) { *,*::before,*::after { scroll-behavior: auto !important; animation-duration: .01ms !important; transition-duration: .01ms !important; } .auth-card,.auth-flip-inner { transition: none !important; } }
   </style>
 </head>
 <body>
   <section class="auth-gate" id="auth-gate" aria-labelledby="authTitle">
-    <div class="auth-card">
-      <div id="loginPanel">
-        <p class="auth-eyebrow">QUANTUM SECURITY LEARNING HUB</p>
-        <h1 id="authTitle">Sign in to continue</h1>
-        <p class="auth-intro">Use your existing Cat's Playground account, or create a new account here.</p>
-        <form id="loginForm">
-          <label class="auth-field"><span>Username</span><input id="loginUsername" name="username" type="text" autocomplete="username" required maxlength="60" placeholder="Your username"></label>
-          <label class="auth-field"><span>Password</span><input id="loginPassword" name="password" type="password" autocomplete="current-password" required placeholder="Your password"></label>
-          <button class="auth-submit" id="loginSubmit" type="submit">SIGN IN</button>
-          <p class="auth-error" id="authError" role="alert" aria-live="polite"></p>
-        </form>
-        <button class="auth-switch" id="showRegister" type="button">New here? Create a new account</button>
-      </div>
+    <div class="auth-card" id="authCard">
+      <div class="auth-flip-inner">
+        <div id="loginPanel" class="auth-face auth-face-front" aria-hidden="false">
+          <div class="auth-face-content">
+            <p class="auth-eyebrow">QUANTUM SECURITY LEARNING HUB</p>
+            <h1 id="authTitle">Sign in to continue</h1>
+            <p class="auth-intro">Use your existing Cat's Playground account, or create a new account here.</p>
+            <form id="loginForm">
+              <label class="auth-field"><span>Username</span><input id="loginUsername" name="username" type="text" autocomplete="username" required maxlength="60" placeholder="Your username"></label>
+              <label class="auth-field"><span>Password</span><input id="loginPassword" name="password" type="password" autocomplete="current-password" required placeholder="Your password"></label>
+              <button class="auth-submit" id="loginSubmit" type="submit">SIGN IN</button>
+              <p class="auth-error" id="authError" role="alert" aria-live="polite"></p>
+            </form>
+            <button class="auth-switch" id="showRegister" type="button">New here? Create a new account</button>
+          </div>
+        </div>
 
-      <div id="registerPanel" hidden>
-        <p class="auth-eyebrow">ADVENTURE PASS</p>
-        <h1 id="registerTitle">Create an account</h1>
-        <p class="auth-intro">Set up your account to continue to the learning tools.</p>
-        <form id="registerForm">
-          <label class="auth-field"><span>Identity · Username</span><input id="registerUsername" name="username" type="text" autocomplete="username" required maxlength="60" placeholder="Name your account"></label>
-          <label class="auth-field"><span>Secret · Password</span><input id="registerPassword" name="password" type="password" autocomplete="new-password" required placeholder="Enter a password"></label>
-          <label class="auth-field"><span>Confirm password</span><input id="registerConfirm" name="confirmPassword" type="password" autocomplete="new-password" required placeholder="Repeat your password"></label>
-          <label class="auth-field"><span>Profile photo · Optional</span><input id="registerPhoto" name="photo" type="file" accept="image/*"></label>
-          <button class="auth-submit" id="registerSubmit" type="submit">JOIN NOW!</button>
-          <p class="auth-error" id="registerError" role="alert" aria-live="polite"></p>
-        </form>
-        <button class="auth-switch" id="backToLogin" type="button">Go back to login</button>
+        <div id="registerPanel" class="auth-face auth-face-back" aria-hidden="true" inert>
+          <div class="auth-face-content">
+            <p class="auth-eyebrow">ADVENTURE PASS</p>
+            <h1 id="registerTitle">Create an account</h1>
+            <p class="auth-intro">Set up your account to continue to the learning tools.</p>
+            <form id="registerForm">
+              <label class="auth-field"><span>Identity · Username</span><input id="registerUsername" name="username" type="text" autocomplete="username" required maxlength="60" placeholder="Name your account"></label>
+              <label class="auth-field"><span>Secret · Password</span><input id="registerPassword" name="password" type="password" autocomplete="new-password" required placeholder="Enter a password"></label>
+              <label class="auth-field"><span>Confirm password</span><input id="registerConfirm" name="confirmPassword" type="password" autocomplete="new-password" required placeholder="Repeat your password"></label>
+              <label class="auth-field"><span>Profile photo · Optional</span><input id="registerPhoto" name="photo" type="file" accept="image/*"></label>
+              <button class="auth-submit" id="registerSubmit" type="submit">JOIN NOW!</button>
+              <p class="auth-error" id="registerError" role="alert" aria-live="polite"></p>
+            </form>
+            <button class="auth-switch" id="backToLogin" type="button">Go back to login</button>
+          </div>
+        </div>
       </div>
     </div>
   </section>
@@ -379,20 +391,38 @@
     const workspace = document.getElementById('workspace');
     const profileDialog = document.getElementById('profileDialog');
     const authGate = document.getElementById('auth-gate');
+    const authCard = document.getElementById('authCard');
     const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxsOdnjfzdpZPaLEojtMJFNjs8t2EJaoPYib4kVj6GrCXKMwt9Fj6iV6swJbicaM28QOw/exec';
     const sessionKey = 'quantumCybersecurityAccountSession';
 
-    function setAuthMode(mode) {
+    function resizeAuthCard() {
+      if (!authCard) return;
+      const registering = authCard.classList.contains('is-registering');
+      const panel = document.getElementById(registering ? 'registerPanel' : 'loginPanel');
+      const content = panel.querySelector('.auth-face-content');
+      authCard.style.height = `${content.scrollHeight + 10}px`;
+    }
+    function setAuthMode(mode, focus = true) {
       const registering = mode === 'register';
-      document.getElementById('loginPanel').hidden = registering;
-      document.getElementById('registerPanel').hidden = !registering;
+      const loginPanel = document.getElementById('loginPanel');
+      const registerPanel = document.getElementById('registerPanel');
+      loginPanel.inert = registering;
+      loginPanel.setAttribute('aria-hidden', String(registering));
+      registerPanel.inert = !registering;
+      registerPanel.setAttribute('aria-hidden', String(!registering));
+      authCard.classList.toggle('is-registering', registering);
       authGate.setAttribute('aria-labelledby', registering ? 'registerTitle' : 'authTitle');
       document.getElementById('authError').textContent = '';
       document.getElementById('authError').classList.remove('is-success');
       document.getElementById('registerError').textContent = '';
-      if (registering) document.getElementById('registerUsername').focus();
-      else document.getElementById('loginUsername').focus();
+      resizeAuthCard();
+      requestAnimationFrame(resizeAuthCard);
+      if (focus) {
+        if (registering) document.getElementById('registerUsername').focus();
+        else document.getElementById('loginUsername').focus();
+      }
     }
+    window.addEventListener('resize', resizeAuthCard);
     function showLogin(message = '') {
       accountSession = null;
       document.body.classList.remove('is-authenticated');
