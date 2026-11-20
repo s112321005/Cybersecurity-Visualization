@@ -41,6 +41,7 @@
     button, input { font: inherit; }
     button, a { -webkit-tap-highlight-color: transparent; }
     a { color: inherit; }
+    h1, h2, h3, h4 { font-weight: 900; }
     .site-header {
       width: min(1180px, calc(100% - 40px)); margin: 28px auto 0;
       display: flex; align-items: center; justify-content: space-between; gap: 20px;
@@ -62,6 +63,7 @@
     .auth-face-content { padding: clamp(22px,5vw,38px); }
     .auth-eyebrow { margin: 0 0 8px; color: #477b99; font-size: 11px; letter-spacing: .15em; }
     .auth-card h1 { margin: 0; font: 400 clamp(26px,7vw,34px)/1.15 "Titan One", Comfortaa, sans-serif; }
+    .brand h1, .auth-card h1 { font-weight: 900; -webkit-text-stroke: .25px currentColor; }
     .auth-intro { margin: 10px 0 21px; color: #637283; font-size: 13px; line-height: 1.7; font-weight: 600; }
     .auth-field { display: block; margin: 14px 0; }
     .auth-field span { display: block; margin-bottom: 7px; font-size: 12px; }
@@ -280,9 +282,7 @@
     </section>
     <section id="homeView" aria-labelledby="homeTitle">
       <div class="welcome">
-        <p class="eyebrow">QUANTUM SECURITY LEARNING HUB</p>
         <h2 id="homeTitle">Where would you like to start?</h2>
-        <p>Choose a goal to get started. Your current area and topic will stay clearly marked as you explore.</p>
       </div>
       <div class="home-grid">
         <a class="entry-card learning" href="#learning" data-open="learning">
