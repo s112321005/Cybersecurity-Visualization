@@ -97,6 +97,7 @@
     .eyebrow { margin: 0 0 8px; color: #477b99; font-size: 12px; letter-spacing: .14em; text-transform: uppercase; }
     .welcome h2 { margin: 0; font-size: clamp(24px,3.2vw,34px); line-height: 1.2; }
     .welcome > p:last-child { margin: 10px 0 0; color: #637283; font-size: 14px; line-height: 1.7; font-weight: 600; }
+    .page-footer { margin: 24px 0 0; color: #758392; text-align: center; font-size: 11px; line-height: 1.6; }
     .home-grid { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 22px; }
     .entry-card {
       --accent: var(--blue); --tint: var(--blue-soft);
@@ -114,7 +115,8 @@
     .card-top { display: flex; align-items: center; justify-content: space-between; position: relative; z-index: 1; }
     .card-number { color: #758392; font-size: 12px; letter-spacing: .1em; }
     .card-label { border: 2px solid var(--ink); border-radius: 999px; background: var(--accent); color: white; padding: 5px 11px; font-size: 11px; }
-    .card-icon { position: relative; z-index: 1; display: grid; place-items: center; width: 88px; height: 88px; margin: 20px 0 17px; border: 3px solid var(--ink); border-radius: 25px; background: var(--tint); box-shadow: 4px 4px 0 var(--ink); font-size: 44px; }
+    .card-icon { position: relative; z-index: 1; display: grid; place-items: center; width: 88px; height: 88px; margin: 20px 0 17px; border: 3px solid var(--ink); border-radius: 25px; background: var(--tint); box-shadow: 4px 4px 0 var(--ink); }
+    .card-icon svg { display: block; width: 64px; height: 64px; overflow: visible; }
     .entry-card h3 { position: relative; z-index: 1; margin: 0; font-size: 21px; line-height: 1.35; }
     .entry-card .purpose { position: relative; z-index: 1; margin: 9px 0 20px; color: #627183; font-size: 13px; line-height: 1.65; font-weight: 600; }
     .card-cta { position: relative; z-index: 1; display: flex; justify-content: space-between; align-items: center; margin-top: auto; padding-top: 13px; border-top: 2px dashed rgba(44,62,80,.22); color: var(--accent); font-size: 13px; }
@@ -133,12 +135,11 @@
     .category-tab:hover { transform: translateY(-2px); }
     .category-tab[aria-selected="true"] { background: var(--tab-bg); box-shadow: 4px 4px 0 var(--tab); }
     .category-nav[data-view="learning"] .category-tab { --tab: var(--green); --tab-bg: var(--green-soft); }
-    .category-nav[data-view="comparison"] .category-tab[data-category="analysis"] { --tab: var(--green); --tab-bg: var(--green-soft); }
-    .category-nav[data-view="comparison"] .category-tab[data-category="comparison"] { --tab: var(--purple); --tab-bg: var(--purple-soft); }
+    .category-nav[data-view="comparison"] .category-tab { --tab: var(--purple); --tab-bg: var(--purple-soft); }
     .tab-index { color: var(--tab); font-size: 11px; }
     .section-panel { --accent: var(--blue); --tint: var(--blue-soft); border: var(--line); border-radius: var(--radius); padding: clamp(17px,3vw,26px); background: rgba(255,255,255,.68); box-shadow: 6px 6px 0 rgba(44,62,80,.12); }
-    .section-panel[data-view="learning"], .section-panel[data-view="comparison"][data-category="analysis"] { --accent: var(--green); --tint: var(--green-soft); }
-    .section-panel[data-view="comparison"][data-category="comparison"] { --accent: var(--purple); --tint: var(--purple-soft); }
+    .section-panel[data-view="learning"] { --accent: var(--green); --tint: var(--green-soft); }
+    .section-panel[data-view="comparison"] { --accent: var(--purple); --tint: var(--purple-soft); }
     .section-heading { display: flex; align-items: center; gap: 13px; margin: 0 0 8px; padding-bottom: 15px; border-bottom: 3px dashed rgba(44,62,80,.23); }
     .section-code { flex: 0 0 auto; padding: 7px 12px; border: 3px solid var(--ink); border-radius: 12px; background: var(--accent); color: white; box-shadow: 3px 3px 0 var(--ink); font-size: 13px; }
     .section-heading h3 { margin: 0; font-size: clamp(17px,2.3vw,21px); line-height: 1.35; }
@@ -280,25 +281,45 @@
       <div class="welcome">
         <p class="eyebrow">QUANTUM SECURITY LEARNING HUB</p>
         <h2 id="homeTitle">Where would you like to start?</h2>
+        <p>Choose a goal to get started. Your current area and topic will stay clearly marked as you explore.</p>
       </div>
       <div class="home-grid">
         <a class="entry-card learning" href="#learning" data-open="learning">
           <div class="card-top"><span class="card-number">01 / LEARN</span><span class="card-label">LEARNING PATH</span></div>
-          <div class="card-icon" aria-hidden="true">✦</div>
+          <div class="card-icon" aria-hidden="true">
+            <svg viewBox="0 0 64 64" fill="none" stroke="var(--ink)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+              <ellipse cx="32" cy="11" rx="12" ry="4" transform="rotate(-22 32 11)" stroke-width="2"/>
+              <circle cx="32" cy="11" r="3.5" fill="var(--accent)"/>
+              <path d="M8 18c8-3 16-2 24 3v34c-8-5-16-6-24-3z" fill="white"/>
+              <path d="M56 18c-8-3-16-2-24 3v34c8-5 16-6 24-3z" fill="white"/>
+              <path d="M32 21v34M14 29c5-2 10-1 14 1M14 37c5-2 10-1 14 1M50 29c-5-2-10-1-14 1M50 37c-5-2-10-1-14 1" stroke="var(--accent)"/>
+            </svg>
+          </div>
           <h3>Security Protocol Learning</h3>
-          <p class="purpose">Start with photons and quantum foundations, then explore QKD, QSS, and QSDC.</p>
+          <p class="purpose">Start with photons and quantum foundations, then explore QKD, quantum secret sharing, and direct communication.</p>
           <div class="card-cta"><span>Explore concepts and protocols</span><b aria-hidden="true">→</b></div>
         </a>
         <a class="entry-card verification" href="VerifySetting.html">
           <div class="card-top"><span class="card-number">02 / VERIFY</span><span class="card-label">SETUP & CHECKS</span></div>
-          <div class="card-icon" aria-hidden="true">✓</div>
+          <div class="card-icon" aria-hidden="true">
+            <svg viewBox="0 0 64 64" fill="none" stroke="var(--ink)" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M32 6 52 14v15c0 13-7 22-20 29-13-7-20-16-20-29V14z" fill="white"/>
+              <path d="m21 32 8 8 15-17" stroke="var(--accent)" stroke-width="5"/>
+            </svg>
+          </div>
           <h3>Security Analysis Verification</h3>
           <p class="purpose">Configure analysis settings and verify security-related behavior with the verification tools.</p>
           <div class="card-cta"><span>Open verification tool</span><b aria-hidden="true">↗</b></div>
         </a>
         <a class="entry-card comparison" href="#comparison" data-open="comparison">
           <div class="card-top"><span class="card-number">03 / COMPARE</span><span class="card-label">COMPARE & EVALUATE</span></div>
-          <div class="card-icon" aria-hidden="true">⇄</div>
+          <div class="card-icon" aria-hidden="true">
+            <svg viewBox="0 0 64 64" fill="none" stroke="var(--ink)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M32 9v42M16 17h32M23 51h18M16 17 8 37m8-20 8 20m24-20-8 20m8-20 8 20"/>
+              <path d="M8 37c2 8 14 8 16 0zM40 37c2 8 14 8 16 0z" fill="var(--tint)"/>
+              <path d="M25 55h14" stroke="var(--accent)" stroke-width="4"/>
+            </svg>
+          </div>
           <h3>Protocol Comparison & Evaluation</h3>
           <p class="purpose">Compare QKD security and discard rates, then open the analysis tool that fits your goal.</p>
           <div class="card-cta"><span>Explore comparison tools</span><b aria-hidden="true">→</b></div>
@@ -319,6 +340,7 @@
       <nav class="category-nav" id="categoryNav" aria-label="Categories in this section"></nav>
       <article class="section-panel" id="sectionPanel" data-category="basics" aria-live="polite"></article>
     </section>
+    <p class="page-footer">Quantum Cybersecurity Education Platform · Select a category to explore its topics</p>
   </main>
 
   <dialog id="profileDialog" aria-labelledby="profileTitle">
@@ -349,7 +371,7 @@
     const content = {
       learning: {
         title: 'Security Protocol Learning',
-        description: '',
+        description: 'Explore the core ideas of quantum communication step by step. Choose a category below; the page title and location indicator will update with it.',
         categories: [
           { id:'basics', label:'Quantum Foundations', code:'START', title:'Quantum Foundations', summary:'Start with photon directions, polarization, and entanglement—the foundations for understanding quantum security protocols.', items:[
             { title:'Photon Game', desc:'Practice photon directions and polarizers through interactive levels.', href:'game/index.html', game:true },
@@ -365,20 +387,20 @@
             { title:'ZhangLiMan Protocol', desc:'Learn how multiple participants work together to recover a shared secret.', href:'ZLMstep1.html' },
             { title:'ZhangMan Protocol', desc:'Explore extended quantum secret-sharing protocols and different security scenarios.', href:'ZMoverview.html' }
           ]},
-          { id:'qsdc', label:'QSDC Secure Direct Communication', code:'QSDC', title:'Quantum Secure Direct Communication', summary:'Learn how quantum communication can send messages directly without first establishing a key, including its control procedures.', image:'pictures/QSDCgeneral.png', items:[
+          { id:'qsdc', label:'QSDC Direct Communication', code:'QSDC', title:'Quantum Secure Direct Communication', summary:'Learn how quantum communication can send messages directly without first establishing a key, including its control procedures.', image:'pictures/QSDCgeneral.png', items:[
             { title:'Ping-Pong Protocol', desc:'Learn how control and message modes support secure two-way quantum communication.', href:'PINGPONGoverview.html' }
           ]}
         ]
       },
       comparison: {
         title: 'Protocol Comparison & Evaluation',
-        description: '',
+        description: 'This area contains comparison and evaluation tools—not concept lessons. Choose an analysis goal to open the right tool.',
         categories: [
           { id:'analysis', label:'Security Analysis', code:'CHECK', title:'QKD Security Analysis', summary:'Configure QKD protocol settings and review security-related behavior and analysis results.', items:[
             { title:'QKD Security Analysis', desc:'Configure a QKD protocol and verify its security-related behavior.', href:'QKDprob.html' }
           ]},
           { id:'comparison', label:'Discard Rate Comparison', code:'COMPARE', title:'QKD Discard Rate Comparison', summary:'Compare discard-rate behavior across different QKD protocol choices.', items:[
-            { title:'QKD Discard Rate Comparison', desc:'Compare how much data is discarded during sifting across protocols.', href:'QKD_compare.html' }
+            { title:'QKD Discard Rate Comparison', desc:'Compare how much data is discarded during sifting across QKD protocols.', href:'QKD_compare.html' }
           ]}
         ]
       }
