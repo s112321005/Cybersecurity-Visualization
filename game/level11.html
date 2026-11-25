@@ -10,17 +10,13 @@
             --primary-blue: #549FD0;
             --ink: #263238;
             --bg-gradient: linear-gradient(135deg, #E0F2FE 0%, #F5F3FF 50%, #ECFDF5 100%);
-            --muted: #667085;
             --paper: #ffffff;
-            --line: #d7e3f5;
             --pass: #20a464;
             --block: #d94343;
             --zero: #99b3e5;
             --one: #3d7df2;
             --plus: #EBBA7C;
-            --plus-deep: #E59A3C;
             --minus: #E8890A;
-            --off: #9aa4b2;
             --unpolarized: #FACC15;
             --unpolarized-deep: #EAB308;
         }
@@ -105,8 +101,8 @@
             box-shadow: 0 0 18px color-mix(in srgb, var(--beam-color) 38%, transparent);
             display: grid;
             place-items: center;
-            --beam-color: var(--one);
-            --state-angle: 0deg;
+            --beam-color: var(--minus);
+            --state-angle: -45deg;
         }
         .tutorial-photon::before {
             content: "";
@@ -139,9 +135,10 @@
             z-index: 2;
         }
 
-        /* 無方向黃色光子（無虛線框） */
+        /* 無方向黃色光子（實線外框） */
         .tutorial-photon.unpolarized {
             --beam-color: var(--unpolarized);
+            border: 3px solid var(--unpolarized-deep);
             background: radial-gradient(circle, #ffffff 0 42%, rgba(250, 204, 21, 0.28) 44% 66%, transparent 68% 100%);
             box-shadow: 0 0 22px rgba(250, 204, 21, 0.55);
         }
@@ -171,7 +168,7 @@
             border: 5px solid var(--ink);
             border-radius: 24px;
             background: radial-gradient(circle at 20% 18%, rgba(255, 216, 77, 0.22), transparent 28%),
-                        radial-gradient(circle at 86% 78%, rgba(229, 93, 139, 0.16), transparent 30%),
+                        radial-gradient(circle at 86% 78%, rgba(232, 137, 10, 0.16), transparent 30%),
                         #fbfdff;
             padding: 18px;
             height: 100%;
@@ -213,7 +210,7 @@
             top: 0;
             transition: transform 0.16s ease, box-shadow 0.16s ease, top 0.12s ease, background 0.16s ease;
         }
-        .option-tile strong { display: block; color: var(--ink); font-size: 1.12rem; font-weight: 950; margin-bottom: 12px; }
+        .option-tile strong { display: block; color: var(--ink); font-size: 1.15rem; font-weight: 950; margin-bottom: 12px; }
         .option-tile:hover {
             transform: translateY(-5px) rotate(-2deg) scale(1.03);
             box-shadow: 0 13px 0 var(--primary-blue), 0 20px 30px rgba(31, 67, 107, 0.14);
@@ -286,10 +283,9 @@
             position: absolute;
             left: 44px;
             right: 44px;
-            top: 40%;
+            top: 42%;
             height: 160px;
             transform: translateY(-50%);
-            /* 調整這兩個數值即可改變兩片 SVG 偏振片的位置與距離 */
             --filter-1: 38%;
             --filter-2: 66%;
         }
@@ -319,7 +315,7 @@
         .intro-animation .level-three-beam { animation: levelThreeBeamIntro 1.5s linear forwards; }
         .finish-animation .level-three-beam { opacity: 0.9; }
 
-        /* 第二段中間光束（X 基底 |+⟩ 暖琥珀色，位於兩片偏振片圖片後方 z-index: 4） */
+        /* 第二段中間光束（橘色 X 基底光，位於偏振片圖片後方 z-index: 4） */
         .level-three-beam-mid {
             position: absolute;
             left: var(--filter-1);
@@ -328,7 +324,7 @@
             height: 8px;
             border-radius: 999px;
             transform: translateY(-50%);
-            background: linear-gradient(90deg, var(--plus-deep), var(--plus));
+            background: linear-gradient(90deg, var(--plus), var(--minus));
             opacity: 0;
             z-index: 4;
         }
@@ -336,7 +332,7 @@
             animation: midBeamPass 0.65s linear forwards;
         }
 
-        /* 移動中的光子亮點（一開始為黃色，通過第一片後轉為 |+⟩ 琥珀色，位於偏振片後方 z-index: 5） */
+        /* 移動光點 */
         .level-three-dot {
             position: absolute;
             left: 46px;
@@ -353,7 +349,7 @@
         .intro-animation .level-three-dot { animation: dualFilterIntro 1.5s linear forwards; }
         .will-block .finish-animation .level-three-dot { animation: dualFilterBlock 1.35s linear forwards; }
 
-        /* 雙偏振片圖片（z-index: 11，覆蓋在光束線條上方） */
+        /* 雙偏振片圖片（z-index: 11） */
         .level-filter {
             position: absolute;
             left: var(--filter-1);
@@ -368,7 +364,7 @@
             width: 132px;
         }
 
-        /* 偏振片上方的 X-Basis 標籤 */
+        /* 偏振片上方 X-Basis 橘色標籤 */
         .filter-basis-tag {
             position: absolute;
             top: -36px;
@@ -378,14 +374,14 @@
             padding: 4px 11px;
             border: 3px solid var(--ink);
             border-radius: 999px;
-            background: #fffbeb;
-            color: #78350f;
+            background: #fff7ed;
+            color: #9a3412;
             font-size: 0.78rem;
             font-weight: 950;
-            box-shadow: 0 4px 0 var(--plus-deep);
+            box-shadow: 0 4px 0 var(--minus);
         }
 
-        /* 通過第一片 X 基底後的中間量子態提示 */
+        /* 中間量子態提示 */
         .mid-state-tag {
             position: absolute;
             left: calc((var(--filter-1) + var(--filter-2)) / 2);
@@ -395,8 +391,8 @@
             padding: 3px 9px;
             border: 2.5px solid var(--ink);
             border-radius: 999px;
-            background: #fffbeb;
-            color: #b45309;
+            background: #fff7ed;
+            color: var(--minus);
             font-size: 0.76rem;
             font-weight: 950;
             opacity: 0;
@@ -407,7 +403,7 @@
             animation: midStatePop 0.35s ease-out 0.25s forwards;
         }
 
-        /* 右側結果框與百分比 */
+        /* 右側結果框與 0% 標記 */
         .result-placeholder {
             position: absolute;
             left: calc(100% - 64px);
@@ -473,7 +469,7 @@
             animation: levelBlockPop 0.45s ease-out 0.85s forwards;
         }
 
-        /* 彈窗樣式 */
+        /* 彈窗樣式（精簡無長篇文字） */
         .level-modal-overlay {
             position: absolute;
             inset: 0;
@@ -491,7 +487,7 @@
         }
         .level-modal-overlay.show { opacity: 1; visibility: visible; }
         .level-modal-card {
-            width: min(410px, 86%);
+            width: min(360px, 84%);
             border: 5px solid #ddd;
             border-radius: 28px;
             background: white;
@@ -522,24 +518,11 @@
         .level-modal-title { margin: 0 0 22px; font-size: 2rem; font-weight: 950; }
         .level-modal-card.success .level-modal-title { color: var(--pass); }
         .level-modal-card.error .level-modal-title { color: var(--block); }
-        /*.level-modal-desc {
-            margin: 0 0 22px;
-            padding: 12px 14px;
-            border-radius: 16px;
-            background: #f8fafc;
-            border: 2px solid #e2e8f0;
-            color: #334155;
-            font-size: 0.92rem;
-            font-weight: 700;
-            line-height: 1.5;
-            text-align: left;
-        }*/
-        .level-modal-desc strong { color: #0f172a; }
         .level-modal-actions { display: flex; justify-content: center; gap: 10px; flex-wrap: nowrap; }
         .level-modal-btn {
             border: 0;
             border-radius: 999px;
-            padding: 12px 34px;
+            padding: 12px 30px;
             color: white;
             font-size: 1rem;
             font-weight: 950;
@@ -548,7 +531,6 @@
             box-shadow: 0 5px 12px rgba(0, 0, 0, 0.15);
             transition: transform 0.18s ease, box-shadow 0.18s ease;
             white-space: nowrap;
-            min-width: max-content;
         }
         .level-modal-card.success .level-modal-btn { background: var(--pass); }
         .level-modal-card.error .level-modal-btn { background: var(--block); }
@@ -571,15 +553,15 @@
                 left: var(--filter-1);
                 transform: scale(1.05);
                 opacity: 1;
-                background: var(--plus-deep);
-                box-shadow: 0 0 18px var(--plus-deep), 0 0 30px color-mix(in srgb, var(--plus) 58%, transparent);
+                background: var(--minus);
+                box-shadow: 0 0 18px var(--minus), 0 0 30px color-mix(in srgb, var(--minus) 52%, transparent);
             }
             48% {
                 left: var(--filter-2);
                 transform: scale(1.1);
                 opacity: 1;
-                background: var(--plus-deep);
-                box-shadow: 0 0 18px var(--plus-deep), 0 0 30px color-mix(in srgb, var(--plus) 58%, transparent);
+                background: var(--minus);
+                box-shadow: 0 0 18px var(--minus), 0 0 30px color-mix(in srgb, var(--minus) 52%, transparent);
             }
             72% {
                 left: var(--filter-2);
@@ -634,7 +616,6 @@
             .level-three-scene { left: 20px; right: 20px; }
             .level-three-scene .tutorial-photon { width: 72px; height: 72px; }
             .level-filter, .level-filter.second { width: 96px; }
-            .filter-basis-tag { font-size: 0.68rem; padding: 3px 8px; top: -30px; }
         }
     </style>
 </head>
@@ -657,19 +638,33 @@ const photonTypes = {
 };
 
 const filterTypes = {
-    diagonal: { label: "Diagonal +45°", basis: "X-Basis", state: "|+⟩", image: "pictures/diagonal.svg" },
-    diagonal45: { label: "Diagonal -45°", basis: "X-Basis", state: "|−⟩", image: "pictures/diagonal_45.svg" }
+    diagonalPlus: { label: "Diagonal +45°", basis: "X-Basis", state: "|+⟩", image: "pictures/diagonal.svg" },
+    diagonalMinus: { label: "Diagonal -45°", basis: "X-Basis", state: "|−⟩", image: "pictures/diagonal_45.svg" }
 };
 
 const level = {
     photon: "unpolarized",
-    filters: ["diagonal", "diagonal45"],
+    filters: ["diagonalPlus", "diagonalMinus"],
     pass: "block",
     output: "none"
 };
 
 const page = document.querySelector("[data-level-page]");
-const nextLevelHref = "game/index.html";
+const levelIndex = Math.max(0, Number(page.dataset.levelPage || 1) - 1);
+const levelFiles = [
+    "game/level1.html",
+    "game/level2.html",
+    "game/level3.html",
+    "game/level4.html",
+    "game/level5.html",
+    "game/level6.html",
+    "game/level7.html",
+    "game/level8.html",
+    "game/level9.html",
+    "game/level10.html",
+    "game/level11.html",
+    "game/level12.html"
+];
 
 function photonMarkup(id = "", extraClass = "") {
     return `<div class="tutorial-photon ${extraClass}" ${id ? `id="${id}"` : ""}><span></span></div>`;
@@ -723,7 +718,7 @@ function renderLevel() {
                 <div class="level-badge-static">Level 11</div>
                 <h1 class="question">Final result?</h1>
                 <div class="level-three-options">
-                    <button class="option-tile" type="button" data-answer="diagLeft" aria-label="left diagonal light passes">
+                    <button class="option-tile" type="button" data-answer="diagLeft" aria-label="diagonal light passes">
                         <strong>DIAGONAL · |−⟩ (X)</strong>
                         ${photonMarkup("", "choice-photon hide-symbol")}
                     </button>
@@ -732,7 +727,7 @@ function renderLevel() {
                         <span class="block-choice-icon"></span>
                     </button>
                 </div>
-                <button class="next-level-btn hidden" id="nextLevelBtn" type="button">Back to Levels</button>
+                <button class="next-level-btn hidden" id="nextLevelBtn" type="button">Next Level</button>
             </aside>
         </section>
     `;
@@ -754,7 +749,6 @@ function renderLevel() {
     const levelModalCard = document.getElementById("levelModalCard");
     const levelModalIcon = document.getElementById("levelModalIcon");
     const levelModalTitle = document.getElementById("levelModalTitle");
-    const levelModalDesc = document.getElementById("levelModalDesc");
     const levelModalBtn = document.getElementById("levelModalBtn");
     const levelModalSecondaryBtn = document.getElementById("levelModalSecondaryBtn");
     const nextLevelBtn = document.getElementById("nextLevelBtn");
@@ -792,7 +786,7 @@ function renderLevel() {
         levelModalIcon.innerHTML = correct ? "&#10003;" : "!";
         levelModalTitle.textContent = correct ? "Correct!" : "Incorrect!";
         levelModalBtn.textContent = correct ? "OK" : "Try again";
-        levelModalSecondaryBtn.textContent = correct ? "Level Map" : "Give up";
+        levelModalSecondaryBtn.textContent = correct ? "Next Level" : "Give up";
         levelModalBtn.style.order = correct ? "1" : "2";
         levelModalSecondaryBtn.style.order = correct ? "2" : "1";
         levelModalSecondaryBtn.classList.remove("hidden");
@@ -855,10 +849,10 @@ function renderLevel() {
 
     levelModalBtn.addEventListener("click", returnToChoice);
     levelModalSecondaryBtn.addEventListener("click", () => {
-        window.location.href = nextLevelHref;
+        window.location.href = lastCorrect ? (levelFiles[levelIndex + 1] || "game/index.html") : "game/index.html";
     });
     nextLevelBtn.addEventListener("click", () => {
-        window.location.href = nextLevelHref;
+        window.location.href = levelFiles[levelIndex + 1] || "game/index.html";
     });
 
     startIntro();
