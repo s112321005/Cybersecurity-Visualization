@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Quantum Blocks</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Titan+One&display=swap');
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      min-height: 100vh;
+      margin: 0;
+      padding: 42px 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background-color: #F0F8FF;
+      background-image: linear-gradient(
+        45deg,
+        #D6EAF8 25%,
+        transparent 25%,
+        transparent 50%,
+        #D6EAF8 50%,
+        #D6EAF8 75%,
+        transparent 75%,
+        transparent
+      );
+      background-size: 100px 100px;
+      color: #0F2027;
+    }
+
+    .game-title {
+      font-family: "Titan One", cursive;
+      font-size: clamp(3rem, 8vw, 5rem);
+      color: white;
+      -webkit-text-stroke: 3px #0F2027;
+      text-shadow: 0 0 8px rgba(52, 152, 219, .8);
+      letter-spacing: 4px;
+      margin: 0 0 10px;
+      text-align: center;
+    }
+
+    .tagline {
+      font-weight: bold;
+      color: #35566a;
+      text-align: center;
+      margin: 0 0 30px;
+    }
+
+    .map-container {
+      display: grid;
+      grid-template-columns: repeat(3, 100px);
+      gap: 24px;
+      padding: 34px;
+      border: 5px solid #0F2027;
+      border-radius: 32px;
+      background: rgba(255, 255, 255, .82);
+      box-shadow: 12px 12px 0 #85C1E9;
+    }
+
+    .level-node {
+      width: 100px;
+      height: 100px;
+      background: white;
+      border: 5px solid #0F2027;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      font-weight: 900;
+      box-shadow: 0 6px 0 #3498DB;
+      cursor: pointer;
+      transition: .18s;
+      text-decoration: none;
+      color: #0F2027;
+      position: relative;
+    }
+
+    .level-node:after {
+      content: "";
+      position: absolute;
+      top: 15px;
+      left: 18px;
+      width: 20px;
+      height: 12px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, .9);
+      transform: rotate(-24deg);
+    }
+
+    .level-node:hover {
+      transform: rotate(5deg) scale(1.1);
+      background: #5DADE2;
+      color: white;
+      box-shadow: 0 11px 0 #0F2027;
+    }
+
+    .level-node span {
+      font-size: 10px;
+      position: absolute;
+      top: 68px;
+      letter-spacing: 1px;
+    }
+
+    @media (max-width: 520px) {
+      body {
+        padding: 28px 12px;
+      }
+      .map-container {
+        grid-template-columns: repeat(2, 86px);
+        gap: 18px;
+        padding: 22px;
+      }
+      .level-node {
+        width: 86px;
+        height: 86px;
+        font-size: 24px;
+      }
+      .level-node span {
+        top: 59px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <h1 class="game-title">QUANTUM BLOCKS</h1>
+  <p class="tagline">Build your tensor products!</p>
+
+  <nav class="map-container">
+    <a class="level-node" href="ent_game/level1.html">1<span>LEVEL</span></a>
+  </nav>
+
+</body>
+</html>
