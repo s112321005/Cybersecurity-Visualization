@@ -7,7 +7,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <style>
         /* =========================================================
-           1. Design Tokens & Full-Viewport Canvas Setup
+1. Design Tokens & Full-Viewport Canvas Setup
            ========================================================= */
         :root {
             --primary-blue: #549FD0;
@@ -56,7 +56,7 @@
         #blochCanvas:active { cursor: grabbing; }
 
         /* =========================================================
-           2. Left Stack: Title + Probability + Photon + States + Gates
+2. Left Stack: Title + Probability + Photon + States + Gates
            ========================================================= */
         .hud-left-stack {
             position: fixed;
@@ -330,7 +330,7 @@
         }
 
         /* =========================================================
-           3. Top-Right Formula Toggle Button
+3. Top-Right Formula Toggle Button
            ========================================================= */
         .hud-top-right-wrap {
             position: fixed;
@@ -370,7 +370,7 @@
         }
 
         /* =========================================================
-           4. Slide-Out Right Formula Drawer (I, X, Y, Z, H)
+4. Slide-Out Right Formula Drawer (I, X, Y, Z, H)
            ========================================================= */
         .formula-drawer {
             position: fixed;
@@ -583,7 +583,7 @@
         }
 
         /* =========================================================
-           5. 3D Projected Floating Pole Badges (|0⟩, |1⟩, |+⟩, |−⟩)
+5. 3D Projected Floating Pole Badges (|0⟩, |1⟩, |+⟩, |−⟩)
            ========================================================= */
         .pole-badges-layer {
             position: fixed;
@@ -726,7 +726,7 @@
 
     <script>
         /* =========================================================================
-           1. Quantum State, Bloch Geometry & Complex Arithmetic
+1. Quantum State, Bloch Geometry & Complex Arithmetic
            ========================================================================= */
         const R = 1.25;
 
@@ -867,8 +867,11 @@
 
         let expandedGateKey = null;
 
-        function renderFormulaDrawer() {
-            const [a, b] = getCurrentSpinor();
+        function renderFormulaDrawer(customAlphaDeg = null) {
+            const useAlpha = (customAlphaDeg !== null) ? customAlphaDeg : displayAlphaDeg;
+            const rad = THREE.MathUtils.degToRad(useAlpha);
+            const a = { re: Math.cos(rad), im: 0 };
+            const b = { re: Math.sin(rad), im: 0 };
             const aStr = fmtComplex(a);
             const bStr = fmtComplex(b);
             document.getElementById("drawerStateChip").textContent = `|ψ⟩ = ${identifyKetLabel(a, b)}`;
@@ -962,7 +965,8 @@
         let axisFadeTimer = 0;
 
         // 正交十字視角（|0⟩上、|1⟩下、|+⟩左、|−⟩右）：
-        const DEFAULT_CAM = { azimuth: -Math.PI / 2, polar: Math.PI / 2, dist: 5.2 };        let camAzimuth = DEFAULT_CAM.azimuth;
+        const DEFAULT_CAM = { azimuth: -Math.PI / 2, polar: Math.PI / 2, dist: 5.2 };
+        let camAzimuth = DEFAULT_CAM.azimuth;
         let camPolar = DEFAULT_CAM.polar;
         let camDist = DEFAULT_CAM.dist;
         let targetAzimuth = DEFAULT_CAM.azimuth;
@@ -975,7 +979,7 @@
         let lastFrameTime = 0;
 
         /* =========================================================================
-           2. Initialize Three.js Scene
+2. Initialize Three.js Scene
            ========================================================================= */
         function initScene() {
             const canvas = document.getElementById("blochCanvas");
@@ -1094,10 +1098,11 @@
                     new THREE.MeshBasicMaterial({
                         color: pole.color,
                         transparent: true,
-                        opacity: 0.24,
+                        opacity: 0,
                         depthWrite: false
                     })
                 );
+                halo.visible = false;
 
                 group.add(orb);
                 group.add(halo);
@@ -1206,7 +1211,7 @@
         }
 
         /* =========================================================================
-           3. State Transitions, Gate Rotations & HUD Sync
+3. State Transitions, Gate Rotations & HUD Sync
            ========================================================================= */
         function setFromAlpha(alphaDeg, animate = false) {
             const clamped = Math.max(0, Math.min(180, alphaDeg));
@@ -1243,6 +1248,9 @@
                 anim.active = false;
             }
 
+            // 1. 先記錄套用閘門「前」的角度，供右側公式欄顯示輸入態 |ψ⟩
+            const prevAlphaDeg = displayAlphaDeg;
+
             const start = currentVec.clone().normalize();
             const end = start.clone().applyAxisAngle(gate.axis, gate.angle).normalize();
 
@@ -1253,6 +1261,17 @@
 
             startTransition(end, gate.axis.clone(), gate.angle, gate.color);
             syncHUD();
+
+            // 2. 若右側公式欄是開啟的，同步展開對應卡片，並代入「套用前」的 |ψ⟩ 顯示完整推導
+            const formulaDrawer = document.getElementById("formulaDrawer");
+            if (formulaDrawer && formulaDrawer.classList.contains("open")) {
+                expandedGateKey = gateKey;
+                renderFormulaDrawer(prevAlphaDeg);
+                const targetBtn = document.querySelector(`.formula-summary[data-formula-key="${gateKey}"]`);
+                if (targetBtn) {
+                    targetBtn.closest(".formula-card").scrollIntoView({ behavior: "smooth", block: "nearest" });
+                }
+            }
         }
 
         function startTransition(endVec, rotAxis, rotAngle, colorHex) {
@@ -1341,7 +1360,7 @@
         }
 
         /* =========================================================================
-           4. Pointer, Touch & UI Event Bindings
+4. Pointer, Touch & UI Event Bindings
            ========================================================================= */
         function bindEvents() {
             const canvas = document.getElementById("blochCanvas");
@@ -1418,7 +1437,6 @@
             document.querySelectorAll("[data-gate]").forEach(el => {
                 el.addEventListener("click", () => {
                     executeGate(el.dataset.gate);
-                    renderFormulaDrawer();
                 });
             });
 
@@ -1443,7 +1461,7 @@
         }
 
         /* =========================================================================
-           5. 3D Pole Badge Projection & 60fps Animation Loop
+5. 3D Pole Badge Projection & 60fps Animation Loop
            ========================================================================= */
         function updatePoleBadges() {
             const w = window.innerWidth;
@@ -1549,10 +1567,16 @@
             coneMat.emissive.setHex(liveColor);
             tipAuraMat.color.setHex(liveColor);
 
-            const pulse = 1 + Math.sin(now * 0.0045) * 0.1;
             Object.values(POLES).forEach(pole => {
-                const isNear = currentVec.distanceTo(pole.vec) < 0.06;
-                poleMeshes[pole.key].halo.scale.setScalar(isNear ? pulse * 1.22 : 1.0);
+                const isNear = !anim.active && currentVec.distanceTo(pole.vec) < 0.05;
+                const halo = poleMeshes[pole.key].halo;
+                halo.visible = isNear;
+                if (isNear) {
+                    halo.scale.setScalar(1.22);
+                    halo.material.opacity = 0.15;
+                } else {
+                    halo.material.opacity = 0;
+                }
             });
 
             updatePoleBadges();
