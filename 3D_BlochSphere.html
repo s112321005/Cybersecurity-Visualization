@@ -1,0 +1,1571 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Bloch Sphere · 3D</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <style>
+        /* =========================================================
+           1. Design Tokens & Full-Viewport Canvas Setup
+           ========================================================= */
+        :root {
+            --primary-blue: #549FD0;
+            --ink: #263238;
+            --zero-light: #99b3e5;
+            --one-blue: #3d7df2;
+            --plus-light: #EBBA7C;
+            --minus-orange: #E8890A;
+            --gate-teal: #10b981;
+            --y-purple: #8b5cf6;
+            --glass-bg: rgba(255, 255, 255, 0.9);
+        }
+
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            font-family: "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
+            color: var(--ink);
+            background:
+                linear-gradient(90deg, rgba(84, 159, 208, 0.08) 1px, transparent 1px),
+                linear-gradient(180deg, rgba(84, 159, 208, 0.08) 1px, transparent 1px),
+                linear-gradient(145deg, #E0F2FE 0%, #F0F9FF 48%, #F8FAFC 100%);
+            background-size: 40px 40px, 40px 40px, 100% 100%;
+            user-select: none;
+        }
+
+        #blochCanvas {
+            position: fixed;
+            inset: 0;
+            width: 100vw;
+            height: 100vh;
+            display: block;
+            cursor: grab;
+            touch-action: none;
+            z-index: 1;
+        }
+
+        #blochCanvas:active { cursor: grabbing; }
+
+        /* =========================================================
+           2. Left Stack: Title + Probability + Photon + States + Gates
+           ========================================================= */
+        .hud-left-stack {
+            position: fixed;
+            top: 18px;
+            left: 18px;
+            z-index: 20;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 10px;
+            pointer-events: none;
+        }
+
+        .hud-left-stack > * {
+            pointer-events: auto;
+        }
+
+        .hud-top-left {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .title-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            border: 3px solid var(--ink);
+            border-radius: 999px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(8px);
+            font-weight: 900;
+            font-size: 0.95rem;
+            letter-spacing: 0.2px;
+            box-shadow: 0 4px 0 var(--primary-blue);
+        }
+
+        .title-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--primary-blue);
+            border: 2px solid var(--ink);
+        }
+
+        .icon-reset-btn {
+            width: 38px;
+            height: 38px;
+            border: 3px solid var(--ink);
+            border-radius: 50%;
+            background: var(--glass-bg);
+            backdrop-filter: blur(8px);
+            color: var(--ink);
+            font-size: 1.05rem;
+            font-weight: 900;
+            display: grid;
+            place-items: center;
+            cursor: pointer;
+            box-shadow: 0 4px 0 #cbd5e1;
+            transition: transform 0.14s ease, box-shadow 0.14s ease;
+        }
+
+        .icon-reset-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 0 var(--primary-blue);
+        }
+
+        .icon-reset-btn:active {
+            transform: translateY(2px);
+            box-shadow: 0 1px 0 #cbd5e1;
+        }
+
+        /* Left Probability Panel (Z & X Measurement Bars) */
+        .hud-left-prob {
+            width: 196px;
+            padding: 10px 14px;
+            border: 3.5px solid var(--ink);
+            border-radius: 20px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 6px 0 var(--primary-blue);
+        }
+
+        .prob-stack {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .prob-unit {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .prob-label {
+            font-size: 0.74rem;
+            font-weight: 900;
+            font-variant-numeric: tabular-nums;
+            letter-spacing: 0.2px;
+        }
+
+        .prob-label.z-lbl { color: #1e40af; }
+        .prob-label.x-lbl { color: #9a3412; }
+
+        .prob-bar {
+            height: 8px;
+            width: 100%;
+            border-radius: 999px;
+            border: 2px solid var(--ink);
+            background: #e2e8f0;
+            overflow: hidden;
+            display: flex;
+        }
+
+        .prob-seg {
+            height: 100%;
+            transition: width 0.22s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        /* Left Photon & Angle Pill Card */
+        .hud-left-photon {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 12px;
+            border: 3.5px solid var(--ink);
+            border-radius: 20px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 6px 0 var(--primary-blue);
+        }
+
+        .photon-orb {
+            position: relative;
+            width: 54px;
+            height: 54px;
+            flex-shrink: 0;
+            border-radius: 50%;
+            border: 3px solid color-mix(in srgb, var(--beam-color) 78%, white);
+            background: radial-gradient(circle, #ffffff 0 45%, color-mix(in srgb, var(--beam-color) 28%, transparent) 48% 100%);
+            box-shadow: 0 0 16px color-mix(in srgb, var(--beam-color) 45%, transparent);
+            display: grid;
+            place-items: center;
+            --beam-color: var(--one-blue);
+            --pol-angle: 90deg;
+            transition: border-color 0.25s ease, box-shadow 0.25s ease;
+        }
+
+        .photon-orb::before {
+            content: "";
+            position: absolute;
+            inset: 6px;
+            border-radius: 50%;
+            border: 4px solid color-mix(in srgb, var(--beam-color) 24%, white);
+        }
+
+        .photon-orb > span {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            width: 10px;
+            height: 32px;
+            background: var(--beam-color);
+            transform: translate(-50%, -50%) rotate(var(--pol-angle));
+            box-shadow: 0 0 8px var(--beam-color);
+            clip-path: polygon(50% 0, 100% 18%, 72% 18%, 72% 82%, 100% 82%, 50% 100%, 0 82%, 28% 82%, 28% 18%, 0 18%);
+            transition: background 0.25s ease;
+        }
+
+        .angle-pills-row {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .num-pill {
+            text-align: center;
+            padding: 3px 10px;
+            border: 2.5px solid var(--ink);
+            border-radius: 999px;
+            background: #ffffff;
+            font-size: 0.8rem;
+            font-weight: 900;
+            font-variant-numeric: tabular-nums;
+            white-space: nowrap;
+        }
+
+        .num-pill.theta-pill {
+            background: #eff6ff;
+            border-color: var(--one-blue);
+            color: #1e3a8a;
+        }
+
+        /* Left Control Groups (States + Gates & Slider) */
+        .left-control-group {
+            display: inline-flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 7px;
+            padding: 8px 11px;
+            max-width: 268px;
+            border: 3.5px solid var(--ink);
+            border-radius: 22px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 6px 0 var(--primary-blue);
+        }
+
+        .dock-btn {
+            appearance: none;
+            min-width: 40px;
+            height: 36px;
+            padding: 0 10px;
+            border: 3px solid var(--ink);
+            border-radius: 999px;
+            background: #ffffff;
+            color: var(--ink);
+            font-size: 0.88rem;
+            font-weight: 950;
+            cursor: pointer;
+            display: inline-grid;
+            place-items: center;
+            transition: transform 0.12s ease, box-shadow 0.12s ease, background 0.15s ease;
+        }
+
+        .dock-btn:hover { transform: translateY(-2px); }
+        .dock-btn:active { transform: translateY(2px); }
+
+        .dock-btn[data-state="zero"] { box-shadow: 0 3px 0 var(--zero-light); color: #1e3a8a; }
+        .dock-btn[data-state="zero"].active { background: #dbeafe; box-shadow: 0 4px 0 var(--one-blue); }
+        .dock-btn[data-state="one"] { box-shadow: 0 3px 0 var(--one-blue); color: #1e3a8a; }
+        .dock-btn[data-state="one"].active { background: #dbeafe; box-shadow: 0 4px 0 var(--one-blue); }
+        .dock-btn[data-state="plus"] { box-shadow: 0 3px 0 var(--plus-light); color: #7c2d12; }
+        .dock-btn[data-state="plus"].active { background: #fef3c7; box-shadow: 0 4px 0 var(--minus-orange); }
+        .dock-btn[data-state="minus"] { box-shadow: 0 3px 0 var(--minus-orange); color: #7c2d12; }
+        .dock-btn[data-state="minus"].active { background: #ffedd5; box-shadow: 0 4px 0 var(--minus-orange); }
+
+        .dock-btn[data-gate="I"] { background: #f1f5f9; box-shadow: 0 3px 0 #94a3b8; }
+        .dock-btn[data-gate="X"] { background: #ffedd5; box-shadow: 0 3px 0 var(--minus-orange); }
+        .dock-btn[data-gate="Y"] { background: #ede9fe; box-shadow: 0 3px 0 var(--y-purple); }
+        .dock-btn[data-gate="Z"] { background: #dbeafe; box-shadow: 0 3px 0 var(--one-blue); }
+        .dock-btn[data-gate="H"] {
+            background: linear-gradient(135deg, #fef3c7 0%, #dbeafe 100%);
+            box-shadow: 0 3px 0 var(--gate-teal);
+        }
+
+        .slider-wrap {
+            width: 100%;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 2px 2px 0;
+        }
+
+        .slider-end {
+            font-size: 0.72rem;
+            font-weight: 900;
+            color: #475569;
+            font-variant-numeric: tabular-nums;
+        }
+
+        input[type="range"]#angleSlider {
+            flex: 1;
+            min-width: 90px;
+            height: 6px;
+            accent-color: var(--primary-blue);
+            cursor: pointer;
+            margin: 0;
+        }
+
+        /* =========================================================
+           3. Top-Right Formula Toggle Button
+           ========================================================= */
+        .hud-top-right-wrap {
+            position: fixed;
+            top: 18px;
+            right: 18px;
+            z-index: 25;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .formula-toggle-btn {
+            width: 46px;
+            height: 46px;
+            border: 3.5px solid var(--ink);
+            border-radius: 16px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            color: var(--ink);
+            cursor: pointer;
+            display: grid;
+            place-items: center;
+            box-shadow: 0 5px 0 var(--primary-blue);
+            transition: transform 0.14s ease, background 0.15s ease, box-shadow 0.14s ease;
+            flex-shrink: 0;
+        }
+
+        .formula-toggle-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .formula-toggle-btn.active {
+            background: #dbeafe;
+            border-color: var(--one-blue);
+            box-shadow: 0 5px 0 var(--one-blue);
+            color: #1e3a8a;
+        }
+
+        /* =========================================================
+           4. Slide-Out Right Formula Drawer (I, X, Y, Z, H)
+           ========================================================= */
+        .formula-drawer {
+            position: fixed;
+            top: 76px;
+            right: 18px;
+            bottom: 24px;
+            width: min(350px, 90vw);
+            z-index: 24;
+            border: 3.5px solid var(--ink);
+            border-radius: 26px;
+            background: rgba(255, 255, 255, 0.94);
+            backdrop-filter: blur(12px);
+            box-shadow: 0 8px 0 var(--primary-blue), 0 18px 36px rgba(15, 23, 42, 0.14);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            transform: translateX(calc(100% + 28px));
+            opacity: 0;
+            pointer-events: none;
+            transition: transform 0.34s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.24s ease;
+        }
+
+        .formula-drawer.open {
+            transform: translateX(0);
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .drawer-header {
+            padding: 12px 16px;
+            border-bottom: 2.5px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #f8fafc;
+        }
+
+        .drawer-title {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 950;
+            font-size: 0.92rem;
+            color: var(--ink);
+        }
+
+        .state-chip {
+            padding: 3px 10px;
+            border: 2px solid var(--ink);
+            border-radius: 999px;
+            background: #eff6ff;
+            font-size: 0.78rem;
+            font-weight: 900;
+            font-family: "JetBrains Mono", "Fira Code", monospace;
+            color: #1e3a8a;
+        }
+
+        .drawer-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .formula-card {
+            border: 3px solid var(--ink);
+            border-radius: 18px;
+            background: #ffffff;
+            box-shadow: 0 4px 0 #cbd5e1;
+            overflow: hidden;
+            transition: transform 0.14s ease, box-shadow 0.14s ease, border-color 0.15s ease;
+        }
+
+        .formula-card:hover { transform: translateY(-2px); }
+
+        .formula-card.expanded {
+            border-color: var(--accent-color, var(--primary-blue));
+            box-shadow: 0 5px 0 var(--accent-color, var(--primary-blue));
+        }
+
+        .formula-summary {
+            width: 100%;
+            appearance: none;
+            border: 0;
+            background: transparent;
+            padding: 10px 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            cursor: pointer;
+            text-align: left;
+            color: var(--ink);
+        }
+
+        .gate-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .gate-badge {
+            width: 34px;
+            height: 34px;
+            border: 2.5px solid var(--ink);
+            border-radius: 11px;
+            display: grid;
+            place-items: center;
+            font-weight: 950;
+            font-size: 1rem;
+            background: var(--badge-bg, #f1f5f9);
+            flex-shrink: 0;
+        }
+
+        .matrix-wrap {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            font-family: "JetBrains Mono", "Fira Code", ui-monospace, monospace;
+            font-size: 0.82rem;
+            font-weight: 800;
+        }
+
+        .matrix-coeff {
+            font-size: 0.78rem;
+            color: #475569;
+        }
+
+        .matrix-box {
+            display: inline-grid;
+            grid-template-columns: repeat(2, minmax(22px, auto));
+            column-gap: 8px;
+            row-gap: 2px;
+            padding: 2px 7px;
+            border-left: 2.5px solid var(--ink);
+            border-right: 2.5px solid var(--ink);
+            border-radius: 5px;
+            text-align: center;
+            line-height: 1.25;
+        }
+
+        .vec-box {
+            display: inline-grid;
+            grid-template-columns: 1fr;
+            row-gap: 2px;
+            padding: 2px 7px;
+            border-left: 2.5px solid var(--ink);
+            border-right: 2.5px solid var(--ink);
+            border-radius: 5px;
+            text-align: center;
+            line-height: 1.25;
+        }
+
+        .chevron-icon {
+            font-size: 0.78rem;
+            font-weight: 950;
+            color: #64748b;
+            transition: transform 0.22s ease;
+        }
+
+        .formula-card.expanded .chevron-icon {
+            transform: rotate(180deg);
+            color: var(--ink);
+        }
+
+        .formula-steps {
+            display: none;
+            padding: 10px 12px 12px;
+            border-top: 2px dashed #cbd5e1;
+            background: #f8fafc;
+            font-family: "JetBrains Mono", "Fira Code", ui-monospace, monospace;
+            font-size: 0.78rem;
+            font-weight: 700;
+            color: #1e293b;
+        }
+
+        .formula-card.expanded .formula-steps {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .calc-row {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .calc-line {
+            padding: 5px 8px;
+            border-radius: 8px;
+            background: #ffffff;
+            border: 1.5px solid #e2e8f0;
+            line-height: 1.45;
+        }
+
+        .calc-result {
+            padding: 6px 10px;
+            border-radius: 10px;
+            background: #eff6ff;
+            border: 2px solid var(--accent-color, var(--primary-blue));
+            font-weight: 900;
+            color: #0f172a;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        /* =========================================================
+           5. 3D Projected Floating Pole Badges (|0⟩, |1⟩, |+⟩, |−⟩)
+           ========================================================= */
+        .pole-badges-layer {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 12;
+            overflow: hidden;
+        }
+
+        .pole-badge {
+            position: absolute;
+            transform: translate(-50%, -50%);
+            pointer-events: auto;
+            appearance: none;
+            padding: 5px 13px;
+            border: 3px solid var(--ink);
+            border-radius: 999px;
+            background: #ffffff;
+            font-size: 0.96rem;
+            font-weight: 950;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: background 0.18s ease, box-shadow 0.18s ease;
+        }
+
+        .pole-badge[data-pole="zero"] { color: #1e3a8a; box-shadow: 0 4px 0 var(--zero-light); }
+        .pole-badge[data-pole="zero"].active { background: #dbeafe; box-shadow: 0 5px 0 var(--one-blue); }
+        .pole-badge[data-pole="one"] { color: #1e3a8a; box-shadow: 0 4px 0 var(--one-blue); }
+        .pole-badge[data-pole="one"].active { background: #dbeafe; box-shadow: 0 5px 0 var(--one-blue); }
+        .pole-badge[data-pole="plus"] { color: #7c2d12; box-shadow: 0 4px 0 var(--plus-light); }
+        .pole-badge[data-pole="plus"].active { background: #fef3c7; box-shadow: 0 5px 0 var(--minus-orange); }
+        .pole-badge[data-pole="minus"] { color: #7c2d12; box-shadow: 0 4px 0 var(--minus-orange); }
+        .pole-badge[data-pole="minus"].active { background: #ffedd5; box-shadow: 0 5px 0 var(--minus-orange); }
+
+        @media (max-width: 720px) {
+            .hud-left-stack { top: 12px; left: 12px; gap: 6px; }
+            .title-pill { padding: 6px 12px; font-size: 0.82rem; }
+            .icon-reset-btn { width: 34px; height: 34px; }
+            .hud-left-prob { width: 160px; padding: 8px 10px; border-radius: 16px; }
+            .hud-left-photon { padding: 6px 8px; gap: 7px; border-radius: 16px; }
+            .photon-orb { width: 42px; height: 42px; }
+            .photon-orb > span { width: 8px; height: 25px; }
+            .num-pill { font-size: 0.72rem; padding: 2px 7px; }
+            .left-control-group { max-width: 210px; padding: 6px 8px; gap: 5px; border-radius: 18px; }
+            .dock-btn { min-width: 34px; height: 32px; padding: 0 7px; font-size: 0.78rem; }
+            .hud-top-right-wrap { top: 12px; right: 12px; }
+            .formula-drawer { top: 68px; right: 12px; bottom: 16px; }
+        }
+    </style>
+</head>
+<body>
+    <canvas id="blochCanvas"></canvas>
+
+    <!-- 3D Projected Floating Pole Badges -->
+    <div class="pole-badges-layer" id="poleBadgesLayer">
+        <button class="pole-badge active" id="badge-zero" data-pole="zero" type="button">|0⟩</button>
+        <button class="pole-badge" id="badge-one" data-pole="one" type="button">|1⟩</button>
+        <button class="pole-badge" id="badge-plus" data-pole="plus" type="button">|+⟩</button>
+        <button class="pole-badge" id="badge-minus" data-pole="minus" type="button">|−⟩</button>
+    </div>
+
+    <!-- Left Column: Title, Probabilities, Photon & Angles, States, Gates & Angle Slider -->
+    <div class="hud-left-stack">
+        <div class="hud-top-left">
+            <div class="title-pill">
+                <span class="title-dot"></span>
+                <span>Bloch Sphere · 3D</span>
+            </div>
+            <button class="icon-reset-btn" id="resetCamBtn" type="button" aria-label="Reset camera">↺</button>
+        </div>
+
+        <div class="hud-left-prob">
+            <div class="prob-stack">
+                <div class="prob-unit">
+                    <span class="prob-label z-lbl" id="zProbLabel">Z: 100% / 0%</span>
+                    <div class="prob-bar">
+                        <div class="prob-seg" id="zSeg0" style="width: 100%; background: var(--zero-light);"></div>
+                        <div class="prob-seg" id="zSeg1" style="width: 0%; background: var(--one-blue);"></div>
+                    </div>
+                </div>
+                <div class="prob-unit">
+                    <span class="prob-label x-lbl" id="xProbLabel">X: 50% / 50%</span>
+                    <div class="prob-bar">
+                        <div class="prob-seg" id="xSegPlus" style="width: 50%; background: var(--plus-light);"></div>
+                        <div class="prob-seg" id="xSegMinus" style="width: 50%; background: var(--minus-orange);"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="hud-left-photon">
+            <div class="photon-orb" id="photonOrb"><span></span></div>
+            <div class="angle-pills-row">
+                <span class="num-pill" id="alphaPill">α: 0°</span>
+                <span class="num-pill theta-pill" id="thetaPill">θ: 0°</span>
+            </div>
+        </div>
+
+        <div class="left-control-group">
+            <button class="dock-btn active" type="button" data-state="zero">|0⟩</button>
+            <button class="dock-btn" type="button" data-state="one">|1⟩</button>
+            <button class="dock-btn" type="button" data-state="plus">|+⟩</button>
+            <button class="dock-btn" type="button" data-state="minus">|−⟩</button>
+        </div>
+
+        <div class="left-control-group">
+            <button class="dock-btn" type="button" data-gate="I">I</button>
+            <button class="dock-btn" type="button" data-gate="X">X</button>
+            <button class="dock-btn" type="button" data-gate="Y">Y</button>
+            <button class="dock-btn" type="button" data-gate="Z">Z</button>
+            <button class="dock-btn" type="button" data-gate="H">H</button>
+            <div class="slider-wrap">
+                <span class="slider-end">0°</span>
+                <input type="range" id="angleSlider" min="0" max="180" step="1" value="0" aria-label="Polarization angle">
+                <span class="slider-end">180°</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Top-Right Formula Drawer Toggle Icon -->
+    <div class="hud-top-right-wrap">
+        <button class="formula-toggle-btn" id="formulaToggleBtn" type="button" aria-label="Formulas" title="I / X / Y / Z / H">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M18 4H6l6 8-6 8h12"/>
+            </svg>
+        </button>
+    </div>
+
+    <!-- Slide-Out Right Formula Drawer (I, X, Y, Z, H) -->
+    <aside class="formula-drawer" id="formulaDrawer" aria-hidden="true">
+        <div class="drawer-header">
+            <div class="drawer-title">
+                <span>∑</span>
+                <span>I · X · Y · Z · H</span>
+            </div>
+            <span class="state-chip" id="drawerStateChip">|ψ⟩ = |0⟩</span>
+        </div>
+        <div class="drawer-list" id="formulaList"></div>
+    </aside>
+
+    <script>
+        /* =========================================================================
+           1. Quantum State, Bloch Geometry & Complex Arithmetic
+           ========================================================================= */
+        const R = 1.25;
+
+        function blochToThree(bx, by, bz) {
+            return new THREE.Vector3(by, bz, bx).normalize();
+        }
+
+        function threeToBloch(vec) {
+            return { bx: vec.z, by: vec.x, bz: vec.y };
+        }
+
+        const POLES = {
+            zero:  { key: "zero",  alpha: 0,   vec: blochToThree(0, 0, 1),  color: 0x3d7df2 },
+            one:   { key: "one",   alpha: 90,  vec: blochToThree(0, 0, -1), color: 0x3d7df2 },
+            plus:  { key: "plus",  alpha: 45,  vec: blochToThree(1, 0, 0),  color: 0xe8890a },
+            minus: { key: "minus", alpha: 135, vec: blochToThree(-1, 0, 0), color: 0xe8890a }
+        };
+
+        const GATES = {
+            I: { axis: blochToThree(0, 0, 1), angle: 0, color: 0x64748b },
+            X: { axis: blochToThree(1, 0, 0), angle: Math.PI, color: 0xe8890a },
+            Y: { axis: blochToThree(0, 1, 0), angle: Math.PI, color: 0x8b5cf6 },
+            Z: { axis: blochToThree(0, 0, 1), angle: Math.PI, color: 0x3d7df2 },
+            H: { axis: blochToThree(Math.SQRT1_2, 0, Math.SQRT1_2), angle: Math.PI, color: 0x10b981 }
+        };
+
+        const GATE_FORMULAS = [
+            {
+                key: "I",
+                badgeBg: "#f1f5f9",
+                accent: "#64748b",
+                coeff: "",
+                mat: ["1", "0", "0", "1"],
+                m: [[{re:1,im:0}, {re:0,im:0}], [{re:0,im:0}, {re:1,im:0}]]
+            },
+            {
+                key: "X",
+                badgeBg: "#ffedd5",
+                accent: "#E8890A",
+                coeff: "",
+                mat: ["0", "1", "1", "0"],
+                m: [[{re:0,im:0}, {re:1,im:0}], [{re:1,im:0}, {re:0,im:0}]]
+            },
+            {
+                key: "Y",
+                badgeBg: "#ede9fe",
+                accent: "#8b5cf6",
+                coeff: "",
+                mat: ["0", "−i", "i", "0"],
+                m: [[{re:0,im:0}, {re:0,im:-1}], [{re:0,im:1}, {re:0,im:0}]]
+            },
+            {
+                key: "Z",
+                badgeBg: "#dbeafe",
+                accent: "#3d7df2",
+                coeff: "",
+                mat: ["1", "0", "0", "−1"],
+                m: [[{re:1,im:0}, {re:0,im:0}], [{re:0,im:0}, {re:-1,im:0}]]
+            },
+            {
+                key: "H",
+                badgeBg: "#d1fae5",
+                accent: "#10b981",
+                coeff: "1/√2",
+                mat: ["1", "1", "1", "−1"],
+                m: [
+                    [{re:Math.SQRT1_2,im:0}, {re:Math.SQRT1_2,im:0}],
+                    [{re:Math.SQRT1_2,im:0}, {re:-Math.SQRT1_2,im:0}]
+                ]
+            }
+        ];
+
+        function cMul(a, b) {
+            return { re: a.re * b.re - a.im * b.im, im: a.re * b.im + a.im * b.re };
+        }
+        function cAdd(a, b) {
+            return { re: a.re + b.re, im: a.im + b.im };
+        }
+        function fmtNum(v) {
+            if (Math.abs(v) < 1e-4) return "0";
+            if (Math.abs(v - 1) < 1e-4) return "1";
+            if (Math.abs(v + 1) < 1e-4) return "-1";
+            if (Math.abs(v - Math.SQRT1_2) < 1e-3) return "1/√2";
+            if (Math.abs(v + Math.SQRT1_2) < 1e-3) return "-1/√2";
+            if (Math.abs(v - 0.5) < 1e-3) return "1/2";
+            if (Math.abs(v + 0.5) < 1e-3) return "-1/2";
+            return v.toFixed(2).replace(/\.00$/, "");
+        }
+        function fmtComplex(c) {
+            const rZero = Math.abs(c.re) < 1e-4;
+            const iZero = Math.abs(c.im) < 1e-4;
+            if (rZero && iZero) return "0";
+            if (iZero) return fmtNum(c.re);
+            if (rZero) {
+                if (Math.abs(c.im - 1) < 1e-4) return "i";
+                if (Math.abs(c.im + 1) < 1e-4) return "-i";
+                return `${fmtNum(c.im)}i`;
+            }
+            const sign = c.im >= 0 ? "+" : "-";
+            const absI = Math.abs(c.im);
+            const iStr = Math.abs(absI - 1) < 1e-4 ? "i" : `${fmtNum(absI)}i`;
+            return `${fmtNum(c.re)}${sign}${iStr}`;
+        }
+
+        function getCurrentSpinor() {
+            const rad = THREE.MathUtils.degToRad(displayAlphaDeg);
+            return [
+                { re: Math.cos(rad), im: 0 },
+                { re: Math.sin(rad), im: 0 }
+            ];
+        }
+
+        function identifyKetLabel(a, b) {
+            const checks = [
+                { label: "|0⟩",  a: {re:1,im:0}, b: {re:0,im:0} },
+                { label: "-|0⟩", a: {re:-1,im:0}, b: {re:0,im:0} },
+                { label: "i|0⟩", a: {re:0,im:1}, b: {re:0,im:0} },
+                { label: "-i|0⟩",a: {re:0,im:-1}, b: {re:0,im:0} },
+                { label: "|1⟩",  a: {re:0,im:0}, b: {re:1,im:0} },
+                { label: "-|1⟩", a: {re:0,im:0}, b: {re:-1,im:0} },
+                { label: "i|1⟩", a: {re:0,im:0}, b: {re:0,im:1} },
+                { label: "-i|1⟩",a: {re:0,im:0}, b: {re:0,im:-1} },
+                { label: "|+⟩",  a: {re:Math.SQRT1_2,im:0}, b: {re:Math.SQRT1_2,im:0} },
+                { label: "-|+⟩", a: {re:-Math.SQRT1_2,im:0}, b: {re:-Math.SQRT1_2,im:0} },
+                { label: "|−⟩",  a: {re:Math.SQRT1_2,im:0}, b: {re:-Math.SQRT1_2,im:0} },
+                { label: "-|−⟩", a: {re:-Math.SQRT1_2,im:0}, b: {re:Math.SQRT1_2,im:0} },
+                { label: "|+i⟩", a: {re:Math.SQRT1_2,im:0}, b: {re:0,im:Math.SQRT1_2} },
+                { label: "|−i⟩", a: {re:Math.SQRT1_2,im:0}, b: {re:0,im:-Math.SQRT1_2} }
+            ];
+            for (const item of checks) {
+                if (Math.hypot(a.re - item.a.re, a.im - item.a.im) < 0.02 &&
+                    Math.hypot(b.re - item.b.re, b.im - item.b.im) < 0.02) {
+                    return item.label;
+                }
+            }
+            return `${fmtComplex(a)}|0⟩ + ${fmtComplex(b)}|1⟩`;
+        }
+
+        let expandedGateKey = null;
+
+        function renderFormulaDrawer() {
+            const [a, b] = getCurrentSpinor();
+            const aStr = fmtComplex(a);
+            const bStr = fmtComplex(b);
+            document.getElementById("drawerStateChip").textContent = `|ψ⟩ = ${identifyKetLabel(a, b)}`;
+
+            const listEl = document.getElementById("formulaList");
+            listEl.innerHTML = GATE_FORMULAS.map(g => {
+                const isExpanded = expandedGateKey === g.key;
+                const t00 = cMul(g.m[0][0], a);
+                const t01 = cMul(g.m[0][1], b);
+                const t10 = cMul(g.m[1][0], a);
+                const t11 = cMul(g.m[1][1], b);
+                const r0 = cAdd(t00, t01);
+                const r1 = cAdd(t10, t11);
+                const outKet = identifyKetLabel(r0, r1);
+
+                return `
+                    <div class="formula-card ${isExpanded ? "expanded" : ""}" style="--accent-color:${g.accent}; --badge-bg:${g.badgeBg};">
+                        <button class="formula-summary" type="button" data-formula-key="${g.key}">
+                            <div class="gate-left">
+                                <span class="gate-badge">${g.key}</span>
+                                <div class="matrix-wrap">
+                                    ${g.coeff ? `<span class="matrix-coeff">${g.coeff}</span>` : ""}
+                                    <div class="matrix-box">
+                                        <span>${g.mat[0]}</span><span>${g.mat[1]}</span>
+                                        <span>${g.mat[2]}</span><span>${g.mat[3]}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <span class="chevron-icon">▼</span>
+                        </button>
+                        <div class="formula-steps">
+                            <div class="calc-row">
+                                <span>${g.key}|ψ⟩ =</span>
+                                ${g.coeff ? `<span>${g.coeff}</span>` : ""}
+                                <div class="matrix-box">
+                                    <span>${g.mat[0]}</span><span>${g.mat[1]}</span>
+                                    <span>${g.mat[2]}</span><span>${g.mat[3]}</span>
+                                </div>
+                                <div class="vec-box">
+                                    <span>${aStr}</span>
+                                    <span>${bStr}</span>
+                                </div>
+                            </div>
+                            <div class="calc-line">
+                                <div>= [ (${fmtNum(g.m[0][0].re)}·${aStr}) + (${fmtComplex(g.m[0][1])}·${bStr}) ]</div>
+                                <div>&nbsp;&nbsp;[ (${fmtComplex(g.m[1][0])}·${aStr}) + (${fmtNum(g.m[1][1].re)}·${bStr}) ]</div>
+                            </div>
+                            <div class="calc-result">
+                                <div class="vec-box">
+                                    <span>${fmtComplex(r0)}</span>
+                                    <span>${fmtComplex(r1)}</span>
+                                </div>
+                                <span>= ${outKet}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join("");
+
+            listEl.querySelectorAll("[data-formula-key]").forEach(btn => {
+                btn.addEventListener("click", () => {
+                    const key = btn.dataset.formulaKey;
+                    expandedGateKey = (expandedGateKey === key) ? null : key;
+                    renderFormulaDrawer();
+                    if (expandedGateKey) {
+                        executeGate(key);
+                    }
+                });
+            });
+        }
+
+        let currentVec = POLES.zero.vec.clone();
+        let displayAlphaDeg = 0;
+
+        let anim = {
+            active: false,
+            t: 0,
+            duration: 0.55,
+            startVec: POLES.zero.vec.clone(),
+            endVec: POLES.zero.vec.clone(),
+            rotAxis: null,
+            rotAngle: 0,
+            axisColor: 0x10b981
+        };
+
+        let scene, camera, renderer;
+        let arrowGroup, shaftMat, coneMat, tipAuraMat;
+        let poleMeshes = {};
+        let trailGroup, trailBeads = [];
+        let rotAxisGroup, rotAxisMat, rotRing1, rotRing2;
+        let axisFadeTimer = 0;
+
+        // 正交十字視角（|0⟩上、|1⟩下、|+⟩左、|−⟩右）：
+        const DEFAULT_CAM = { azimuth: -Math.PI / 2, polar: Math.PI / 2, dist: 5.2 };        let camAzimuth = DEFAULT_CAM.azimuth;
+        let camPolar = DEFAULT_CAM.polar;
+        let camDist = DEFAULT_CAM.dist;
+        let targetAzimuth = DEFAULT_CAM.azimuth;
+        let targetPolar = DEFAULT_CAM.polar;
+        let targetDist = DEFAULT_CAM.dist;
+
+        let isDragging = false;
+        let dragDist = 0;
+        let prevPointer = { x: 0, y: 0 };
+        let lastFrameTime = 0;
+
+        /* =========================================================================
+           2. Initialize Three.js Scene
+           ========================================================================= */
+        function initScene() {
+            const canvas = document.getElementById("blochCanvas");
+            scene = new THREE.Scene();
+
+            camera = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 0.1, 100);
+            updateCamera();
+
+            renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+            renderer.setSize(window.innerWidth, window.innerHeight);
+
+            scene.add(new THREE.AmbientLight(0xffffff, 0.88));
+            const keyLight = new THREE.DirectionalLight(0xffffff, 0.72);
+            keyLight.position.set(4, 6, 5);
+            scene.add(keyLight);
+
+            const rimLight = new THREE.DirectionalLight(0x93c5fd, 0.42);
+            rimLight.position.set(-4, -3, -4);
+            scene.add(rimLight);
+
+            const sphereGeo = new THREE.SphereGeometry(R, 64, 48);
+            const outerGlassMat = new THREE.MeshPhongMaterial({
+                color: 0xeef6ff,
+                emissive: 0x549fd0,
+                emissiveIntensity: 0.06,
+                specular: 0xffffff,
+                shininess: 110,
+                transparent: true,
+                opacity: 0.25,
+                depthWrite: false
+            });
+            scene.add(new THREE.Mesh(sphereGeo, outerGlassMat));
+
+            const innerRimMat = new THREE.MeshBasicMaterial({
+                color: 0x93c5fd,
+                transparent: true,
+                opacity: 0.14,
+                side: THREE.BackSide,
+                depthWrite: false
+            });
+            scene.add(new THREE.Mesh(sphereGeo, innerRimMat));
+
+            const wireMat = new THREE.LineBasicMaterial({
+                color: 0x549fd0,
+                transparent: true,
+                opacity: 0.22
+            });
+
+            [-60, -30, 30, 60].forEach(lat => {
+                const rad = THREE.MathUtils.degToRad(lat);
+                const ringR = R * Math.cos(rad);
+                const y = R * Math.sin(rad);
+                scene.add(buildCircleLine(ringR, 72, wireMat, y, "XZ"));
+            });
+
+            [0, 45, 90, 135].forEach(lon => {
+                const line = buildCircleLine(R, 72, wireMat, 0, "XY");
+                line.rotation.y = THREE.MathUtils.degToRad(lon);
+                scene.add(line);
+            });
+
+            const equatorGeo = new THREE.TorusGeometry(R, 0.011, 16, 100);
+            const equatorMat = new THREE.MeshBasicMaterial({
+                color: 0x549fd0,
+                transparent: true,
+                opacity: 0.62
+            });
+            const equatorMesh = new THREE.Mesh(equatorGeo, equatorMat);
+            equatorMesh.rotation.x = Math.PI / 2;
+            scene.add(equatorMesh);
+
+            const zAxisGeo = new THREE.CylinderGeometry(0.017, 0.017, R * 2.34, 16);
+            scene.add(new THREE.Mesh(zAxisGeo, new THREE.MeshBasicMaterial({ color: 0x3d7df2 })));
+
+            const xAxisGeo = new THREE.CylinderGeometry(0.017, 0.017, R * 2.34, 16);
+            const xAxisMesh = new THREE.Mesh(xAxisGeo, new THREE.MeshBasicMaterial({ color: 0xe8890a }));
+            xAxisMesh.rotation.x = Math.PI / 2;
+            scene.add(xAxisMesh);
+
+            const yPts = [new THREE.Vector3(-R * 1.18, 0, 0), new THREE.Vector3(R * 1.18, 0, 0)];
+            const yGeo = new THREE.BufferGeometry().setFromPoints(yPts);
+            const yMat = new THREE.LineDashedMaterial({
+                color: 0x94a3b8,
+                dashSize: 0.07,
+                gapSize: 0.05,
+                transparent: true,
+                opacity: 0.6
+            });
+            const yLine = new THREE.Line(yGeo, yMat);
+            yLine.computeLineDistances();
+            scene.add(yLine);
+
+            scene.add(new THREE.Mesh(
+                new THREE.SphereGeometry(0.048, 20, 20),
+                new THREE.MeshBasicMaterial({ color: 0x263238 })
+            ));
+
+            Object.values(POLES).forEach(pole => {
+                const group = new THREE.Group();
+                group.position.copy(pole.vec).multiplyScalar(R);
+
+                const orb = new THREE.Mesh(
+                    new THREE.SphereGeometry(0.068, 24, 24),
+                    new THREE.MeshPhongMaterial({
+                        color: pole.color,
+                        emissive: pole.color,
+                        emissiveIntensity: 0.4,
+                        shininess: 90
+                    })
+                );
+                orb.userData.poleKey = pole.key;
+
+                const halo = new THREE.Mesh(
+                    new THREE.SphereGeometry(0.115, 24, 24),
+                    new THREE.MeshBasicMaterial({
+                        color: pole.color,
+                        transparent: true,
+                        opacity: 0.24,
+                        depthWrite: false
+                    })
+                );
+
+                group.add(orb);
+                group.add(halo);
+                scene.add(group);
+                poleMeshes[pole.key] = { group, orb, halo };
+            });
+
+            arrowGroup = new THREE.Group();
+            const shaftLen = R - 0.17;
+            const shaftGeo = new THREE.CylinderGeometry(0.032, 0.032, shaftLen, 20);
+            shaftGeo.translate(0, shaftLen / 2, 0);
+            shaftMat = new THREE.MeshPhongMaterial({
+                color: 0x3d7df2,
+                emissive: 0x3d7df2,
+                emissiveIntensity: 0.45
+            });
+            arrowGroup.add(new THREE.Mesh(shaftGeo, shaftMat));
+
+            const coneGeo = new THREE.ConeGeometry(0.08, 0.2, 24);
+            coneGeo.translate(0, shaftLen + 0.08, 0);
+            coneMat = new THREE.MeshPhongMaterial({
+                color: 0x3d7df2,
+                emissive: 0x3d7df2,
+                emissiveIntensity: 0.55
+            });
+            arrowGroup.add(new THREE.Mesh(coneGeo, coneMat));
+
+            tipAuraMat = new THREE.MeshBasicMaterial({
+                color: 0x3d7df2,
+                transparent: true,
+                opacity: 0.42,
+                depthWrite: false
+            });
+            const tipAura = new THREE.Mesh(new THREE.SphereGeometry(0.15, 24, 24), tipAuraMat);
+            tipAura.position.set(0, R, 0);
+            arrowGroup.add(tipAura);
+            scene.add(arrowGroup);
+
+            trailGroup = new THREE.Group();
+            const beadGeo = new THREE.SphereGeometry(0.026, 12, 12);
+            for (let i = 0; i < 28; i++) {
+                const mat = new THREE.MeshBasicMaterial({
+                    color: 0x10b981,
+                    transparent: true,
+                    opacity: 0,
+                    depthWrite: false
+                });
+                const bead = new THREE.Mesh(beadGeo, mat);
+                bead.visible = false;
+                trailGroup.add(bead);
+                trailBeads.push(bead);
+            }
+            scene.add(trailGroup);
+
+            rotAxisGroup = new THREE.Group();
+            const rotLineGeo = new THREE.CylinderGeometry(0.015, 0.015, R * 2.65, 12);
+            rotAxisMat = new THREE.MeshBasicMaterial({
+                color: 0x10b981,
+                transparent: true,
+                opacity: 0
+            });
+            rotAxisGroup.add(new THREE.Mesh(rotLineGeo, rotAxisMat));
+
+            const ringGeo = new THREE.TorusGeometry(0.09, 0.012, 12, 32);
+            rotRing1 = new THREE.Mesh(ringGeo, rotAxisMat);
+            rotRing1.rotation.x = Math.PI / 2;
+            rotRing1.position.y = R * 1.26;
+            rotAxisGroup.add(rotRing1);
+
+            rotRing2 = new THREE.Mesh(ringGeo, rotAxisMat);
+            rotRing2.rotation.x = Math.PI / 2;
+            rotRing2.position.y = -R * 1.26;
+            rotAxisGroup.add(rotRing2);
+
+            scene.add(rotAxisGroup);
+            window.addEventListener("resize", onResize);
+        }
+
+        function buildCircleLine(radius, segments, material, offset = 0, plane = "XZ") {
+            const pts = [];
+            for (let i = 0; i <= segments; i++) {
+                const a = (i / segments) * Math.PI * 2;
+                if (plane === "XZ") {
+                    pts.push(new THREE.Vector3(Math.cos(a) * radius, offset, Math.sin(a) * radius));
+                } else {
+                    pts.push(new THREE.Vector3(Math.cos(a) * radius, Math.sin(a) * radius, offset));
+                }
+            }
+            return new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts), material);
+        }
+
+        function onResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+
+        function updateCamera() {
+            const sinP = Math.sin(camPolar);
+            camera.position.set(
+                camDist * sinP * Math.sin(camAzimuth),
+                camDist * Math.cos(camPolar),
+                camDist * sinP * Math.cos(camAzimuth)
+            );
+            camera.lookAt(0, 0, 0);
+        }
+
+        /* =========================================================================
+           3. State Transitions, Gate Rotations & HUD Sync
+           ========================================================================= */
+        function setFromAlpha(alphaDeg, animate = false) {
+            const clamped = Math.max(0, Math.min(180, alphaDeg));
+            displayAlphaDeg = clamped;
+            const thetaRad = THREE.MathUtils.degToRad(clamped * 2);
+            const target = blochToThree(Math.sin(thetaRad), 0, Math.cos(thetaRad));
+
+            if (animate) {
+                startTransition(target, null, 0, getColorHexForVec(target));
+            } else {
+                anim.active = false;
+                currentVec.copy(target);
+                clearTrail();
+            }
+            syncHUD();
+            renderFormulaDrawer();
+        }
+
+        function selectPole(poleKey) {
+            const pole = POLES[poleKey];
+            if (!pole) return;
+            displayAlphaDeg = pole.alpha;
+            startTransition(pole.vec.clone(), null, 0, pole.color);
+            syncHUD();
+            renderFormulaDrawer();
+        }
+
+        function executeGate(gateKey) {
+            const gate = GATES[gateKey];
+            if (!gate) return;
+
+            if (anim.active) {
+                currentVec.copy(anim.endVec);
+                anim.active = false;
+            }
+
+            const start = currentVec.clone().normalize();
+            const end = start.clone().applyAxisAngle(gate.axis, gate.angle).normalize();
+
+            const { bx, bz } = threeToBloch(end);
+            let thetaDeg = THREE.MathUtils.radToDeg(Math.atan2(bx, bz));
+            thetaDeg = ((thetaDeg % 360) + 360) % 360;
+            displayAlphaDeg = Math.round((thetaDeg / 2) * 10) / 10;
+
+            startTransition(end, gate.axis.clone(), gate.angle, gate.color);
+            syncHUD();
+        }
+
+        function startTransition(endVec, rotAxis, rotAngle, colorHex) {
+            anim = {
+                active: true,
+                t: 0,
+                duration: 0.56,
+                startVec: currentVec.clone().normalize(),
+                endVec: endVec.clone().normalize(),
+                rotAxis,
+                rotAngle,
+                axisColor: colorHex
+            };
+
+            if (rotAxis && rotAngle !== 0) {
+                const up = new THREE.Vector3(0, 1, 0);
+                rotAxisGroup.quaternion.setFromUnitVectors(up, rotAxis);
+                rotAxisMat.color.setHex(colorHex);
+                axisFadeTimer = 1.15;
+            }
+
+            clearTrail();
+        }
+
+        function clearTrail() {
+            trailBeads.forEach(b => {
+                b.visible = false;
+                b.material.opacity = 0;
+            });
+        }
+
+        function getColorHexForVec(vec) {
+            const { bx, bz } = threeToBloch(vec);
+            const zWeight = Math.abs(bz);
+            const xWeight = Math.abs(bx);
+            const total = zWeight + xWeight || 1;
+            const cZ = new THREE.Color(0x3d7df2);
+            const cX = new THREE.Color(0xe8890a);
+            return cZ.lerp(cX, xWeight / total).getHex();
+        }
+
+        function syncHUD() {
+            const { bx, bz } = threeToBloch(anim.active ? anim.endVec : currentVec);
+
+            const p0 = Math.round(Math.max(0, Math.min(100, ((1 + bz) * 0.5) * 100)));
+            const p1 = 100 - p0;
+            const pPlus = Math.round(Math.max(0, Math.min(100, ((1 + bx) * 0.5) * 100)));
+            const pMinus = 100 - pPlus;
+
+            const alphaClean = Math.round(displayAlphaDeg);
+            const thetaClean = Math.round(displayAlphaDeg * 2);
+
+            document.getElementById("alphaPill").textContent = `α: ${alphaClean}°`;
+            document.getElementById("thetaPill").textContent = `θ: ${thetaClean}°`;
+
+            document.getElementById("zProbLabel").textContent = `Z: ${p0}% / ${p1}%`;
+            document.getElementById("zSeg0").style.width = `${p0}%`;
+            document.getElementById("zSeg1").style.width = `${p1}%`;
+
+            document.getElementById("xProbLabel").textContent = `X: ${pPlus}% / ${pMinus}%`;
+            document.getElementById("xSegPlus").style.width = `${pPlus}%`;
+            document.getElementById("xSegMinus").style.width = `${pMinus}%`;
+
+            const orb = document.getElementById("photonOrb");
+            const colorHex = getColorHexForVec(anim.active ? anim.endVec : currentVec);
+            const cssHex = "#" + colorHex.toString(16).padStart(6, "0");
+            orb.style.setProperty("--beam-color", cssHex);
+            orb.style.setProperty("--pol-angle", `${90 - displayAlphaDeg}deg`);
+
+            document.getElementById("angleSlider").value = alphaClean;
+
+            let matchedPole = null;
+            const targetCheck = anim.active ? anim.endVec : currentVec;
+            Object.values(POLES).forEach(p => {
+                if (targetCheck.distanceTo(p.vec) < 0.05) {
+                    matchedPole = p.key;
+                }
+            });
+
+            document.querySelectorAll("[data-state]").forEach(btn => {
+                btn.classList.toggle("active", btn.dataset.state === matchedPole);
+            });
+            document.querySelectorAll(".pole-badge").forEach(badge => {
+                badge.classList.toggle("active", badge.dataset.pole === matchedPole);
+            });
+        }
+
+        /* =========================================================================
+           4. Pointer, Touch & UI Event Bindings
+           ========================================================================= */
+        function bindEvents() {
+            const canvas = document.getElementById("blochCanvas");
+            const raycaster = new THREE.Raycaster();
+            const ndc = new THREE.Vector2();
+
+            function onDown(x, y) {
+                isDragging = true;
+                dragDist = 0;
+                prevPointer = { x, y };
+            }
+
+            function onMove(x, y) {
+                if (isDragging) {
+                    const dx = x - prevPointer.x;
+                    const dy = y - prevPointer.y;
+                    dragDist += Math.hypot(dx, dy);
+                    targetAzimuth -= dx * 0.0085;
+                    targetPolar = THREE.MathUtils.clamp(targetPolar - dy * 0.0085, 0.2, Math.PI - 0.2);
+                    prevPointer = { x, y };
+                } else {
+                    ndc.x = (x / window.innerWidth) * 2 - 1;
+                    ndc.y = -(y / window.innerHeight) * 2 + 1;
+                    raycaster.setFromCamera(ndc, camera);
+                    const orbs = Object.values(poleMeshes).map(m => m.orb);
+                    const hits = raycaster.intersectObjects(orbs);
+                    canvas.style.cursor = hits.length > 0 ? "pointer" : "grab";
+                }
+            }
+
+            function onUp(x, y) {
+                if (isDragging && dragDist < 6) {
+                    ndc.x = (x / window.innerWidth) * 2 - 1;
+                    ndc.y = -(y / window.innerHeight) * 2 + 1;
+                    raycaster.setFromCamera(ndc, camera);
+                    const orbs = Object.values(poleMeshes).map(m => m.orb);
+                    const hits = raycaster.intersectObjects(orbs);
+                    if (hits.length > 0) {
+                        selectPole(hits[0].object.userData.poleKey);
+                    }
+                }
+                isDragging = false;
+            }
+
+            canvas.addEventListener("mousedown", e => onDown(e.clientX, e.clientY));
+            window.addEventListener("mousemove", e => onMove(e.clientX, e.clientY));
+            window.addEventListener("mouseup", e => onUp(e.clientX, e.clientY));
+
+            canvas.addEventListener("touchstart", e => {
+                if (e.touches.length === 1) onDown(e.touches[0].clientX, e.touches[0].clientY);
+            }, { passive: true });
+
+            canvas.addEventListener("touchmove", e => {
+                if (e.touches.length === 1) onMove(e.touches[0].clientX, e.touches[0].clientY);
+            }, { passive: true });
+
+            canvas.addEventListener("touchend", e => {
+                if (e.changedTouches.length === 1) onUp(e.changedTouches[0].clientX, e.changedTouches[0].clientY);
+            });
+
+            canvas.addEventListener("wheel", e => {
+                e.preventDefault();
+                targetDist = THREE.MathUtils.clamp(targetDist + e.deltaY * 0.0022, 2.4, 8.0);
+            }, { passive: false });
+
+            document.querySelectorAll("[data-pole]").forEach(el => {
+                el.addEventListener("click", () => selectPole(el.dataset.pole));
+            });
+
+            document.querySelectorAll("[data-state]").forEach(el => {
+                el.addEventListener("click", () => selectPole(el.dataset.state));
+            });
+
+            document.querySelectorAll("[data-gate]").forEach(el => {
+                el.addEventListener("click", () => {
+                    executeGate(el.dataset.gate);
+                    renderFormulaDrawer();
+                });
+            });
+
+            document.getElementById("angleSlider").addEventListener("input", e => {
+                setFromAlpha(parseFloat(e.target.value), false);
+            });
+
+            document.getElementById("resetCamBtn").addEventListener("click", () => {
+                targetAzimuth = DEFAULT_CAM.azimuth;
+                targetPolar = DEFAULT_CAM.polar;
+                targetDist = DEFAULT_CAM.dist;
+            });
+
+            const formulaToggleBtn = document.getElementById("formulaToggleBtn");
+            const formulaDrawer = document.getElementById("formulaDrawer");
+            formulaToggleBtn.addEventListener("click", () => {
+                const isOpen = formulaDrawer.classList.toggle("open");
+                formulaToggleBtn.classList.toggle("active", isOpen);
+                formulaDrawer.setAttribute("aria-hidden", String(!isOpen));
+                if (isOpen) renderFormulaDrawer();
+            });
+        }
+
+        /* =========================================================================
+           5. 3D Pole Badge Projection & 60fps Animation Loop
+           ========================================================================= */
+        function updatePoleBadges() {
+            const w = window.innerWidth;
+            const h = window.innerHeight;
+            const camLength = camera.position.length();
+
+            Object.values(POLES).forEach(pole => {
+                const badge = document.getElementById(`badge-${pole.key}`);
+                if (!badge) return;
+
+                const worldPos = pole.vec.clone().multiplyScalar(R + 0.25);
+                const proj = worldPos.clone().project(camera);
+
+                const sx = (proj.x * 0.5 + 0.5) * w;
+                const sy = (-proj.y * 0.5 + 0.5) * h;
+
+                const dist = worldPos.distanceTo(camera.position);
+                const isBack = dist > camLength + 0.22;
+
+                badge.style.left = `${sx}px`;
+                badge.style.top = `${sy}px`;
+                badge.style.opacity = isBack ? "0.62" : "1";
+                badge.style.zIndex = Math.round(50 - dist * 5);
+                badge.style.transform = `translate(-50%, -50%) scale(${isBack ? 0.9 : 1})`;
+            });
+        }
+
+        function animateLoop(now = 0) {
+            requestAnimationFrame(animateLoop);
+
+            const dt = Math.min(0.05, (now - lastFrameTime) / 1000 || 0.016);
+            lastFrameTime = now;
+
+            camAzimuth += (targetAzimuth - camAzimuth) * 0.14;
+            camPolar += (targetPolar - camPolar) * 0.14;
+            camDist += (targetDist - camDist) * 0.14;
+            updateCamera();
+
+            if (anim.active) {
+                anim.t += dt / anim.duration;
+                const clampedT = Math.min(1, anim.t);
+                const ease = clampedT * clampedT * (3 - 2 * clampedT);
+
+                if (anim.rotAxis && anim.rotAngle !== 0) {
+                    currentVec.copy(anim.startVec).applyAxisAngle(anim.rotAxis, anim.rotAngle * ease).normalize();
+                } else {
+                    const dot = THREE.MathUtils.clamp(anim.startVec.dot(anim.endVec), -1, 1);
+                    const omega = Math.acos(dot);
+                    if (omega < 0.001) {
+                        currentVec.copy(anim.endVec);
+                    } else {
+                        const sinO = Math.sin(omega);
+                        const w1 = Math.sin((1 - ease) * omega) / sinO;
+                        const w2 = Math.sin(ease * omega) / sinO;
+                        currentVec.set(
+                            anim.startVec.x * w1 + anim.endVec.x * w2,
+                            anim.startVec.y * w1 + anim.endVec.y * w2,
+                            anim.startVec.z * w1 + anim.endVec.z * w2
+                        ).normalize();
+                    }
+                }
+
+                const activeCount = Math.floor(ease * trailBeads.length);
+                for (let i = 0; i < trailBeads.length; i++) {
+                    const bead = trailBeads[i];
+                    if (i <= activeCount && anim.rotAngle !== 0) {
+                        const stepFrac = (i / (trailBeads.length - 1)) * ease;
+                        const pos = anim.startVec.clone().applyAxisAngle(anim.rotAxis, anim.rotAngle * stepFrac).normalize();
+                        bead.position.copy(pos).multiplyScalar(R * 1.015);
+                        bead.material.color.setHex(anim.axisColor);
+                        bead.material.opacity = 0.25 + 0.65 * (i / Math.max(1, activeCount));
+                        bead.visible = true;
+                    } else {
+                        bead.visible = false;
+                    }
+                }
+
+                if (clampedT >= 1) {
+                    currentVec.copy(anim.endVec);
+                    anim.active = false;
+                }
+            } else {
+                trailBeads.forEach(b => {
+                    if (b.visible) {
+                        b.material.opacity -= dt * 0.95;
+                        if (b.material.opacity <= 0) b.visible = false;
+                    }
+                });
+            }
+
+            if (axisFadeTimer > 0) {
+                axisFadeTimer -= dt;
+                rotAxisMat.opacity = Math.min(0.85, Math.max(0, axisFadeTimer * 0.95));
+            } else {
+                rotAxisMat.opacity = 0;
+            }
+
+            arrowGroup.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), currentVec);
+            const liveColor = getColorHexForVec(currentVec);
+            shaftMat.color.setHex(liveColor);
+            shaftMat.emissive.setHex(liveColor);
+            coneMat.color.setHex(liveColor);
+            coneMat.emissive.setHex(liveColor);
+            tipAuraMat.color.setHex(liveColor);
+
+            const pulse = 1 + Math.sin(now * 0.0045) * 0.1;
+            Object.values(POLES).forEach(pole => {
+                const isNear = currentVec.distanceTo(pole.vec) < 0.06;
+                poleMeshes[pole.key].halo.scale.setScalar(isNear ? pulse * 1.22 : 1.0);
+            });
+
+            updatePoleBadges();
+            renderer.render(scene, camera);
+        }
+
+        window.onload = function () {
+            initScene();
+            bindEvents();
+            syncHUD();
+            renderFormulaDrawer();
+            animateLoop();
+        };
+    </script>
+</body>
+</html>
