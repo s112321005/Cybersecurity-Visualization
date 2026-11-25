@@ -251,7 +251,7 @@
             appearance: none;
             border: 5px solid var(--ink);
             border-radius: 999px;
-            background: var(--pass);
+            background: var(--primary-blue);
             color: white;
             min-height: 58px;
             padding: 12px 18px;
@@ -288,7 +288,6 @@
             top: 40%;
             height: 160px;
             transform: translateY(-50%);
-            /* 調整這兩個數值即可改變兩片 SVG 偏振片的位置與距離 */
             --filter-1: 38%;
             --filter-2: 66%;
         }
@@ -668,7 +667,20 @@ const level = {
 };
 
 const page = document.querySelector("[data-level-page]");
-const nextLevelHref = "game/index.html";
+const levelIndex = Math.max(0, Number(page.dataset.levelPage || 1) - 1);
+const levelFiles = [
+    "game/level1.html",
+    "game/level2.html",
+    "game/level3.html",
+    "game/level4.html",
+    "game/level5.html",
+    "game/level6.html",
+    "game/level7.html",
+    "game/level8.html",
+    "game/level9.html",
+    "game/level10.html",
+    "game/level11.html"
+];
 
 function photonMarkup(id = "", extraClass = "") {
     return `<div class="tutorial-photon ${extraClass}" ${id ? `id="${id}"` : ""}><span></span></div>`;
@@ -682,6 +694,7 @@ function setPhoton(el, state) {
 }
 
 function renderLevel() {
+    const levelNo = levelIndex + 1;
     const correctAnswer = "none";
     const filtersMarkup = level.filters.map((filterName, index) => {
         const filter = filterTypes[filterName];
@@ -720,7 +733,7 @@ function renderLevel() {
                 </div>
             </section>
             <aside class="level-three-panel ready" id="levelPanel">
-                <div class="level-badge-static">Level 10</div>
+                <div class="level-badge-static">Level ${levelNo}</div>
                 <h1 class="question">Final result?</h1>
                 <div class="level-three-options">
                     <button class="option-tile" type="button" data-answer="horizontal" aria-label="horizontal light passes">
@@ -732,7 +745,7 @@ function renderLevel() {
                         <span class="block-choice-icon"></span>
                     </button>
                 </div>
-                <button class="next-level-btn hidden" id="nextLevelBtn" type="button">Back to Levels</button>
+                <button class="next-level-btn hidden" id="nextLevelBtn" type="button">Next Level</button>
             </aside>
         </section>
     `;
@@ -795,7 +808,7 @@ function renderLevel() {
             ? "光子先經 <strong>Z 基底（|1⟩ 垂直）</strong> 偏振片極化，再遇到同屬 <strong>Z 基底的正交方向（|0⟩ 水平）</strong>，因兩態完全正交而 100% 阻擋（0%）。<br><span style='color:#64748b;font-size:0.85rem;'>💡 提示：若在兩者之間改放 <strong>X 基底（|+⟩ / |−⟩ 對角）</strong> 偏振片，光子重新投影後反而會有一部分通過！</span>"
             : "再想一下：第一片偏振片已將光子固定在 <strong>Z 基底的 |1⟩（垂直）</strong> 狀態，接著遇到同樣屬於 <strong>Z 基底的 |0⟩（水平）</strong> 偏振片，兩者彼此正交，光線能否通過？";
         levelModalBtn.textContent = correct ? "OK" : "Try again";
-        levelModalSecondaryBtn.textContent = correct ? "Level Map" : "Give up";
+        levelModalSecondaryBtn.textContent = correct ? "Next Level" : "Give up";
         levelModalBtn.style.order = correct ? "1" : "2";
         levelModalSecondaryBtn.style.order = correct ? "2" : "1";
         levelModalSecondaryBtn.classList.remove("hidden");
@@ -858,10 +871,10 @@ function renderLevel() {
 
     levelModalBtn.addEventListener("click", returnToChoice);
     levelModalSecondaryBtn.addEventListener("click", () => {
-        window.location.href = nextLevelHref;
+        window.location.href = lastCorrect ? (levelFiles[levelIndex + 1] || "game/index.html") : "game/index.html";
     });
     nextLevelBtn.addEventListener("click", () => {
-        window.location.href = nextLevelHref;
+        window.location.href = levelFiles[levelIndex + 1] || "game/index.html";
     });
 
     startIntro();
