@@ -580,6 +580,28 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
+            gap: 8px;
+        }
+
+        .calc-result-kets {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 2px;
+            text-align: right;
+            line-height: 1.35;
+        }
+
+        .calc-result-sub {
+            font-size: 0.74rem;
+            font-weight: 800;
+            color: #334155;
+        }
+
+        .calc-result-final {
+            font-size: 0.84rem;
+            font-weight: 950;
+            color: #0f172a;
         }
 
         /* =========================================================
@@ -775,8 +797,8 @@
                 badgeBg: "#ede9fe",
                 accent: "#8b5cf6",
                 coeff: "",
-                mat: ["0", "−i", "i", "0"],
-                m: [[{re:0,im:0}, {re:0,im:-1}], [{re:0,im:1}, {re:0,im:0}]]
+                mat: ["0", "1", "−1", "0"],
+                 m: [[{re:0,im:0}, {re:1,im:0}], [{re:-1,im:0}, {re:0,im:0}]]
             },
             {
                 key: "Z",
@@ -887,6 +909,20 @@
                 const r1 = cAdd(t10, t11);
                 const outKet = identifyKetLabel(r0, r1);
 
+                // 當運算為 H 閘且結果為 |+⟩ 或 |−⟩ 時，先顯示 |0⟩ 與 |1⟩ 的線性組合再顯示 |+⟩ / |−⟩
+                let expandedKetLine = "";
+                if (g.key === "H") {
+                    if (outKet === "|+⟩") {
+                        expandedKetLine = `<div class="calc-result-sub">= 1/√2 ( |0⟩ + |1⟩ )</div>`;
+                    } else if (outKet === "|−⟩") {
+                        expandedKetLine = `<div class="calc-result-sub">= 1/√2 ( |0⟩ − |1⟩ )</div>`;
+                    } else if (outKet === "-|+⟩") {
+                        expandedKetLine = `<div class="calc-result-sub">= -1/√2 ( |0⟩ + |1⟩ )</div>`;
+                    } else if (outKet === "-|−⟩") {
+                        expandedKetLine = `<div class="calc-result-sub">= -1/√2 ( |0⟩ − |1⟩ )</div>`;
+                    }
+                }
+
                 return `
                     <div class="formula-card ${isExpanded ? "expanded" : ""}" style="--accent-color:${g.accent}; --badge-bg:${g.badgeBg};">
                         <button class="formula-summary" type="button" data-formula-key="${g.key}">
@@ -924,7 +960,10 @@
                                     <span>${fmtComplex(r0)}</span>
                                     <span>${fmtComplex(r1)}</span>
                                 </div>
-                                <span>= ${outKet}</span>
+                                <div class="calc-result-kets">
+                                    ${expandedKetLine}
+                                    <div class="calc-result-final">= ${outKet}</div>
+                                </div>
                             </div>
                         </div>
                     </div>
